@@ -1,18 +1,15 @@
-//
-//  Item.swift
-//  SC40-V3
-//
-//  Created by David O'Connell on 17/10/2025.
-//
+
 
 import Foundation
-import SwiftData
 
-@Model
-final class Item {
-    var timestamp: Date
-    
-    init(timestamp: Date) {
-        self.timestamp = timestamp
+final class Item: Identifiable {
+    let id: UUID
+    var name: String
+    var createdAt: Date
+
+    init(id: UUID = UUID(), name: String = "", createdAt: Date = Date()) {
+        self.id = id
+        self.name = name
+        self.createdAt = createdAt
     }
 }

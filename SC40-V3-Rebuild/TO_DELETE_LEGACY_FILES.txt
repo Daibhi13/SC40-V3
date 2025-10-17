@@ -1,0 +1,13 @@
+Delete or refactor the following files, as they reference missing/legacy types and are causing build errors:
+
+- SC40-V3/SC40-V3/Models/NextWeekAI.swift
+- SC40-V3/SC40-V3/Models/ProgramModels.swift
+- SC40-V3/SC40-V3/Models/SampleWeekPrint.swift
+- SC40-V3/SC40-V3/Models/SprintProgramViewModel.swift
+- SC40-V3/SC40-V3/Models/TrainingSession.swift (if not the canonical one)
+- SC40-V3/SC40-V3/Models/SprintSetAndTrainingSession.swift (if not the canonical one)
+- SC40-V3/SC40-V3/Models/UserProfileViewModel.swift (if not the canonical one)
+- SC40-V3/SC40-V3/UI/OnboardingView.swift (if not the canonical one)
+- SC40-V3/SC40-V3/ContentView.swift (if not the canonical one)
+
+Check each for references to missing types/functions and either update to use canonical types or remove from the project.

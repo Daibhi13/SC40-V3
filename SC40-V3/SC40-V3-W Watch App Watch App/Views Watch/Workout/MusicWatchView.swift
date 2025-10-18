@@ -7,6 +7,8 @@ struct MusicApp {
     let bundleId: String
 }
 
+import SwiftUI
+
 struct MusicWatchView: View {
     /// 0 = Control, 1 = MainWorkout, 2 = Music (default)
     var selectedIndex: Int = 2
@@ -25,14 +27,14 @@ struct MusicWatchView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [BrandColorsWatch.background, BrandColorsWatch.tertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Time at top
                 Text(currentTimeString())
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
-                    .foregroundColor(BrandColorsWatch.secondary)
+                    .foregroundColor(Color.brandSecondary)
                     .padding(.top, 8)
 
                 Spacer()
@@ -43,25 +45,25 @@ struct MusicWatchView: View {
                     VStack(spacing: 4) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(BrandColorsWatch.tertiary.opacity(0.13))
+                                .fill(Color.brandTertiary.opacity(0.13))
                                 .frame(width: 60, height: 60)
                             Image(systemName: isPlaying ? "music.note" : "applewatch")
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 30, height: 30)
-                                .foregroundColor(isPlaying ? BrandColorsWatch.primary : BrandColorsWatch.accent)
+                                .foregroundColor(isPlaying ? Color.brandPrimary : Color.brandAccent)
                         }
                         
                         VStack(spacing: 2) {
                             Text(currentTrack)
                                 .font(.system(size: 14, weight: .bold, design: .rounded))
-                                .foregroundColor(BrandColorsWatch.primary)
+                                .foregroundColor(Color.brandPrimary)
                                 .lineLimit(1)
                             
                             if !currentArtist.isEmpty {
                                 Text(currentArtist)
                                     .font(.system(size: 10, weight: .medium))
-                                    .foregroundColor(BrandColorsWatch.secondary)
+                                    .foregroundColor(Color.brandSecondary)
                                     .lineLimit(1)
                             }
                         }
@@ -71,7 +73,7 @@ struct MusicWatchView: View {
                     Button(action: { showingAppLauncher.toggle() }) {
                         Image(systemName: "ellipsis.circle")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(BrandColorsWatch.tertiary.opacity(0.7))
+                            .foregroundColor(Color.brandTertiary.opacity(0.7))
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
@@ -83,26 +85,26 @@ struct MusicWatchView: View {
                     Button(action: { previousTrack() }) {
                         Image(systemName: "backward.fill")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(BrandColorsWatch.secondary)
+                            .foregroundColor(Color.brandSecondary)
                             .frame(width: 36, height: 36)
-                            .background(Circle().fill(BrandColorsWatch.tertiary.opacity(0.13)))
+                            .background(Circle().fill(Color.brandTertiary.opacity(0.13)))
                     }
                     
                     Button(action: { togglePlayPause() }) {
                         Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                             .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(BrandColorsWatch.background)
+                            .foregroundColor(Color.brandBackground)
                             .frame(width: 44, height: 44)
-                            .background(Circle().fill(BrandColorsWatch.primary))
-                            .shadow(color: BrandColorsWatch.primary.opacity(0.18), radius: 3, x: 0, y: 1)
+                            .background(Circle().fill(Color.brandPrimary))
+                            .shadow(color: Color.brandPrimary.opacity(0.18), radius: 3, x: 0, y: 1)
                     }
                     
                     Button(action: { nextTrack() }) {
                         Image(systemName: "forward.fill")
                             .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(BrandColorsWatch.secondary)
+                            .foregroundColor(Color.brandSecondary)
                             .frame(width: 36, height: 36)
-                            .background(Circle().fill(BrandColorsWatch.tertiary.opacity(0.13)))
+                            .background(Circle().fill(Color.brandTertiary.opacity(0.13)))
                     }
                 }
                 .padding(.bottom, 12)
@@ -215,17 +217,17 @@ struct MusicAppLauncherView: View {
                             VStack(spacing: 6) {
                                 ZStack {
                                     Circle()
-                                        .fill(BrandColorsWatch.tertiary.opacity(0.12))
+                                        .fill(Color.brandTertiary.opacity(0.12))
                                         .frame(width: 55, height: 55)
                                     
                                     Image(systemName: app.icon)
                                         .font(.system(size: 22, weight: .medium))
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                 }
                                 
                                 Text(app.name)
                                     .font(.system(size: 11, weight: .medium))
-                                    .foregroundColor(BrandColorsWatch.secondary)
+                                    .foregroundColor(Color.brandSecondary)
                                     .multilineTextAlignment(.center)
                                     .lineLimit(2)
                             }

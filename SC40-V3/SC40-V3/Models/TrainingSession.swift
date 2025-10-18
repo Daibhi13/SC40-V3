@@ -3,6 +3,7 @@
 // import ProgramModels
 // import ProgramGenerator
 import Foundation
+import Combine
 
 // Example: Generate a 12-week hybrid AI training program in Swift
 // Updated: Generate a 12-week hybrid AI training program with dynamic reps, rest, and AI adjustments

@@ -1,0 +1,12 @@
+# Features Documentation
+
+This directory contains documentation for specific features and functionality.
+
+## Feature Documentation:
+- ENHANCED_LEADERBOARD_IMPLEMENTATION.md
+- AUTOMATED_WORKOUT_FLOW_IMPLEMENTATION.md
+- SPRINT_NEWS_FEATURE_ENABLED.md
+- SPRINT_NEWS_SETUP.md
+- SESSION_LIBRARY_BROWSER_IMPLEMENTATION.md
+- WATCH_APP_COMPLETE.md
+- ENHANCEMENT_OPPORTUNITIES.md

@@ -1,12 +1,12 @@
-//
-//  SC40_V3_EExtension.swift
-//  SC40-V3-E
-//
-//  Created by David O'Connell on 28/08/2025.
-//
-
 import AppIntents
+import ExtensionKit
+import Foundation
 
-@main
-struct SC40_V3_EExtension: AppIntentsExtension {
+// ExtensionKit app entry point for watchOS
+@available(watchOS 10.0, *)
+struct SC40_V3_EExtension {
+    // ExtensionKit app initialization
+    init() {
+        print("SC40-V3 Extension initialized")
+    }
 }

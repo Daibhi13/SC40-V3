@@ -55,7 +55,7 @@ struct TrainingView: View {
                     case .helpInfo:
                         AnyView(HelpInfoView())
                     case .news:
-                        AnyView(NewsView()) // Use the new NewsView instead of placeholder
+                        AnyView(SprintNewsView()) // Use SprintNewsView instead of non-existent NewsView
                     case .shareWithTeammates:
                         AnyView(ShareWithTeammatesView())
                     case .sharePerformance:
@@ -255,8 +255,11 @@ struct TrainingView: View {
                     
                     // Session Card
                     if let firstSession = sessionsToShow.first {
-                        SessionCardDashboardView(session: firstSession)
-                            .frame(width: UIScreen.main.bounds.width * 0.9)
+                        GeometryReader { geometry in
+                            SessionCardDashboardView(session: firstSession)
+                                .frame(width: geometry.size.width * 0.9)
+                        }
+                        .frame(height: 180) // Provide a fixed height for the GeometryReader
                     }
                     
                     Text("Up Next")
@@ -351,28 +354,30 @@ struct TrainingProgramCarousel: View {
             
             // --- Snap-to-card carousel ---
             if !sortedSessions.isEmpty {
-                TabView {
-                    ForEach(sortedSessions.prefix(84), id: \.id) { session in
-                        SessionCardDashboardView(session: session)
-                            .frame(width: UIScreen.main.bounds.width * 0.9)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 18)
-                                    .stroke(Color.white.opacity(0.18), lineWidth: 2)
-                            )
-                            .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: 8)
-                            .padding(.vertical, 8)
-                            .onTapGesture {
-                                selectedSession = session
-                                // --- Haptic feedback on tap ---
-                                #if os(iOS)
-                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                #endif
-                            }
-                            .id(session.id) // Explicit id to ensure stability
+                GeometryReader { geometry in
+                    TabView {
+                        ForEach(sortedSessions.prefix(84), id: \.id) { session in
+                            SessionCardDashboardView(session: session)
+                                .frame(width: geometry.size.width * 0.9)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .stroke(Color.white.opacity(0.18), lineWidth: 2)
+                                )
+                                .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: 8)
+                                .padding(.vertical, 8)
+                                .onTapGesture {
+                                    selectedSession = session
+                                    // --- Haptic feedback on tap ---
+                                    #if os(iOS)
+                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                    #endif
+                                }
+                                .id(session.id) // Explicit id to ensure stability
+                        }
                     }
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+                    .frame(height: 200)
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
-                .frame(height: 200)
             }
         }
         .sheet(item: $selectedSession) { session in

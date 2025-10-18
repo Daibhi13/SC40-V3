@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import CoreLocation
 import MapKit
 
@@ -43,24 +44,28 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
     }
     
     private func reverseGeocodeWithCLGeocoder(location: CLLocation) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = " " // Empty query for reverse geocoding
+        request.region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: 100, longitudinalMeters: 100)
+
+        let search = MKLocalSearch(request: request)
+        search.start { [weak self] response, error in
             DispatchQueue.main.async { [weak self] in
                 if let error = error {
                     self?.errorMessage = "Failed to get location details: \(error.localizedDescription)"
                     return
                 }
-                
-                guard let placemark = placemarks?.first else {
+
+                guard let placemark = response?.mapItems.first?.placemark else {
                     self?.errorMessage = "No location information found"
                     return
                 }
-                
-                // Extract location details
+
+                // Extract location details using MapKit placemark
                 self?.county = placemark.subAdministrativeArea ?? ""
                 self?.state = placemark.administrativeArea ?? ""
                 self?.country = placemark.country ?? ""
-                
+
                 print("📍 Location detected:")
                 print("   County: \(self?.county ?? "Unknown")")
                 print("   State: \(self?.state ?? "Unknown")")

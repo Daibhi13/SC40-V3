@@ -39,20 +39,22 @@ struct EntryIOSView: View {
                 .ignoresSafeArea()
 
                 // Subtle animated background particles
-                ForEach(0..<12, id: \.self) { index in
-                    Circle()
-                        .fill(Color.white.opacity(Double(index) * 0.02 + 0.05))
-                        .frame(width: CGFloat(index * 2 + 4), height: CGFloat(index * 2 + 4))
-                        .position(
-                            x: CGFloat.random(in: 0...UIScreen.main.bounds.width),
-                            y: CGFloat.random(in: 0...UIScreen.main.bounds.height)
-                        )
-                        .animation(
-                            Animation.easeInOut(duration: Double.random(in: 3...6))
-                                .repeatForever(autoreverses: true)
-                                .delay(Double.random(in: 0...2)),
-                            value: UUID()
-                        )
+                GeometryReader { geometry in
+                    ForEach(0..<12, id: \.self) { index in
+                        Circle()
+                            .fill(Color.white.opacity(Double(index) * 0.02 + 0.05))
+                            .frame(width: CGFloat(index * 2 + 4), height: CGFloat(index * 2 + 4))
+                            .position(
+                                x: CGFloat.random(in: 0...geometry.size.width),
+                                y: CGFloat.random(in: 0...geometry.size.height)
+                            )
+                            .animation(
+                                Animation.easeInOut(duration: Double.random(in: 3...6))
+                                    .repeatForever(autoreverses: true)
+                                    .delay(Double.random(in: 0...2)),
+                                value: UUID()
+                            )
+                    }
                 }
 
                 // Premium glass effect overlay

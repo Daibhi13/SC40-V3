@@ -7,14 +7,14 @@ struct RepLogSummaryFlowView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [BrandColorsWatch.background, BrandColorsWatch.tertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
             VStack(spacing: 0) {
                 if !showSummary {
                     RepLogWatchLiveView(workoutVM: workoutVM,
-                                        horizontalTab: .constant(0), 
-                                        isModal: true, 
-                                        showNext: true, 
+                                        horizontalTab: .constant(0),
+                                        isModal: true,
+                                        showNext: true,
                                         onNext: { showSummary = true })
                 } else {
                     SummaryReportView(onDone: onDone, showClose: true)

@@ -19,7 +19,6 @@ struct EntryViewWatch: View {
                             print("🆘 CREATING EMERGENCY SESSION - ZERO BUFFERING ENFORCED")
                             
                             let emergencySession = TrainingSession(
-                                id: UUID(),
                                 week: 1,
                                 day: 1,
                                 type: "Sprint Training",
@@ -44,7 +43,6 @@ struct EntryViewWatch: View {
                             print("🆘 EMERGENCY ZERO BUFFERING: Creating session immediately")
                             
                             let emergencySession = TrainingSession(
-                                id: UUID(),
                                 week: 1,
                                 day: 1,
                                 type: "Sprint Training",
@@ -104,7 +102,7 @@ struct EntryViewWatch: View {
                         
                         if needsOnboarding && !emergencyBypass {
                             let _ = print("📱 SHOWING: OnboardingRequiredView")
-                            OnboardingRequiredView()
+                            OnboardingRequiredView(onComplete: { })
                         } else {
                             let _ = print("🏃‍♂️ SHOWING: Session Cards or Debug View (emergencyBypass: \(emergencyBypass))")
                             // NUCLEAR: ALWAYS show sessions if we have them OR if emergency bypass is active

@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import HealthKit
 
 #if canImport(WatchConnectivity)
@@ -55,7 +56,10 @@ final class UserProfileData: @unchecked Sendable {
 @MainActor
 class HealthKitManager: ObservableObject {
     static let shared = HealthKitManager()
-    
+
+    // Required for ObservableObject conformance
+    var objectWillChange = ObservableObjectPublisher()
+
     @Published var isAuthorized = false
     @Published var authorizationStatus: HKAuthorizationStatus = .notDetermined
     @Published var isWorkoutActive = false

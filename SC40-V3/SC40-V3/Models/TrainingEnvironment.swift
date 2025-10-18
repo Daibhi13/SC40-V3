@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 enum TrainingEnvironment: String, Codable, CaseIterable, Identifiable {
     case proCoach

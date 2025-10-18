@@ -333,7 +333,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         #endif
     }
     
-    func sendCompletedSession(_ session: WatchTrainingSession) {
+    func sendCompletedSession(_ session: TrainingSession) {
         #if canImport(WatchConnectivity)
         guard WCSession.default.isReachable else { return }
         
@@ -454,7 +454,7 @@ extension WorkoutWatchViewModel {
     }
     
     /// Creates a WorkoutWatchViewModel configured for a specific training session
-    static func fromSession(_ session: WatchTrainingSession) -> WorkoutWatchViewModel {
+    static func fromSession(_ session: TrainingSession) -> WorkoutWatchViewModel {
         // Calculate total reps from all sprint sets
         let totalReps = session.sprints.reduce(0) { total, sprint in
             total + sprint.reps

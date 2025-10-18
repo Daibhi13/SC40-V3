@@ -7,12 +7,30 @@
 
 import XCTest
 
+@MainActor
 final class SC40_V3UITestsLaunchTests: XCTestCase {
 
+    nonisolated
+    override init() {
+        super.init()
+    }
+
+    nonisolated
+    override init(invocation: NSInvocation?) {
+        super.init(invocation: invocation)
+    }
+
+    nonisolated
+    override init(selector: Selector) {
+        super.init(selector: selector)
+    }
+
+    nonisolated
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
 
+    nonisolated
     override func setUpWithError() throws {
         continueAfterFailure = false
     }

@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import os
 
 final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     @Published var profile: UserProfile {

@@ -1,3 +1,6 @@
+import SwiftUI
+import Combine
+
 // Row view for a single rep log entry
 struct RepLogRowView: View {
     let rep: Int
@@ -66,6 +69,8 @@ struct RepLogWatchLiveView_Previews: PreviewProvider {
                             onNext: {})
     }
 }
+
+import SwiftUI
 
 struct RepLogWatchLiveView: View {
     // Header columns as computed properties to help type-checking
@@ -158,17 +163,17 @@ struct RepLogWatchLiveView: View {
     }
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [BrandColorsWatch.background, BrandColorsWatch.tertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
                 .ignoresSafeArea()
             VStack(spacing: 2) {
                 HStack {
                     Text("Rep Timer")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(BrandColorsWatch.primary)
+                        .foregroundColor(Color.brandPrimary)
                     Spacer()
                     Text(currentTime)
                         .font(.system(size: 16, weight: .medium, design: .monospaced))
-                        .foregroundColor(BrandColorsWatch.accent)
+                        .foregroundColor(Color.brandAccent)
                         .onReceive(timerPublisher) { date in
                             currentTime = Self.timeString(date)
                         }
@@ -183,7 +188,7 @@ struct RepLogWatchLiveView: View {
                             tmHeader
                             rtHeader
                         }
-                        .foregroundColor(BrandColorsWatch.secondary)
+                        .foregroundColor(Color.brandSecondary)
                         Divider().opacity(0.3)
                         ForEach(reps, id: \.0) { row in
                             RepLogRowView(
@@ -199,7 +204,7 @@ struct RepLogWatchLiveView: View {
                                     // The rest time is now calculated from WorkoutWatchViewModel
                                 }
                             )
-                            .background(BrandColorsWatch.tertiary.opacity(0.08))
+                            .background(Color.brandTertiary.opacity(0.08))
                             .cornerRadius(6)
                         }
                     }

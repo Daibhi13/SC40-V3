@@ -1,9 +1,22 @@
-# Sprint Coach 40 - Legal Documents
+# Sprint Coach 40 - Documentation
 
-This folder contains the legal documents for the Sprint Coach 40 iOS app.
+This folder contains the main project documentation and legal documents for the Sprint Coach 40 iOS app.
 
-## Documents
+## Project Documentation
+- **Read.md** - Main project overview and getting started
+- **PROJECT_FOLDER_LAYOUT.md** - Project structure and organization
+- **PROJECT_SCHEMES_DIAGRAM.md** - Xcode project schemes and targets
+- **CURRENT_STATUS.md** - Current development status and progress
+- **PROGRESS_UPDATE.md** - Recent development updates
+- **PROJECT_STATUS_Sep23.md** - Historical project status
+- **SC40-V3_USER_PROCESS_BREAKDOWN.md** - Detailed user process documentation
+- **CONNECTIVITY_IMPROVEMENTS_COMPLETE.md** - Watch connectivity improvements
+- **CRASH_FIX_SUMMARY.md** - Crash fixes and stability improvements
+- **DeFranco_FAQ.md** - FAQ and documentation
+- **SHARE_WITH_TEAMMATES_STRATEGY.md** - Team collaboration features
+- **QUICK_START_GUIDE.md** - Quick start guide for developers
 
+## Legal Documents (GitHub Pages Ready)
 - **index.html** - Landing page with links to all legal documents
 - **privacy.html** - Privacy Policy
 - **terms.html** - Terms of Service
@@ -83,4 +96,4 @@ To update documents:
 
 ---
 
-**Last Updated**: September 30, 2025
+**Last Updated**: October 17, 2025

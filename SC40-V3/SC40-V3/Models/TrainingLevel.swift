@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 enum TrainingLevel: String, Codable, CaseIterable, Identifiable {
     case beginner

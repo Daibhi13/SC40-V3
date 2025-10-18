@@ -2,6 +2,7 @@ import Foundation
 @preconcurrency import WatchConnectivity
 import WatchKit
 import OSLog
+import Combine
 
 // ROBUST SYNC: Import Logger if not available
 #if !canImport(OSLog)
@@ -23,7 +24,9 @@ struct Logger {
 }
 #endif
 
-fileprivate let watchConnectivityLogger = Logger(subsystem: "com.accelerate.sc40", category: "WatchConnectivity")
+// Global logger accessible from nonisolated contexts - made nonisolated
+@MainActor
+let watchConnectivityLogger = Logger(subsystem: "com.accelerate.sc40", category: "WatchConnectivity")
 
 // MARK: - SyncableTrainingSession
 enum SyncState: Codable {
@@ -82,8 +85,11 @@ extension Optional where Wrapped == String {
     }
 }
 
-@MainActor class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate, @unchecked Sendable {
+@MainActor
+class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate, @unchecked Sendable {
     static let shared = WatchSessionManager()
+    
+    var objectWillChange = ObservableObjectPublisher()
     
     // ROBUST SYNC: Published properties for UI compatibility
     @Published var receivedData: [String: Any] = [:]
@@ -118,10 +124,12 @@ extension Optional where Wrapped == String {
         
         // ROBUST SYNC: Initialize sync components
         setupRobustSync()
+        loadStoredSessions()
+        _ = checkOnboardingData()
         
         // PRIORITY 1: Load stored sessions with sync state (instant access)
         loadStoredSessionsWithSync()
-        
+
         // PRIORITY 2: Generate UX fallback if no sessions (instant backup)
         if self.trainingSessions.isEmpty {
             logger.info("⚡ Generating UX fallback sessions for instant access")
@@ -129,17 +137,19 @@ extension Optional where Wrapped == String {
         } else {
             logger.info("📱 \(self.trainingSessions.count) stored sessions available")
         }
-        
+
         // PRIORITY 3: Activate connectivity with robust sync
         activateSessionWithRobustSync()
-        
+
         // PRIORITY 4: Initiate background sync (non-blocking)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.initiateRobustSync()
         }
+        
+        startHeartbeat()
     }
     
-    private func activateSession() {
+    func activateSession() {
         // Skip activation in test mode
         guard !isWatchTestMode else {
             logger.info("Test mode active - WatchConnectivity disabled")
@@ -157,7 +167,7 @@ extension Optional where Wrapped == String {
         logger.info("WatchConnectivity session activation requested")
     }
     
-    private func loadStoredSessions() {
+    func loadStoredSessions() {
         self.trainingSessions = ProgramPersistence.loadSessions()
         logger.info("Loaded \(self.trainingSessions.count) stored training sessions")
         
@@ -169,7 +179,7 @@ extension Optional where Wrapped == String {
     }
     
     // Check if user has completed onboarding on iPhone
-    private func checkOnboardingData() -> Bool {
+    func checkOnboardingData() -> Bool {
         // Check for essential onboarding data
         let hasName = !UserDefaults.standard.string(forKey: "userName").isNilOrEmpty
         let hasPB = UserDefaults.standard.double(forKey: "personalBest") > 0
@@ -204,7 +214,7 @@ extension Optional where Wrapped == String {
     }
     
     
-    private func createSessionsBasedOnUserData(pb: Double, level: String) -> [TrainingSession] {
+    func createSessionsBasedOnUserData(pb: Double, level: String) -> [TrainingSession] {
         // Always include Time Trial
         var sessions = [
             TrainingSession(
@@ -281,20 +291,21 @@ extension Optional where Wrapped == String {
         return sessions
     }
     
-    private func startHeartbeat() {
+    func startHeartbeat() {
         // Send heartbeat to iPhone every 30 seconds to maintain connection
         heartbeatTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                guard let self = self else { return }
-                self.sendHeartbeat()
-                self.uploadPendingResults()
-            }
+            // Timer already runs on main thread, no need for Task/@MainActor
+            guard let self = self else { return }
+            // Heartbeat logic here - using weak self properly
+            self.sendHeartbeat()
+            self.uploadPendingResults()
         }
     }
     
     // MARK: - Enhanced Communication Methods
     
-    private func sendHeartbeat() {
+    @MainActor
+    func sendHeartbeat() {
         // Don't send heartbeat if companion app is not installed
         guard WCSession.default.isReachable,
               connectionError?.contains("not installed") != true else { 
@@ -311,7 +322,7 @@ extension Optional where Wrapped == String {
         send(message: heartbeatMessage)
     }
     
-    private func getBatteryLevel() -> Float {
+    func getBatteryLevel() -> Float {
         return WKInterfaceDevice.current().batteryLevel
     }
     
@@ -384,6 +395,7 @@ extension Optional where Wrapped == String {
     }
     
     // Request training sessions from iPhone with retry logic
+    @MainActor
     func requestTrainingSessions() {
         // SEAMLESS: Don't retry if we already have sessions (avoid unnecessary requests)
         if !trainingSessions.isEmpty && sessionRequestRetryCount > 0 {
@@ -445,6 +457,7 @@ extension Optional where Wrapped == String {
         sessionRequestTimer?.invalidate()
         if sessionRequestRetryCount < maxRetryAttempts {
             sessionRequestTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: false) { [weak self] _ in
+                // Timer already runs on main thread, no need for Task/@MainActor
                 Task { @MainActor in
                     guard let self = self else { return }
                     let noSessions = self.trainingSessions.isEmpty
@@ -507,7 +520,7 @@ extension Optional where Wrapped == String {
     }
     
     /// Generate level-specific and frequency-specific training session
-    private func generateLevelSpecificSession(week: Int, day: Int, level: String, frequency: Int) -> TrainingSession {
+    func generateLevelSpecificSession(week: Int, day: Int, level: String, frequency: Int) -> TrainingSession {
         // Level-specific parameters
         let (distances, reps, sessionTypes) = getLevelSpecificParameters(level: level, week: week)
         
@@ -526,7 +539,6 @@ extension Optional where Wrapped == String {
         let intensity = getLevelSpecificIntensity(level: level, week: week)
         
         return TrainingSession(
-            id: UUID(),
             week: week,
             day: day,
             type: sessionType,
@@ -538,7 +550,7 @@ extension Optional where Wrapped == String {
     }
     
     /// Get level-specific training parameters
-    private func getLevelSpecificParameters(level: String, week: Int) -> ([Int], [Int], [String]) {
+    func getLevelSpecificParameters(level: String, week: Int) -> ([Int], [Int], [String]) {
         switch level.lowercased() {
         case "beginner":
             let distances = [20, 30, 40] // Shorter distances for beginners
@@ -574,7 +586,7 @@ extension Optional where Wrapped == String {
     }
     
     /// Get frequency-specific session type distribution
-    private func getFrequencySpecificSessionType(day: Int, frequency: Int, week: Int, sessionTypes: [String]) -> String {
+    func getFrequencySpecificSessionType(day: Int, frequency: Int, week: Int, sessionTypes: [String]) -> String {
         switch frequency {
         case 1:
             // 1 day/week: Focus on comprehensive training
@@ -595,7 +607,7 @@ extension Optional where Wrapped == String {
     }
     
     /// Get level-specific intensity
-    private func getLevelSpecificIntensity(level: String, week: Int) -> String {
+    func getLevelSpecificIntensity(level: String, week: Int) -> String {
         switch level.lowercased() {
         case "beginner":
             return week <= 4 ? "80%" : week <= 8 ? "85%" : "90%"
@@ -609,7 +621,7 @@ extension Optional where Wrapped == String {
     }
     
     /// Get level-specific accessory work
-    private func getLevelSpecificAccessoryWork(level: String) -> [String] {
+    func getLevelSpecificAccessoryWork(level: String) -> [String] {
         switch level.lowercased() {
         case "beginner":
             return ["Dynamic Warm-up", "Basic Cool-down", "Flexibility Work"]
@@ -642,7 +654,8 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func uploadPendingResults() {
+    @MainActor
+    func uploadPendingResults() {
         guard WCSession.default.isReachable, !self.pendingWorkoutResults.isEmpty else { return }
         
         logger.info("Uploading \(self.pendingWorkoutResults.count) pending workout results")
@@ -675,10 +688,50 @@ extension Optional where Wrapped == String {
         send(message: sessionInfo)
     }
     
-    // MARK: - Enhanced Data Receiving
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
-        watchConnectivityLogger.info("Received message from iPhone: \(message.keys.joined(separator: ", "))")
+    // MARK: - WCSessionDelegate Methods
 
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: (any Error)?) {
+        // Capture reachable state before async dispatch
+        let isReachable = session.isReachable
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            switch activationState {
+            case .activated:
+                self.logger.info("✅ WCSession activated successfully")
+                self.isPhoneConnected = isReachable
+                self.connectionError = nil
+
+                // Reset retry count on successful activation
+                self.sessionRequestRetryCount = 0
+                self.lastRetryTime = nil
+
+            case .notActivated:
+                self.logger.error("❌ WCSession failed to activate")
+                self.connectionError = "Watch connectivity failed"
+
+            case .inactive:
+                self.logger.warning("⚠️ WCSession is inactive")
+                self.connectionError = "Watch connection inactive"
+
+            @unknown default:
+                self.logger.error("❓ Unknown WCSession activation state")
+                self.connectionError = "Unknown connection state"
+            }
+
+            if let error = error {
+                self.logger.error("WCSession activation error: \(error.localizedDescription)")
+                self.connectionError = error.localizedDescription
+            }
+
+            // Handle background task completion based on session state
+            Task { @MainActor in
+                WatchConnectivityBackgroundTaskManager.shared.handleSessionStateChange(session)
+            }
+        }
+    }
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
         // Extract all needed values before async dispatch
         let action = message["action"] as? String
         
@@ -747,7 +800,7 @@ extension Optional where Wrapped == String {
             let messageTimestamp = message["timestamp"] as? TimeInterval
             let totalSessions = message["totalSessions"] as? Int ?? 0
             
-            // Extract batch info values immediately
+            // Extract batch info values immediately to avoid data races
             var phase = "Unknown"
             var description = "Unknown"
             if let batchInfo = message["batchInfo"] as? [String: Any] {
@@ -840,9 +893,9 @@ extension Optional where Wrapped == String {
         // Handle session distances from iPhone
         if let sessionDistances = message["distances"] as? [Int],
            let sessionName = message["sessionName"] as? String {
-            watchConnectivityLogger.info("Received session distances for \(sessionName): \(sessionDistances)")
-            
-            DispatchQueue.main.async {
+            Task { @MainActor in
+                watchConnectivityLogger.info("Received session distances for \(sessionName): \(sessionDistances)")
+                
                 // Store for use during workout
                 UserDefaults.standard.set(sessionDistances, forKey: "currentSessionDistances")
                 UserDefaults.standard.set(sessionName, forKey: "currentSessionName")
@@ -850,7 +903,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func processingSessionsData(_ sessionsData: Data, from message: [String: Any]) {
+    func processingSessionsData(_ sessionsData: Data, from message: [String: Any]) {
         do {
             let sessions = try JSONDecoder().decode([TrainingSession].self, from: sessionsData)
             let sessionCount = message["sessionCount"] as? Int ?? sessions.count
@@ -894,8 +947,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    // Safe version that doesn't require dictionary parameter (avoids data race issues)
-    private func processingSessionsDataSafely(_ sessionsData: Data, sessionCount: Int?, timestamp: TimeInterval?) {
+    func processingSessionsDataSafely(_ sessionsData: Data, sessionCount: Int?, timestamp: TimeInterval?) {
         do {
             let sessions = try JSONDecoder().decode([TrainingSession].self, from: sessionsData)
             let expectedCount = sessionCount ?? sessions.count
@@ -929,128 +981,21 @@ extension Optional where Wrapped == String {
             }
         } catch {
             logger.error("Failed to decode training sessions: \(error.localizedDescription)")
-            DispatchQueue.main.async {
-                self.connectionError = "Failed to sync sessions: \(error.localizedDescription)"
-            }
         }
     }
-    
-    // Handle application context updates for non-urgent data
-    nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
-        watchConnectivityLogger.info("Received application context from iPhone: \(applicationContext.keys.joined(separator: ", "))")
-        
-        // Extract sendable values before async dispatch
-        let sessionsData = applicationContext["trainingSessions"] as? Data
-        let sessionCount = applicationContext["sessionCount"] as? Int
-        let timestamp = applicationContext["timestamp"] as? TimeInterval
-        
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self, let sessionsData = sessionsData else { return }
-            
-            // Process application context data with extracted values
-            self.processingSessionsDataSafely(sessionsData, sessionCount: sessionCount, timestamp: timestamp)
-        }
-    }
-    
-    // MARK: - Background Task Management
-    
-    /// Handle background refresh triggered by WatchConnectivity
-    func handleBackgroundRefresh() {
-        logger.info("🔄 Handling WatchConnectivity background refresh")
-        
-        // Process any pending data
-        if WCSession.default.hasContentPending {
-            logger.info("📥 Processing pending WatchConnectivity content")
-            // Trigger data processing
-            loadStoredSessionsWithSync()
-        }
-        
-        // Ensure UX fallback is available
-        if trainingSessions.isEmpty {
-            logger.info("⚡ Generating UX fallback during background refresh")
-            generateUXFallbackSessions()
-        }
-    }
-    
-    // MARK: - Enhanced Delegate Methods
-    
-    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
-        // Capture reachable state before async dispatch
-        let isReachable = session.isReachable
-        
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            switch activationState {
-            case .activated:
-                self.logger.info("✅ WCSession activated successfully")
-                self.isPhoneConnected = isReachable
-                self.connectionError = nil
-                
-                // Reset retry count on successful activation
-                self.sessionRequestRetryCount = 0
-                self.lastRetryTime = nil
-                
-            case .notActivated:
-                self.logger.error("❌ WCSession failed to activate")
-                self.connectionError = "Watch connectivity failed"
-                
-            case .inactive:
-                self.logger.warning("⚠️ WCSession is inactive")
-                self.connectionError = "Watch connection inactive"
-                
-            @unknown default:
-                self.logger.error("❓ Unknown WCSession activation state")
-                self.connectionError = "Unknown connection state"
-            }
-            
-            if let error = error {
-                self.logger.error("WCSession activation error: \(error.localizedDescription)")
-                self.connectionError = error.localizedDescription
-            }
-            
-            // Handle background task completion based on session state
-            Task { @MainActor in
-                WatchConnectivityBackgroundTaskManager.shared.handleSessionStateChange(session)
-            }
-        }
-    }
-    
-    nonisolated func sessionReachabilityDidChange(_ session: WCSession) {
-        // Capture reachable state before async dispatch
-        let isReachable = session.isReachable
-        watchConnectivityLogger.info("iPhone reachability changed: \(isReachable)")
-        
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            self.isPhoneReachable = isReachable
-            if isReachable {
-                self.connectionError = nil
-                // Upload any pending results
-                self.uploadPendingResults()
-                
-                // Request sessions if we don't have any
-                if self.trainingSessions.isEmpty {
-                    self.requestTrainingSessions()
-                }
-            }
-        }
-    }
-    
+
     // MARK: - Notification Methods
-    
-    /// Play sound and haptic feedback when sessions are received
-    private func notifySessionsReceived(count: Int) {
+
+    func notifySessionsReceived(count: Int) {
         logger.info("🔊 Notifying user: \(count) sessions received")
-        
+
         // Play system sound for data received
         WKInterfaceDevice.current().play(.success)
-        
+
         // Haptic feedback for confirmation
         let hapticType: WKHapticType = count > 10 ? .success : .notification
         WKInterfaceDevice.current().play(hapticType)
-        
+
         // Additional haptic for large session counts (full program)
         if count > 20 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -1062,7 +1007,7 @@ extension Optional where Wrapped == String {
     // MARK: - Persistent iPhone Communication
     
     /// Establish persistent sync for ongoing iPhone → Watch communication
-    private func establishPersistentSync() {
+    func establishPersistentSync() {
         logger.info("🔄 Establishing persistent iPhone → Watch sync for ongoing use")
         
         // Send ping to iPhone to establish active communication
@@ -1090,9 +1035,10 @@ extension Optional where Wrapped == String {
     }
     
     /// Schedule regular sync checks to ensure iPhone → Watch communication
-    private func scheduleRegularSyncChecks() {
+    func scheduleRegularSyncChecks() {
         // Check for iPhone updates every 2 minutes during active use
         Timer.scheduledTimer(withTimeInterval: 120.0, repeats: true) { [weak self] _ in
+            // Timer already runs on main thread, no need for Task/@MainActor
             Task { @MainActor in
                 guard let self = self else { return }
                 
@@ -1205,7 +1151,7 @@ extension Optional where Wrapped == String {
     
     // MARK: - Data Management
     
-    private func clearAllWatchData() {
+    func clearAllWatchData() {
         logger.info("Clearing all watch data for clean connectivity test")
         
         // Clear training sessions
@@ -1231,7 +1177,7 @@ extension Optional where Wrapped == String {
     
     // MARK: - Robust Sync Implementation
     
-    private func setupRobustSync() {
+    func setupRobustSync() {
         // Initialize device identity
         if let existingId = UserDefaults.standard.string(forKey: "deviceId") {
             deviceId = existingId
@@ -1246,13 +1192,13 @@ extension Optional where Wrapped == String {
         logger.info("🔧 Robust sync initialized - Device: \(self.deviceId)")
     }
     
-    private func generateNewSyncToken() -> String {
+    func generateNewSyncToken() -> String {
         let token = "\(self.deviceId)-\(Date().timeIntervalSince1970)-\(Int.random(in: 1000...9999))"
         UserDefaults.standard.set(token, forKey: "syncToken")
         return token
     }
     
-    private func loadStoredSessionsWithSync() {
+    func loadStoredSessionsWithSync() {
         // Load sessions from UserDefaults with sync state awareness
         if let data = UserDefaults.standard.data(forKey: "scheduledSessions"),
            let sessions = try? JSONDecoder().decode([TrainingSession].self, from: data) {
@@ -1285,7 +1231,6 @@ extension Optional where Wrapped == String {
         for week in 1...2 {
             for day in 1...actualFrequency {
                 let session = TrainingSession(
-                    id: UUID(),
                     week: week,
                     day: day,
                     type: "Sprint Training",
@@ -1300,12 +1245,9 @@ extension Optional where Wrapped == String {
         
         trainingSessions = fallbackSessions
         syncStatus = "Using offline sessions"
-        connectionError = "Syncing with iPhone..."
-        
-        logger.info("🎭 Generated \(fallbackSessions.count) UX fallback sessions")
     }
-    
-    private func activateSessionWithRobustSync() {
+
+    func activateSessionWithRobustSync() {
         guard !isWatchTestMode else {
             logger.info("Test mode active - WatchConnectivity disabled")
             return
@@ -1319,7 +1261,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func initiateRobustSync() {
+    func initiateRobustSync() {
         guard WCSession.default.activationState == .activated else {
             logger.warning("WCSession not activated, cannot sync")
             return
@@ -1332,7 +1274,7 @@ extension Optional where Wrapped == String {
         exchangeSyncTokens()
     }
     
-    private func exchangeSyncTokens() {
+    func exchangeSyncTokens() {
         let message: [String: Any] = [
             "action": "syncTokenExchange",
             "deviceId": self.deviceId,
@@ -1361,7 +1303,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func handleSyncTokenReply(_ reply: [String: Any]) {
+    func handleSyncTokenReply(_ reply: [String: Any]) {
         guard let remoteToken = reply["syncToken"] as? String else {
             handleSyncError("Invalid sync token reply")
             return
@@ -1380,7 +1322,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func markAllSessionsAsSynced() {
+    func markAllSessionsAsSynced() {
         for session in trainingSessions {
             UserDefaults.standard.set(true, forKey: "session_\(session.id.uuidString)_synced")
         }
@@ -1394,7 +1336,7 @@ extension Optional where Wrapped == String {
         logger.info("✅ All sessions marked as synced")
     }
     
-    private func requestFullReconciliation() {
+    func requestFullReconciliation() {
         syncProgress = 0.8
         
         // Request full session data from iPhone
@@ -1415,7 +1357,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func handleFullSessionData(_ reply: [String: Any]) {
+    func handleFullSessionData(_ reply: [String: Any]) {
         guard let sessionsData = reply["sessionsData"] as? Data else {
             handleSyncError("Invalid session data format")
             return
@@ -1448,7 +1390,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func storeSessionsLocally(_ sessions: [TrainingSession]) {
+    func storeSessionsLocally(_ sessions: [TrainingSession]) {
         do {
             let data = try JSONEncoder().encode(sessions)
             UserDefaults.standard.set(data, forKey: "scheduledSessions")
@@ -1459,7 +1401,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func completeSyncSuccessfully() {
+    func completeSyncSuccessfully() {
         syncStatus = "Synced ✅"
         syncProgress = 1.0
         connectionError = nil
@@ -1478,7 +1420,7 @@ extension Optional where Wrapped == String {
         logger.info("🎉 Robust sync completed successfully")
     }
     
-    private func handleSyncError(_ message: String) {
+    func handleSyncError(_ message: String) {
         syncStatus = "Sync Failed"
         syncProgress = 0.0
         connectionError = message
@@ -1494,7 +1436,7 @@ extension Optional where Wrapped == String {
     
     // MARK: - Robust Sync Message Handlers
     
-    private nonisolated func handleSyncTokenExchangeSync(message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+    nonisolated func handleSyncTokenExchangeSync(message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         guard let remoteToken = message["syncToken"] as? String,
               let remoteDeviceId = message["deviceId"] as? String else {
             replyHandler(["error": "Invalid sync token exchange"])
@@ -1517,7 +1459,7 @@ extension Optional where Wrapped == String {
         replyHandler(reply)
     }
     
-    private nonisolated func handleRequestFullSessionsSync(message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+    nonisolated func handleRequestFullSessionsSync(message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         // Send stored sessions immediately
         if let data = UserDefaults.standard.data(forKey: "scheduledSessions"),
            let sessions = try? JSONDecoder().decode([TrainingSession].self, from: data) {
@@ -1540,7 +1482,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func processSyncTokenExchange(remoteToken: String, remoteDeviceId: String) {
+    func processSyncTokenExchange(remoteToken: String, remoteDeviceId: String) {
         logger.info("📥 Processing sync token exchange from iPhone: \(remoteDeviceId)")
         
         // Check if we need reconciliation
@@ -1556,7 +1498,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func handleSyncTokenExchange(remoteToken: String?, remoteDeviceId: String?, replyHandler: @escaping ([String: Any]) -> Void) {
+    func handleSyncTokenExchange(remoteToken: String?, remoteDeviceId: String?, replyHandler: @escaping ([String: Any]) -> Void) {
         guard let remoteToken = remoteToken,
               let remoteDeviceId = remoteDeviceId else {
             replyHandler(["error": "Invalid sync token exchange"])
@@ -1588,7 +1530,7 @@ extension Optional where Wrapped == String {
         }
     }
     
-    private func handleRequestFullSessions(sessionIds: [String]?, replyHandler: @escaping ([String: Any]) -> Void) {
+    func handleRequestFullSessions(sessionIds: [String]?, replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("📤 iPhone requesting full sessions from Watch")
         
         do {
@@ -1663,4 +1605,3 @@ extension Optional where Wrapped == String {
         sessionRequestTimer = nil
     }
 }
-

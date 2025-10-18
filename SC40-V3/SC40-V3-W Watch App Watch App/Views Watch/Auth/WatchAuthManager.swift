@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import Combine
 #if os(watchOS)
 import WatchKit
 #endif
@@ -8,6 +9,8 @@ import WatchKit
 @MainActor
 class WatchAuthManager: ObservableObject {
     static let shared = WatchAuthManager()
+    
+    var objectWillChange = ObservableObjectPublisher()
     
     @Published var isAuthenticated = false
     @Published var isLoading = false

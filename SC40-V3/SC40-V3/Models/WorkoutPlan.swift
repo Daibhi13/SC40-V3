@@ -1,5 +1,6 @@
 // 12-week training plan
 import Foundation
+import Combine
 
 struct WorkoutPlan: Codable {
     var weeks: [WeekPlan]

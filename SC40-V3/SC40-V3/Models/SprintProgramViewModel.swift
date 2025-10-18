@@ -5,6 +5,7 @@
 //  Author: Copilot
 
 import Foundation
+import Combine
 
 // Ensure only canonical SessionFeedback is used everywhere in this file.
 

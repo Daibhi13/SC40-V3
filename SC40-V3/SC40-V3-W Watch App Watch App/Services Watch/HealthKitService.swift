@@ -1,10 +1,13 @@
 import Foundation
 import HealthKit
+import Combine
 
 #if os(watchOS)
 @MainActor
 class WatchHealthKitService: NSObject, ObservableObject {
     static let shared = WatchHealthKitService()
+    
+    var objectWillChange = ObservableObjectPublisher()
     
     @Published var isAuthorized = false
     @Published var currentHeartRate: Double = 0
@@ -193,13 +196,15 @@ class WatchHealthKitService: NSObject, ObservableObject {
             anchor: nil,
             limit: HKObjectQueryNoLimit
         ) { [weak self] _, samples, _, _, error in
-            Task { @MainActor in
+            // Process samples directly without Task - avoid self capture in concurrent context
+            DispatchQueue.main.async {
                 self?.processHeartRateSamples(samples, error: error)
             }
         }
         
         heartRateQuery?.updateHandler = { [weak self] _, samples, _, _, error in
-            Task { @MainActor in
+            // Process samples directly without Task - avoid self capture in concurrent context
+            DispatchQueue.main.async {
                 self?.processHeartRateSamples(samples, error: error)
             }
         }
@@ -328,6 +333,8 @@ extension WatchHealthKitService: HKLiveWorkoutBuilderDelegate {
 @MainActor
 class WatchHealthKitService: ObservableObject {
     static let shared = WatchHealthKitService()
+    
+    var objectWillChange = ObservableObjectPublisher()
     
     @Published var isAuthorized = false
     @Published var currentHeartRate: Double = 0

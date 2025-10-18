@@ -1,10 +1,14 @@
 import Foundation
+import Combine
 import StoreKit
 
 @MainActor
 class StoreKitService: ObservableObject {
     static let shared = StoreKitService()
-    
+
+    // Required for ObservableObject conformance
+    var objectWillChange = ObservableObjectPublisher()
+
     // MARK: - Published Properties
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []

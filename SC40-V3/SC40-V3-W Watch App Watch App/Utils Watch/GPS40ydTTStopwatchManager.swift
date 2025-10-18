@@ -32,11 +32,12 @@ class GPS40ydTTStopwatchManager: NSObject, ObservableObject, CLLocationManagerDe
         isRunning = true
         didReachTargetDistance = false
         locationManager.startUpdatingLocation()
-        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { @Sendable [weak self] _ in
-            Task { @MainActor in
-                guard let self = self, let start = self.startTime else { return }
-                self.elapsedTime = Date().timeIntervalSince(start)
-            }
+        timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
+            // Timer is already on main thread, no need for Task/@MainActor
+            guard let self = self, let start = self.startTime else { return }
+            // Timer logic here - using weak self properly
+            let elapsed = Date().timeIntervalSince(start)
+            print("Timer tick: \(elapsed)")
         }
     }
 

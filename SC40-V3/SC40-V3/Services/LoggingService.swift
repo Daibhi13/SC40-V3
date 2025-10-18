@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import OSLog
 #if canImport(UIKit)
 import UIKit

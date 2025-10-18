@@ -1,6 +1,7 @@
 import SwiftUI
 import WatchConnectivity
 import AVFoundation
+import Combine
 
 // Animated, branded splash screen for StarterProWatchView
 struct SplashScreen: View {
@@ -11,9 +12,9 @@ struct SplashScreen: View {
             Canvas { context, size in
                 // Liquid glass background with depth
                 let gradient = Gradient(colors: [
-                    BrandColorsWatch.background,
-                    BrandColorsWatch.tertiary.opacity(0.18),
-                    BrandColorsWatch.primary.opacity(0.05)
+                    Color.brandBackground,
+                    Color.brandTertiary.opacity(0.18),
+                    Color.brandPrimary.opacity(0.05)
                 ])
                 context.fill(Path(CGRect(origin: .zero, size: size)), 
                            with: .linearGradient(gradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
@@ -21,28 +22,28 @@ struct SplashScreen: View {
                 // Floating glass orb effect
                 context.addFilter(.blur(radius: 20))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.1, y: size.height * 0.2, width: 60, height: 60)), 
-                           with: .color(BrandColorsWatch.primary.opacity(0.15)))
+                           with: .color(Color.brandPrimary.opacity(0.15)))
                 context.addFilter(.blur(radius: 15))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.7, y: size.height * 0.7, width: 40, height: 40)), 
-                           with: .color(BrandColorsWatch.accent.opacity(0.20)))
+                           with: .color(Color.brandAccent.opacity(0.20)))
             }
             .ignoresSafeArea()
             VStack {
                 Spacer()
                 ZStack {
                     Circle()
-                        .fill(BrandColorsWatch.primary.opacity(0.13))
+                        .fill(Color.brandPrimary.opacity(0.13))
                         .frame(width: 120, height: 120)
                     Text("SC")
                         .font(.system(size: 44, weight: .heavy, design: .rounded))
-                        .foregroundColor(BrandColorsWatch.primary)
-                        .shadow(color: BrandColorsWatch.tertiary.opacity(0.18), radius: 2, x: 0, y: 1)
+                        .foregroundColor(Color.brandPrimary)
+                        .shadow(color: Color.brandTertiary.opacity(0.18), radius: 2, x: 0, y: 1)
                 }
                 .scaleEffect(splashScale)
                 .opacity(splashOpacity)
                 Text("Starts Coach")
                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                    .shadow(color: BrandColorsWatch.tertiary.opacity(0.18), radius: 1, x: 0, y: 1)
+                    .shadow(color: Color.brandTertiary.opacity(0.18), radius: 1, x: 0, y: 1)
                     .padding(.top, 8)
                     .scaleEffect(splashScale)
                     .opacity(splashOpacity)
@@ -122,9 +123,9 @@ struct StarterProView: View {
             Canvas { context, size in
                 // Sophisticated liquid glass background
                 let mainGradient = Gradient(colors: [
-                    BrandColorsWatch.background,
-                    BrandColorsWatch.tertiary.opacity(0.18),
-                    BrandColorsWatch.primary.opacity(0.08)
+                    Color.brandBackground,
+                    Color.brandTertiary.opacity(0.18),
+                    Color.brandPrimary.opacity(0.08)
                 ])
                 context.fill(Path(CGRect(origin: .zero, size: size)),
                            with: .linearGradient(mainGradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
@@ -143,14 +144,14 @@ struct StarterProView: View {
                 wavePath.addLine(to: CGPoint(x: size.width, y: size.height))
                 wavePath.addLine(to: CGPoint(x: 0, y: size.height))
                 
-                context.fill(wavePath, with: .color(BrandColorsWatch.accent.opacity(0.12)))
+                context.fill(wavePath, with: .color(Color.brandAccent.opacity(0.12)))
                 
                 // Glass bubble effects
                 context.addFilter(.blur(radius: 12))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.15, y: size.height * 0.25, width: 25, height: 25)),
-                           with: .color(BrandColorsWatch.primary.opacity(0.18)))
+                           with: .color(Color.brandPrimary.opacity(0.18)))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.75, y: size.height * 0.65, width: 20, height: 20)),
-                           with: .color(BrandColorsWatch.tertiary.opacity(0.15)))
+                           with: .color(Color.brandTertiary.opacity(0.15)))
             }
             .ignoresSafeArea()
             if showTimeTrial {
@@ -161,28 +162,28 @@ struct StarterProView: View {
                         HStack {
                             Text("Time Trial")
                                 .font(.system(size: 18, weight: .medium, design: .rounded))
-                                .foregroundColor(BrandColorsWatch.primary)
+                                .foregroundColor(Color.brandPrimary)
                         }
                         .padding(.top, 4)
                         Text("Total Time \(totalTimeString())")
                             .font(.system(size: 16, weight: .semibold, design: .rounded))
-                            .foregroundColor(BrandColorsWatch.accent)
+                            .foregroundColor(Color.brandAccent)
                             .padding(.bottom, 2)
                         // Distance Row
                         Button(action: { showDistancePicker = true }) {
                             HStack(spacing: 0) {
                                 Text("Distance")
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.secondary)
+                                    .foregroundColor(Color.brandSecondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Spacer()
                                 Text("\(distanceString())")
                                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.primary)
+                                    .foregroundColor(Color.brandPrimary)
                                     .frame(width: 60)
                             }
                             .padding(.vertical, 8)
-                            .background(BrandColorsWatch.tertiary.opacity(0.10))
+                            .background(Color.brandTertiary.opacity(0.10))
                             .cornerRadius(12)
                         }
                         .buttonStyle(.plain)
@@ -191,36 +192,36 @@ struct StarterProView: View {
                                 Canvas { context, size in
                                     // Picker modal background
                                     let modalGradient = Gradient(colors: [
-                                        BrandColorsWatch.background,
-                                        BrandColorsWatch.tertiary.opacity(0.18)
+                                        Color.brandBackground,
+                                        Color.brandTertiary.opacity(0.18)
                                     ])
                                     context.fill(Path(CGRect(origin: .zero, size: size)),
                                                with: .linearGradient(modalGradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
                                     
                                     // Subtle glass overlay
                                     context.fill(Path(ellipseIn: CGRect(x: size.width * 0.3, y: size.height * 0.2, width: 30, height: 30)),
-                                               with: .color(BrandColorsWatch.primary.opacity(0.10)))
+                                               with: .color(Color.brandPrimary.opacity(0.10)))
                                 }
                                 .ignoresSafeArea()
                                 VStack {
                                     Text("Distance")
                                         .font(.headline)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.top)
                                     Spacer()
                                     Picker("Distance", selection: $distance) {
-                                        ForEach([20, 30, 40, 50, 60, 100, 200], id: \ .self) { Text("\($0) yd").foregroundColor(BrandColorsWatch.secondary) }
+                                        ForEach([20, 30, 40, 50, 60, 100, 200], id: \ .self) { Text("\($0) yd").foregroundColor(Color.brandSecondary) }
                                     }
                                     .labelsHidden()
                                     .pickerStyle(.wheel)
                                     .frame(height: 100)
                                     .clipped()
-                                    .background(BrandColorsWatch.background.opacity(0.7))
+                                    .background(Color.brandBackground.opacity(0.7))
                                     .cornerRadius(10)
                                     Spacer()
                                     Button("Done") { showDistancePicker = false }
                                         .font(.title3)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.bottom)
                                 }
                             }
@@ -229,16 +230,16 @@ struct StarterProView: View {
                             HStack(spacing: 0) {
                                 Text("Sets")
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.secondary)
+                                    .foregroundColor(Color.brandSecondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Spacer()
                                 Text("\(sets)")
                                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.primary)
+                                    .foregroundColor(Color.brandPrimary)
                                     .frame(width: 40)
                             }
                             .padding(.vertical, 8)
-                            .background(BrandColorsWatch.tertiary.opacity(0.10))
+                            .background(Color.brandTertiary.opacity(0.10))
                             .cornerRadius(12)
                         }
                         .buttonStyle(.plain)
@@ -247,36 +248,36 @@ struct StarterProView: View {
                                 Canvas { context, size in
                                     // Picker modal background
                                     let modalGradient = Gradient(colors: [
-                                        BrandColorsWatch.background,
-                                        BrandColorsWatch.tertiary.opacity(0.18)
+                                        Color.brandBackground,
+                                        Color.brandTertiary.opacity(0.18)
                                     ])
                                     context.fill(Path(CGRect(origin: .zero, size: size)),
                                                with: .linearGradient(modalGradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
                                     
                                     // Subtle glass overlay
                                     context.fill(Path(ellipseIn: CGRect(x: size.width * 0.7, y: size.height * 0.6, width: 25, height: 25)),
-                                               with: .color(BrandColorsWatch.accent.opacity(0.12)))
+                                               with: .color(Color.brandAccent.opacity(0.12)))
                                 }
                                 .ignoresSafeArea()
                                 VStack {
                                     Text("Sets")
                                         .font(.headline)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.top)
                                     Spacer()
                                     Picker("Sets", selection: $sets) {
-                                        ForEach(1...30, id: \ .self) { Text("\($0)").foregroundColor(BrandColorsWatch.secondary) }
+                                        ForEach(1...30, id: \ .self) { Text("\($0)").foregroundColor(Color.brandSecondary) }
                                     }
                                     .labelsHidden()
                                     .pickerStyle(.wheel)
                                     .frame(height: 100)
                                     .clipped()
-                                    .background(BrandColorsWatch.background.opacity(0.7))
+                                    .background(Color.brandBackground.opacity(0.7))
                                     .cornerRadius(10)
                                     Spacer()
                                     Button("Done") { showSetsPicker = false }
                                         .font(.title3)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.bottom)
                                 }
                             }
@@ -289,16 +290,16 @@ struct StarterProView: View {
                             HStack(spacing: 0) {
                                 Text("Rest")
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.secondary)
+                                    .foregroundColor(Color.brandSecondary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 Spacer()
                                 Text(restTimeString())
                                     .font(.system(size: 22, weight: .bold, design: .rounded))
-                                    .foregroundColor(BrandColorsWatch.primary)
+                                    .foregroundColor(Color.brandPrimary)
                                     .frame(width: 60)
                             }
                             .padding(.vertical, 8)
-                            .background(BrandColorsWatch.tertiary.opacity(0.10))
+                            .background(Color.brandTertiary.opacity(0.10))
                             .cornerRadius(12)
                         }
                         .buttonStyle(.plain)
@@ -307,46 +308,46 @@ struct StarterProView: View {
                                 Canvas { context, size in
                                     // Picker modal background
                                     let modalGradient = Gradient(colors: [
-                                        BrandColorsWatch.background,
-                                        BrandColorsWatch.tertiary.opacity(0.18)
+                                        Color.brandBackground,
+                                        Color.brandTertiary.opacity(0.18)
                                     ])
                                     context.fill(Path(CGRect(origin: .zero, size: size)),
                                                with: .linearGradient(modalGradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
                                     
                                     // Subtle glass overlay
                                     context.fill(Path(ellipseIn: CGRect(x: size.width * 0.2, y: size.height * 0.8, width: 35, height: 35)),
-                                               with: .color(BrandColorsWatch.tertiary.opacity(0.15)))
+                                               with: .color(Color.brandTertiary.opacity(0.15)))
                                 }
                                 .ignoresSafeArea()
                                 VStack {
                                     Text("Rest")
                                         .font(.headline)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.top)
                                     Spacer()
                                     HStack(spacing: 0) {
                                         VStack(spacing: 2) {
                                             Text("min")
                                                 .font(.caption2)
-                                                .foregroundColor(BrandColorsWatch.secondary.opacity(0.7))
+                                                .foregroundColor(Color.brandSecondary.opacity(0.7))
                                             Picker("Minutes", selection: $restMinutes) {
-                                                ForEach(0...9, id: \ .self) { Text("\($0)").foregroundColor(BrandColorsWatch.secondary) }
+                                                ForEach(0...9, id: \ .self) { Text("\($0)").foregroundColor(Color.brandSecondary) }
                                             }
                                             .frame(width: 80)
                                             .clipped()
-                                            .background(BrandColorsWatch.background.opacity(0.7))
+                                            .background(Color.brandBackground.opacity(0.7))
                                             .cornerRadius(8)
                                         }
                                         VStack(spacing: 2) {
                                             Text("sec")
                                                 .font(.caption2)
-                                                .foregroundColor(BrandColorsWatch.secondary.opacity(0.7))
+                                                .foregroundColor(Color.brandSecondary.opacity(0.7))
                                             Picker("Seconds", selection: $restSeconds) {
-                                                ForEach(0...59, id: \ .self) { Text(String(format: "%02d", $0)).foregroundColor(BrandColorsWatch.secondary) }
+                                                ForEach(0...59, id: \ .self) { Text(String(format: "%02d", $0)).foregroundColor(Color.brandSecondary) }
                                             }
                                             .frame(width: 80)
                                             .clipped()
-                                            .background(BrandColorsWatch.background.opacity(0.7))
+                                            .background(Color.brandBackground.opacity(0.7))
                                             .cornerRadius(8)
                                         }
                                     }
@@ -359,7 +360,7 @@ struct StarterProView: View {
                                         showRestPicker = false
                                     }
                                         .font(.title3)
-                                        .foregroundColor(BrandColorsWatch.primary)
+                                        .foregroundColor(Color.brandPrimary)
                                         .padding(.bottom)
                                 }
                             }
@@ -368,10 +369,10 @@ struct StarterProView: View {
                         Button(action: { showTimeTrial = true }) {
                             Label("Start Session", systemImage: "play.fill")
                                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                                .foregroundColor(BrandColorsWatch.background)
+                                .foregroundColor(Color.brandBackground)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 10)
-                                .background(BrandColorsWatch.primary)
+                                .background(Color.brandPrimary)
                                 .cornerRadius(14)
                         }
                         .buttonStyle(.plain)
@@ -453,6 +454,7 @@ struct StarterProView: View {
 // Listen for start session trigger from phone
 class WatchSessionTriggerManager: NSObject, ObservableObject, WCSessionDelegate, @unchecked Sendable {
     static let shared = WatchSessionTriggerManager()
+    var objectWillChange = ObservableObjectPublisher()
     @Published var shouldStartSession: Bool = false
     private override init() {
         super.init()

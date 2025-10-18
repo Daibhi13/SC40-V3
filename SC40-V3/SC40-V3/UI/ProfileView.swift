@@ -229,7 +229,7 @@ struct ProfileView: View {
             }
         }
         .sheet(isPresented: $showEditProfile) {
-            EditProfileView(userProfileVM: userProfileVM)
+            EditProfileView(userProfileVM: userProfileVM, isPresented: .constant(true))
         }
     }
 }

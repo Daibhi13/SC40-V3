@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftUI
 #if canImport(WatchConnectivity)
 import WatchConnectivity
@@ -11,7 +12,10 @@ import UIKit
 @MainActor
 class PlatformWorkoutManager: ObservableObject {
     static let shared = PlatformWorkoutManager()
-    
+
+    // Required for ObservableObject conformance
+    var objectWillChange = ObservableObjectPublisher()
+
     @Published var preferredPlatform: WorkoutPlatform = .auto
     @Published var availablePlatforms: [WorkoutPlatform] = []
     @Published var isWatchAvailable = false

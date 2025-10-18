@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftUI
 
 /// Automated Help & Info content management system
@@ -6,7 +7,10 @@ import SwiftUI
 @MainActor
 class HelpContentManager: ObservableObject, @unchecked Sendable {
     static let shared = HelpContentManager()
-    
+
+    // Required for ObservableObject conformance
+    var objectWillChange = ObservableObjectPublisher()
+
     @Published var lastUpdated = Date()
     @Published var contentVersion = "1.0.0"
     

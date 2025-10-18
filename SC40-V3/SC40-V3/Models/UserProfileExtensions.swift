@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 // Extension to UserProfile that adds training session relationships
 // This is separated to avoid circular dependency issues during compilation

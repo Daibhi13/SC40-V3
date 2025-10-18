@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// End-of-session summary and sharing.
-
 struct SummaryReportView: View {
     var onDone: (() -> Void)? = nil
     var showClose: Bool = false
@@ -19,9 +17,9 @@ struct SummaryReportView: View {
             Canvas { context, size in
                 // Summary report liquid glass background
                 let reportGradient = Gradient(colors: [
-                    BrandColorsWatch.background,
-                    BrandColorsWatch.tertiary.opacity(0.18),
-                    BrandColorsWatch.primary.opacity(0.05)
+                    Color.brandBackground,
+                    Color.brandTertiary.opacity(0.18),
+                    Color.brandPrimary.opacity(0.05)
                 ])
                 context.fill(Path(CGRect(origin: .zero, size: size)),
                            with: .linearGradient(reportGradient, startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: size.width, y: size.height)))
@@ -32,32 +30,32 @@ struct SummaryReportView: View {
                     let x = size.width * 0.2 + (size.width * 0.6 / 6) * CGFloat(i)
                     let height = barHeight * (1.2 - CGFloat(i) * 0.2)
                     context.fill(Path(CGRect(x: x, y: size.height * 0.7, width: 4, height: height)),
-                               with: .color(BrandColorsWatch.accent.opacity(0.25)))
+                               with: .color(Color.brandAccent.opacity(0.25)))
                 }
                 
                 // Glass shimmer effect
                 context.addFilter(.blur(radius: 10))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.1, y: size.height * 0.3, width: 30, height: 30)),
-                           with: .color(BrandColorsWatch.primary.opacity(0.12)))
+                           with: .color(Color.brandPrimary.opacity(0.12)))
                 context.fill(Path(ellipseIn: CGRect(x: size.width * 0.7, y: size.height * 0.5, width: 20, height: 20)),
-                           with: .color(BrandColorsWatch.tertiary.opacity(0.15)))
+                           with: .color(Color.brandTertiary.opacity(0.15)))
             }
             .ignoresSafeArea()
             VStack(spacing: 16) {
                 HStack {
                     Image(systemName: "chart.bar.xaxis")
                         .font(.system(size: 32))
-                        .foregroundColor(BrandColorsWatch.primary)
+                        .foregroundColor(Color.brandPrimary)
                     Spacer()
                     if showClose {
                         Button(action: { onDone?() }) {
                             ZStack {
                                 Circle()
-                                    .fill(BrandColorsWatch.tertiary.opacity(0.18))
+                                    .fill(Color.brandTertiary.opacity(0.18))
                                     .frame(width: 36, height: 36)
                                 Image(systemName: "xmark")
                                     .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(BrandColorsWatch.primary)
+                                    .foregroundColor(Color.brandPrimary)
                             }
                         }
                         .buttonStyle(.plain)
@@ -65,8 +63,8 @@ struct SummaryReportView: View {
                 }
                 Text("SC Report")
                     .font(.system(size: 22, weight: .heavy, design: .rounded))
-                    .foregroundColor(BrandColorsWatch.primary)
-                    .shadow(color: BrandColorsWatch.tertiary.opacity(0.18), radius: 2, x: 0, y: 1)
+                    .foregroundColor(Color.brandPrimary)
+                    .shadow(color: Color.brandTertiary.opacity(0.18), radius: 2, x: 0, y: 1)
                 if !reps.isEmpty && reps.count <= 100 {
                     ScrollView {
                         VStack(spacing: 6) {
@@ -76,7 +74,7 @@ struct SummaryReportView: View {
                                 Text("Tm").font(.caption2).frame(width: 44, alignment: .center)
                                 Text("Rt").font(.caption2).frame(width: 44, alignment: .center)
                             }
-                            .foregroundColor(BrandColorsWatch.secondary)
+                            .foregroundColor(Color.brandSecondary)
                             Divider().opacity(0.3)
                             ForEach(reps, id: \.rep) { row in
                                 HStack {
@@ -97,7 +95,7 @@ struct SummaryReportView: View {
                                     Text("")
                                         .frame(width: 44, alignment: .center)
                                 }
-                                .background(BrandColorsWatch.tertiary.opacity(0.08))
+                                .background(Color.brandTertiary.opacity(0.08))
                                 .cornerRadius(6)
                             }
                         }
@@ -110,7 +108,7 @@ struct SummaryReportView: View {
                             .foregroundColor(.yellow)
                         Text(reps.isEmpty ? "No data to display." : "Too many reps to display.")
                             .font(.footnote)
-                            .foregroundColor(BrandColorsWatch.secondary)
+                            .foregroundColor(Color.brandSecondary)
                     }
                 }
                 Spacer(minLength: 0)
@@ -118,10 +116,10 @@ struct SummaryReportView: View {
                     Button(action: { onDone?() }) {
                         Label("Done", systemImage: "checkmark")
                             .font(.headline)
-                            .foregroundColor(BrandColorsWatch.background)
+                            .foregroundColor(Color.brandBackground)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 6)
-                            .background(BrandColorsWatch.primary)
+                            .background(Color.brandPrimary)
                             .cornerRadius(10)
                     }
                     .buttonStyle(.plain)

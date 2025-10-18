@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import SwiftUI
 
 // Removed legacy SessionFeedback definition. Use canonical struct from Models/SessionFeedback.swift.

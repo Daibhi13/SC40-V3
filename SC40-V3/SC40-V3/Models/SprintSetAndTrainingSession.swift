@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 // Canonical SprintSet and TrainingSession types for SC40-V3
 

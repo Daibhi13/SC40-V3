@@ -1,5 +1,6 @@
 // Stores profile (age, height, PB, etc.)
 import Foundation
+import Combine
 
 public struct UserProfile: Codable {
     public var name: String

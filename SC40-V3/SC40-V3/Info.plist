@@ -105,6 +105,8 @@
 	<false/>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).watchkitapp</string>
 	<key>WKWatchConnectivityEnabled</key>
 	<true/>
 </dict>

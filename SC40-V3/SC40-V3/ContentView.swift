@@ -174,23 +174,7 @@ struct RecordCardView: View {
 }
 
 // Helper view for quick win feature rows
-struct QuickWinFeatureRow: View {
-    let icon: String
-    let text: String
-    let color: Color
-    
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(color)
-            Text(text)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white.opacity(0.9))
-            Spacer()
-        }
-    }
-}
+// Note: This component is defined in QuickWinView.swift for consistency
 
 struct CountdownView: View {
     let targetTime: Double

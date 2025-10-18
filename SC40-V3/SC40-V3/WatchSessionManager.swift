@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import os.log
 @preconcurrency import WatchConnectivity
 
@@ -17,6 +18,10 @@ import os.log
 @available(iOS 9.0, *)
 @MainActor class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = WatchSessionManager()
+
+    // Required for ObservableObject conformance
+    var objectWillChange = ObservableObjectPublisher()
+
     @Published var receivedData: [String: Any] = [:]
     @Published var isWatchConnected = false
     @Published var isWatchReachable = false

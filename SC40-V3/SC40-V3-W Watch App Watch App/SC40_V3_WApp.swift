@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@main
 struct SC40_V3_W_Watch_AppApp: App {
     var body: some Scene {
         WindowGroup {

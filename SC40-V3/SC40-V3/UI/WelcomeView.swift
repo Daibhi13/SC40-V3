@@ -99,7 +99,7 @@ struct WelcomeView: View {
 
             } catch {
                 let errorResult = SocialLoginResult.error(message: "Facebook login failed. Please try again.")
-                await handleSocialLoginResult(errorResult)
+                handleSocialLoginResult(errorResult)
             }
         }
     }
@@ -119,7 +119,7 @@ struct WelcomeView: View {
 
             } catch {
                 let errorResult = SocialLoginResult.error(message: "Apple Sign-In failed. Please try again.")
-                await handleSocialLoginResult(errorResult)
+                handleSocialLoginResult(errorResult)
             }
         }
     }
@@ -139,7 +139,7 @@ struct WelcomeView: View {
 
             } catch {
                 let errorResult = SocialLoginResult.error(message: "Instagram login failed. Please try again.")
-                await handleSocialLoginResult(errorResult)
+                handleSocialLoginResult(errorResult)
             }
         }
     }
@@ -159,7 +159,7 @@ struct WelcomeView: View {
 
             } catch {
                 let errorResult = SocialLoginResult.error(message: "Google Sign-In failed. Please try again.")
-                await handleSocialLoginResult(errorResult)
+                handleSocialLoginResult(errorResult)
             }
         }
     }

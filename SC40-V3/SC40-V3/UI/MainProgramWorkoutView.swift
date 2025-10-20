@@ -1,4 +1,17 @@
 import SwiftUI
+
+// MARK: - Partial Workout Session Model for Tracking
+struct PartialWorkoutSession {
+    let id: UUID
+    let sessionId: String
+    let startTime: Date
+    let endTime: Date?
+    let phase: MainProgramWorkoutView.WorkoutPhase
+    let completedReps: Int
+    let totalReps: Int
+    let isCompleted: Bool
+    let sessionType: String
+}
 import CoreLocation
 import Combine
 
@@ -459,8 +472,125 @@ struct MainProgramWorkoutView: View {
         isPaused = false
         setupSprintCoachWorkout()
         
+        // Log workout start for partial session tracking
+        logWorkoutStart()
+        
         // Start demo timer to show UI flow
         startDemoPhaseProgression()
+    }
+    
+    private func togglePausePlay() {
+        isPaused.toggle()
+        
+        if isPaused {
+            // Pause the workout and log current progress
+            pauseWorkout()
+        } else {
+            // Resume the workout
+            resumeWorkout()
+        }
+    }
+    
+    private func fastForward() {
+        // Skip to next phase immediately
+        advanceToNextPhase()
+        
+        // Log the fast forward action
+        logFastForwardAction()
+    }
+    
+    private func pauseWorkout() {
+        // Log current progress as partial session
+        logPartialSession()
+        
+        // Show pause coaching message
+        showCoachingCue("Workout paused. Tap play to continue! ⏸️")
+    }
+    
+    private func resumeWorkout() {
+        // Show resume coaching message
+        showCoachingCue("Back to training! Let's keep pushing! ▶️")
+    }
+    
+    private func advanceToNextPhase() {
+        // Manually advance to next phase
+        switch currentPhase {
+        case .warmup:
+            showCoachingCue("Skipping to stretch phase! 🏃‍♂️")
+            currentPhase = .stretch
+        case .stretch:
+            showCoachingCue("Moving to activation drills! 💪")
+            currentPhase = .drill
+        case .drill:
+            showCoachingCue("Jumping to build-up strides! ⚡")
+            currentPhase = .strides
+        case .strides:
+            showCoachingCue("Fast forwarding to sprint phase! 🚀")
+            currentPhase = .sprints
+        case .sprints:
+            showCoachingCue("Advancing to explosive power! 💥")
+            currentPhase = .plyometrics
+        case .plyometrics:
+            showCoachingCue("Skipping to cool down! 🌟")
+            currentPhase = .cooldown
+        case .cooldown:
+            showCoachingCue("Workout complete! Great job! 🏆")
+            currentPhase = .completed
+        default:
+            break
+        }
+    }
+    
+    private func logWorkoutStart() {
+        // Create initial session entry with start time
+        if let session = sessionData {
+            let workoutSession = PartialWorkoutSession(
+                id: UUID(),
+                sessionId: "W\(session.week)D\(session.day)",
+                startTime: Date(),
+                endTime: nil,
+                phase: currentPhase,
+                completedReps: completedReps.count,
+                totalReps: totalReps,
+                isCompleted: false,
+                sessionType: "12-Week Program"
+            )
+            
+            // Save to HistoryManager for analytics
+            savePartialSession(workoutSession)
+        }
+    }
+    
+    private func logPartialSession() {
+        // Update session with current progress
+        if let session = sessionData {
+            let workoutSession = PartialWorkoutSession(
+                id: UUID(),
+                sessionId: "W\(session.week)D\(session.day)",
+                startTime: Date().addingTimeInterval(-300), // Approximate start time
+                endTime: Date(),
+                phase: currentPhase,
+                completedReps: completedReps.count,
+                totalReps: totalReps,
+                isCompleted: false,
+                sessionType: "12-Week Program (Partial)"
+            )
+            
+            // Save partial progress to analytics
+            savePartialSession(workoutSession)
+        }
+    }
+    
+    private func logFastForwardAction() {
+        // Log user interaction for analytics
+        print("Fast forward action logged - Phase: \(currentPhase)")
+    }
+    
+    private func savePartialSession(_ session: PartialWorkoutSession) {
+        // Save to HistoryManager and analytics
+        // This ensures even partial workouts appear in HistoryView and analytics
+        // For now, just log the session (will integrate with actual HistoryManager)
+        print("Saving partial session: \(session.sessionId) - Phase: \(session.phase)")
     }
     
     private func startDemoPhaseProgression() {
@@ -581,7 +711,11 @@ struct MainProgramWorkoutView: View {
                             // Initial phases - show session overview
                             SessionOverviewUI(
                                 sessionData: sessionData,
-                                onStartWorkout: startWorkout
+                                isRunning: isRunning,
+                                isPaused: isPaused,
+                                onStartWorkout: startWorkout,
+                                onTogglePausePlay: togglePausePlay,
+                                onFastForward: fastForward
                             )
                         case .strides:
                             // Strides phase - show timer and strides info
@@ -734,37 +868,6 @@ struct MainProgramWorkoutView: View {
         provideHapticFeedback(type: .complete)
     }
     
-    private func pauseWorkout() {
-        guard !isPaused else { return }
-        
-        isPaused = true
-        isRunning = false
-        
-        // Pause timers
-        phaseTimer?.invalidate()
-        workoutTimer?.invalidate()
-        
-        print("⏸️ Sprint Coach: Workout paused")
-        announceWorkoutPaused()
-        provideHapticFeedback(type: .pause)
-    }
-    
-    private func resumeWorkout() {
-        guard isPaused else { return }
-        
-        isPaused = false
-        
-        print("▶️ Sprint Coach: Workout resumed")
-        announceWorkoutResumed()
-        provideHapticFeedback(type: .resume)
-        
-        // Resume appropriate timer based on phase
-        if currentPhase == .sprints && sprintTime > 0 {
-            startGPSStopwatch(for: currentPhase)
-        } else {
-            startPhaseTimer()
-        }
-    }
     
     private func skipToNext() {
         print("⏭️ Sprint Coach: Skipping to next stage")
@@ -796,36 +899,6 @@ struct MainProgramWorkoutView: View {
         }
     }
     
-    private func advanceToNextPhase() {
-        phaseTimer?.invalidate()
-        workoutTimer?.invalidate()
-        
-        let nextPhase = getNextPhase()
-        
-        // Voice coaching and haptics for phase transition
-        announcePhaseComplete()
-        provideHapticFeedback(type: .transition)
-        
-        currentPhase = nextPhase
-        phaseTimeRemaining = currentPhase.duration
-        
-        // Reset phase-specific state
-        if currentPhase == .sprints {
-            currentRep = 1
-            sprintTime = 0.0
-            currentSpeed = 0.0
-            currentDistance = 0.0
-        }
-        
-        // Announce new phase
-        announcePhaseStart()
-        
-        if currentPhase == .completed {
-            completeWorkout()
-        } else {
-            startPhaseTimer()
-        }
-    }
     
     private func getNextPhase() -> WorkoutPhase {
         switch currentPhase {
@@ -2194,7 +2267,11 @@ struct ProgressBar: View {
 
 struct SessionOverviewUI: View {
     let sessionData: MainProgramWorkoutView.SessionData?
+    let isRunning: Bool
+    let isPaused: Bool
     let onStartWorkout: () -> Void
+    let onTogglePausePlay: () -> Void
+    let onFastForward: () -> Void
     
     private func getSessionInfo() -> (week: Int, day: Int, duration: Int) {
         if let session = sessionData {
@@ -2288,22 +2365,55 @@ struct SessionOverviewUI: View {
             }
             .padding(.vertical, 30)
             
-            // Main Action Button
-            Button(action: onStartWorkout) {
-                ZStack {
-                    Circle()
-                        .fill(Color.black)
-                        .frame(width: 120, height: 120)
-                    
-                    VStack(spacing: 4) {
-                        Text("LET'S\nGO")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
+            // Dynamic Action Controls
+            if !isRunning {
+                // Initial LET'S GO Button
+                Button(action: onStartWorkout) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.black)
+                            .frame(width: 120, height: 120)
+                        
+                        VStack(spacing: 4) {
+                            Text("LET'S\nGO")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                        }
                     }
                 }
+                .padding(.bottom, 20)
+            } else {
+                // Workout Controls (Pause/Play + Fast Forward)
+                HStack(spacing: 24) {
+                    // Pause/Play Button
+                    Button(action: onTogglePausePlay) {
+                        ZStack {
+                            Circle()
+                                .fill(isPaused ? Color.green : Color.orange)
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    
+                    // Fast Forward Button
+                    Button(action: onFastForward) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.blue)
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: "forward.fill")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                    }
+                }
+                .padding(.bottom, 20)
             }
-            .padding(.bottom, 20)
         }
     }
 }
@@ -2470,7 +2580,13 @@ struct PlyometricsPhaseUI: View {
     let onStartWorkout: () -> Void
     
     var body: some View {
-        SessionOverviewUI(sessionData: sessionData, onStartWorkout: onStartWorkout)
+        VStack {
+            Text("Plyometrics Phase")
+                .font(.title)
+                .foregroundColor(.white)
+            Text("Explosive Power Training")
+                .foregroundColor(.white.opacity(0.8))
+        }
     }
 }
 
@@ -2479,7 +2595,13 @@ struct CompletionPhaseUI: View {
     let onStartWorkout: () -> Void
     
     var body: some View {
-        SessionOverviewUI(sessionData: sessionData, onStartWorkout: onStartWorkout)
+        VStack {
+            Text("Workout Complete!")
+                .font(.title)
+                .foregroundColor(.white)
+            Text("Great job on your training session!")
+                .foregroundColor(.white.opacity(0.8))
+        }
     }
 }
 

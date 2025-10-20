@@ -247,6 +247,9 @@ class WorkoutSessionManager: ObservableObject {
         gpsManager.$currentLocation
             .sink { [weak self] location in
                 // Handle location updates if needed
+                guard let self = self else { return }
+                // Use self here for future location processing
+                _ = self // Suppress warning until location processing is implemented
             }
             .store(in: &cancellables)
         

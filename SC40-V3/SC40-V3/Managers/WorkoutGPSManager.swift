@@ -232,6 +232,9 @@ class WorkoutGPSManager: NSObject, ObservableObject {
                     onSprintStart()
                     
                     print("🏃‍♂️💨 Sprint detected! Speed: \(String(format: "%.1f", self.currentSpeed)) mph")
+                    if let startLoc = sprintStartLocation {
+                        print("📍 Sprint started at: \(startLoc.coordinate.latitude), \(startLoc.coordinate.longitude)")
+                    }
                 }
             },
             onComplete: { finalDistance, totalTime in

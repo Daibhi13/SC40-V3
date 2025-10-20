@@ -20,6 +20,7 @@ struct TrainingView: View {
     @State private var showSixPartWorkout = false
     @State private var selectedSession: TrainingSession?
     @State private var showMainProgramWorkout = false
+    @State private var showSprintTimerPro = false
 
     enum MenuSelection {
         case main
@@ -38,7 +39,7 @@ struct TrainingView: View {
     var body: some View {
         let profile = userProfileVM.profile
         ZStack {
-            // Premium gradient background matching the design
+            // WelcomeView-style gradient background with glass effect
             LinearGradient(
                 colors: [
                     Color(red: 0.1, green: 0.2, blue: 0.4),  // Dark blue top
@@ -49,6 +50,21 @@ struct TrainingView: View {
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
+            
+            // Glass effect overlay
+            Rectangle()
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.1),
+                            Color.clear,
+                            Color.white.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .ignoresSafeArea()
             
             NavigationView {
                 ZStack {
@@ -260,6 +276,9 @@ struct TrainingView: View {
                     }
             }
             .navigationViewStyle(StackNavigationViewStyle())
+        }
+        .sheet(isPresented: $showSprintTimerPro) {
+            SprintTimerProView()
         }
     }
 }
@@ -551,12 +570,34 @@ extension TrainingView {
 
                 // Sprint Timer Pro Access Point
                 SprintTimerProAccessCard(isProUser: isProUser) {
-                    // Navigate to Pro Features for purchase
-                    selectedMenu = .proFeatures
-                    showMenu = false
+                    if isProUser {
+                        // Navigate to Sprint Timer Pro
+                        showSprintTimerPro = true
+                    } else {
+                        // Navigate to Pro Features for purchase
+                        selectedMenu = .proFeatures
+                        showMenu = false
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
+                
+                // Demo: Tap to toggle Pro status (for testing)
+                #if DEBUG
+                Button(action: {
+                    isProUser.toggle()
+                }) {
+                    Text("Demo: Toggle Pro Status (Currently: \(isProUser ? "PRO" : "FREE"))")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(8)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 12)
+                #endif
 
 
                 // Up Next Section - Exact match
@@ -607,11 +648,31 @@ extension TrainingView {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.1))
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.white.opacity(0.15),
+                                    Color.white.opacity(0.05)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.3),
+                                            Color.white.opacity(0.1)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 1
+                                )
                         )
+                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                 )
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
@@ -1530,7 +1591,7 @@ struct SprintTimerProAccessCard: View {
                             }
                         }
                         
-                        Text(isProUser ? "Tap to open Sprint Timer Pro" : "Professional timing & training app")
+                        Text(isProUser ? "Create custom sprint workouts" : "Professional timing & training app")
                             .font(.system(size: 14, weight: .medium))
                             .foregroundColor(.white.opacity(0.7))
                     }
@@ -1546,6 +1607,27 @@ struct SprintTimerProAccessCard: View {
                                 .font(.system(size: 12, weight: .medium))
                                 .foregroundColor(.white.opacity(0.6))
                         }
+                    } else {
+                        // Pro user - show action button
+                        HStack(spacing: 8) {
+                            Image(systemName: "crown.fill")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.yellow)
+                            
+                            Text("OPEN PRO")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.yellow.opacity(0.2))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.yellow, lineWidth: 1)
+                                )
+                        )
                     }
                 }
                 

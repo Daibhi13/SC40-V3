@@ -83,40 +83,28 @@ struct ControlWatchView: View {
                 
 
                 
-                // Navigation Controls: Sprint Start/Stop and Rep Navigation
+                // Wave AI Automated Controls: No Start/Stop - Only Navigation
                 HStack(spacing: 16) {
-                    // Previous/Back Button - also functions as Sprint START when not running
+                    // Previous/Back Button - Go back to previous rep or phase
                     Button(action: { 
-                        if !workoutVM.isRunning {
-                            // Start current sprint rep
-                            workoutVM.startRep()
-                        } else {
-                            // Go back to previous rep or phase
-                            workoutVM.goToPreviousStep()
-                        }
+                        workoutVM.goToPreviousStep()
                     }) {
-                        Image(systemName: workoutVM.isRunning ? "backward.fill" : "play.circle.fill")
+                        Image(systemName: "backward.fill")
                             .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(workoutVM.isRunning ? Color.brandSecondary : Color.green)
+                            .foregroundColor(Color.brandSecondary)
                             .frame(width: 38, height: 38)
-                            .background(Circle().stroke(workoutVM.isRunning ? Color.brandSecondary : Color.green, lineWidth: 2))
+                            .background(Circle().stroke(Color.brandSecondary, lineWidth: 2))
                     }
                     
-                    // Forward/Next Button - also functions as Sprint STOP when running
+                    // Forward/Next Button - Move forward to next rep or phase
                     Button(action: { 
-                        if workoutVM.isRunning {
-                            // Complete current sprint rep
-                            workoutVM.completeCurrentRep()
-                        } else {
-                            // Move forward to next rep or phase
-                            workoutVM.goToNextStep()
-                        }
+                        workoutVM.goToNextStep()
                     }) {
-                        Image(systemName: workoutVM.isRunning ? "stop.circle.fill" : "forward.fill")
+                        Image(systemName: "forward.fill")
                             .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(workoutVM.isRunning ? Color.red : Color.brandAccent)
+                            .foregroundColor(Color.brandAccent)
                             .frame(width: 38, height: 38)
-                            .background(Circle().stroke(workoutVM.isRunning ? Color.red : Color.brandAccent, lineWidth: 2))
+                            .background(Circle().stroke(Color.brandAccent, lineWidth: 2))
                     }
                 }
                 Spacer(minLength: 4)

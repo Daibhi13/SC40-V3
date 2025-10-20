@@ -9,7 +9,7 @@ import UIKit
 // MARK: - Voice & Haptics Manager
 // Communicates all instructions via voice prompts and haptic feedback
 
-class VoiceHapticsManager: ObservableObject {
+class VoiceHapticsManager: NSObject, ObservableObject {
     static let shared = VoiceHapticsManager()
     
     // MARK: - Published Properties
@@ -31,7 +31,8 @@ class VoiceHapticsManager: ObservableObject {
     private let notificationGenerator = UINotificationFeedbackGenerator()
     #endif
     
-    private init() {
+    private override init() {
+        super.init()
         setupAudioSession()
         setupSpeechSynthesizer()
         prepareHaptics()

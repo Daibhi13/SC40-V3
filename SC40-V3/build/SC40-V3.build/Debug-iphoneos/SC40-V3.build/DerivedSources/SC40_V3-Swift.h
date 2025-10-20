@@ -281,6 +281,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #if __has_warning("-Watimport-in-framework-header")
 #pragma clang diagnostic ignored "-Watimport-in-framework-header"
 #endif
+@import AVFAudio;
 @import AuthenticationServices;
 @import CoreLocation;
 @import Foundation;
@@ -375,6 +376,19 @@ SWIFT_CLASS("_TtC7SC40_V317ShareableTextItem")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+SWIFT_CLASS("_TtC7SC40_V319VoiceHapticsManager")
+@interface VoiceHapticsManager : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+@class AVSpeechSynthesizer;
+@class AVSpeechUtterance;
+@interface VoiceHapticsManager (SWIFT_EXTENSION(SC40_V3)) <AVSpeechSynthesizerDelegate>
+- (void)speechSynthesizer:(AVSpeechSynthesizer * _Nonnull)synthesizer didFinishSpeechUtterance:(AVSpeechUtterance * _Nonnull)utterance;
+- (void)speechSynthesizer:(AVSpeechSynthesizer * _Nonnull)synthesizer didCancelSpeechUtterance:(AVSpeechUtterance * _Nonnull)utterance;
+@end
+
 @class WCSession;
 SWIFT_CLASS("_TtC7SC40_V319WatchSessionManager") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface WatchSessionManager : NSObject <WCSessionDelegate>
@@ -386,6 +400,17 @@ SWIFT_CLASS("_TtC7SC40_V319WatchSessionManager") SWIFT_AVAILABILITY(ios,introduc
 - (void)sessionReachabilityDidChange:(WCSession * _Nonnull)session;
 - (void)sessionDidBecomeInactive:(WCSession * _Nonnull)session;
 - (void)sessionDidDeactivate:(WCSession * _Nonnull)session;
+@end
+
+SWIFT_CLASS("_TtC7SC40_V317WorkoutGPSManager")
+@interface WorkoutGPSManager : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@interface WorkoutGPSManager (SWIFT_EXTENSION(SC40_V3)) <CLLocationManagerDelegate>
+- (void)locationManager:(CLLocationManager * _Nonnull)manager didUpdateLocations:(NSArray<CLLocation *> * _Nonnull)locations;
+- (void)locationManager:(CLLocationManager * _Nonnull)manager didFailWithError:(NSError * _Nonnull)error;
+- (void)locationManager:(CLLocationManager * _Nonnull)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 @end
 
 #endif

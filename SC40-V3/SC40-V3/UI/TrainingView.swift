@@ -240,9 +240,11 @@ struct TrainingView: View {
                             Button("Done") {
                                 selectedSession = nil
                             }
+                            .foregroundColor(.white)
                         }
                     }
             }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
         .sheet(isPresented: $showMainProgramWorkout) {
             NavigationView {
@@ -254,9 +256,11 @@ struct TrainingView: View {
                             Button("Done") {
                                 showMainProgramWorkout = false
                             }
+                            .foregroundColor(.white)
                         }
                     }
             }
+            .navigationViewStyle(StackNavigationViewStyle())
         }
         .sheet(isPresented: $showAutomatedWorkout) {
             if let firstSession = TrainingView.staticMockSessions.first {
@@ -264,7 +268,11 @@ struct TrainingView: View {
             }
         }
     }
-    
+}
+
+// MARK: - TrainingView Extensions
+
+extension TrainingView {
     static func stableSessionID(week: Int, day: Int) -> UUID {
         // Create a deterministic UUID string based on week and day, padded to fixed length
         // Format: "0001-0002-000000000000"
@@ -439,7 +447,11 @@ struct TrainingView: View {
             notes: "Full recovery session"
         )
     ]
+}
 
+// MARK: - TrainingView Methods
+
+extension TrainingView {
     // Main dashboard matching the exact screenshot design
     func mainDashboard(profile: UserProfile, userProfileVM: UserProfileViewModel) -> some View {
         let sessionsToShow: [TrainingSession]
@@ -1713,5 +1725,11 @@ struct AutomatedWorkoutCard: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func getCurrentTrainingSession() -> TrainingSession? {
+        return TrainingView.staticMockSessions.first
     }
 }

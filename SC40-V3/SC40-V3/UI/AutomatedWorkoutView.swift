@@ -216,7 +216,7 @@ struct AutomatedWorkoutView: View {
             Spacer()
             
             // Main Display
-            VStack(spacing: 32) {
+            VStack(spacing: 24) {
                 // Current Stage Display
                 stageDisplayView
                 
@@ -224,12 +224,23 @@ struct AutomatedWorkoutView: View {
                 metricsDisplayView
             }
             
-            Spacer()
+            // Rep Log - Always visible for user feedback
+            RepLogView(
+                drillTimes: dataRecorder.drillTimes,
+                strideTimes: dataRecorder.strideTimes,
+                sprintTimes: dataRecorder.sprintTimes,
+                currentStage: sessionManager.currentStage,
+                currentRep: sessionManager.currentRep,
+                session: session
+            )
+            .frame(height: 180)
+            .padding(.horizontal, 24)
+            .padding(.top, 16)
             
             // Control Buttons
             controlButtonsView
                 .padding(.horizontal, 24)
-                .padding(.bottom, 40)
+                .padding(.bottom, 20)
         }
     }
     

@@ -588,8 +588,24 @@ struct OnboardingView: View {
             userProfileVM.profile.frequency = daysAvailable
             userProfileVM.profile.leaderboardOptIn = leaderboardOptIn
             
+            // Save data for intelligent session selection system
+            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+            UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+            UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+            UserDefaults.standard.set(gender, forKey: "userGender")
+            UserDefaults.standard.set(age, forKey: "userAge")
+            UserDefaults.standard.set(1, forKey: "currentWeek") // Start at week 1
+            UserDefaults.standard.set(1, forKey: "currentDay") // Start at day 1
+            
+            // Initialize session preferences based on level and frequency
+            let initialPreferences = createInitialSessionPreferences(level: fitnessLevel, frequency: daysAvailable)
+            UserDefaults.standard.set(initialPreferences.favoriteTypes, forKey: "favoriteSessionTypes")
+            UserDefaults.standard.set(initialPreferences.preferredDistances, forKey: "preferredDistances")
+            UserDefaults.standard.set(initialPreferences.intensityPreference, forKey: "intensityPreference")
+            
             // Debug: Verify the personal best is set correctly
             print("🏃‍♂️ Onboarding: Setting personal best to \(pb)s")
+            print("📊 Session Selection: Level=\(fitnessLevel), Frequency=\(daysAvailable) days/week")
             print("🏃‍♂️ Onboarding: Level = \(fitnessLevel), Frequency = \(daysAvailable) days/week")
             
             // Generate comprehensive 12-week training program
@@ -725,6 +741,54 @@ struct OnboardingView: View {
                 return "Elite"
             }
         }
+    }
+    
+    /// Create initial session preferences based on user level and training frequency
+    private func createInitialSessionPreferences(level: String, frequency: Int) -> (favoriteTypes: [String], preferredDistances: [Int], intensityPreference: Double) {
+        var favoriteTypes: [String] = []
+        var preferredDistances: [Int] = []
+        var intensityPreference: Double = 0.5
+        
+        // Set preferences based on fitness level
+        switch level {
+        case "Beginner":
+            favoriteTypes = ["Sprint", "Acceleration"]
+            preferredDistances = [10, 20, 30, 40]
+            intensityPreference = 0.3 // Lower intensity for beginners
+            
+        case "Intermediate":
+            favoriteTypes = ["Sprint", "Max Velocity", "Acceleration"]
+            preferredDistances = [20, 30, 40, 50]
+            intensityPreference = 0.5 // Moderate intensity
+            
+        case "Advanced":
+            favoriteTypes = ["Max Velocity", "Speed Endurance", "Sprint"]
+            preferredDistances = [30, 40, 50, 60, 70]
+            intensityPreference = 0.7 // Higher intensity
+            
+        case "Elite":
+            favoriteTypes = ["Peak Velocity", "Speed Endurance", "Max Velocity"]
+            preferredDistances = [40, 50, 60, 70, 80, 90, 100]
+            intensityPreference = 0.9 // Maximum intensity
+            
+        default:
+            favoriteTypes = ["Sprint", "Acceleration"]
+            preferredDistances = [20, 30, 40]
+            intensityPreference = 0.5
+        }
+        
+        // Adjust preferences based on training frequency
+        if frequency >= 5 {
+            // High frequency - add recovery and variety
+            favoriteTypes.append("Active Recovery")
+            favoriteTypes.append("Tempo")
+        } else if frequency <= 2 {
+            // Low frequency - focus on core sessions
+            favoriteTypes = favoriteTypes.prefix(2).map { $0 }
+            intensityPreference = min(intensityPreference + 0.1, 1.0) // Slightly higher intensity for fewer sessions
+        }
+        
+        return (favoriteTypes, preferredDistances, intensityPreference)
     }
 }
 

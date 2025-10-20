@@ -12,14 +12,6 @@
       },
       {
         "comment": "",
-        "key": "Help & Info View",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 67
-        }
-      },
-      {
-        "comment": "",
         "key": "News View",
         "location": {
           "startingColumn": 38,
@@ -40,14 +32,6 @@
         "location": {
           "startingColumn": 38,
           "startingLine": 75
-        }
-      },
-      {
-        "comment": "",
-        "key": "Help & Info",
-        "location": {
-          "startingColumn": 98,
-          "startingLine": 67
         }
       },
       {

@@ -537,6 +537,15 @@ struct TrainingView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
 
+                // Sprint Timer Pro Access Point
+                SprintTimerProAccessCard(isProUser: isProUser) {
+                    // Navigate to Pro Features for purchase
+                    selectedMenu = .proFeatures
+                    showMenu = false
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 24)
+
                 // Up Next Section - Exact match
                 VStack(alignment: .leading, spacing: 12) {
                     HStack(spacing: 8) {
@@ -1464,4 +1473,147 @@ struct TrainingProgramCarousel_Previews: PreviewProvider {
 #Preview("TrainingView - Professional UI") {
     TrainingView(userProfileVM: UserProfileViewModel())
         .preferredColorScheme(.dark)
+}
+
+// MARK: - Sprint Timer Pro Access Card
+struct SprintTimerProAccessCard: View {
+    let isProUser: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: {
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            #endif
+            onTap()
+        }) {
+            VStack(spacing: 16) {
+                // Header with icon and title
+                HStack(spacing: 16) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.2))
+                            .frame(width: 60, height: 60)
+                        
+                        Image(systemName: "stopwatch.fill")
+                            .font(.system(size: 28, weight: .medium))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack(spacing: 8) {
+                            Text("Sprint Timer Pro")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            if isProUser {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.green)
+                            } else {
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
+                        }
+                        
+                        Text(isProUser ? "Tap to open Sprint Timer Pro" : "Professional timing & training app")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    
+                    Spacer()
+                    
+                    if !isProUser {
+                        VStack(alignment: .trailing, spacing: 2) {
+                            Text("$4.99")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            Text("one-time")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                    }
+                }
+                
+                if !isProUser {
+                    // Features preview for non-pro users
+                    VStack(spacing: 8) {
+                        HStack(spacing: 12) {
+                            FeatureTag(text: "10-100 yards")
+                            FeatureTag(text: "GPS Timing")
+                            FeatureTag(text: "Custom Reps")
+                        }
+                        
+                        HStack(spacing: 12) {
+                            FeatureTag(text: "Rest Periods")
+                            FeatureTag(text: "Pro Starter")
+                            Spacer()
+                        }
+                    }
+                    
+                    // Call to action
+                    HStack(spacing: 8) {
+                        Image(systemName: "arrow.right.circle.fill")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        
+                        Text("Unlock Sprint Timer Pro")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        
+                        Spacer()
+                    }
+                } else {
+                    // Pro user - show access button
+                    HStack(spacing: 8) {
+                        Image(systemName: "play.circle.fill")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.green)
+                        
+                        Text("Open Sprint Timer Pro")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                }
+            }
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(isProUser ? Color.green.opacity(0.1) : Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(isProUser ? Color.green.opacity(0.3) : Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), lineWidth: isProUser ? 2 : 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Feature Tag Component
+struct FeatureTag: View {
+    let text: String
+    
+    var body: some View {
+        Text(text)
+            .font(.system(size: 12, weight: .medium))
+            .foregroundColor(.white.opacity(0.8))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+            )
+    }
 }

@@ -4,146 +4,106 @@
     "Localizable": [
       {
         "comment": "",
-        "key": "SC Pro Features",
+        "key": "",
         "location": {
           "startingColumn": 30,
-          "startingLine": 157
+          "startingLine": 124
         }
       },
       {
         "comment": "",
-        "key": "Advanced Analytics",
+        "key": "Pro Features",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 42
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unlock premium features",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchased",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 186
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro Bundle",
         "location": {
           "startingColumn": 26,
-          "startingLine": 100
+          "startingLine": 258
         }
       },
       {
         "comment": "",
-        "key": "Gain a competitive edge with in-depth sprint metrics, AI-powered coaching, and pro recruiting tools.",
+        "key": "Both features at a discount",
         "location": {
           "startingColumn": 26,
-          "startingLine": 105
+          "startingLine": 262
         }
       },
       {
         "comment": "",
-        "key": "Performance Trends",
+        "key": "Get Pro Bundle",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 272
+        }
+      },
+      {
+        "comment": "",
+        "key": "$5.99",
         "location": {
           "startingColumn": 30,
-          "startingLine": 66
+          "startingLine": 279
         }
       },
       {
         "comment": "",
-        "key": "Track your progress with advanced performance analytics and detailed sprint trend analysis.",
+        "key": "Save $1.99",
         "location": {
           "startingColumn": 30,
-          "startingLine": 70
+          "startingLine": 282
         }
       },
       {
         "comment": "",
-        "key": "• Detailed performance graphs",
+        "key": "Restore Purchases",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 76
+          "startingColumn": 26,
+          "startingLine": 324
         }
       },
       {
         "comment": "",
-        "key": "• Sprint time progression tracking",
+        "key": "Already purchased? Restore here",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 77
+          "startingColumn": 26,
+          "startingLine": 328
         }
       },
       {
         "comment": "",
-        "key": "• Comparative analysis over time",
+        "key": "Restore Purchases",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 78
-        }
-      },
-      {
-        "comment": "",
-        "key": "• Export performance reports",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 79
-        }
-      },
-      {
-        "comment": "",
-        "key": "Upgrade for $4.99/mo",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 88
-        }
-      },
-      {
-        "comment": "",
-        "key": "Upgrade for $4.99/mo",
-        "location": {
-          "startingColumn": 30,
-          "startingLine": 111
-        }
-      },
-      {
-        "comment": "",
-        "key": "Sprint Coach Starter",
-        "location": {
-          "startingColumn": 30,
-          "startingLine": 123
-        }
-      },
-      {
-        "comment": "",
-        "key": "SC Pro turns your Apple Watch into a world-class starter and timer. Set reps and rest, start your session, and get precise results—automatically synced to your phone.",
-        "location": {
-          "startingColumn": 30,
-          "startingLine": 127
-        }
-      },
-      {
-        "comment": "",
-        "key": "• Precision starter: 'On your marks... Set... Go!'",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 132
-        }
-      },
-      {
-        "comment": "",
-        "key": "• Set reps and rest your way",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 133
-        }
-      },
-      {
-        "comment": "",
-        "key": "• Team or solo timing",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 134
-        }
-      },
-      {
-        "comment": "",
-        "key": "• Results sync to phone & analytics",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 135
-        }
-      },
-      {
-        "comment": "",
-        "key": "Unlock SC Pro for $4.99 one-time",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 141
+          "startingColumn": 22,
+          "startingLine": 337
         }
       }
     ]

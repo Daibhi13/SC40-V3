@@ -72,7 +72,7 @@ struct TrainingView: View {
                     case .sharePerformance:
                         AnyView(SharePerformanceView())
                     case .proFeatures:
-                        AnyView(Text("Pro Features").foregroundColor(.white).navigationTitle("Pro Features"))
+                        AnyView(ProFeaturesView())
                     case .performanceTrends:
                         AnyView(AdvancedAnalyticsView())
                     }

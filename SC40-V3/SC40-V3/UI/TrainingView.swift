@@ -20,6 +20,7 @@ struct TrainingView: View {
     @State private var showSixPartWorkout = false
     @State private var selectedSession: TrainingSession?
     @State private var showMainProgramWorkout = false
+    @State private var showAutomatedWorkout = false
 
     enum MenuSelection {
         case main
@@ -255,6 +256,11 @@ struct TrainingView: View {
                             }
                         }
                     }
+            }
+        }
+        .sheet(isPresented: $showAutomatedWorkout) {
+            if let firstSession = TrainingView.staticMockSessions.first {
+                AutomatedWorkoutView(session: firstSession)
             }
         }
     }
@@ -542,6 +548,14 @@ struct TrainingView: View {
                     // Navigate to Pro Features for purchase
                     selectedMenu = .proFeatures
                     showMenu = false
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 24)
+
+                // Automated Workout Card
+                AutomatedWorkoutCard {
+                    // Navigate to automated workout
+                    showAutomatedWorkout = true
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 24)
@@ -1615,5 +1629,89 @@ struct FeatureTag: View {
                             .stroke(Color.white.opacity(0.2), lineWidth: 1)
                     )
             )
+    }
+}
+
+// MARK: - Automated Workout Card
+struct AutomatedWorkoutCard: View {
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: {
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            #endif
+            onTap()
+        }) {
+            VStack(spacing: 16) {
+                // Header with icon and title
+                HStack(spacing: 16) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.purple.opacity(0.2))
+                            .frame(width: 60, height: 60)
+                        
+                        Image(systemName: "waveform.path.ecg")
+                            .font(.system(size: 28, weight: .medium))
+                            .foregroundColor(.purple)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Wave AI Workout")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        Text("Fully automated training session")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "arrow.right.circle.fill")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundColor(.purple)
+                }
+                
+                // Features preview
+                VStack(spacing: 8) {
+                    HStack(spacing: 12) {
+                        FeatureTag(text: "Voice Coaching")
+                        FeatureTag(text: "GPS Auto-Stop")
+                        FeatureTag(text: "Hands-Free")
+                    }
+                    
+                    HStack(spacing: 12) {
+                        FeatureTag(text: "Auto Transitions")
+                        FeatureTag(text: "Haptic Cues")
+                        Spacer()
+                    }
+                }
+                
+                // Description
+                HStack(spacing: 8) {
+                    Image(systemName: "info.circle.fill")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.purple)
+                    
+                    Text("Complete workout automation with voice guidance, GPS distance detection, and automatic stage transitions")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.leading)
+                    
+                    Spacer()
+                }
+            }
+            .padding(20)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

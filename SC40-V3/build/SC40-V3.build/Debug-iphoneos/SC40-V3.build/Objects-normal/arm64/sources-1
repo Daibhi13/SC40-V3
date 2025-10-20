@@ -1,4 +1,10 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Configuration/NewsAPIConfig.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/VoiceHapticsManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutAlgorithmEngine.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutDataRecorder.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutGPSManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutSessionManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutTimerManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveAI.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveSprintProgram.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ComprehensiveSessionLibrary.swift
@@ -76,6 +82,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdaptiveWorkoutHub.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsMonetizationView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AutomatedWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CalendarRoadmapView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CoachingSettingsView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CombineView.swift

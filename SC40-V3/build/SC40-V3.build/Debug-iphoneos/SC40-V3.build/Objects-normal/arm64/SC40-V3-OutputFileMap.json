@@ -46,6 +46,66 @@
     "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Item.swiftdeps",
     "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Item~partial.swiftmodule"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/VoiceHapticsManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutAlgorithmEngine.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutDataRecorder.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutGPSManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutSessionManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutTimerManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager~partial.swiftmodule"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveAI.swift" : {
     "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.swiftconstvalues",
     "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.d",
@@ -665,6 +725,16 @@
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView.o",
     "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView.swiftdeps",
     "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView~partial.swiftmodule"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AutomatedWorkoutView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.dia",
+    "index-unit-output-path" : "/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.swiftdeps",
+    "swiftmodule" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView~partial.swiftmodule"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CalendarRoadmapView.swift" : {
     "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CalendarRoadmapView.swiftconstvalues",

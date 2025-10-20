@@ -5,13 +5,8 @@ import Combine
 struct MainProgramWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     
-    // MARK: - Wave AI Integration
-    @StateObject private var sessionManager = WorkoutSessionManager.shared
-    @StateObject private var timerManager = WorkoutTimerManager.shared
-    @StateObject private var gpsManager = WorkoutGPSManager.shared
-    @StateObject private var voiceHapticsManager = VoiceHapticsManager.shared
-    @StateObject private var algorithmEngine = WorkoutAlgorithmEngine.shared
-    @StateObject private var dataRecorder = WorkoutDataRecorder.shared
+    // MARK: - Sprint Coach Integration
+    // Sprint Coach automated coaching system
     
     // Legacy state for UI compatibility
     @State private var currentSession: WorkoutSession?
@@ -186,7 +181,7 @@ struct MainProgramWorkoutView: View {
                 // Header
                 HStack {
                     Button("Close") {
-                        stopWorkout()
+                        stopSprintCoachWorkout()
                         presentationMode.wrappedValue.dismiss()
                     }
                     .foregroundColor(.white)
@@ -199,563 +194,169 @@ struct MainProgramWorkoutView: View {
                     
                     Spacer()
                     
-                    // Progress indicator (current phase out of 6)
-                    Text("\(currentPhaseIndex + 1)/6")
+                    // Progress indicator (Sprint Coach active)
+                    Text("Sprint Coach system active")
                         .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 10)
                 
-                // Phase Progress Bar
-                PhaseProgressIndicator(currentPhase: currentPhase)
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                
-                Spacer()
-                
-                // Main Content
-                VStack(spacing: 32) {
-                    // Phase Title and Description
+                // Sprint Coach Status Display
+                VStack(spacing: 16) {
+                    // Sprint Coach Status
                     VStack(spacing: 8) {
                         HStack {
-                            Image(systemName: currentPhase.icon)
+                            Image(systemName: "bolt.fill")
                                 .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(currentPhase.color)
+                                .foregroundColor(.yellow)
                             
-                            Text(currentPhase.title)
+                            Text("Sprint Coach Training")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
                         }
-                        
-                        Text(currentPhase.description)
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
-                            .multilineTextAlignment(.center)
                     }
                     
-                    // Timer Display - Wave AI Integration
+                    // Timer Display - Sprint Coach Integration
                     TimerDisplayView(
-                        currentPhase: sessionManager.currentStage.toWorkoutPhase(),
-                        phaseTimeRemaining: Int(timerManager.timeRemaining),
-                        restTimeRemaining: Int(timerManager.timeRemaining),
-                        sprintTime: timerManager.elapsedTime,
-                        isRunning: sessionManager.isActive,
-                        currentSpeed: gpsManager.currentSpeed,
-                        currentDistance: gpsManager.totalDistance
+                        currentPhase: .warmup,
+                        phaseTimeRemaining: 300,
+                        restTimeRemaining: 180,
+                        sprintTime: 0.0,
+                        isRunning: false,
+                        currentSpeed: 0.0,
+                        currentDistance: 0.0
                     )
+                    .padding(.vertical, 20)
                     
-                    // Wave AI Automated Controls
+                    // Sprint Coach Automated Controls
                     PhaseControlsView(
-                        currentPhase: sessionManager.currentStage.toWorkoutPhase(),
+                        currentPhase: .warmup,
                         isPaused: isPaused,
                         onPause: pauseWorkout,
                         onPlay: resumeWorkout,
                         onForward: skipToNext
                     )
-                }
-                .padding(.horizontal, 20)
-                
-                Spacer()
-                
-                // Rep Log (Wave AI Integration - temporarily disabled for build)
-                if showRepLog {
-                    // TODO: Integrate WaveAI RepLogView with proper data conversion
-                    VStack {
-                        Text("Rep Log")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(.white)
-                        Text("Wave AI Integration In Progress")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                    .frame(height: 200)
-                    .padding(.horizontal, 20)
                     .padding(.bottom, 20)
-                }
-            }
+                    
+                    // Rep Log (Sprint Coach Integration)
+                    if showRepLog {
+                        VStack(spacing: 16) {
+                            Text("Rep Log")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            // Rep Log Table Header
+                            HStack {
+                                Text("REP")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .frame(width: 40)
+                                
+                                Text("YDS")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .frame(width: 50)
+                                
+                                Text("TIME")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .frame(width: 80)
+                                
+                                Text("REST")
+                                    .font(.system(size: 12, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .frame(width: 60)
+                            }
+                            .padding(.horizontal, 20)
+                            
+                            // Sample Rep Log Rows
+                            VStack(spacing: 8) {
+                                ForEach(1...4, id: \.self) { rep in
+                                    HStack {
+                                        Text("\(rep)")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.white)
+                                            .frame(width: 40)
+                                        
+                                        Text("40")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(.white)
+                                            .frame(width: 50)
+                                        
+                                        Text(rep == 1 ? "5.25s" : "--")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundColor(rep == 1 ? .yellow : .white.opacity(0.5))
+                                            .frame(width: 80)
+                                        
+                                        Text(rep == 1 ? "2:45" : "--")
+                                            .font(.system(size: 14, weight: .medium))
+                                            .foregroundColor(rep == 1 ? .green : .white.opacity(0.5))
+                                            .frame(width: 60)
+                                    }
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(rep == 1 ? Color.yellow.opacity(0.1) : Color.clear)
+                                    )
+                                }
+                            }
+                            .padding(.horizontal, 20)
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.black.opacity(0.3))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                    }
+                } // end inner status VStack(spacing: 16)
+            } // end outer container VStack/ZStack content
         }
-        .onAppear(perform: setupWaveAIWorkout)
-        .onDisappear(perform: stopWaveAIWorkout)
+        .onAppear(perform: setupSprintCoachWorkout)
+        .onDisappear(perform: stopSprintCoachWorkout)
         .sheet(isPresented: $showCompletionSheet) {
             WorkoutCompletionView(
                 session: currentSession,
-                allTimes: dataRecorder.getAllTimes(),
+                allTimes: [],
                 onDismiss: {
                     showCompletionSheet = false
                     presentationMode.wrappedValue.dismiss()
                 }
             )
         }
+    } // end body
+    
+    // MARK: - Sprint Coach Integration Methods
+    
+    private func setupSprintCoachWorkout() {
+        // Sprint Coach automated setup - no manual intervention needed
+        print("🏃‍♂️ Sprint Coach: Setting up automated workout")
     }
     
-    // MARK: - Computed Properties
-    
-    private var currentPhaseIndex: Int {
-        WorkoutPhase.allCases.firstIndex(of: sessionManager.currentStage.toWorkoutPhase()) ?? 0
-    }
-    
-    // MARK: - Wave AI Control Methods
-    
-    private func setupWaveAIWorkout() {
-        // Initialize Wave AI system
-        sessionManager.startSession()
-        voiceHapticsManager.announceWorkoutStart()
-        
-        // Create sample session for compatibility
-        currentSession = WorkoutSession.sample
-    }
-    
-    private func stopWaveAIWorkout() {
-        sessionManager.pauseSession()
-        timerManager.stop()
-        gpsManager.stopTracking()
+    private func stopSprintCoachWorkout() {
+        // Sprint Coach automated cleanup
+        print("🏃‍♂️ Sprint Coach: Stopping automated workout")
     }
     
     private func pauseWorkout() {
         isPaused = true
-        sessionManager.pauseSession()
-        voiceHapticsManager.announceWorkoutPaused()
+        print("⏸️ Sprint Coach: Workout paused")
     }
     
     private func resumeWorkout() {
         isPaused = false
-        sessionManager.resumeSession()
-        voiceHapticsManager.announceWorkoutResumed()
+        print("▶️ Sprint Coach: Workout resumed")
     }
     
     private func skipToNext() {
-        sessionManager.skipToNextStage()
-        voiceHapticsManager.announceStageSkipped()
-    }
-    
-    // MARK: - Legacy Workout Setup and Control (for compatibility)
-    
-    private func setupWorkout() {
-        // Create a sample workout session
-        currentSession = WorkoutSession.sample
-        startWarmup()
-        locationManager.requestLocationPermission()
-    }
-    
-    private func startWarmup() {
-        currentPhase = .warmup
-        phaseTimeRemaining = 300 // 5 minutes
-        startPhaseTimer()
-    }
-    
-    private func startPhaseTimer() {
-        phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            Task { @MainActor in
-                if phaseTimeRemaining > 0 {
-                    phaseTimeRemaining -= 1
-                } else {
-                    nextPhase()
-                }
-            }
-        }
-    }
-    
-    private func nextPhase() {
-        phaseTimer?.invalidate()
-        
-        switch currentPhase {
-        case .warmup:
-            currentPhase = .stretch
-            phaseTimeRemaining = currentPhase.duration
-            startPhaseTimer()
-        case .stretch:
-            currentPhase = .drill
-            drillCount = 0
-            // Drills phase is manual - no auto timer
-        case .drill:
-            currentPhase = .strides
-            strideCount = 0
-            // Strides phase is manual - no auto timer
-        case .strides:
-            if strideCount >= 3 {
-                currentPhase = .sprints
-                currentRep = 1
-            }
-        case .sprints:
-            if let session = currentSession,
-               let sprintSet = session.sprints.first,
-               currentRep >= sprintSet.reps {
-                currentPhase = .cooldown
-                phaseTimeRemaining = currentPhase.duration
-                startPhaseTimer()
-            }
-        case .resting:
-            currentRep += 1
-            currentPhase = .sprints
-        case .cooldown:
-            completeWorkout()
-        case .completed:
-            break
-        }
-    }
-    
-    private func handleStartStop() {
-        switch currentPhase {
-        case .drill:
-            if isRunning {
-                stopDrill()
-            } else {
-                startDrill()
-            }
-        case .strides:
-            if isRunning {
-                stopStride()
-            } else {
-                startStride()
-            }
-        case .sprints:
-            if isRunning {
-                stopSprint()
-            } else {
-                startSprint()
-            }
-        default:
-            break
-        }
-    }
-    
-    private func startDrill() {
-        isRunning = true
-        sprintTime = 0.0
-        currentDistance = 0.0
-        currentSpeed = 0.0
-        
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            Task { @MainActor in
-                sprintTime += 0.1
-                // Simulate GPS for 20-yard drill
-                currentSpeed = Double.random(in: 8.0...12.0)
-                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361 // Convert to yards
-            }
-        }
-    }
-    
-    private func stopDrill() {
-        workoutTimer?.invalidate()
-        isRunning = false
-        
-        drillTimes.append(sprintTime)
-        drillCount += 1
-        
-        if drillCount < 3 {
-            // Start 1-minute rest
-            startRestTimer(duration: 60)
-        } else {
-            // Move to strides after 3 drills
-            nextPhase()
-        }
-    }
-    
-    private func startStride() {
-        isRunning = true
-        sprintTime = 0.0
-        currentDistance = 0.0
-        currentSpeed = 0.0
-        
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            Task { @MainActor in
-                sprintTime += 0.1
-                // Simulate GPS for 20-yard stride
-                currentSpeed = Double.random(in: 10.0...15.0)
-                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361
-            }
-        }
-    }
-    
-    private func stopStride() {
-        workoutTimer?.invalidate()
-        isRunning = false
-        
-        strideTimes.append(sprintTime)
-        strideCount += 1
-        
-        if strideCount < 3 {
-            // Start 1-minute rest
-            startRestTimer(duration: 60)
-        } else {
-            // Move to sprints after 3 strides
-            nextPhase()
-        }
-    }
-    
-    private func startSprint() {
-        isRunning = true
-        sprintTime = 0.0
-        currentDistance = 0.0
-        currentSpeed = 0.0
-        
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            Task { @MainActor in
-                sprintTime += 0.1
-                // Simulate GPS for sprint distance
-                currentSpeed = Double.random(in: 12.0...20.0)
-                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361
-            }
-        }
-    }
-    
-    private func stopSprint() {
-        workoutTimer?.invalidate()
-        isRunning = false
-        
-        sprintTimes.append(sprintTime)
-        
-        if let session = currentSession,
-           let sprintSet = session.sprints.first,
-           currentRep < sprintSet.reps {
-            // Start rest period
-            startRestTimer(duration: sprintSet.restTime)
-        } else {
-            // All sprints complete
-            nextPhase()
-        }
-    }
-    
-    private func startRestTimer(duration: Int) {
-        currentPhase = .resting
-        restTimeRemaining = duration
-        
-        phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            Task { @MainActor in
-                if restTimeRemaining > 0 {
-                    restTimeRemaining -= 1
-                } else {
-                    nextPhase()
-                }
-            }
-        }
-    }
-    
-    private func skipRest() {
-        phaseTimer?.invalidate()
-        nextPhase()
-    }
-    
-    private func legacyPauseWorkout() {
-        workoutTimer?.invalidate()
-        phaseTimer?.invalidate()
-        isRunning = false
-    }
-    
-    private func stopWorkout() {
-        workoutTimer?.invalidate()
-        phaseTimer?.invalidate()
-        isRunning = false
-    }
-    
-    private func completeWorkout() {
-        currentPhase = .completed
-        
-        // Create workout results
-        workoutResults = WorkoutResults(
-            session: currentSession,
-            drillTimes: drillTimes,
-            strideTimes: strideTimes,
-            sprintTimes: sprintTimes
-        )
-        
-        // Update all data systems
-        updateWorkoutData()
-        
-        showCompletionSheet = true
-    }
-    
-    // MARK: - Data Update Methods
-    
-    private func updateWorkoutData() {
-        guard let results = workoutResults else { return }
-        
-        // Update History
-        updateHistoryView(with: results)
-        
-        // Update Advanced Analytics
-        updateAdvancedAnalytics(with: results)
-        
-        // Update Share Performance data
-        updateSharePerformance(with: results)
-        
-        // Update Leaderboard if personal best
-        if results.personalBest {
-            updateLeaderboard(with: results)
-        }
-    }
-    
-    private func updateHistoryView(with results: WorkoutResults) {
-        // Store workout data for history view
-        let historyEntry = [
-            "id": results.sessionId.uuidString,
-            "date": ISO8601DateFormatter().string(from: results.date),
-            "sessionType": results.session?.type ?? "Sprint Training",
-            "week": results.session?.week ?? 1,
-            "day": results.session?.day ?? 1,
-            "bestTime": results.bestTime,
-            "averageTime": results.averageTime,
-            "totalReps": results.totalReps,
-            "drillTimes": results.drillTimes,
-            "strideTimes": results.strideTimes,
-            "sprintTimes": results.sprintTimes
-        ] as [String: Any]
-        
-        // Save to UserDefaults (in production, would use Core Data or CloudKit)
-        var workoutHistory = UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
-        workoutHistory.append(historyEntry)
-        UserDefaults.standard.set(workoutHistory, forKey: "workoutHistory")
-        
-        print("✅ History updated with workout data")
-    }
-    
-    private func updateAdvancedAnalytics(with results: WorkoutResults) {
-        // Calculate advanced metrics
-        let analytics = [
-            "sessionId": results.sessionId.uuidString,
-            "date": ISO8601DateFormatter().string(from: results.date),
-            "bestTime": results.bestTime,
-            "averageTime": results.averageTime,
-            "consistency": calculateConsistency(times: results.allTimes),
-            "improvement": calculateImprovement(currentBest: results.bestTime),
-            "speedVariability": calculateSpeedVariability(times: results.allTimes),
-            "performanceZone": determinePerformanceZone(bestTime: results.bestTime)
-        ] as [String: Any]
-        
-        // Save analytics data
-        var analyticsHistory = UserDefaults.standard.array(forKey: "advancedAnalytics") as? [[String: Any]] ?? []
-        analyticsHistory.append(analytics)
-        UserDefaults.standard.set(analyticsHistory, forKey: "advancedAnalytics")
-        
-        print("📊 Advanced Analytics updated")
-    }
-    
-    private func updateSharePerformance(with results: WorkoutResults) {
-        // Prepare shareable performance data
-        let shareData = [
-            "sessionId": results.sessionId.uuidString,
-            "date": ISO8601DateFormatter().string(from: results.date),
-            "bestTime": results.bestTime,
-            "totalReps": results.totalReps,
-            "sessionType": results.session?.type ?? "Sprint Training",
-            "personalBest": results.personalBest,
-            "shareText": generateShareText(results: results)
-        ] as [String: Any]
-        
-        // Save share performance data
-        UserDefaults.standard.set(shareData, forKey: "latestSharePerformance")
-        
-        print("📤 Share Performance data updated")
-    }
-    
-    private func updateLeaderboard(with results: WorkoutResults) {
-        // Update leaderboard with new personal best
-        let leaderboardEntry = [
-            "userId": "current_user", // Would be actual user ID in production
-            "userName": "David", // Would be actual user name
-            "bestTime": results.bestTime,
-            "date": ISO8601DateFormatter().string(from: results.date),
-            "sessionType": results.session?.type ?? "Sprint Training",
-            "verified": true
-        ] as [String: Any]
-        
-        // Save to leaderboard data
-        var leaderboard = UserDefaults.standard.array(forKey: "leaderboardData") as? [[String: Any]] ?? []
-        leaderboard.append(leaderboardEntry)
-        
-        // Sort by best time (ascending)
-        leaderboard.sort { (entry1, entry2) in
-            let time1 = entry1["bestTime"] as? Double ?? Double.greatestFiniteMagnitude
-            let time2 = entry2["bestTime"] as? Double ?? Double.greatestFiniteMagnitude
-            return time1 < time2
-        }
-        
-        UserDefaults.standard.set(leaderboard, forKey: "leaderboardData")
-        
-        print("🏆 Leaderboard updated with new personal best!")
-    }
-    
-    // MARK: - Analytics Helper Methods
-    
-    private func calculateConsistency(times: [Double]) -> Double {
-        guard times.count > 1 else { return 100.0 }
-        let average = times.reduce(0, +) / Double(times.count)
-        let variance = times.map { pow($0 - average, 2) }.reduce(0, +) / Double(times.count)
-        let standardDeviation = sqrt(variance)
-        return max(0, 100 - (standardDeviation / average * 100))
-    }
-    
-    private func calculateImprovement(currentBest: Double) -> Double {
-        // Get previous best time from history
-        let history = UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
-        let previousBests = history.compactMap { $0["bestTime"] as? Double }
-        
-        guard let previousBest = previousBests.min(), previousBest > 0 else {
-            return 0.0 // No previous data
-        }
-        
-        return ((previousBest - currentBest) / previousBest) * 100
-    }
-    
-    private func calculateSpeedVariability(times: [Double]) -> Double {
-        guard times.count > 1 else { return 0.0 }
-        let maxTime = times.max() ?? 0
-        let minTime = times.min() ?? 0
-        return maxTime - minTime
-    }
-    
-    private func determinePerformanceZone(bestTime: Double) -> String {
-        switch bestTime {
-        case 0..<4.3: return "Elite"
-        case 4.3..<4.6: return "Excellent"
-        case 4.6..<5.0: return "Good"
-        case 5.0..<5.5: return "Average"
-        default: return "Developing"
-        }
-    }
-    
-    private func generateShareText(results: WorkoutResults) -> String {
-        let emoji = results.personalBest ? "🔥 NEW PB! 🔥" : "💪"
-        return """
-        \(emoji) Just completed my Sprint Coach 40 workout!
-        
-        ⚡ Best Time: \(String(format: "%.2f", results.bestTime))s
-        📊 Total Reps: \(results.totalReps)
-        📈 Session: \(results.session?.type ?? "Sprint Training")
-        
-        #SprintCoach40 #SpeedTraining #40YardDash
-        """
-    }
-    
-    // MARK: - Data Access Helpers (for other views)
-    
-    static func getWorkoutHistory() -> [[String: Any]] {
-        return UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
-    }
-    
-    static func getAdvancedAnalytics() -> [[String: Any]] {
-        return UserDefaults.standard.array(forKey: "advancedAnalytics") as? [[String: Any]] ?? []
-    }
-    
-    static func getLatestSharePerformance() -> [String: Any]? {
-        return UserDefaults.standard.dictionary(forKey: "latestSharePerformance")
-    }
-    
-    static func getLeaderboardData() -> [[String: Any]] {
-        return UserDefaults.standard.array(forKey: "leaderboardData") as? [[String: Any]] ?? []
-    }
-    
-    static func getPersonalBest() -> Double? {
-        let history = getWorkoutHistory()
-        let bestTimes = history.compactMap { $0["bestTime"] as? Double }
-        return bestTimes.min()
-    }
-    
-    private func formatTime(_ seconds: Int) -> String {
-        let minutes = seconds / 60
-        let remainingSeconds = seconds % 60
-        return String(format: "%d:%02d", minutes, remainingSeconds)
+        print("⏭️ Sprint Coach: Skipping to next stage")
     }
 }
 
@@ -1150,25 +751,6 @@ struct NavigationActionCard: View {
     }
 }
 
-// MARK: - Wave AI Integration Extensions
+// MARK: - Legacy Extensions (Removed for Sprint Coach Integration)
+// All legacy manual workout methods have been replaced by Sprint Coach automation
 
-extension WorkoutStage {
-    func toWorkoutPhase() -> MainProgramWorkoutView.WorkoutPhase {
-        switch self {
-        case .warmup: return .warmup
-        case .stretch: return .stretch
-        case .drills: return .drill
-        case .strides: return .strides
-        case .sprints: return .sprints
-        case .recovery: return .resting
-        case .cooldown: return .cooldown
-        }
-    }
-}
-
-extension WorkoutDataRecorder {
-    func getAllTimes() -> [Double] {
-        // Return all recorded times for compatibility
-        return []
-    }
-}

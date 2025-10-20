@@ -28,26 +28,10 @@
       },
       {
         "comment": "",
-        "key": "Profile Settings",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 211
-        }
-      },
-      {
-        "comment": "",
-        "key": "Referrals",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 216
-        }
-      },
-      {
-        "comment": "",
         "key": "",
         "location": {
           "startingColumn": 20,
-          "startingLine": 292
+          "startingLine": 288
         }
       }
     ]

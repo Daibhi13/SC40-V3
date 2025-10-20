@@ -62,7 +62,7 @@ struct TrainingView: View {
                     case .smartHub:
                         AnyView(Enhanced40YardSmartView())
                     case .settings:
-                        AnyView(Text("Settings View").foregroundColor(.white).navigationTitle("Settings"))
+                        AnyView(SettingsView())
                     case .helpInfo:
                         AnyView(Text("Help & Info View").foregroundColor(.white).navigationTitle("Help & Info"))
                     case .news:
@@ -74,7 +74,7 @@ struct TrainingView: View {
                     case .proFeatures:
                         AnyView(Text("Pro Features").foregroundColor(.white).navigationTitle("Pro Features"))
                     case .performanceTrends:
-                        AnyView(Text("Performance Trends").foregroundColor(.white).navigationTitle("Trends"))
+                        AnyView(AdvancedAnalyticsView())
                     }
                 }
                 .background(Color.clear)

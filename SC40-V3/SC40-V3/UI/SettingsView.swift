@@ -208,14 +208,10 @@ struct SettingsView: View {
             NotificationSettingsView()
         }
         .sheet(isPresented: $showProfile) {
-            Text("Profile Settings")
-                .font(.title)
-                .padding()
+            ProfileView(userProfileVM: userProfileVM)
         }
         .sheet(isPresented: $showReferrals) {
-            Text("Referrals")
-                .font(.title)
-                .padding()
+            ReferralsView()
         }
     }
 }

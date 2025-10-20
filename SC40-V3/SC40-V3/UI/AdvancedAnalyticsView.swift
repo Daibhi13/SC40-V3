@@ -132,37 +132,59 @@ struct AdvancedAnalyticsView: View {
                     .padding(.top, 40)
                     .padding(.horizontal, 20)
                     
-                    // Tab Selection - matching your design exactly
-                    HStack(spacing: 0) {
-                        TabButton(
-                            title: "Performance",
-                            icon: "chart.line.uptrend.xyaxis",
-                            isSelected: selectedTab == .performance,
-                            action: { selectedTab = .performance }
-                        )
-                        
-                        TabButton(
-                            title: "Biomechanics",
-                            icon: "waveform.path.ecg",
-                            isSelected: selectedTab == .biomechanics,
-                            action: { selectedTab = .biomechanics }
-                        )
-                        
-                        TabButton(
-                            title: "Benchmarks",
-                            icon: "target",
-                            isSelected: selectedTab == .benchmarks,
-                            action: { selectedTab = .benchmarks }
-                        )
-                        
-                        TabButton(
-                            title: "AI Insights",
-                            icon: "brain.head.profile",
-                            isSelected: selectedTab == .aiInsights,
-                            action: { selectedTab = .aiInsights }
-                        )
+                    // Tab Selection - Fixed layout to prevent truncation
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            TabButton(
+                                title: "Performance",
+                                icon: "chart.line.uptrend.xyaxis",
+                                isSelected: selectedTab == .performance,
+                                action: { 
+                                    HapticManager.shared.light()
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                        selectedTab = .performance 
+                                    }
+                                }
+                            )
+                            
+                            TabButton(
+                                title: "Biomechanics",
+                                icon: "waveform.path.ecg",
+                                isSelected: selectedTab == .biomechanics,
+                                action: { 
+                                    HapticManager.shared.light()
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                        selectedTab = .biomechanics 
+                                    }
+                                }
+                            )
+                            
+                            TabButton(
+                                title: "Benchmarks",
+                                icon: "target",
+                                isSelected: selectedTab == .benchmarks,
+                                action: { 
+                                    HapticManager.shared.light()
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                        selectedTab = .benchmarks 
+                                    }
+                                }
+                            )
+                            
+                            TabButton(
+                                title: "AI Insights",
+                                icon: "brain.head.profile",
+                                isSelected: selectedTab == .aiInsights,
+                                action: { 
+                                    HapticManager.shared.light()
+                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                                        selectedTab = .aiInsights 
+                                    }
+                                }
+                            )
+                        }
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 20)
                     .padding(.top, 30)
                     
                     // Content based on selected tab
@@ -1356,18 +1378,20 @@ struct TabButton: View {
         Button(action: action) {
             HStack(spacing: 6) {
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 12, weight: .medium))
                     .foregroundColor(isSelected ? .black : .white.opacity(0.7))
                 
                 Text(title)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(isSelected ? .black : .white)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .frame(minWidth: 80)
             .background(
-                RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: 20)
                     .fill(
                         isSelected 
                         ? LinearGradient(
@@ -1383,11 +1407,20 @@ struct TabButton: View {
                     )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 25)
+                RoundedRectangle(cornerRadius: 20)
                     .stroke(
                         isSelected ? Color.clear : Color.white.opacity(0.2), 
                         lineWidth: 1
                     )
+            )
+            .scaleEffect(isSelected ? 1.05 : 1.0)
+            .shadow(
+                color: isSelected 
+                ? Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.3) 
+                : Color.clear,
+                radius: isSelected ? 8 : 0,
+                x: 0,
+                y: isSelected ? 4 : 0
             )
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isSelected)
@@ -1401,6 +1434,22 @@ struct PerformanceTabContent: View {
     
     var body: some View {
         VStack(spacing: 16) {
+            // Split Analysis Card
+            AnalyticsCard(
+                icon: "timer",
+                title: "Split Analysis",
+                iconColor: Color(red: 1.0, green: 0.6, blue: 0.0),
+                showContent: showContent,
+                delay: 0.5
+            ) {
+                VStack(spacing: 12) {
+                    SplitAnalysisRow(distance: "0-10yd", time: "1.84s", percentage: "95%")
+                    SplitAnalysisRow(distance: "10-20yd", time: "1.21s", percentage: "95%")
+                    SplitAnalysisRow(distance: "20-30yd", time: "1.31s", percentage: "95%")
+                    SplitAnalysisRow(distance: "30-40yd", time: "0.89s", percentage: "95%")
+                }
+            }
+            
             // Performance Progression Card
             AnalyticsCard(
                 icon: "chart.line.uptrend.xyaxis",
@@ -1472,6 +1521,159 @@ struct PerformanceTabContent: View {
                             .multilineTextAlignment(.center)
                     }
                     .frame(height: 100)
+                }
+            }
+            
+            // Professional Reports Card
+            AnalyticsCard(
+                icon: "doc.text.fill",
+                title: "Professional Reports",
+                iconColor: Color(red: 1.0, green: 0.4, blue: 0.4),
+                showContent: showContent,
+                delay: 1.1
+            ) {
+                VStack(spacing: 16) {
+                    Text("Export comprehensive training data for coaches\nand institutions")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .padding(.bottom, 8)
+                    
+                    // Report Buttons
+                    VStack(spacing: 12) {
+                        // Recruiting Card
+                        Button(action: {}) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "doc.fill")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Recruiting Card")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.white)
+                                    Text("Professional 1-page summary")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(red: 1.0, green: 0.4, blue: 0.4), Color(red: 1.0, green: 0.5, blue: 0.5)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(12)
+                        }
+                        
+                        // Coaching Analysis
+                        Button(action: {}) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "chart.bar.doc.horizontal.fill")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Coaching Analysis")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.white)
+                                    Text("Detailed performance breakdown")
+                                        .font(.system(size: 12, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.7))
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.blue, Color.blue.opacity(0.8)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(12)
+                        }
+                        
+                        // Raw Data Export
+                        HStack(spacing: 12) {
+                            Text("Raw Data Export")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 8) {
+                                Button("JSON") {}
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.white.opacity(0.2))
+                                    .cornerRadius(8)
+                                
+                                Button("CSV") {}
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.white.opacity(0.2))
+                                    .cornerRadius(8)
+                                
+                                Button("PDF") {}
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.white.opacity(0.2))
+                                    .cornerRadius(8)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        
+                        // Share Options
+                        HStack(spacing: 24) {
+                            Button(action: {}) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "person.2.fill")
+                                        .font(.system(size: 14, weight: .medium))
+                                    Text("Share with Coach")
+                                        .font(.system(size: 14, weight: .semibold))
+                                }
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            }
+                            
+                            Button(action: {}) {
+                                HStack(spacing: 8) {
+                                    Image(systemName: "building.2.fill")
+                                        .font(.system(size: 14, weight: .medium))
+                                    Text("Send to School")
+                                        .font(.system(size: 14, weight: .semibold))
+                                }
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                            }
+                        }
+                        .padding(.top, 8)
+                        
+                        // Verification Badge
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.shield.fill")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.green)
+                            
+                            Text("GPS-Verified • Cross-Device Validated")
+                                .font(.system(size: 12, weight: .medium))
+                                .foregroundColor(.green)
+                        }
+                        .padding(.top, 8)
+                    }
                 }
             }
         }
@@ -1776,6 +1978,52 @@ struct AIInsightsTabContent: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Split Analysis Row Component
+
+struct SplitAnalysisRow: View {
+    let distance: String
+    let time: String
+    let percentage: String
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Text(distance)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
+                .frame(width: 60, alignment: .leading)
+            
+            Text(time)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.white)
+                .frame(width: 60, alignment: .leading)
+            
+            // Progress bar
+            HStack {
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color(red: 1.0, green: 0.6, blue: 0.0), Color(red: 1.0, green: 0.4, blue: 0.0)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(height: 4)
+                    .cornerRadius(2)
+                
+                Spacer()
+            }
+            .frame(maxWidth: .infinity)
+            
+            Text(percentage)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.green)
+                .frame(width: 40, alignment: .trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
 

@@ -12,14 +12,6 @@
       },
       {
         "comment": "",
-        "key": "Settings View",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 65
-        }
-      },
-      {
-        "comment": "",
         "key": "Help & Info View",
         "location": {
           "startingColumn": 38,
@@ -52,22 +44,6 @@
       },
       {
         "comment": "",
-        "key": "Performance Trends",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 77
-        }
-      },
-      {
-        "comment": "",
-        "key": "Settings",
-        "location": {
-          "startingColumn": 95,
-          "startingLine": 65
-        }
-      },
-      {
-        "comment": "",
         "key": "Help & Info",
         "location": {
           "startingColumn": 98,
@@ -96,14 +72,6 @@
         "location": {
           "startingColumn": 94,
           "startingLine": 75
-        }
-      },
-      {
-        "comment": "",
-        "key": "Trends",
-        "location": {
-          "startingColumn": 100,
-          "startingLine": 77
         }
       },
       {

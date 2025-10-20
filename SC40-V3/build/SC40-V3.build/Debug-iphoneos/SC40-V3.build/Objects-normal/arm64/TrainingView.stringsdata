@@ -12,42 +12,10 @@
       },
       {
         "comment": "",
-        "key": "News View",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 69
-        }
-      },
-      {
-        "comment": "",
-        "key": "Share with Teammates",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 71
-        }
-      },
-      {
-        "comment": "",
         "key": "Pro Features",
         "location": {
           "startingColumn": 38,
           "startingLine": 75
-        }
-      },
-      {
-        "comment": "",
-        "key": "News",
-        "location": {
-          "startingColumn": 91,
-          "startingLine": 69
-        }
-      },
-      {
-        "comment": "",
-        "key": "Share",
-        "location": {
-          "startingColumn": 102,
-          "startingLine": 71
         }
       },
       {

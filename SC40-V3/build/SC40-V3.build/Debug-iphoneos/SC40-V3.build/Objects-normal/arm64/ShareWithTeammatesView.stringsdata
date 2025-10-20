@@ -4,58 +4,114 @@
     "Localizable": [
       {
         "comment": "",
-        "key": "Give 1 Week Free!",
+        "key": "Link Copied!",
         "location": {
-          "startingColumn": 18,
-          "startingLine": 29
+          "startingColumn": 16,
+          "startingLine": 249
         }
       },
       {
         "comment": "",
-        "key": "Share Sprint Coach 40 with a teammate and you’ll give them 7 days free!",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 32
-        }
-      },
-      {
-        "comment": "",
-        "key": "1 Free Week of Sprint Coach 40",
+        "key": "",
         "location": {
           "startingColumn": 30,
-          "startingLine": 48
+          "startingLine": 237
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share Sprint Coach 40 with your teammates\nand give them 7 days of free access to all\nfeatures!",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share with Teammates",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "Give them 1 week free!",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "1 Week Free Access",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 76
         }
       },
       {
         "comment": "",
         "key": "From: You",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 51
+          "startingColumn": 42,
+          "startingLine": 80
         }
       },
       {
         "comment": "",
-        "key": "Recipients must be new to Sprint Coach 40 to redeem this gift.",
+        "key": "All Pro Features",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 55
+          "startingColumn": 46,
+          "startingLine": 89
         }
       },
       {
         "comment": "",
-        "key": "Share With a Teammate",
+        "key": "Requirements",
         "location": {
-          "startingColumn": 22,
-          "startingLine": 64
+          "startingColumn": 38,
+          "startingLine": 117
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share with Teammate",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 156
         }
       },
       {
         "comment": "",
         "key": "Copy Link",
         "location": {
-          "startingColumn": 22,
-          "startingLine": 76
+          "startingColumn": 42,
+          "startingLine": 184
+        }
+      },
+      {
+        "comment": "",
+        "key": "What They'll Get",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 205
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 250
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share link copied to clipboard",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 252
         }
       }
     ]

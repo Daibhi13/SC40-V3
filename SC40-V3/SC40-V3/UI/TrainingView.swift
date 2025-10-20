@@ -66,9 +66,9 @@ struct TrainingView: View {
                     case .helpInfo:
                         AnyView(HelpInfoView())
                     case .news:
-                        AnyView(Text("News View").foregroundColor(.white).navigationTitle("News"))
+                        AnyView(SprintNewsView())
                     case .shareWithTeammates:
-                        AnyView(Text("Share with Teammates").foregroundColor(.white).navigationTitle("Share"))
+                        AnyView(ShareWithTeammatesView())
                     case .sharePerformance:
                         AnyView(SharePerformanceView())
                     case .proFeatures:

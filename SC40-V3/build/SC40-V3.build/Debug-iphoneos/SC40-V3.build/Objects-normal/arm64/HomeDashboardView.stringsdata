@@ -1,0 +1,112 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HomeDashboardView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Welcome back,",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Today's Workout",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 43
+        }
+      },
+      {
+        "comment": "",
+        "key": "6×20yd Acceleration Sprints",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start on Watch",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 52
+        }
+      },
+      {
+        "comment": "",
+        "key": "Performance Highlights",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Milestone",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Quick Actions",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "Performance",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 112
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Log",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Menu",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Profile",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 148
+        }
+      },
+      {
+        "comment": "",
+        "key": "Logout",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 150
+        }
+      }
+    ]
+  },
+  "version": 1
+}

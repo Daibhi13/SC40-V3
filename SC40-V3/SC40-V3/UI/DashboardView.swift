@@ -20,13 +20,13 @@ struct DashboardView: View {
                     case .main:
                         AnyView(mainDashboard(profile: profile))
                     case .history:
-                        AnyView(HistoryView(sessions: [], userProfile: profile)) // Using empty array until session management is resolved
+                        AnyView(HistoryView())
                     case .leaderboard:
                         AnyView(UserStatsView(currentUser: profile))
                     case .performanceTrends:
                         AnyView(PerformanceTrendsView(weeks: [])) // TODO: Pass real data
                     case .smartHub:
-                        AnyView(SmartHubView())
+                        AnyView(Enhanced40YardSmartView())
                     case .performance:
                         AnyView(DashboardPerformanceView(profile: profile))
                     case .settings:

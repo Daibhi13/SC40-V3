@@ -92,8 +92,7 @@ struct HistoryView_Previews: PreviewProvider {
             currentDay: 1
         )
         
-        HistoryView(sessions: MockTrainingData.createMockCompletedSessions(),
-                   userProfile: mockProfile)
+        HistoryView()
             .preferredColorScheme(.dark)
     }
 }

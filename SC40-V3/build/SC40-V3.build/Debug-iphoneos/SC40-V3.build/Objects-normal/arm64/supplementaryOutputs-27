@@ -1,0 +1,107 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HelpInfoView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpInfoView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpInfoView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpInfoView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpInfoView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpInfoView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HelpSections.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpSections.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpSections.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpSections.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpSections.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HelpSections.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HistoryView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HistoryViewDemo.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewDemo.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewDemo.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewDemo.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewDemo.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewDemo.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HistoryViewPreview.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewPreview.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewPreview.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewPreview.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewPreview.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HistoryViewPreview.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HomeDashboardView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HomeDashboardView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HomeDashboardView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HomeDashboardView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HomeDashboardView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HomeDashboardView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/LeaderboardViewModel.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardViewModel.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardViewModel.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardViewModel.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardViewModel.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardViewModel.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MainProgramWorkoutView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MainProgramWorkoutView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MainProgramWorkoutView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MainProgramWorkoutView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MainProgramWorkoutView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MainProgramWorkoutView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MiniSessionChartView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MiniSessionChartView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MiniSessionChartView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MiniSessionChartView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MiniSessionChartView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MiniSessionChartView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MockTrainingData.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MockTrainingData.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MockTrainingData.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MockTrainingData.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MockTrainingData.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/MockTrainingData.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/NotificationSettingsView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NotificationSettingsView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NotificationSettingsView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NotificationSettingsView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NotificationSettingsView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NotificationSettingsView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/OnboardingView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/OnboardingView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/OnboardingView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/OnboardingView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/OnboardingView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/OnboardingView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PerformanceTrendsView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceTrendsView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceTrendsView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceTrendsView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceTrendsView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceTrendsView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PerformanceView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PerformanceView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PostSessionAnalyticsPanel.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PostSessionAnalyticsPanel.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PostSessionAnalyticsPanel.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PostSessionAnalyticsPanel.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PostSessionAnalyticsPanel.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PostSessionAnalyticsPanel.swiftdeps"
+  }
+}

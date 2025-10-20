@@ -1,0 +1,408 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdaptiveWorkoutHub.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "SC40 Workouts",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 138
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC40 Sprint Training",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Works seamlessly on iPhone & Apple Watch",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your Available Platforms",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Choose Your Workout Experience",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 90
+        }
+      },
+      {
+        "comment": "",
+        "key": "RECOMMENDED",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 223
+        }
+      },
+      {
+        "comment": "",
+        "key": "Why Choose Dual Platform?",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 268
+        }
+      },
+      {
+        "comment": "",
+        "key": "Available Training Sessions",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 309
+        }
+      },
+      {
+        "comment": "",
+        "key": "240+ sessions",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 315
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC40 Workout",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 395
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ Workout",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 368
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 402
+        }
+      },
+      {
+        "comment": "",
+        "key": "📱 iPhone Workout Ready",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 423
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your workout will use your iPhone's GPS for accurate distance tracking and display the full session interface.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 426
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start iPhone Workout",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 432
+        }
+      },
+      {
+        "comment": "",
+        "key": "🧠 Analyzing your devices...",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 457
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC40 is determining the best workout experience based on your available devices and current context.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 460
+        }
+      },
+      {
+        "comment": "",
+        "key": "📱 iPhone Selected",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 473
+        }
+      },
+      {
+        "comment": "",
+        "key": "Based on your current setup, iPhone provides the best workout experience with GPS tracking and full session access.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Smart Workout",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 482
+        }
+      },
+      {
+        "comment": "",
+        "key": "iPhone Workout",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 662
+        }
+      },
+      {
+        "comment": "",
+        "key": "📱 iPhone Workout",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 516
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS Sprint Training • Full Session Library",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 520
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your iPhone will provide precision GPS tracking for accurate sprint timing and distance measurement. Ensure you have a clear view of the sky for optimal results.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 541
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS Ready",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 535
+        }
+      },
+      {
+        "comment": "",
+        "key": "🎯 Today's Recommended Sessions",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 553
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld sessions",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 559
+        }
+      },
+      {
+        "comment": "",
+        "key": "Access the complete SC40 training library with sessions for all levels and training phases.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 600
+        }
+      },
+      {
+        "comment": "",
+        "key": "Browse All Sessions",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 604
+        }
+      },
+      {
+        "comment": "",
+        "key": "📚 Complete Session Library",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 585
+        }
+      },
+      {
+        "comment": "",
+        "key": "240+ sessions",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 591
+        }
+      },
+      {
+        "comment": "",
+        "key": "⚡ Quick Start",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 618
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld reps",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 756
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 760
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 764
+        }
+      },
+      {
+        "comment": "",
+        "key": "iPhone Workout",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 938
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld reps",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 862
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 863
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 864
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld of %lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 899
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Sprint",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 915
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint",
+        "location": {
+          "startingColumn": 60,
+          "startingLine": 915
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Phase",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 926
+        }
+      },
+      {
+        "comment": "",
+        "key": "End Workout",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 945
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld reps",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1066
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1070
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1078
+        }
+      },
+      {
+        "comment": "",
+        "key": "⌚ Check your Apple Watch",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1104
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your workout will begin on your Apple Watch. Please check your watch to start your sprint training session.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1107
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send Launch Signal to Watch",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 1112
+        }
+      }
+    ]
+  },
+  "version": 1
+}

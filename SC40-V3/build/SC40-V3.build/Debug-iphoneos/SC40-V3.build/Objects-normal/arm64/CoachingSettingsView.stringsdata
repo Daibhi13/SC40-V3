@@ -1,0 +1,192 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CoachingSettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Coaching Settings",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "Goal",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 100
+        }
+      },
+      {
+        "comment": "",
+        "key": "Days Per Week",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coaching Style",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 116
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session Duration",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 125
+        }
+      },
+      {
+        "comment": "",
+        "key": "Voice Coach",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 134
+        }
+      },
+      {
+        "comment": "",
+        "key": "Environment",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 143
+        }
+      },
+      {
+        "comment": "",
+        "key": "Features",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 152
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Goal",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld days",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Style",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 117
+        }
+      },
+      {
+        "comment": "",
+        "key": "Duration",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "20 min",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 min",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 128
+        }
+      },
+      {
+        "comment": "",
+        "key": "60 min",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "Voice Coach",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "Environment",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 144
+        }
+      },
+      {
+        "comment": "",
+        "key": "Auto Progression",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 153
+        }
+      },
+      {
+        "comment": "",
+        "key": "Injury Safe (Recovery/Mobility)",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coaching Notifications",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 155
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro User (Unlocks Pro Features)",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 156
+        }
+      }
+    ]
+  },
+  "version": 1
+}

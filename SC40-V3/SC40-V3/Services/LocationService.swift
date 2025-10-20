@@ -50,26 +50,30 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
 
         let search = MKLocalSearch(request: request)
         search.start { [weak self] response, error in
-            DispatchQueue.main.async { [weak self] in
+            // Ensure we have a strong self before hopping to the main queue
+            guard let self = self else { return }
+
+            Task { @MainActor in
                 if let error = error {
-                    self?.errorMessage = "Failed to get location details: \(error.localizedDescription)"
+                    self.errorMessage = "Failed to get location details: \(error.localizedDescription)"
                     return
                 }
 
-                guard let placemark = response?.mapItems.first?.placemark else {
-                    self?.errorMessage = "No location information found"
+                guard let mapItem = response?.mapItems.first else {
+                    self.errorMessage = "No location information found"
                     return
                 }
 
-                // Extract location details using MapKit placemark
-                self?.county = placemark.subAdministrativeArea ?? ""
-                self?.state = placemark.administrativeArea ?? ""
-                self?.country = placemark.country ?? ""
+                // Use placemark for location details (compatible with all iOS versions)
+                let placemark = mapItem.placemark
+                self.county = placemark.subAdministrativeArea ?? ""
+                self.state = placemark.administrativeArea ?? ""
+                self.country = placemark.country ?? ""
 
                 print("📍 Location detected:")
-                print("   County: \(self?.county ?? "Unknown")")
-                print("   State: \(self?.state ?? "Unknown")")
-                print("   Country: \(self?.country ?? "Unknown")")
+                print("   County: \(self.county)")
+                print("   State: \(self.state)")
+                print("   Country: \(self.country)")
             }
         }
     }
@@ -104,3 +108,4 @@ extension LocationService: CLLocationManagerDelegate {
         }
     }
 }
+

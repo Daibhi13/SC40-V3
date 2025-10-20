@@ -1,0 +1,64 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/OnboardingRequiredView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 107
+        }
+      },
+      {
+        "comment": "",
+        "key": "Setup",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Premium Gradient",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 219
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40 Branding",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 219
+        }
+      },
+      {
+        "comment": "",
+        "key": "Watch Adaptive Sizing",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 240
+        }
+      },
+      {
+        "comment": "",
+        "key": "Spacing: %lldpx",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 240
+        }
+      },
+      {
+        "comment": "",
+        "key": "Padding: %lldpx",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 240
+        }
+      }
+    ]
+  },
+  "version": 1
+}

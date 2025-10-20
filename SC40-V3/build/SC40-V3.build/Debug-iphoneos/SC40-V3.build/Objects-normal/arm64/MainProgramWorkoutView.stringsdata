@@ -1,0 +1,304 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MainProgramWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Training",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 201
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld/6",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 208
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 193
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 787
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 801
+        }
+      },
+      {
+        "comment": "",
+        "key": "RUNNING",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 794
+        }
+      },
+      {
+        "comment": "",
+        "key": "READY",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 794
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 812
+        }
+      },
+      {
+        "comment": "",
+        "key": "mph",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 818
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 824
+        }
+      },
+      {
+        "comment": "",
+        "key": "yards",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 830
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 866
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start",
+        "location": {
+          "startingColumn": 51,
+          "startingLine": 866
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next Phase",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 882
+        }
+      },
+      {
+        "comment": "",
+        "key": "Skip Rest",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 900
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep Log",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 945
+        }
+      },
+      {
+        "comment": "",
+        "key": "Live Results",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 951
+        }
+      },
+      {
+        "comment": "",
+        "key": "PHASE",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 960
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 965
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 970
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 975
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1045
+        }
+      },
+      {
+        "comment": "",
+        "key": "•••",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1056
+        }
+      },
+      {
+        "comment": "",
+        "key": "—",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1061
+        }
+      },
+      {
+        "comment": "",
+        "key": "—",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1067
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1196
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Complete!",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Great job on your sprint training session",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1115
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session Results",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1124
+        }
+      },
+      {
+        "comment": "",
+        "key": "BEST TIME",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 1130
+        }
+      },
+      {
+        "comment": "",
+        "key": "TOTAL REPS",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 1139
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 1142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Data Updated Successfully",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1161
+        }
+      },
+      {
+        "comment": "",
+        "key": "History",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1168
+        }
+      },
+      {
+        "comment": "",
+        "key": "Analytics",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1169
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share Ready",
+        "location": {
+          "startingColumn": 35,
+          "startingLine": 1175
+        }
+      },
+      {
+        "comment": "",
+        "key": "Leaderboard",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 1177
+        }
+      }
+    ]
+  },
+  "version": 1
+}

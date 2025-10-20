@@ -1,0 +1,107 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Configuration/NewsAPIConfig.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveAI.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveSprintProgram.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ComprehensiveSessionLibrary.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ComprehensiveSessionSystem.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionSystem.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionSystem.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionSystem.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionSystem.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionSystem.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/Example3DayIntermediate.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Example3DayIntermediate.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Example3DayIntermediate.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Example3DayIntermediate.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Example3DayIntermediate.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Example3DayIntermediate.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ExpandedPyramidLibrary.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ExpandedPyramidLibrary.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ExpandedPyramidLibrary.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ExpandedPyramidLibrary.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ExpandedPyramidLibrary.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ExpandedPyramidLibrary.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/FatigueManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/FatigueManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/FatigueManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/FatigueManager.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/FatigueManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/FatigueManager.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/HybridAIExtensions.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HybridAIExtensions.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HybridAIExtensions.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HybridAIExtensions.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HybridAIExtensions.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/HybridAIExtensions.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/LeaderboardService.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardService.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardService.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardService.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardService.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/LeaderboardService.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/Level.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Level.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Level.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Level.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Level.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/Level.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/NextWeekAI.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NextWeekAI.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NextWeekAI.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NextWeekAI.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NextWeekAI.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/NextWeekAI.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ProgramGenerator.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramGenerator.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramGenerator.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramGenerator.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramGenerator.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramGenerator.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ProgramModels.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ProgramModels_backup.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels_backup.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels_backup.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels_backup.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels_backup.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ProgramModels_backup.swiftdeps"
+  }
+}

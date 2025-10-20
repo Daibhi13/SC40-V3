@@ -1,0 +1,56 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/DaySessionCardsWatchView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Select Workout",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 311
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH 40",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 305
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week %lld of 12",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 320
+        }
+      },
+      {
+        "comment": "",
+        "key": "Swipe Left",
+        "location": {
+          "startingColumn": 53,
+          "startingLine": 415
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint",
+        "location": {
+          "startingColumn": 68,
+          "startingLine": 415
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sync iPhone Sessions",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 448
+        }
+      }
+    ]
+  },
+  "version": 1
+}

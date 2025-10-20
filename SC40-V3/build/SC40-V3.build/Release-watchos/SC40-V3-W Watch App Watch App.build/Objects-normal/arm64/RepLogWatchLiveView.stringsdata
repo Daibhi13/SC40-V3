@@ -1,0 +1,88 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/RepLogWatchLiveView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "%llds",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "%llds",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rp",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "Dst",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tm",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rt",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 87
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep Timer",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 170
+        }
+      }
+    ]
+  },
+  "version": 1
+}

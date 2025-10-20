@@ -1,0 +1,56 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 197
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "Customize your training experience",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Profile Settings",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 211
+        }
+      },
+      {
+        "comment": "",
+        "key": "Referrals",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 216
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 292
+        }
+      }
+    ]
+  },
+  "version": 1
+}

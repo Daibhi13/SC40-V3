@@ -1,10 +1,11 @@
 import SwiftUI
 import CoreLocation
+import Combine
 
 struct MainProgramWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var locationManager = LocationService()
-    @State private var currentSession: TrainingSession?
+    @State private var currentSession: WorkoutSession?
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var currentRep = 1
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes warmup
@@ -15,12 +16,51 @@ struct MainProgramWorkoutView: View {
     @State private var isRunning = false
     @State private var sprintTimes: [Double] = []
     @State private var strideTimes: [Double] = []
-    @State private var showRepLog = false
+    @State private var drillTimes: [Double] = []
+    @State private var showRepLog = true
     @State private var workoutTimer: Timer?
     @State private var phaseTimer: Timer?
     @State private var showCompletionSheet = false
+    @State private var workoutResults: WorkoutResults? = nil
+    @State private var drillCount = 0
+    @State private var strideCount = 0
     
-    enum WorkoutPhase {
+    // MARK: - Models
+    
+    struct WorkoutSession {
+        let id = UUID()
+        let week: Int
+        let day: Int
+        let type: String
+        let sprints: [SprintSet]
+        let totalDuration: Int // minutes
+        
+        static let sample = WorkoutSession(
+            week: 1,
+            day: 1,
+            type: "Speed Development",
+            sprints: [SprintSet(distanceYards: 30, reps: 4, intensity: "100%")],
+            totalDuration: 47
+        )
+    }
+    
+    struct SprintSet {
+        let distanceYards: Int
+        let reps: Int
+        let intensity: String
+        
+        var restTime: Int {
+            // Calculate rest based on distance (in seconds)
+            switch distanceYards {
+            case 0...20: return 60
+            case 21...40: return 120
+            case 41...60: return 180
+            default: return 240
+            }
+        }
+    }
+    
+    enum WorkoutPhase: CaseIterable {
         case warmup
         case stretch
         case drill
@@ -32,27 +72,40 @@ struct MainProgramWorkoutView: View {
         
         var title: String {
             switch self {
-            case .warmup: return "Warm Up"
-            case .stretch: return "Dynamic Stretch"
-            case .drill: return "Sprint Drills"
-            case .strides: return "Build-Up Strides"
-            case .sprints: return "SPRINT!"
-            case .resting: return "Rest & Recover"
-            case .cooldown: return "Cool Down"
-            case .completed: return "Workout Complete"
+            case .warmup: return "Warm-Up"
+            case .stretch: return "Stretch"
+            case .drill: return "Drills"
+            case .strides: return "Strides"
+            case .sprints: return "Sprints"
+            case .resting: return "Rest"
+            case .cooldown: return "Cooldown"
+            case .completed: return "Complete"
             }
         }
         
-        var subtitle: String {
+        var description: String {
             switch self {
-            case .warmup: return "Prepare your body"
-            case .stretch: return "Dynamic mobility • 5-8 minutes"
-            case .drill: return "A-skips • High knees • Butt kicks"
-            case .strides: return "3×20 Yard • 70% Effort • Auto-detected"
-            case .sprints: return "Maximum effort"
+            case .warmup: return "Light jog"
+            case .stretch: return "Dynamic mobility"
+            case .drill: return "GPS Stopwatch (20-yard clarity check)"
+            case .strides: return "20 yards × 3 reps"
+            case .sprints: return "Maximum effort sprints"
             case .resting: return "Active recovery"
             case .cooldown: return "Stretch and recover"
-            case .completed: return "Great work!"
+            case .completed: return "Session complete!"
+            }
+        }
+        
+        var duration: Int {
+            switch self {
+            case .warmup: return 300 // 5 minutes
+            case .stretch: return 300 // 5 minutes
+            case .drill: return 600 // 10 minutes (flexible)
+            case .strides: return 480 // 8 minutes (3 reps + rest)
+            case .sprints: return 900 // 15 minutes (varies by session)
+            case .resting: return 0 // Dynamic
+            case .cooldown: return 300 // 5 minutes
+            case .completed: return 0
             }
         }
         
@@ -83,235 +136,155 @@ struct MainProgramWorkoutView: View {
         }
     }
     
+    // MARK: - Workout Results Model
+    struct WorkoutResults {
+        let sessionId: UUID
+        let date: Date
+        let session: WorkoutSession?
+        let drillTimes: [Double]
+        let strideTimes: [Double]
+        let sprintTimes: [Double]
+        let bestTime: Double
+        let averageTime: Double
+        let totalReps: Int
+        let personalBest: Bool
+        
+        var allTimes: [Double] {
+            drillTimes + strideTimes + sprintTimes
+        }
+        
+        init(session: WorkoutSession?, drillTimes: [Double], strideTimes: [Double], sprintTimes: [Double]) {
+            self.sessionId = UUID()
+            self.date = Date()
+            self.session = session
+            self.drillTimes = drillTimes
+            self.strideTimes = strideTimes
+            self.sprintTimes = sprintTimes
+            
+            let allTimes = drillTimes + strideTimes + sprintTimes
+            self.bestTime = allTimes.min() ?? 0.0
+            self.averageTime = allTimes.isEmpty ? 0.0 : allTimes.reduce(0, +) / Double(allTimes.count)
+            self.totalReps = allTimes.count
+            
+            // Check if this is a personal best (simplified - would normally check against stored history)
+            self.personalBest = bestTime > 0 && bestTime < 5.0 // Placeholder logic
+        }
+    }
+    
     var body: some View {
         ZStack {
             // Premium gradient background
             LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
-                    .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
-                    .init(color: Color(red: 0.15, green: 0.25, blue: 0.45), location: 0.5),
-                    .init(color: Color(red: 0.2, green: 0.15, blue: 0.35), location: 0.7),
-                    .init(color: Color(red: 0.1, green: 0.05, blue: 0.25), location: 1.0)
-                ]),
+                colors: [
+                    Color(red: 0.05, green: 0.1, blue: 0.2),
+                    Color(red: 0.1, green: 0.2, blue: 0.35),
+                    Color(red: 0.15, green: 0.25, blue: 0.45),
+                    Color(red: 0.2, green: 0.15, blue: 0.35),
+                    Color(red: 0.1, green: 0.05, blue: 0.25)
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-            .ignoresSafeArea(.all)
+            .ignoresSafeArea()
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 0) {
-                    // Header with close button
-                    HStack {
-                        Spacer()
-                        
-                        Button(action: {
-                            stopWorkout()
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
-                                .frame(width: 32, height: 32)
-                                .background(Color.black.opacity(0.3))
-                                .clipShape(Circle())
-                        }
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button("Close") {
+                        stopWorkout()
+                        presentationMode.wrappedValue.dismiss()
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 60)
+                    .foregroundColor(.white)
                     
-                    // Workout Header
+                    Spacer()
+                    
+                    Text("Sprint Training")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    // Progress indicator (current phase out of 6)
+                    Text("\(currentPhaseIndex + 1)/6")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                
+                // Phase Progress Bar
+                PhaseProgressIndicator(currentPhase: currentPhase)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 16)
+                
+                Spacer()
+                
+                // Main Content
+                VStack(spacing: 32) {
+                    // Phase Title and Description
                     VStack(spacing: 8) {
-                        Text("SPRINT COACH 40")
-                            .font(.system(size: 14, weight: .semibold))
+                        HStack {
+                            Image(systemName: currentPhase.icon)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(currentPhase.color)
+                            
+                            Text(currentPhase.title)
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                        }
+                        
+                        Text(currentPhase.description)
+                            .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
-                            .tracking(2)
-                        
-                        if let session = currentSession {
-                            Text("WEEK \(session.week) - DAY \(session.day) / \(getTotalWorkoutTime()) Min")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                        } else {
-                            Text("WEEK 1 - DAY 1 / 47 Min")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                        }
+                            .multilineTextAlignment(.center)
                     }
-                    .padding(.top, 20)
                     
-                    // Phase Progress Bar
-                    WorkoutProgressBar(
+                    // Timer Display
+                    TimerDisplayView(
                         currentPhase: currentPhase,
-                        warmupTime: 5,
-                        sprintTime: getSprintPhaseTime(),
-                        cooldownTime: 5
+                        phaseTimeRemaining: phaseTimeRemaining,
+                        restTimeRemaining: restTimeRemaining,
+                        sprintTime: sprintTime,
+                        isRunning: isRunning,
+                        currentSpeed: currentSpeed,
+                        currentDistance: currentDistance
                     )
-                    .padding(.horizontal, 20)
-                    .padding(.top, 20)
                     
-                    // Main Content Area
-                    VStack(spacing: 40) {
-                        // Phase Icon and Title
-                        VStack(spacing: 16) {
-                            ZStack {
-                                Circle()
-                                    .fill(currentPhase.color.opacity(0.2))
-                                    .frame(width: 80, height: 80)
-                                
-                                Image(systemName: currentPhase.icon)
-                                    .font(.system(size: 40, weight: .bold))
-                                    .foregroundColor(currentPhase.color)
-                            }
-                            
-                            VStack(spacing: 4) {
-                                Text(currentPhase.title)
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                if currentPhase == .sprints && currentSession != nil {
-                                    Text("Rep \(currentRep) of \(getTotalReps())")
-                                        .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                } else if currentPhase == .strides {
-                                    Text(currentPhase.subtitle)
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                        .multilineTextAlignment(.center)
-                                }
-                            }
-                        }
-                        .padding(.top, 40)
-                        
-                        // Main Timer Circle
-                        ZStack {
-                            Circle()
-                                .stroke(Color.white.opacity(0.2), lineWidth: 8)
-                                .frame(width: 200, height: 200)
-                            
-                            Circle()
-                                .stroke(currentPhase.color, lineWidth: 8)
-                                .frame(width: 200, height: 200)
-                                .opacity(isRunning ? 1.0 : 0.5)
-                            
-                            VStack(spacing: 8) {
-                                if currentPhase == .resting {
-                                    Text(formatTime(restTimeRemaining))
-                                        .font(.system(size: 48, weight: .bold))
-                                        .foregroundColor(.white)
-                                    
-                                    Text("Rest")
-                                        .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                } else if currentPhase == .sprints || currentPhase == .strides {
-                                    Text(String(format: "%.2f", sprintTime))
-                                        .font(.system(size: 48, weight: .bold))
-                                        .foregroundColor(.white)
-                                    
-                                    Text(isRunning ? "GO!" : "READY")
-                                        .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                } else {
-                                    Text(formatTime(phaseTimeRemaining))
-                                        .font(.system(size: 48, weight: .bold))
-                                        .foregroundColor(.white)
-                                    
-                                    Text("Go!")
-                                        .font(.system(size: 16, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
-                            }
-                        }
-                        
-                        // Speed and Distance (during sprints and strides)
-                        if currentPhase == .sprints || currentPhase == .strides {
-                            HStack(spacing: 40) {
-                                VStack(spacing: 4) {
-                                    Text("SPEED")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(.white.opacity(0.6))
-                                    
-                                    Text(String(format: "%.1f", currentSpeed))
-                                        .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(.white)
-                                    
-                                    Text("mph")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.6))
-                                }
-                                
-                                VStack(spacing: 4) {
-                                    Text("DISTANCE")
-                                        .font(.system(size: 12, weight: .semibold))
-                                        .foregroundColor(.white.opacity(0.6))
-                                    
-                                    Text(String(format: "%.0f", currentDistance))
-                                        .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(.white)
-                                    
-                                    Text("yards")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.6))
-                                }
-                            }
-                            .padding(16)
-                            .background(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .fill(Color.black.opacity(0.3))
-                            )
-                        }
-                        
-                        // Control Buttons
-                        HStack(spacing: 40) {
-                            Button(action: {
-                                pauseWorkout()
-                            }) {
-                                Image(systemName: "pause.fill")
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.white.opacity(0.2))
-                                    .clipShape(Circle())
-                            }
-                            
-                            Button(action: {
-                                handleMainAction()
-                            }) {
-                                Image(systemName: getMainActionIcon())
-                                    .font(.system(size: 24, weight: .bold))
-                                    .foregroundColor(.white)
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.white.opacity(0.2))
-                                    .clipShape(Circle())
-                            }
-                        }
-                        .padding(.bottom, 40)
-                        
-                        // Rep Log Section (Scrollable within main scroll)
-                        MainProgramRepLogSheet(
-                            sprintTimes: sprintTimes,
-                            strideTimes: strideTimes,
-                            currentRep: currentRep,
-                            currentPhase: currentPhase,
-                            session: currentSession,
-                            showRepLog: .constant(true)
-                        )
-                        .padding(.bottom, 40)
-                    }
+                    // Phase-specific controls
+                    PhaseControlsView(
+                        currentPhase: currentPhase,
+                        isRunning: isRunning,
+                        onStartStop: handleStartStop,
+                        onNext: nextPhase,
+                        onSkipRest: skipRest
+                    )
+                }
+                .padding(.horizontal, 20)
+                
+                Spacer()
+                
+                // Rep Log (always visible)
+                if showRepLog {
+                    RepLogView(
+                        drillTimes: drillTimes,
+                        strideTimes: strideTimes,
+                        sprintTimes: sprintTimes,
+                        currentPhase: currentPhase,
+                        currentRep: currentRep,
+                        session: currentSession
+                    )
+                    .frame(height: 200)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 20)
                 }
             }
         }
-        .onAppear {
-            setupWorkout()
-            showRepLog = true
-        }
-        .onDisappear {
-            stopWorkout()
-        }
+        .onAppear(perform: setupWorkout)
+        .onDisappear(perform: stopWorkout)
         .sheet(isPresented: $showCompletionSheet) {
-            WorkoutCompletionSheet(
+            WorkoutCompletionView(
                 session: currentSession,
-                sprintTimes: sprintTimes,
-                strideTimes: strideTimes,
+                allTimes: sprintTimes + strideTimes + drillTimes,
                 onDismiss: {
                     showCompletionSheet = false
                     presentationMode.wrappedValue.dismiss()
@@ -320,21 +293,19 @@ struct MainProgramWorkoutView: View {
         }
     }
     
+    // MARK: - Computed Properties
+    
+    private var currentPhaseIndex: Int {
+        WorkoutPhase.allCases.firstIndex(of: currentPhase) ?? 0
+    }
+    
     // MARK: - Workout Setup and Control
     
     private func setupWorkout() {
-        // Create a default session for the workout
-        currentSession = TrainingSession(
-            id: UUID(),
-            week: 1,
-            day: 1,
-            type: "Sprint Training",
-            focus: "Speed Development",
-            sprints: [SprintSet(distanceYards: 30, reps: 4, intensity: "100%")],
-            accessoryWork: [],
-            notes: nil
-        )
+        // Create a sample workout session
+        currentSession = WorkoutSession.sample
         startWarmup()
+        locationManager.requestLocationPermission()
     }
     
     private func startWarmup() {
@@ -361,33 +332,32 @@ struct MainProgramWorkoutView: View {
         switch currentPhase {
         case .warmup:
             currentPhase = .stretch
-            phaseTimeRemaining = 420 // 7 minutes for dynamic stretching
+            phaseTimeRemaining = currentPhase.duration
             startPhaseTimer()
         case .stretch:
             currentPhase = .drill
-            phaseTimeRemaining = 600 // 10 minutes for sprint drills
-            startPhaseTimer()
+            drillCount = 0
+            // Drills phase is manual - no auto timer
         case .drill:
             currentPhase = .strides
-            currentRep = 1
+            strideCount = 0
+            // Strides phase is manual - no auto timer
         case .strides:
-            if currentRep >= 3 {
+            if strideCount >= 3 {
                 currentPhase = .sprints
                 currentRep = 1
             }
         case .sprints:
-            if currentRep >= getTotalReps() {
+            if let session = currentSession,
+               let sprintSet = session.sprints.first,
+               currentRep >= sprintSet.reps {
                 currentPhase = .cooldown
-                phaseTimeRemaining = 300 // 5 minutes
+                phaseTimeRemaining = currentPhase.duration
                 startPhaseTimer()
             }
         case .resting:
             currentRep += 1
-            currentPhase = currentRep <= getTotalReps() ? .sprints : .cooldown
-            if currentPhase == .cooldown {
-                phaseTimeRemaining = 300
-                startPhaseTimer()
-            }
+            currentPhase = .sprints
         case .cooldown:
             completeWorkout()
         case .completed:
@@ -395,19 +365,92 @@ struct MainProgramWorkoutView: View {
         }
     }
     
-    private func handleMainAction() {
+    private func handleStartStop() {
         switch currentPhase {
-        case .warmup, .stretch, .drill, .cooldown:
-            skipPhase() // Allow user to skip ahead if desired
-        case .strides, .sprints:
-            // Fully automated phases with voice cues and haptics
-            // No manual intervention - user listens through earbuds/watch
-            // Olympic-style automated coaching
+        case .drill:
+            if isRunning {
+                stopDrill()
+            } else {
+                startDrill()
+            }
+        case .strides:
+            if isRunning {
+                stopStride()
+            } else {
+                startStride()
+            }
+        case .sprints:
+            if isRunning {
+                stopSprint()
+            } else {
+                startSprint()
+            }
+        default:
             break
-        case .resting:
-            skipRest() // Allow user to skip rest if ready
-        case .completed:
-            break
+        }
+    }
+    
+    private func startDrill() {
+        isRunning = true
+        sprintTime = 0.0
+        currentDistance = 0.0
+        currentSpeed = 0.0
+        
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            Task { @MainActor in
+                sprintTime += 0.1
+                // Simulate GPS for 20-yard drill
+                currentSpeed = Double.random(in: 8.0...12.0)
+                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361 // Convert to yards
+            }
+        }
+    }
+    
+    private func stopDrill() {
+        workoutTimer?.invalidate()
+        isRunning = false
+        
+        drillTimes.append(sprintTime)
+        drillCount += 1
+        
+        if drillCount < 3 {
+            // Start 1-minute rest
+            startRestTimer(duration: 60)
+        } else {
+            // Move to strides after 3 drills
+            nextPhase()
+        }
+    }
+    
+    private func startStride() {
+        isRunning = true
+        sprintTime = 0.0
+        currentDistance = 0.0
+        currentSpeed = 0.0
+        
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            Task { @MainActor in
+                sprintTime += 0.1
+                // Simulate GPS for 20-yard stride
+                currentSpeed = Double.random(in: 10.0...15.0)
+                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361
+            }
+        }
+    }
+    
+    private func stopStride() {
+        workoutTimer?.invalidate()
+        isRunning = false
+        
+        strideTimes.append(sprintTime)
+        strideCount += 1
+        
+        if strideCount < 3 {
+            // Start 1-minute rest
+            startRestTimer(duration: 60)
+        } else {
+            // Move to sprints after 3 strides
+            nextPhase()
         }
     }
     
@@ -415,16 +458,14 @@ struct MainProgramWorkoutView: View {
         isRunning = true
         sprintTime = 0.0
         currentDistance = 0.0
+        currentSpeed = 0.0
         
-        HapticManager.shared.heavy()
-        
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { _ in
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             Task { @MainActor in
-                sprintTime += 0.01
-                
-                // Simulate GPS data (in real app, use actual GPS)
-                currentSpeed = Double.random(in: 12.0...18.0) // mph
-                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361 // Convert to yards
+                sprintTime += 0.1
+                // Simulate GPS for sprint distance
+                currentSpeed = Double.random(in: 12.0...20.0)
+                currentDistance = sprintTime * (currentSpeed * 1.467) * 1.09361
             }
         }
     }
@@ -433,24 +474,22 @@ struct MainProgramWorkoutView: View {
         workoutTimer?.invalidate()
         isRunning = false
         
-        if currentPhase == .strides {
-            strideTimes.append(sprintTime)
-        } else {
-            sprintTimes.append(sprintTime)
-        }
+        sprintTimes.append(sprintTime)
         
-        HapticManager.shared.success()
-        
-        if currentPhase == .sprints && currentRep < getTotalReps() {
-            startRest()
+        if let session = currentSession,
+           let sprintSet = session.sprints.first,
+           currentRep < sprintSet.reps {
+            // Start rest period
+            startRestTimer(duration: sprintSet.restTime)
         } else {
+            // All sprints complete
             nextPhase()
         }
     }
     
-    private func startRest() {
+    private func startRestTimer(duration: Int) {
         currentPhase = .resting
-        restTimeRemaining = getRestTime()
+        restTimeRemaining = duration
         
         phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             Task { @MainActor in
@@ -468,16 +507,10 @@ struct MainProgramWorkoutView: View {
         nextPhase()
     }
     
-    private func skipPhase() {
-        phaseTimer?.invalidate()
-        nextPhase()
-    }
-    
     private func pauseWorkout() {
         workoutTimer?.invalidate()
         phaseTimer?.invalidate()
         isRunning = false
-        HapticManager.shared.light()
     }
     
     private func stopWorkout() {
@@ -488,76 +521,323 @@ struct MainProgramWorkoutView: View {
     
     private func completeWorkout() {
         currentPhase = .completed
-        HapticManager.shared.success()
         
-        // Save completed session with results
-        if let session = currentSession {
-            // Session completion logic (simplified for now)
-            print("Session completed: \(session.type)")
-            
-            // Update personal best if applicable
-            if let bestTime = sprintTimes.min() {
-                print("Best time: \(String(format: "%.2f", bestTime))s")
-            }
-        }
+        // Create workout results
+        workoutResults = WorkoutResults(
+            session: currentSession,
+            drillTimes: drillTimes,
+            strideTimes: strideTimes,
+            sprintTimes: sprintTimes
+        )
         
-        // Show completion sheet with navigation options
+        // Update all data systems
+        updateWorkoutData()
+        
         showCompletionSheet = true
     }
     
-    // MARK: - Helper Methods
+    // MARK: - Data Update Methods
     
-    private func getTotalReps() -> Int {
-        return currentSession?.sprints.first?.reps ?? 4
+    private func updateWorkoutData() {
+        guard let results = workoutResults else { return }
+        
+        // Update History
+        updateHistoryView(with: results)
+        
+        // Update Advanced Analytics
+        updateAdvancedAnalytics(with: results)
+        
+        // Update Share Performance data
+        updateSharePerformance(with: results)
+        
+        // Update Leaderboard if personal best
+        if results.personalBest {
+            updateLeaderboard(with: results)
+        }
     }
     
-    private func getRestTime() -> Int {
-        // Use session data or fallback to default
-        if let session = currentSession,
-           let sprintSet = session.sprints.first {
-            // Estimate rest time based on distance and intensity
-            let distance = sprintSet.distanceYards
-            if distance >= 60 {
-                return 300 // 5 minutes for longer sprints
-            } else if distance >= 40 {
-                return 240 // 4 minutes for medium sprints
-            } else {
-                return 180 // 3 minutes for short sprints
+    private func updateHistoryView(with results: WorkoutResults) {
+        // Store workout data for history view
+        let historyEntry = [
+            "id": results.sessionId.uuidString,
+            "date": ISO8601DateFormatter().string(from: results.date),
+            "sessionType": results.session?.type ?? "Sprint Training",
+            "week": results.session?.week ?? 1,
+            "day": results.session?.day ?? 1,
+            "bestTime": results.bestTime,
+            "averageTime": results.averageTime,
+            "totalReps": results.totalReps,
+            "drillTimes": results.drillTimes,
+            "strideTimes": results.strideTimes,
+            "sprintTimes": results.sprintTimes
+        ] as [String: Any]
+        
+        // Save to UserDefaults (in production, would use Core Data or CloudKit)
+        var workoutHistory = UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
+        workoutHistory.append(historyEntry)
+        UserDefaults.standard.set(workoutHistory, forKey: "workoutHistory")
+        
+        print("✅ History updated with workout data")
+    }
+    
+    private func updateAdvancedAnalytics(with results: WorkoutResults) {
+        // Calculate advanced metrics
+        let analytics = [
+            "sessionId": results.sessionId.uuidString,
+            "date": ISO8601DateFormatter().string(from: results.date),
+            "bestTime": results.bestTime,
+            "averageTime": results.averageTime,
+            "consistency": calculateConsistency(times: results.allTimes),
+            "improvement": calculateImprovement(currentBest: results.bestTime),
+            "speedVariability": calculateSpeedVariability(times: results.allTimes),
+            "performanceZone": determinePerformanceZone(bestTime: results.bestTime)
+        ] as [String: Any]
+        
+        // Save analytics data
+        var analyticsHistory = UserDefaults.standard.array(forKey: "advancedAnalytics") as? [[String: Any]] ?? []
+        analyticsHistory.append(analytics)
+        UserDefaults.standard.set(analyticsHistory, forKey: "advancedAnalytics")
+        
+        print("📊 Advanced Analytics updated")
+    }
+    
+    private func updateSharePerformance(with results: WorkoutResults) {
+        // Prepare shareable performance data
+        let shareData = [
+            "sessionId": results.sessionId.uuidString,
+            "date": ISO8601DateFormatter().string(from: results.date),
+            "bestTime": results.bestTime,
+            "totalReps": results.totalReps,
+            "sessionType": results.session?.type ?? "Sprint Training",
+            "personalBest": results.personalBest,
+            "shareText": generateShareText(results: results)
+        ] as [String: Any]
+        
+        // Save share performance data
+        UserDefaults.standard.set(shareData, forKey: "latestSharePerformance")
+        
+        print("📤 Share Performance data updated")
+    }
+    
+    private func updateLeaderboard(with results: WorkoutResults) {
+        // Update leaderboard with new personal best
+        let leaderboardEntry = [
+            "userId": "current_user", // Would be actual user ID in production
+            "userName": "David", // Would be actual user name
+            "bestTime": results.bestTime,
+            "date": ISO8601DateFormatter().string(from: results.date),
+            "sessionType": results.session?.type ?? "Sprint Training",
+            "verified": true
+        ] as [String: Any]
+        
+        // Save to leaderboard data
+        var leaderboard = UserDefaults.standard.array(forKey: "leaderboardData") as? [[String: Any]] ?? []
+        leaderboard.append(leaderboardEntry)
+        
+        // Sort by best time (ascending)
+        leaderboard.sort { (entry1, entry2) in
+            let time1 = entry1["bestTime"] as? Double ?? Double.greatestFiniteMagnitude
+            let time2 = entry2["bestTime"] as? Double ?? Double.greatestFiniteMagnitude
+            return time1 < time2
+        }
+        
+        UserDefaults.standard.set(leaderboard, forKey: "leaderboardData")
+        
+        print("🏆 Leaderboard updated with new personal best!")
+    }
+    
+    // MARK: - Analytics Helper Methods
+    
+    private func calculateConsistency(times: [Double]) -> Double {
+        guard times.count > 1 else { return 100.0 }
+        let average = times.reduce(0, +) / Double(times.count)
+        let variance = times.map { pow($0 - average, 2) }.reduce(0, +) / Double(times.count)
+        let standardDeviation = sqrt(variance)
+        return max(0, 100 - (standardDeviation / average * 100))
+    }
+    
+    private func calculateImprovement(currentBest: Double) -> Double {
+        // Get previous best time from history
+        let history = UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
+        let previousBests = history.compactMap { $0["bestTime"] as? Double }
+        
+        guard let previousBest = previousBests.min(), previousBest > 0 else {
+            return 0.0 // No previous data
+        }
+        
+        return ((previousBest - currentBest) / previousBest) * 100
+    }
+    
+    private func calculateSpeedVariability(times: [Double]) -> Double {
+        guard times.count > 1 else { return 0.0 }
+        let maxTime = times.max() ?? 0
+        let minTime = times.min() ?? 0
+        return maxTime - minTime
+    }
+    
+    private func determinePerformanceZone(bestTime: Double) -> String {
+        switch bestTime {
+        case 0..<4.3: return "Elite"
+        case 4.3..<4.6: return "Excellent"
+        case 4.6..<5.0: return "Good"
+        case 5.0..<5.5: return "Average"
+        default: return "Developing"
+        }
+    }
+    
+    private func generateShareText(results: WorkoutResults) -> String {
+        let emoji = results.personalBest ? "🔥 NEW PB! 🔥" : "💪"
+        return """
+        \(emoji) Just completed my Sprint Coach 40 workout!
+        
+        ⚡ Best Time: \(String(format: "%.2f", results.bestTime))s
+        📊 Total Reps: \(results.totalReps)
+        📈 Session: \(results.session?.type ?? "Sprint Training")
+        
+        #SprintCoach40 #SpeedTraining #40YardDash
+        """
+    }
+    
+    // MARK: - Data Access Helpers (for other views)
+    
+    static func getWorkoutHistory() -> [[String: Any]] {
+        return UserDefaults.standard.array(forKey: "workoutHistory") as? [[String: Any]] ?? []
+    }
+    
+    static func getAdvancedAnalytics() -> [[String: Any]] {
+        return UserDefaults.standard.array(forKey: "advancedAnalytics") as? [[String: Any]] ?? []
+    }
+    
+    static func getLatestSharePerformance() -> [String: Any]? {
+        return UserDefaults.standard.dictionary(forKey: "latestSharePerformance")
+    }
+    
+    static func getLeaderboardData() -> [[String: Any]] {
+        return UserDefaults.standard.array(forKey: "leaderboardData") as? [[String: Any]] ?? []
+    }
+    
+    static func getPersonalBest() -> Double? {
+        let history = getWorkoutHistory()
+        let bestTimes = history.compactMap { $0["bestTime"] as? Double }
+        return bestTimes.min()
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+}
+
+// MARK: - Supporting Views
+
+struct PhaseProgressIndicator: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(MainProgramWorkoutView.WorkoutPhase.allCases.dropLast(), id: \.self) { phase in
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(getPhaseColor(phase))
+                    .frame(height: 4)
+                    .frame(maxWidth: .infinity)
             }
         }
-        return 180 // Default 3 minutes
     }
     
-    private func getTotalWorkoutTime() -> Int {
-        // Calculate based on session structure
-        if currentSession != nil {
-            let warmup = 5 // 5 minutes
-            let cooldown = 5 // 5 minutes
-            let reps = getTotalReps()
-            let restMinutes = getRestTime() / 60
-            let sprintPhase = (reps * 2) + ((reps - 1) * restMinutes) // Estimate
-            let strides = 10 // 10 minutes for strides
-            return warmup + strides + sprintPhase + cooldown
+    private func getPhaseColor(_ phase: MainProgramWorkoutView.WorkoutPhase) -> Color {
+        let currentIndex = MainProgramWorkoutView.WorkoutPhase.allCases.firstIndex(of: currentPhase) ?? 0
+        let phaseIndex = MainProgramWorkoutView.WorkoutPhase.allCases.firstIndex(of: phase) ?? 0
+        
+        if phaseIndex <= currentIndex {
+            return phase.color
+        } else {
+            return Color.white.opacity(0.3)
         }
-        return 47 // Default workout time
     }
+}
+
+struct TimerDisplayView: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    let phaseTimeRemaining: Int
+    let restTimeRemaining: Int
+    let sprintTime: Double
+    let isRunning: Bool
+    let currentSpeed: Double
+    let currentDistance: Double
     
-    private func getSprintPhaseTime() -> Int {
-        let reps = getTotalReps()
-        let restMinutes = getRestTime() / 60
-        return (reps * 2) + ((reps - 1) * restMinutes) // Estimate: 2 min per rep + rest
-    }
-    
-    private func getMainActionIcon() -> String {
-        switch currentPhase {
-        case .warmup, .stretch, .drill, .cooldown:
-            return "forward.fill" // Skip button available
-        case .strides, .sprints:
-            return "speaker.wave.3.fill" // Voice-guided automatic phase
-        case .resting:
-            return "forward.fill" // Skip rest button
-        case .completed:
-            return "checkmark.fill"
+    var body: some View {
+        VStack(spacing: 16) {
+            // Main Timer Circle
+            ZStack {
+                Circle()
+                    .stroke(Color.white.opacity(0.2), lineWidth: 8)
+                    .frame(width: 180, height: 180)
+                
+                Circle()
+                    .stroke(currentPhase.color, lineWidth: 8)
+                    .frame(width: 180, height: 180)
+                    .opacity(isRunning ? 1.0 : 0.6)
+                
+                VStack(spacing: 4) {
+                    if currentPhase == .resting {
+                        Text(formatTime(restTimeRemaining))
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("REST")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    } else if currentPhase == .drill || currentPhase == .strides || currentPhase == .sprints {
+                        Text(String(format: "%.2f", sprintTime))
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(.white)
+                        Text(isRunning ? "RUNNING" : "READY")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    } else {
+                        Text(formatTime(phaseTimeRemaining))
+                            .font(.system(size: 36, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("TIME")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+            }
+            
+            // GPS Data (for drill, strides, sprints)
+            if currentPhase == .drill || currentPhase == .strides || currentPhase == .sprints {
+                HStack(spacing: 32) {
+                    VStack(spacing: 4) {
+                        Text("SPEED")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text(String(format: "%.1f", currentSpeed))
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("mph")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    
+                    VStack(spacing: 4) {
+                        Text("DISTANCE")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text(String(format: "%.0f", currentDistance))
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("yards")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                }
+                .padding(12)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.black.opacity(0.3))
+                )
+            }
         }
     }
     
@@ -568,441 +848,368 @@ struct MainProgramWorkoutView: View {
     }
 }
 
-// MARK: - Workout Progress Bar
-
-struct WorkoutProgressBar: View {
+struct PhaseControlsView: View {
     let currentPhase: MainProgramWorkoutView.WorkoutPhase
-    let warmupTime: Int
-    let sprintTime: Int
-    let cooldownTime: Int
+    let isRunning: Bool
+    let onStartStop: () -> Void
+    let onNext: () -> Void
+    let onSkipRest: () -> Void
     
     var body: some View {
-        HStack(spacing: 4) {
-            // Warmup
-            RoundedRectangle(cornerRadius: 2)
-                .fill(getPhaseColor(.warmup))
-                .frame(height: 4)
-                .frame(width: CGFloat(warmupTime * 8)) // Scale factor
+        HStack(spacing: 24) {
+            // Start/Stop Button (for GPS phases)
+            if currentPhase == .drill || currentPhase == .strides || currentPhase == .sprints {
+                Button(action: onStartStop) {
+                    HStack(spacing: 8) {
+                        Image(systemName: isRunning ? "stop.fill" : "play.fill")
+                            .font(.system(size: 18, weight: .bold))
+                        Text(isRunning ? "Stop" : "Start")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(width: 120, height: 48)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(currentPhase.color)
+                    )
+                }
+            }
             
-            // Sprint Phase
-            RoundedRectangle(cornerRadius: 2)
-                .fill(getPhaseColor(.sprints))
-                .frame(height: 4)
-                .frame(width: CGFloat(sprintTime * 8))
+            // Next Phase Button (for timed phases)
+            if currentPhase == .warmup || currentPhase == .stretch || currentPhase == .cooldown {
+                Button(action: onNext) {
+                    HStack(spacing: 8) {
+                        Text("Next Phase")
+                            .font(.system(size: 16, weight: .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(width: 140, height: 48)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color.white.opacity(0.2))
+                    )
+                }
+            }
             
-            // Cooldown
-            RoundedRectangle(cornerRadius: 2)
-                .fill(getPhaseColor(.cooldown))
-                .frame(height: 4)
-                .frame(width: CGFloat(cooldownTime * 8))
-        }
-    }
-    
-    private func getPhaseColor(_ phase: MainProgramWorkoutView.WorkoutPhase) -> Color {
-        switch (currentPhase, phase) {
-        case (.warmup, .warmup), (.strides, .sprints), (.sprints, .sprints), (.resting, .sprints):
-            return phase.color
-        case (.cooldown, .cooldown), (.completed, _):
-            return phase.color
-        default:
-            return Color.white.opacity(0.3)
+            // Skip Rest Button
+            if currentPhase == .resting {
+                Button(action: onSkipRest) {
+                    HStack(spacing: 8) {
+                        Text("Skip Rest")
+                            .font(.system(size: 16, weight: .semibold))
+                        Image(systemName: "forward.fill")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundColor(.white)
+                    .frame(width: 120, height: 48)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color.yellow.opacity(0.8))
+                    )
+                }
+            }
         }
     }
 }
 
-// MARK: - Main Program Rep Log Sheet
-
-struct MainProgramRepLogSheet: View {
-    let sprintTimes: [Double]
+struct RepLogView: View {
+    let drillTimes: [Double]
     let strideTimes: [Double]
-    let currentRep: Int
+    let sprintTimes: [Double]
     let currentPhase: MainProgramWorkoutView.WorkoutPhase
-    let session: TrainingSession?
-    @Binding var showRepLog: Bool
+    let currentRep: Int
+    let session: MainProgramWorkoutView.WorkoutSession?
+    
+    private var sprintReps: Int {
+        session?.sprints.first?.reps ?? 4
+    }
+    
+    private var drillRowCount: Int {
+        max(drillTimes.count, 3)
+    }
+    
+    private var strideRowCount: Int {
+        max(strideTimes.count, 3)
+    }
+    
+    private var sprintRowCount: Int {
+        max(sprintTimes.count, sprintReps)
+    }
     
     var body: some View {
         VStack(spacing: 0) {
-            // Handle
-            RoundedRectangle(cornerRadius: 2.5)
-                .fill(Color.white.opacity(0.3))
-                .frame(width: 40, height: 5)
-                .padding(.top, 12)
-            
             // Header
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Rep Log")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                    
-                    Text("Live Workout Report")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                }
+                Text("Rep Log")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
                 
                 Spacer()
                 
-                Text("18:11")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                Text("Live Results")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
             
             // Table Header
             HStack {
+                Text("PHASE")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.6))
+                    .frame(width: 60, alignment: .leading)
+                
                 Text("REP")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white.opacity(0.6))
-                    .frame(width: 40, alignment: .leading)
-                
-                Text("YDS")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.6))
-                    .frame(width: 50, alignment: .center)
+                    .frame(width: 40, alignment: .center)
                 
                 Text("TIME")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white.opacity(0.6))
                     .frame(maxWidth: .infinity, alignment: .center)
                 
-                Text("REST")
+                Text("SPEED")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white.opacity(0.6))
-                    .frame(width: 50, alignment: .trailing)
+                    .frame(width: 60, alignment: .trailing)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
             
             ScrollView {
                 VStack(spacing: 0) {
-                    // Strides Section
-                    if !strideTimes.isEmpty || currentPhase == .strides {
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("STRIDES")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color.purple)
-                                
-                                Spacer()
-                                
-                                Text("Build-up • 70% effort")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundColor(Color.purple.opacity(0.8))
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 16)
-                            .padding(.bottom, 8)
-                            
-                            ForEach(1...3, id: \.self) { rep in
-                                RepLogRow(
-                                    rep: rep,
-                                    distance: 20,
-                                    time: rep <= strideTimes.count ? strideTimes[rep - 1] : nil,
-                                    isActive: currentPhase == .strides && rep == currentRep,
-                                    color: Color.purple
-                                )
-                            }
-                        }
+                    // Drill times
+                    ForEach(0..<drillRowCount, id: \.self) { index in
+                        RepLogRow(
+                            phase: "DRILL",
+                            rep: index + 1,
+                            time: index < drillTimes.count ? drillTimes[index] : nil,
+                            isActive: currentPhase == .drill && index == drillTimes.count,
+                            color: Color.indigo
+                        )
                     }
                     
-                    // Sprints Section
-                    if currentPhase == .sprints || currentPhase == .resting || !sprintTimes.isEmpty {
-                        VStack(spacing: 0) {
-                            HStack {
-                                Text("SPRINTS")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(Color.green)
-                                
-                                Spacer()
-                                
-                                Text("Maximum effort • 100%")
-                                    .font(.system(size: 11, weight: .medium))
-                                    .foregroundColor(Color.green.opacity(0.8))
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.top, 16)
-                            .padding(.bottom, 8)
-                            
-                            let totalReps = session?.sprints.first?.reps ?? 4
-                            let distance = session?.sprints.first?.distanceYards ?? 30
-                            
-                            ForEach(1...totalReps, id: \.self) { rep in
-                                RepLogRow(
-                                    rep: rep,
-                                    distance: distance,
-                                    time: rep <= sprintTimes.count ? sprintTimes[rep - 1] : nil,
-                                    isActive: (currentPhase == .sprints || currentPhase == .resting) && rep == currentRep,
-                                    color: Color.green
-                                )
-                            }
-                        }
+                    // Stride times
+                    ForEach(0..<strideRowCount, id: \.self) { index in
+                        RepLogRow(
+                            phase: "STRIDE",
+                            rep: index + 1,
+                            time: index < strideTimes.count ? strideTimes[index] : nil,
+                            isActive: currentPhase == .strides && index == strideTimes.count,
+                            color: Color.purple
+                        )
+                    }
+                    
+                    // Sprint times
+                    ForEach(0..<sprintRowCount, id: \.self) { index in
+                        RepLogRow(
+                            phase: "SPRINT",
+                            rep: index + 1,
+                            time: index < sprintTimes.count ? sprintTimes[index] : nil,
+                            isActive: (currentPhase == .sprints || currentPhase == .resting) && index + 1 == currentRep,
+                            color: Color.green
+                        )
                     }
                 }
             }
-            
-            Spacer(minLength: 20)
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 300)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0.8))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
         )
-        .padding(.horizontal, 20)
     }
 }
 
-// MARK: - Rep Log Row
-
 struct RepLogRow: View {
+    let phase: String
     let rep: Int
-    let distance: Int
     let time: Double?
     let isActive: Bool
     let color: Color
     
     var body: some View {
         HStack {
-            Text("\(rep)")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.white)
-                .frame(width: 40, alignment: .leading)
+            Text(phase)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(color)
+                .frame(width: 60, alignment: .leading)
             
-            Text("\(distance)")
-                .font(.system(size: 16, weight: .medium))
+            Text("\(rep)")
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.white)
-                .frame(width: 50, alignment: .center)
+                .frame(width: 40, alignment: .center)
             
             if let time = time {
                 Text(String(format: "%.2f", time))
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                     .frame(maxWidth: .infinity, alignment: .center)
             } else if isActive {
                 Text("•••")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 14, weight: .bold))
                     .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                     .frame(maxWidth: .infinity, alignment: .center)
             } else {
                 Text("—")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.white.opacity(0.5))
                     .frame(maxWidth: .infinity, alignment: .center)
             }
             
             Text("—")
-                .font(.system(size: 16, weight: .medium))
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.white.opacity(0.5))
-                .frame(width: 50, alignment: .trailing)
+                .frame(width: 60, alignment: .trailing)
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 6)
         .background(
-            isActive ?
-            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.1) :
-            Color.clear
+            isActive ? Color.white.opacity(0.1) : Color.clear
         )
     }
 }
 
-// MARK: - Preview
-
-// MARK: - Workout Completion Sheet
-
-struct WorkoutCompletionSheet: View {
-    let session: TrainingSession?
-    let sprintTimes: [Double]
-    let strideTimes: [Double]
+struct WorkoutCompletionView: View {
+    let session: MainProgramWorkoutView.WorkoutSession?
+    let allTimes: [Double]
     let onDismiss: () -> Void
     
-    @State private var showContent = false
-    
-    var bestTime: Double? {
-        sprintTimes.min()
-    }
-    
-    var averageTime: Double? {
-        guard !sprintTimes.isEmpty else { return nil }
-        return sprintTimes.reduce(0, +) / Double(sprintTimes.count)
-    }
-    
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Premium gradient background
-                LinearGradient(
-                    gradient: Gradient(stops: [
-                        .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
-                        .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
-                        .init(color: Color(red: 0.15, green: 0.25, blue: 0.45), location: 0.5),
-                        .init(color: Color(red: 0.2, green: 0.15, blue: 0.35), location: 0.7),
-                        .init(color: Color(red: 0.1, green: 0.05, blue: 0.25), location: 1.0)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea(.all)
-                
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 32) {
-                        // Success Header
-                        VStack(spacing: 20) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.green.opacity(0.2))
-                                    .frame(width: 120, height: 120)
-                                
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 60, weight: .bold))
-                                    .foregroundColor(.green)
-                            }
-                            .opacity(showContent ? 1 : 0)
-                            .scaleEffect(showContent ? 1.0 : 0.8)
-                            .animation(.spring(response: 1.0, dampingFraction: 0.7).delay(0.3), value: showContent)
-                            
-                            VStack(spacing: 8) {
-                                Text("Workout Complete!")
-                                    .font(.system(size: 28, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                if let session = session {
-                                    Text("Week \(session.week), Day \(session.day)")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.8))
-                                }
-                            }
-                            .opacity(showContent ? 1 : 0)
-                            .animation(.easeInOut(duration: 0.8).delay(0.5), value: showContent)
-                        }
-                        .padding(.top, 40)
-                        
-                        // Performance Summary
-                        if let bestTime = bestTime, let averageTime = averageTime {
-                            VStack(spacing: 20) {
-                                Text("Performance Summary")
-                                    .font(.system(size: 22, weight: .bold))
-                                    .foregroundColor(.white)
-                                
-                                HStack(spacing: 20) {
-                                    PerformanceCard(
-                                        title: "Best Time",
-                                        value: String(format: "%.2fs", bestTime),
-                                        icon: "trophy.fill",
-                                        color: Color(red: 1.0, green: 0.8, blue: 0.0)
-                                    )
-                                    
-                                    PerformanceCard(
-                                        title: "Average",
-                                        value: String(format: "%.2fs", averageTime),
-                                        icon: "chart.bar.fill",
-                                        color: Color.blue
-                                    )
-                                }
-                                
-                                PerformanceCard(
-                                    title: "Total Sprints",
-                                    value: "\(sprintTimes.count)",
-                                    icon: "bolt.fill",
-                                    color: Color.green
-                                )
-                            }
-                            .opacity(showContent ? 1 : 0)
-                            .animation(.easeInOut(duration: 0.8).delay(0.7), value: showContent)
-                        }
-                        
-                        // Navigation Options
-                        VStack(spacing: 16) {
-                            Text("What's Next?")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                            
-                            VStack(spacing: 12) {
-                                NavigationActionCard(
-                                    title: "View History",
-                                    subtitle: "See all your training sessions",
-                                    icon: "clock.arrow.circlepath",
-                                    color: Color.purple
-                                ) {
-                                    // Navigate to History
-                                    onDismiss()
-                                    // This would trigger navigation to History in parent view
-                                }
-                                
-                                NavigationActionCard(
-                                    title: "Advanced Analytics",
-                                    subtitle: "Detailed performance insights",
-                                    icon: "chart.line.uptrend.xyaxis",
-                                    color: Color.orange
-                                ) {
-                                    // Navigate to Advanced Analytics
-                                    onDismiss()
-                                    // This would trigger navigation to Analytics in parent view
-                                }
-                                
-                                NavigationActionCard(
-                                    title: "Share Performance",
-                                    subtitle: "Share your results with teammates",
-                                    icon: "square.and.arrow.up",
-                                    color: Color.cyan
-                                ) {
-                                    // Navigate to Share Performance
-                                    onDismiss()
-                                    // This would trigger sharing functionality
-                                }
-                            }
-                        }
-                        .opacity(showContent ? 1 : 0)
-                        .animation(.easeInOut(duration: 0.8).delay(0.9), value: showContent)
-                        
-                        // Done Button
-                        Button(action: onDismiss) {
-                            HStack(spacing: 12) {
-                                Text("Done")
-                                    .font(.system(size: 18, weight: .semibold))
-                                    .foregroundColor(.black)
-                                
-                                Image(systemName: "checkmark")
-                                    .font(.system(size: 16, weight: .bold))
-                                    .foregroundColor(.black)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 56)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Color(red: 1.0, green: 0.8, blue: 0.0),
-                                        Color(red: 1.0, green: 0.6, blue: 0.0)
-                                    ]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(16)
-                            .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), radius: 8, x: 0, y: 4)
-                        }
-                        .opacity(showContent ? 1 : 0)
-                        .animation(.easeInOut(duration: 0.8).delay(1.1), value: showContent)
-                        .padding(.horizontal, 20)
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.05, green: 0.1, blue: 0.2),
+                    Color(red: 0.1, green: 0.2, blue: 0.35),
+                    Color(red: 0.15, green: 0.25, blue: 0.45)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 32) {
+                // Completion Icon
+                ZStack {
+                    Circle()
+                        .fill(Color.green.opacity(0.2))
+                        .frame(width: 120, height: 120)
+                    
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 60, weight: .bold))
+                        .foregroundColor(.green)
                 }
+                
+                VStack(spacing: 8) {
+                    Text("Workout Complete!")
+                        .font(.system(size: 28, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Text("Great job on your sprint training session")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                }
+                
+                // Results Summary
+                if !allTimes.isEmpty {
+                    VStack(spacing: 12) {
+                        Text("Session Results")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        HStack(spacing: 32) {
+                            VStack(spacing: 4) {
+                                Text("BEST TIME")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.6))
+                                Text(String(format: "%.2f", allTimes.min() ?? 0.0))
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            }
+                            
+                            VStack(spacing: 4) {
+                                Text("TOTAL REPS")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.6))
+                                Text("\(allTimes.count)")
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .padding(16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.3))
+                        )
+                    }
+                }
+                
+                // Data Update Confirmation
+                VStack(spacing: 8) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(.green)
+                        Text("Data Updated Successfully")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    
+                    VStack(spacing: 4) {
+                        HStack(spacing: 16) {
+                            Label("History", systemImage: "clock.arrow.circlepath")
+                            Label("Analytics", systemImage: "chart.line.uptrend.xyaxis")
+                        }
+                        .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
+                        
+                        HStack(spacing: 16) {
+                            Label("Share Ready", systemImage: "square.and.arrow.up")
+                            if let bestTime = allTimes.min(), bestTime < 5.0 {
+                                Label("Leaderboard", systemImage: "trophy.fill")
+                                    .foregroundColor(.yellow)
+                            }
+                        }
+                        .font(.system(size: 12))
+                        .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.green.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.green.opacity(0.3), lineWidth: 1)
+                        )
+                )
+                .padding(.horizontal, 20)
+                
+                Button("Done") {
+                    onDismiss()
+                }
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundColor(.white)
+                .frame(width: 200, height: 50)
+                .background(
+                    RoundedRectangle(cornerRadius: 25)
+                        .fill(Color.green)
+                )
             }
-            .navigationBarHidden(true)
-        }
-        .onAppear {
-            showContent = true
+            .padding(.horizontal, 32)
         }
     }
 }
 
 // MARK: - Performance Card
-
 struct PerformanceCard: View {
     let title: String
     let value: String
@@ -1045,7 +1252,6 @@ struct PerformanceCard: View {
 }
 
 // MARK: - Navigation Action Card
-
 struct NavigationActionCard: View {
     let title: String
     let subtitle: String
@@ -1093,13 +1299,5 @@ struct NavigationActionCard: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
-    }
-}
-
-// MARK: - Preview
-
-struct MainProgramWorkoutView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainProgramWorkoutView()
     }
 }

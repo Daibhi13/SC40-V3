@@ -1,0 +1,64 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ShareWithTeammatesView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Give 1 Week Free!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share Sprint Coach 40 with a teammate and you’ll give them 7 days free!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "1 Free Week of Sprint Coach 40",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 48
+        }
+      },
+      {
+        "comment": "",
+        "key": "From: You",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 51
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recipients must be new to Sprint Coach 40 to redeem this gift.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 55
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share With a Teammate",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "Copy Link",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 76
+        }
+      }
+    ]
+  },
+  "version": 1
+}

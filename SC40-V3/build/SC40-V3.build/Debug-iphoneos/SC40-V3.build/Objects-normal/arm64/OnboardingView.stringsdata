@@ -1,0 +1,384 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/OnboardingView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Welcome, %@!",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Let's build your personalized training program",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "5 Questions • 2 minutes",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "This is the foundation of your training program. Be honest for best results.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 166
+        }
+      },
+      {
+        "comment": "",
+        "key": "1/5",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 157
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 Yard Personal Best",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 152
+        }
+      },
+      {
+        "comment": "",
+        "key": ".",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 204
+        }
+      },
+      {
+        "comment": "",
+        "key": "s",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 241
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seconds",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 174
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seconds",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 179
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 181
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hundredths",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 211
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hundredths",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 216
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your Time",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 250
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@s",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 253
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 264
+        }
+      },
+      {
+        "comment": "",
+        "key": "Gender",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 320
+        }
+      },
+      {
+        "comment": "",
+        "key": "Gender",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 323
+        }
+      },
+      {
+        "comment": "",
+        "key": "2/5",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 311
+        }
+      },
+      {
+        "comment": "",
+        "key": "Profile Information",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 306
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 331
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select your 40-yard time above for automatic level detection",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 369
+        }
+      },
+      {
+        "comment": "",
+        "key": "Level",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 374
+        }
+      },
+      {
+        "comment": "",
+        "key": "Auto-detected: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 338
+        }
+      },
+      {
+        "comment": "",
+        "key": "Override",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 342
+        }
+      },
+      {
+        "comment": "",
+        "key": "3/5",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 401
+        }
+      },
+      {
+        "comment": "",
+        "key": "Body Metrics",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 396
+        }
+      },
+      {
+        "comment": "",
+        "key": "Age",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 412
+        }
+      },
+      {
+        "comment": "",
+        "key": "Age: %lld",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 416
+        }
+      },
+      {
+        "comment": "",
+        "key": "Height",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 425
+        }
+      },
+      {
+        "comment": "",
+        "key": "Height: %lldft %lldin",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 430
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 436
+        }
+      },
+      {
+        "comment": "",
+        "key": "Weight",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 446
+        }
+      },
+      {
+        "comment": "",
+        "key": "Weight: %lld lbs",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 450
+        }
+      },
+      {
+        "comment": "",
+        "key": "4/5",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Schedule",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 472
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Frequency",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 487
+        }
+      },
+      {
+        "comment": "",
+        "key": "Days per week: %lld",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 491
+        }
+      },
+      {
+        "comment": "",
+        "key": "5/5",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 517
+        }
+      },
+      {
+        "comment": "",
+        "key": "Compete & Compare",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 512
+        }
+      },
+      {
+        "comment": "",
+        "key": "Join the global leaderboard and compete with other athletes?",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 527
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opt in to Leaderboard",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 532
+        }
+      },
+      {
+        "comment": "",
+        "key": "Yes, I'm in!",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 533
+        }
+      },
+      {
+        "comment": "",
+        "key": "No thanks",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 534
+        }
+      },
+      {
+        "comment": "",
+        "key": "Program Ready",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 553
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ • %lld days/week • %@s baseline",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 556
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generate My Training Program",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 606
+        }
+      }
+    ]
+  },
+  "version": 1
+}

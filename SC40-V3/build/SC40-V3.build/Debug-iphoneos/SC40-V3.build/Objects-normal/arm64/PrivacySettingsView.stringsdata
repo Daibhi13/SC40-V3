@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PrivacySettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Privacy Settings",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Leaderboard Privacy",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "Show my stats on Leaderboard",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 19
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opt out to keep your stats private from others. You will still see the leaderboard for motivation.",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 21
+        }
+      }
+    ]
+  },
+  "version": 1
+}

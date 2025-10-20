@@ -1,0 +1,104 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SCStarterConfigView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "SC Starter",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS-Verified Sprint Training",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select Distance",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 78
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "yd",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select Reps",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 139
+        }
+      },
+      {
+        "comment": "",
+        "key": "Select Rest Time",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 184
+        }
+      },
+      {
+        "comment": "",
+        "key": "min",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 188
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Workout",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 225
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Summary",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 254
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,104 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ReminderSettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Reminders",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Reminders",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Additional Reminders",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Motivation & Recap",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enable Training Reminders",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 30
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reminder Time",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Remind me the day before",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Missed Session Reminder",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 35
+        }
+      },
+      {
+        "comment": "",
+        "key": "Hydration Reminders (every 3–4 hrs)",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 36
+        }
+      },
+      {
+        "comment": "",
+        "key": "Mobility Reminders (once daily)",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Motivational Quotes",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Weekly Summary",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 41
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,200 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SharedComponents.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Personal Best",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "Date: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 31
+        }
+      },
+      {
+        "comment": "",
+        "key": "Event: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rank: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Personal Best",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 44
+        }
+      },
+      {
+        "comment": "",
+        "key": "New PB (seconds)",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Profile",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Name",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Age",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Weight (lbs)",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unlock Pro Features",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 170
+        }
+      },
+      {
+        "comment": "",
+        "key": "PRO",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 202
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Progress",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld of %lld sessions completed",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 235
+        }
+      },
+      {
+        "comment": "",
+        "key": "Streak: %lld 🔥",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 240
+        }
+      },
+      {
+        "comment": "",
+        "key": "Goal: %@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 246
+        }
+      },
+      {
+        "comment": "",
+        "key": "Set New Goal",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 257
+        }
+      },
+      {
+        "comment": "",
+        "key": "Goal (seconds)",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 259
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save Goal",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 263
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 270
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,4 @@
+Target dependency graph (2 targets)
+Target 'SC40-V3' in project 'SC40-V3'
+➜ Explicit dependency on target 'SC40-V3-W Watch App Watch App' in project 'SC40-V3'
+Target 'SC40-V3-W Watch App Watch App' in project 'SC40-V3' (no dependencies)

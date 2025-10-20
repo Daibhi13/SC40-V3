@@ -803,11 +803,14 @@ class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate, @unche
             let totalSessions = message["totalSessions"] as? Int ?? 0
             
             // Extract batch info values immediately to avoid data races
-            var phase = "Unknown"
-            var description = "Unknown"
+            let capturedPhase: String
+            let capturedDescription: String
             if let batchInfo = message["batchInfo"] as? [String: Any] {
-                phase = batchInfo["phase"] as? String ?? "Unknown"
-                description = batchInfo["description"] as? String ?? "Unknown"
+                capturedPhase = batchInfo["phase"] as? String ?? "Unknown"
+                capturedDescription = batchInfo["description"] as? String ?? "Unknown"
+            } else {
+                capturedPhase = "Unknown"
+                capturedDescription = "Unknown"
             }
             
             // Send immediate reply
@@ -822,7 +825,7 @@ class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate, @unche
                 
                 // Log batch information using extracted values
                 let batchSessionCount = sessionCount ?? 0
-                self.logger.info("📦 Batch received: \(phase) - \(description)")
+                self.logger.info("📦 Batch received: \(capturedPhase) - \(capturedDescription)")
                 self.logger.info("📦 Sessions: \(batchSessionCount)/\(totalSessions)")
                 
                 if let sessionsData = sessionsData {

@@ -1,0 +1,128 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/EntryViewWatch.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Loading Sessions...",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 124
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sessions: %lld",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 128
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected: %@",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 132
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reachable: %@",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 136
+        }
+      },
+      {
+        "comment": "",
+        "key": "Force Load Sessions",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH 40",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 263
+        }
+      },
+      {
+        "comment": "",
+        "key": "Watch Entry Flow",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "• Zero Buffering System",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "• Emergency Session Creation",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "• Seamless Transition",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "• iPhone Setup Detection",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH 40",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 317
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connection Status",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 332
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sessions: Ready",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 332
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connected",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 332
+        }
+      }
+    ]
+  },
+  "version": 1
+}

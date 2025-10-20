@@ -1,0 +1,80 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProPurchaseView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Upgrade to Pro",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processing purchase...",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unlock Premium Features",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Get access to Starter Pro timing, advanced analytics, and unlimited training sessions",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading products...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Restore Purchases",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processing...",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 265
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchased",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 268
+        }
+      },
+      {
+        "comment": "",
+        "key": "Purchase",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 270
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,11 @@
+{
+  "users": [
+    { "initials": "JS", "name": "John Smith", "countryFlag": "🇲🇽", "country": "Mexico", "time": 4.74 },
+    { "initials": "EW", "name": "Emily Wilson", "countryFlag": "🇺🇸", "country": "USA", "time": 4.79 },
+    { "initials": "MB", "name": "Michael Brown", "countryFlag": "🇨🇦", "country": "Canada", "time": 4.80 },
+    { "initials": "JT", "name": "Jessica Taylor", "countryFlag": "🇺🇸", "country": "USA", "time": 4.85 },
+    { "initials": "DW", "name": "Daniel Wang", "countryFlag": "🇨🇳", "country": "China", "time": 4.87 },
+    { "initials": "SD", "name": "Sarah Davis", "countryFlag": "🇺🇸", "country": "USA", "time": 4.89 },
+    { "initials": "AJ", "name": "Andrew Johnson", "countryFlag": "🇺🇸", "country": "USA", "time": 4.90 }
+  ]
+}

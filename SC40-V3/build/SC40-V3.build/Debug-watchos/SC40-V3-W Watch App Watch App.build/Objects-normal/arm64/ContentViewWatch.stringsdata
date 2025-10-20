@@ -1,0 +1,64 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/ContentViewWatch.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Hello, world!",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 32
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 50
+        }
+      },
+      {
+        "comment": "",
+        "key": "Apple Watch UI",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Optimized Interface",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC40",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 138
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 138
+        }
+      },
+      {
+        "comment": "",
+        "key": "Apple Watch Optimized",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 138
+        }
+      }
+    ]
+  },
+  "version": 1
+}

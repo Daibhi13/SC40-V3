@@ -1,0 +1,23 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdaptiveWorkoutHub.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsMonetizationView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CombineView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.swiftdeps"
+  }
+}

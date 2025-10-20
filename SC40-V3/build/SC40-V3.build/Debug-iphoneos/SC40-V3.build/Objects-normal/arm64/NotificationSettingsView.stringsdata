@@ -1,0 +1,72 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/NotificationSettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Notification Settings",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Notifications",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 22
+        }
+      },
+      {
+        "comment": "",
+        "key": "Alert Style",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 25
+        }
+      },
+      {
+        "comment": "",
+        "key": "Options",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enable Notifications",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "Alert Style",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sound",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Badge",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 35
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,107 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ActivityView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ActivityView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ActivityView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ActivityView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ActivityView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ActivityView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdaptiveWorkoutDemo.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutDemo.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutDemo.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutDemo.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutDemo.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutDemo.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/IntroductionCard.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/QuickTrainingSection.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickTrainingSection.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickTrainingSection.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickTrainingSection.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickTrainingSection.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickTrainingSection.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/RecordCard.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/ReusableRecordCard.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/SprintCoachGradientBackground.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/CompletePhoneWorkout.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneGPSStopwatchManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutButton.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutMirror.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirror.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirror.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirror.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirror.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirror.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutMirrorView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirrorView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirrorView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirrorView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirrorView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutMirrorView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutViewModel.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutViewModel.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutViewModel.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutViewModel.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutViewModel.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutViewModel.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/TimeTrialPhoneView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/TimeTrialPhoneView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/TimeTrialPhoneView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/TimeTrialPhoneView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/TimeTrialPhoneView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/TimeTrialPhoneView.swiftdeps"
+  }
+}

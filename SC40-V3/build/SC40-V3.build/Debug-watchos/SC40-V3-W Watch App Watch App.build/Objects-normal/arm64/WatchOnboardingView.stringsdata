@@ -1,0 +1,96 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Auth/WatchOnboardingView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Back",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next",
+        "location": {
+          "startingColumn": 60,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Welcome to SC40!",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 161
+        }
+      },
+      {
+        "comment": "",
+        "key": "Let's set up your personalized sprint training program",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 166
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your Level",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 179
+        }
+      },
+      {
+        "comment": "",
+        "key": "Choose your current sprint level",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "40-Yard Target",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 236
+        }
+      },
+      {
+        "comment": "",
+        "key": "Set your current 40-yard dash time",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 240
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ Level",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 297
+        }
+      },
+      {
+        "comment": "",
+        "key": "seconds",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 254
+        }
+      }
+    ]
+  },
+  "version": 1
+}

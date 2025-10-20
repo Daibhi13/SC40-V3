@@ -1,0 +1,23 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/ContentView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/SideMenuView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/WatchSessionManager.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchSessionManager.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchSessionManager.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchSessionManager.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchSessionManager.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchSessionManager.swiftdeps"
+  }
+}

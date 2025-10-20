@@ -1,30 +1,30 @@
 import SwiftUI
 
-/// Enhanced Leaderboard View with podium, medals, and animations
+/// Enhanced Leaderboard View matching the professional UI design
 struct EnhancedLeaderboardView: View {
     var currentUser: UserProfile
     @StateObject private var locationService = LocationService()
     @State private var selectedFilter: LeaderboardFilter = .all
     @State private var showShareSheet = false
     @State private var shareText = ""
-    @State private var animatePodium = false
+    @State private var animateEntrance = false
     
     enum LeaderboardFilter: String, CaseIterable, Identifiable {
-        case all = "🌍 Global"
-        case region = "📍 Region"
-        case county = "🏘️ County"
-        case friends = "👥 Friends"
-        case age = "🎂 Age Group"
+        case all = "All"
+        case region = "Region"
+        case county = "County"
+        case friends = "Friends"
+        case age = "Age"
         
         var id: String { rawValue }
         
-        var icon: String {
+        var displayName: String {
             switch self {
-            case .all: return "globe.americas.fill"
-            case .region: return "map.fill"
-            case .county: return "building.2.fill"
-            case .friends: return "person.2.fill"
-            case .age: return "calendar"
+            case .all: return "All"
+            case .region: return "Region"
+            case .county: return "County"
+            case .friends: return "Friends"
+            case .age: return "Age"
             }
         }
     }
@@ -78,356 +78,239 @@ struct EnhancedLeaderboardView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                // Background gradient
-                LinearGradient(
-                    gradient: Gradient(colors: [
-                        Color.yellow.opacity(0.1),
-                        Color.orange.opacity(0.05),
-                        Color.red.opacity(0.03)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+        ZStack {
+            // Professional gradient background matching the design
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.1, green: 0.2, blue: 0.4),
+                    Color(red: 0.2, green: 0.3, blue: 0.6),
+                    Color(red: 0.3, green: 0.4, blue: 0.7)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header Section
+                VStack(spacing: 20) {
+                    // Title
+                    Text("Leaderboard")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .padding(.top, 20)
+                    
+                    // Subtitle
+                    Text("Compete with athletes worldwide")
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    // User Rank Card
+                    UserRankCard(
+                        rank: (leaderboard.firstIndex(where: { $0.name == currentUser.name }) ?? 0) + 1,
+                        time: currentUser.personalBests["40yd"] ?? currentUser.baselineTime
+                    )
+                    .scaleEffect(animateEntrance ? 1.0 : 0.8)
+                    .opacity(animateEntrance ? 1.0 : 0.0)
+                    
+                    // Filter Tabs
+                    FilterTabsView(selectedFilter: $selectedFilter)
+                        .padding(.horizontal, 20)
+                }
+                .padding(.bottom, 30)
                 
-                if leaderboard.isEmpty {
-                    EmptyStateView.noLeaderboardData(action: {
-                        selectedFilter = .all
-                    })
-                } else {
-                    ScrollView {
-                        VStack(spacing: 20) {
-                            // Header Stats
-                            LeaderboardHeaderStats(
-                                totalAthletes: leaderboard.count,
-                                userRank: (leaderboard.firstIndex(where: { $0.name == currentUser.name }) ?? 0) + 1,
-                            userTime: currentUser.personalBests["40yd"] ?? currentUser.baselineTime
-                        )
-                        
-                        // Filter Picker
-                        FilterPicker(selectedFilter: $selectedFilter)
-                        
-                        // Top 3 Podium
-                        if leaderboard.count >= 3 {
-                            PodiumView(
-                                first: leaderboard[0],
-                                second: leaderboard[1],
-                                third: leaderboard[2],
-                                animate: animatePodium
+                // Leaderboard List
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(Array(leaderboard.enumerated()), id: \.element.id) { index, user in
+                            AthleteCard(
+                                user: user,
+                                rank: index + 1,
+                                isCurrentUser: user.name == currentUser.name
                             )
-                            .padding(.vertical)
+                            .scaleEffect(animateEntrance ? 1.0 : 0.9)
+                            .opacity(animateEntrance ? 1.0 : 0.0)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(Double(index) * 0.1), value: animateEntrance)
                         }
-                        
-                        // Rest of Leaderboard
-                        VStack(spacing: 12) {
-                            ForEach(Array(leaderboard.enumerated()), id: \.element.id) { index, user in
-                                if index >= 3 {
-                                    LeaderboardRow(
-                                        user: user,
-                                        rank: index + 1,
-                                        isCurrentUser: user.name == currentUser.name,
-                                        onShare: {
-                                            shareText = "I'm ranked #\(index + 1) with a time of \(String(format: "%.2f", user.time))s! 🏃‍♂️⚡ #SprintCoach40"
-                                            showShareSheet = true
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                        .padding(.horizontal)
                     }
-                    .padding(.vertical)
-                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 100)
                 }
             }
-            .navigationTitle("🏆 Leaderboard")
-            .navigationBarTitleDisplayMode(.inline)
-            .onAppear {
-                withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2)) {
-                    animatePodium = true
-                }
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.7)) {
+                animateEntrance = true
             }
-            .sheet(isPresented: $showShareSheet) {
-                ActivityView(activityItems: [shareText])
-            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ActivityView(activityItems: [shareText])
         }
     }
 }
 
-// MARK: - Header Stats
-struct LeaderboardHeaderStats: View {
-    let totalAthletes: Int
-    let userRank: Int
-    let userTime: Double
+// MARK: - User Rank Card
+struct UserRankCard: View {
+    let rank: Int
+    let time: Double
     
     var body: some View {
         HStack(spacing: 16) {
-            LeaderboardStatCard(
-                icon: "person.3.fill",
-                value: "\(totalAthletes)",
-                label: "Athletes",
-                color: .blue
-            )
+            // Rank Badge
+            ZStack {
+                Circle()
+                    .fill(Color.yellow)
+                    .frame(width: 50, height: 50)
+                
+                Text("#\(rank)")
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .foregroundColor(.black)
+            }
             
-            LeaderboardStatCard(
-                icon: "trophy.fill",
-                value: "#\(userRank)",
-                label: "Your Rank",
-                color: .orange
-            )
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Your Rank")
+                    .font(.subheadline)
+                    .foregroundColor(.white.opacity(0.8))
+                
+                Text("\(String(format: "%.2f", time))s")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
             
-            LeaderboardStatCard(
-                icon: "stopwatch.fill",
-                value: String(format: "%.2f", userTime),
-                label: "Your Time",
-                color: .green
-            )
+            Spacer()
+            
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("40-Yard Dash")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
+                
+                Text("Personal Best")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
+            }
         }
-        .padding(.horizontal)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.15))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 20)
     }
 }
 
-struct LeaderboardStatCard: View {
-    let icon: String
-    let value: String
-    let label: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(.title3)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
-            
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.white.opacity(0.8))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-    }
-}
 
-// MARK: - Filter Picker
-struct FilterPicker: View {
+// MARK: - Filter Tabs View
+struct FilterTabsView: View {
     @Binding var selectedFilter: EnhancedLeaderboardView.LeaderboardFilter
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 ForEach(EnhancedLeaderboardView.LeaderboardFilter.allCases) { filter in
-                    FilterChipButton(
-                        filter: filter,
+                    FilterTab(
+                        title: filter.displayName,
                         isSelected: selectedFilter == filter
                     ) {
-                        withAnimation(.spring(response: 0.3)) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                             selectedFilter = filter
                         }
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 4)
         }
     }
 }
 
-struct FilterChipButton: View {
-    let filter: EnhancedLeaderboardView.LeaderboardFilter
+struct FilterTab: View {
+    let title: String
     let isSelected: Bool
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: filter.icon)
-                    .font(.caption)
-                Text(filter.rawValue)
-                    .font(.subheadline)
-                    .fontWeight(isSelected ? .semibold : .regular)
-            }
-            .foregroundColor(isSelected ? .white : .primary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(isSelected ? Color.blue : Color.white.opacity(0.6))
-            .cornerRadius(20)
-            .shadow(color: .black.opacity(isSelected ? 0.2 : 0.1), radius: 4, x: 0, y: 2)
-        }
-    }
-}
-
-// MARK: - Podium View
-struct PodiumView: View {
-    let first: LeaderboardUser
-    let second: LeaderboardUser
-    let third: LeaderboardUser
-    let animate: Bool
-    
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 12) {
-            // Second Place
-            PodiumPosition(
-                user: second,
-                rank: 2,
-                height: 100,
-                color: Color.gray,
-                medal: "🥈",
-                animate: animate
-            )
-            .offset(y: animate ? 0 : 100)
-            
-            // First Place
-            PodiumPosition(
-                user: first,
-                rank: 1,
-                height: 140,
-                color: Color.yellow,
-                medal: "🥇",
-                animate: animate
-            )
-            .offset(y: animate ? 0 : 150)
-            
-            // Third Place
-            PodiumPosition(
-                user: third,
-                rank: 3,
-                height: 80,
-                color: Color.brown,
-                medal: "🥉",
-                animate: animate
-            )
-            .offset(y: animate ? 0 : 80)
-        }
-        .padding(.horizontal)
-    }
-}
-
-struct PodiumPosition: View {
-    let user: LeaderboardUser
-    let rank: Int
-    let height: CGFloat
-    let color: Color
-    let medal: String
-    let animate: Bool
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            // Medal
-            Text(medal)
-                .font(.system(size: 40))
-                .scaleEffect(animate ? 1.0 : 0.5)
-                .opacity(animate ? 1.0 : 0.0)
-            
-            // Avatar
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.3))
-                    .frame(width: 60, height: 60)
-                
-                Text(user.initials)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(color)
-            }
-            
-            // Name
-            Text(user.name)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-                .lineLimit(1)
-            
-            // Time
-            Text(String(format: "%.2f s", user.time))
-                .font(.caption2)
-                .fontWeight(.bold)
-                .foregroundColor(color)
-            
-            // Podium Block
-            VStack {
-                Text("#\(rank)")
-                    .font(.title)
-                    .fontWeight(.black)
-                    .foregroundColor(.white)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .background(
-                LinearGradient(
-                    gradient: Gradient(colors: [color, color.opacity(0.7)]),
-                    startPoint: .top,
-                    endPoint: .bottom
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .medium)
+                .foregroundColor(isSelected ? .black : .white.opacity(0.7))
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(isSelected ? Color.white : Color.white.opacity(0.1))
                 )
-            )
-            .cornerRadius(8)
-            .shadow(color: color.opacity(0.5), radius: 8, x: 0, y: 4)
         }
-        .frame(maxWidth: .infinity)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
-// MARK: - Leaderboard Row
-struct LeaderboardRow: View {
+
+// MARK: - Athlete Card
+struct AthleteCard: View {
     let user: LeaderboardUser
     let rank: Int
     let isCurrentUser: Bool
-    let onShare: () -> Void
+    
+    var rankIcon: String {
+        switch rank {
+        case 1: return "👑"
+        case 2: return "🥈"
+        case 3: return "🥉"
+        case 4: return "4"
+        case 5: return "5"
+        case 6: return "6"
+        default: return "\(rank)"
+        }
+    }
+    
+    var rankColor: Color {
+        switch rank {
+        case 1: return .yellow
+        case 2: return .gray
+        case 3: return .brown
+        default: return .white.opacity(0.3)
+        }
+    }
     
     var body: some View {
         HStack(spacing: 16) {
-            // Rank
-            Text("#\(rank)")
-                .font(.headline)
-                .fontWeight(.bold)
-                .foregroundColor(isCurrentUser ? .blue : .secondary)
-                .frame(width: 40)
-            
-            // Avatar
+            // Rank Badge
             ZStack {
                 Circle()
-                    .fill(isCurrentUser ? Color.blue.opacity(0.2) : Color.gray.opacity(0.2))
-                    .frame(width: 50, height: 50)
+                    .fill(rankColor)
+                    .frame(width: 40, height: 40)
                 
-                Text(user.initials)
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .foregroundColor(isCurrentUser ? .blue : .gray)
+                if rank <= 3 {
+                    Text(rankIcon)
+                        .font(.title3)
+                } else {
+                    Text(rankIcon)
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
             }
             
             // User Info
             VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 6) {
-                    Text(user.name)
-                        .font(.headline)
-                        .foregroundColor(.primary)
-                    
-                    if isCurrentUser {
-                        Text("YOU")
-                            .font(.caption2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
-                            .background(Color.blue)
-                            .cornerRadius(4)
-                    }
-                }
+                Text(user.name)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
                 
                 HStack(spacing: 4) {
                     Text(user.countryFlag)
-                        .font(.caption)
+                        .font(.subheadline)
                     Text(user.locationDisplay)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                        .font(.subheadline)
+                        .foregroundColor(.white.opacity(0.7))
                 }
             }
             
@@ -435,40 +318,24 @@ struct LeaderboardRow: View {
             
             // Time
             VStack(alignment: .trailing, spacing: 2) {
-                Text(String(format: "%.2f", user.time))
-                    .font(.title3)
+                Text("\(String(format: "%.2f", user.time))s")
+                    .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(isCurrentUser ? .blue : .primary)
+                    .foregroundColor(.white)
                 
-                Text("seconds")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-            }
-            
-            // Actions Menu
-            Menu {
-                Button(action: {}) {
-                    Label("Add Friend", systemImage: "person.badge.plus")
-                }
-                Button(action: {}) {
-                    Label("Challenge", systemImage: "bolt")
-                }
-                Button(action: onShare) {
-                    Label("Share", systemImage: "square.and.arrow.up")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle.fill")
-                    .font(.title3)
-                    .foregroundColor(.gray)
+                Text("40 YD")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
             }
         }
-        .padding()
-        .background(isCurrentUser ? Color.blue.opacity(0.1) : Color.white.opacity(0.6))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 3, x: 0, y: 2)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(isCurrentUser ? Color.blue : Color.clear, lineWidth: 2)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(isCurrentUser ? 0.2 : 0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(isCurrentUser ? Color.yellow : Color.white.opacity(0.1), lineWidth: isCurrentUser ? 2 : 1)
+                )
         )
     }
 }

@@ -255,7 +255,7 @@ struct SprinterAnimationView: View {
 }
 
 #Preview("4. Quick Win Introduction") {
-    RecordCardView(onContinue: {})
+    RecordCardView(userName: "David", onContinue: {})
         .preferredColorScheme(.dark)
 }
 

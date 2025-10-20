@@ -1,0 +1,128 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PerformanceTrendsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Splits Over Time",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 34
+        }
+      },
+      {
+        "comment": "",
+        "key": "Charts are available in iOS 16 and later",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 45
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fatigue Trend",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "Charts are available in iOS 16 and later",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Personal Best Progress",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 63
+        }
+      },
+      {
+        "comment": "",
+        "key": "Charts are available in iOS 16 and later",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 73
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Phase",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 40
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fatigue",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "PB",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 68
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export CSV",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export JSON",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 82
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,32 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/WatchSessionPlaybackView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Week %lld, Day %lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 42
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest: %llds",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 53
+        }
+      }
+    ]
+  },
+  "version": 1
+}

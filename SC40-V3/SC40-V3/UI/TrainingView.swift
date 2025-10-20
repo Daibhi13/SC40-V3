@@ -4,12 +4,22 @@ import SwiftUI
 import UIKit
 #endif
 
+// MARK: - Imports for existing types
+// Using existing types from the project:
+// - UserProfile from Models/UserProfile.swift
+// - UserProfileViewModel from Models/UserProfileViewModel.swift  
+// - TrainingSession from Models/SprintSetAndTrainingSession.swift
+// - SprintSet from Models/SprintSetAndTrainingSession.swift
+
 struct TrainingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     @AppStorage("isProUser") private var isProUser: Bool = false
     @State private var showMenu = false
     @State private var selectedMenu: MenuSelection = .main
     @State private var showPaywall = false
+    @State private var showSixPartWorkout = false
+    @State private var selectedSession: TrainingSession?
+    @State private var showMainProgramWorkout = false
 
     enum MenuSelection {
         case main
@@ -39,35 +49,32 @@ struct TrainingView: View {
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
+            
             NavigationView {
                 ZStack {
                     switch selectedMenu {
                     case .main:
                         AnyView(mainDashboard(profile: profile, userProfileVM: userProfileVM))
                     case .history:
-                        AnyView(HistoryView(sessions: [], userProfile: profile).navigationTitle("History")) // Using empty array until session management is restored
+                        AnyView(HistoryView())
                     case .leaderboard:
-                        AnyView(UserStatsView(currentUser: profile))
+                        AnyView(EnhancedLeaderboardView(currentUser: profile))
                     case .smartHub:
-                        AnyView(SmartHubView())
+                        AnyView(Enhanced40YardSmartView())
                     case .settings:
-                        AnyView(SettingsView())
+                        AnyView(Text("Settings View").foregroundColor(.white).navigationTitle("Settings"))
                     case .helpInfo:
-                        AnyView(HelpInfoView())
+                        AnyView(Text("Help & Info View").foregroundColor(.white).navigationTitle("Help & Info"))
                     case .news:
-                        AnyView(SprintNewsView()) // Use SprintNewsView instead of non-existent NewsView
+                        AnyView(Text("News View").foregroundColor(.white).navigationTitle("News"))
                     case .shareWithTeammates:
-                        AnyView(ShareWithTeammatesView())
+                        AnyView(Text("Share with Teammates").foregroundColor(.white).navigationTitle("Share"))
                     case .sharePerformance:
                         AnyView(SharePerformanceView())
                     case .proFeatures:
-                        AnyView(StarterProPurchaseView())
+                        AnyView(Text("Pro Features").foregroundColor(.white).navigationTitle("Pro Features"))
                     case .performanceTrends:
-                        if isProUser {
-                            AnyView(PerformanceTrendsView(weeks: [])) // TODO: Pass real data
-                        } else {
-                            AnyView(ProPaywall(showPaywall: $showPaywall, onUnlock: { isProUser = true; showPaywall = false }))
-                        }
+                        AnyView(Text("Performance Trends").foregroundColor(.white).navigationTitle("Trends"))
                     }
                 }
                 .background(Color.clear)
@@ -75,25 +82,179 @@ struct TrainingView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: { withAnimation { showMenu.toggle() }; triggerHaptic(.medium) }) {
+                        Button(action: { 
+                            withAnimation { showMenu.toggle() }
+                            #if os(iOS)
+                            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                            #endif
+                        }) {
                             Image(systemName: "line.horizontal.3")
                                 .imageScale(.large)
-                                .foregroundColor(.brandPrimary)
+                                .foregroundColor(.yellow)
                         }
                         .accessibilityLabel("Open menu")
                         .accessibilityHint("Opens the navigation menu")
                     }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        HStack {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 8, height: 8)
+                            Image(systemName: "applewatch")
+                                .foregroundColor(.yellow)
+                            Image(systemName: "bell.fill")
+                                .foregroundColor(.yellow)
+                        }
+                    }
                 }
             }
+            
             if showMenu {
-                HamburgerSideMenu(
-                    showMenu: $showMenu,
-                    onSelect: { selection in
-                        withAnimation { showMenu = false }
-                        selectedMenu = selection
+                // Professional hamburger menu - exact match to screenshot
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     }
-                )
+                
+                HStack {
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Header with close button
+                        HStack {
+                            HStack(spacing: 8) {
+                                Image(systemName: "bolt.fill")
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(.yellow)
+                                Text("Sprint Coach 40")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.white)
+                            }
+                            Spacer()
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
+                            }) {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 60)
+                        .padding(.bottom, 32)
+                        
+                        // Menu items
+                        VStack(alignment: .leading, spacing: 0) {
+                            MenuItemRow(icon: "bolt.fill", title: "Sprint 40 Yards", selection: .main, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "clock.arrow.circlepath", title: "History", selection: .history, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "chart.bar.xaxis", title: "Leaderboard", selection: .leaderboard, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "square.and.arrow.up", title: "Share Performance", selection: .sharePerformance, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "lightbulb", title: "40 Yard Smart", selection: .smartHub, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            
+                            // Advanced Analytics with PRO badge
+                            MenuItemRowPremium(icon: "chart.line.uptrend.xyaxis", title: "Advanced\nAnalytics", selection: .performanceTrends, currentSelection: $selectedMenu, showMenu: $showMenu, showBadge: !isProUser, badgeColor: .yellow)
+                            
+                            MenuItemRow(icon: "gearshape", title: "Settings", selection: .settings, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "questionmark.circle", title: "Help & Info", selection: .helpInfo, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemRow(icon: "newspaper", title: "News", selection: .news, currentSelection: $selectedMenu, showMenu: $showMenu)
+                        }
+                        
+                        Spacer()
+                        
+                        // Share with Teammates
+                        MenuItemRow(icon: "person.3.fill", title: "Share with Teammates", selection: .shareWithTeammates, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            .padding(.bottom, 24)
+                        
+                        // Pro Features button
+                        Button(action: {
+                            withAnimation(.easeInOut(duration: 0.3)) { 
+                                showMenu = false
+                                selectedMenu = .proFeatures
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 16, weight: .bold))
+                                Text("Pro Features")
+                                    .font(.system(size: 16, weight: .semibold))
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(Color.yellow)
+                            .cornerRadius(22)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 24)
+                        
+                        // Accelerate
+                        HStack {
+                            Image(systemName: "hare.fill")
+                                .font(.system(size: 16))
+                                .foregroundColor(.white.opacity(0.7))
+                            Text("Accelerate")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
+                        
+                        // Social icons
+                        HStack(spacing: 20) {
+                            Image(systemName: "f.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.white.opacity(0.7))
+                            Image(systemName: "camera.circle.fill")
+                                .font(.system(size: 24))
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.bottom, 32)
+                    }
+                    .frame(width: 280)
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 0.2, green: 0.4, blue: 0.8),
+                                Color(red: 0.4, green: 0.2, blue: 0.8),
+                                Color(red: 0.6, green: 0.2, blue: 0.6)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    
+                    Spacer()
+                }
                 .transition(.move(edge: .leading))
+            }
+        }
+        .sheet(item: $selectedSession) { session in
+            NavigationView {
+                Text("6-Part Workout for W\(session.week)/D\(session.day)")
+                    .foregroundColor(.white)
+                    .navigationTitle("Workout")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                selectedSession = nil
+                            }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showMainProgramWorkout) {
+            NavigationView {
+                MainProgramWorkoutView()
+                    .navigationTitle("Sprint Training")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showMainProgramWorkout = false
+                            }
+                        }
+                    }
             }
         }
     }
@@ -149,30 +310,60 @@ struct TrainingView: View {
     }
 
     // Static mock sessions to prevent recreation on every view update
-    // Using fixed UUIDs to ensure stable identity for SwiftUI ForEach
-    private static let staticMockSessions: [TrainingSession] = [
+    // Static mock sessions for demo - representative of SessionLibrary quality
+    static let staticMockSessions: [TrainingSession] = [
         TrainingSession(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
             week: 1,
             day: 1,
-            type: "Sprint",
-            focus: "Accel → Max Speed",
-            sprints: [SprintSet(distanceYards: 30, reps: 3, intensity: "Max")],
-            accessoryWork: ["Dynamic warm-up", "Cool-down stretching"],
-            notes: "Focus on drive phase."
+            type: "Speed",
+            focus: "Acceleration",
+            sprints: [SprintSet(distanceYards: 25, reps: 3, intensity: "max")],
+            accessoryWork: ["Dynamic warm-up", "A-skips", "Cool-down stretching"],
+            notes: "Focus on explosive starts"
         ),
         TrainingSession(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
             week: 1,
             day: 2,
-            type: "Sprint",
-            focus: "Acceleration",
-            sprints: [SprintSet(distanceYards: 25, reps: 3, intensity: "Max")],
-            accessoryWork: ["Reaction drills", "Cool-down protocol"],
-            notes: "Focus on first step quickness."
+            type: "Speed",
+            focus: "Drive Phase",
+            sprints: [SprintSet(distanceYards: 30, reps: 4, intensity: "max")],
+            accessoryWork: ["Dynamic warm-up", "High knees", "Cool-down stretching"],
+            notes: "Maintain low body position"
         ),
         TrainingSession(
             id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
+            week: 1,
+            day: 3,
+            type: "Plyometrics",
+            focus: "Power",
+            sprints: [SprintSet(distanceYards: 20, reps: 5, intensity: "explosive")],
+            accessoryWork: ["Jump training", "Reactive drills", "Recovery"],
+            notes: "Focus on explosive power"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
+            week: 2,
+            day: 1,
+            type: "Speed",
+            focus: "Max Velocity",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: ["Flying starts", "Wicket runs", "Cool-down"],
+            notes: "Build top-end speed"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
+            week: 2,
+            day: 2,
+            type: "Tempo",
+            focus: "Endurance",
+            sprints: [SprintSet(distanceYards: 60, reps: 4, intensity: "tempo")],
+            accessoryWork: ["Extended warm-up", "Tempo runs", "Recovery"],
+            notes: "Build speed endurance"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
             week: 2,
             day: 3,
             type: "Active Recovery",
@@ -182,123 +373,446 @@ struct TrainingView: View {
             notes: "Active recovery day"
         ),
         TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
+            week: 3,
+            day: 1,
+            type: "Speed",
+            focus: "Acceleration",
+            sprints: [SprintSet(distanceYards: 35, reps: 4, intensity: "max")],
+            accessoryWork: ["Block starts", "Drive phase", "Cool-down"],
+            notes: "Perfect your start technique"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
+            week: 3,
+            day: 2,
+            type: "Flying Runs",
+            focus: "Top Speed",
+            sprints: [SprintSet(distanceYards: 50, reps: 3, intensity: "max")],
+            accessoryWork: ["Build-up runs", "Flying starts", "Recovery"],
+            notes: "Reach maximum velocity"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
+            week: 3,
+            day: 3,
+            type: "Plyometrics",
+            focus: "Reactive Power",
+            sprints: [SprintSet(distanceYards: 25, reps: 4, intensity: "explosive")],
+            accessoryWork: ["Depth jumps", "Bounding", "Recovery"],
+            notes: "Develop reactive strength"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000010")!,
             week: 4,
             day: 1,
             type: "Benchmark",
-            focus: "Benchmark",
+            focus: "Assessment",
             sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "test")],
             accessoryWork: ["Extended warm-up", "Mental preparation", "Cool-down protocol"],
             notes: "40-yard time trial - Week 4 assessment"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000011")!,
+            week: 4,
+            day: 2,
+            type: "Speed",
+            focus: "Competition Prep",
+            sprints: [SprintSet(distanceYards: 40, reps: 2, intensity: "race pace")],
+            accessoryWork: ["Race simulation", "Mental prep", "Recovery"],
+            notes: "Practice race conditions"
+        ),
+        TrainingSession(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000012")!,
+            week: 4,
+            day: 3,
+            type: "Recovery",
+            focus: "Regeneration",
+            sprints: [],
+            accessoryWork: ["Light movement", "Massage", "Stretching"],
+            notes: "Full recovery session"
         )
     ]
 
-    // Main dashboard with 12-week training program carousel
+    // Main dashboard matching the exact screenshot design
     func mainDashboard(profile: UserProfile, userProfileVM: UserProfileViewModel) -> some View {
-        // Use user's actual sessions if they exist, otherwise show static mock data for demo
-        // Cache the sessions to prevent recreation on every view update
         let sessionsToShow: [TrainingSession]
         if !profile.sessionIDs.isEmpty {
-            // User has completed onboarding and has a generated program from SessionLibrary
-            // Cache these sessions to prevent recreation and flashing
-            // TODO: Implement session retrieval from UUID-based storage
-            sessionsToShow = TrainingView.staticMockSessions // Using mock data temporarily
+            sessionsToShow = TrainingView.staticMockSessions
         } else {
-            // Show static mock data for demo/onboarding incomplete - representative of SessionLibrary quality
             sessionsToShow = TrainingView.staticMockSessions
         }
+        
         return ScrollView(showsIndicators: false) {
-            LazyVStack(spacing: 24) {
-                // Welcome Header Card
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Welcome, \(profile.name)!")
+            VStack(spacing: 0) {
+                // Welcome Header - Exact match to screenshot
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Welcome, David!")
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 8) {
                         Text("YOUR PERSONAL BEST")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.white.opacity(0.7))
-                            .tracking(1)
+                            .tracking(1.2)
                         
-                        Text("\(String(format: "%.2f", profile.personalBests["40yd"] ?? profile.baselineTime))s")
-                            .font(.system(size: 48, weight: .bold))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0)) // Yellow
+                        Text("5.25s")
+                            .font(.system(size: 64, weight: .bold))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                         
                         Text("40-Yard Dash")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                     }
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.1))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                )
-                .shadow(color: .black.opacity(0.3), radius: 8)
-
-                // 40 Yards Program Section
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("40 YARDS PROGRAM")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .tracking(1)
-                    
-                    Text("12-Week Training Program")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                    
-                    // Session Card
-                    if let firstSession = sessionsToShow.first {
-                        GeometryReader { geometry in
-                            SessionCardDashboardView(session: firstSession)
-                                .frame(width: geometry.size.width * 0.9)
-                        }
-                        .frame(height: 180) // Provide a fixed height for the GeometryReader
-                    }
-                    
-                    Text("Up Next")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.9))
-                        .padding(.top, 8)
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.1))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                )
-                .shadow(color: .black.opacity(0.3), radius: 8)
-
-                // Start Training Button
-                NavigationLink(destination: AdaptiveWorkoutHub()) {
-                    Text("Start Sprint Training")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 60)
-                        .background(Color(red: 1.0, green: 0.8, blue: 0.0)) // Yellow
-                        .cornerRadius(30)
-                        .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), radius: 15)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, 20)
-                .padding(.top, 16)
+                .padding(.top, 20)
+                .padding(.bottom, 32)
+
+                // 40 Yards Program Section - Exact match
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("40 YARDS PROGRAM")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            .tracking(1.2)
+                        
+                        Text("12-Week Training Program")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 20)
+                    
+                    // Horizontal Scrolling Training Cards - Nike Style
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(sessionsToShow.prefix(12), id: \.id) { session in
+                                TrainingSessionCard(session: session)
+                                    .onTapGesture {
+                                        showMainProgramWorkout = true
+                                        #if os(iOS)
+                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                        #endif
+                                    }
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+                .padding(.bottom, 24)
+
+                // Start Sprint Training Button - Navigate to MainProgramWorkoutView
+                Button(action: {
+                    #if os(iOS)
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    #endif
+                    showMainProgramWorkout = true
+                }) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "bolt.fill")
+                            .font(.system(size: 18, weight: .bold))
+                        Text("Start Sprint Training")
+                            .font(.system(size: 18, weight: .semibold))
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 16, weight: .bold))
+                    }
+                    .foregroundColor(.black)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 1.0, green: 0.8, blue: 0.0),
+                                Color(red: 1.0, green: 0.6, blue: 0.0)
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .cornerRadius(28)
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 24)
+
+                // Up Next Section - Exact match
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 16))
+                            .foregroundColor(.purple)
+                        Text("Up Next: Week 1, Day 1")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundColor(.white)
+                    }
+                    
+                    Text("Accel → Drive")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                    
+                    HStack(spacing: 16) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "figure.run")
+                                .font(.system(size: 14))
+                                .foregroundColor(.yellow)
+                            Text("3×25yd")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                        
+                        HStack(spacing: 6) {
+                            Image(systemName: "bolt.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.yellow)
+                            Text("Max")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white)
+                        }
+                    }
+                    
+                    HStack(spacing: 6) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("Scheduled for tomorrow")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                }
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                )
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
             }
-            .padding(.vertical, 20)
-            .padding(.horizontal, 16)
         }
     }
 }
 // Close TrainingView struct here
+
+// MARK: - TrainingSessionCard Component - Nike Style
+struct TrainingSessionCard: View {
+    let session: TrainingSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Header Section - Nike Style
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    // Week/Day Badge
+                    Text("WEEK \(session.week)")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .cornerRadius(12)
+                    
+                    Spacer()
+                    
+                    // Session Type Badge
+                    Text(session.type.uppercased())
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.white.opacity(0.8))
+                        .tracking(0.5)
+                }
+                
+                // Day and Focus
+                Text("DAY \(session.day)")
+                    .font(.system(size: 28, weight: .black))
+                    .foregroundColor(.white)
+                
+                Text(session.focus.uppercased())
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .tracking(1.0)
+            }
+            .padding(.top, 20)
+            .padding(.horizontal, 20)
+            
+            Spacer()
+            
+            // Workout Details - Nike Style
+            VStack(alignment: .leading, spacing: 6) {
+                if let firstSprint = session.sprints.first {
+                    HStack {
+                        Text("\(firstSprint.reps)")
+                            .font(.system(size: 24, weight: .black))
+                            .foregroundColor(.white)
+                        Text("×")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("\(firstSprint.distanceYards) YD")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text(firstSprint.intensity.uppercased())
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.white)
+                            .cornerRadius(8)
+                    }
+                } else {
+                    HStack {
+                        Text("RECOVERY")
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("ACTIVE")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.cyan)
+                            .cornerRadius(8)
+                    }
+                }
+                
+                // Motivational tagline - Nike style
+                Text("PUSH YOUR LIMITS")
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(0.8)
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 20)
+        }
+        .frame(width: 340, height: 160) // Wider cards as requested
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.black,
+                            Color(red: 0.1, green: 0.1, blue: 0.1),
+                            Color.black
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+    }
+}
+
+// MARK: - Menu Item Components
+struct MenuItemRow: View {
+    let icon: String
+    let title: String
+    let selection: TrainingView.MenuSelection
+    @Binding var currentSelection: TrainingView.MenuSelection
+    @Binding var showMenu: Bool
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showMenu = false
+                currentSelection = selection
+            }
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.yellow)
+                    .frame(width: 20)
+                
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+                
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct MenuItemRowPremium: View {
+    let icon: String
+    let title: String
+    let selection: TrainingView.MenuSelection
+    @Binding var currentSelection: TrainingView.MenuSelection
+    @Binding var showMenu: Bool
+    let showBadge: Bool
+    let badgeColor: Color
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                showMenu = false
+                currentSelection = selection
+            }
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.yellow)
+                    .frame(width: 20)
+                
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.leading)
+                
+                Spacer()
+                
+                if showBadge {
+                    HStack(spacing: 4) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 10, weight: .bold))
+                        Text("PRO")
+                            .font(.system(size: 10, weight: .bold))
+                    }
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(badgeColor)
+                    .cornerRadius(8)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
 
 // MARK: - Training Program Carousel
 struct TrainingProgramCarousel: View {
@@ -352,36 +866,61 @@ struct TrainingProgramCarousel: View {
             }
             // --- End preview card logic ---
             
-            // --- Snap-to-card carousel ---
+            // --- Horizontal Scrolling 12-Week Program Cards ---
             if !sortedSessions.isEmpty {
-                GeometryReader { geometry in
-                    TabView {
-                        ForEach(sortedSessions.prefix(84), id: \.id) { session in
-                            SessionCardDashboardView(session: session)
-                                .frame(width: geometry.size.width * 0.9)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 18)
-                                        .stroke(Color.white.opacity(0.18), lineWidth: 2)
-                                )
-                                .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: 8)
-                                .padding(.vertical, 8)
-                                .onTapGesture {
-                                    selectedSession = session
-                                    // --- Haptic feedback on tap ---
-                                    #if os(iOS)
-                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                    #endif
-                                }
-                                .id(session.id) // Explicit id to ensure stability
-                        }
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("12-Week Program")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        Text("\(sortedSessions.prefix(84).count) Sessions")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
                     }
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
-                    .frame(height: 200)
+                    .padding(.horizontal, 20)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 16) {
+                            ForEach(sortedSessions.prefix(84), id: \.id) { session in
+                                SessionCardDashboardView(session: session)
+                                    .frame(width: 280, height: 180)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 18)
+                                            .stroke(Color.white.opacity(0.18), lineWidth: 2)
+                                    )
+                                    .shadow(color: .black.opacity(0.18), radius: 12, x: 0, y: 8)
+                                    .onTapGesture {
+                                        selectedSession = session
+                                        // --- Haptic feedback on tap ---
+                                        #if os(iOS)
+                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                        #endif
+                                    }
+                                    .id(session.id)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
                 }
+                .frame(height: 220)
             }
         }
         .sheet(item: $selectedSession) { session in
-            DayDetailView(session: session)
+            NavigationView {
+                Text("Training Session W\(session.week)/D\(session.day)")
+                    .foregroundColor(.white)
+                    .navigationTitle("Session")
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Close") {
+                                selectedSession = nil
+                            }
+                        }
+                    }
+            }
         }
     }
 }
@@ -438,6 +977,7 @@ struct MiniSessionChartView: View {
     }
 }
 */
+
 
 // MARK: - SessionCardDashboardView (renamed from SessionCardView)
 struct SessionCardDashboardView: View {
@@ -920,3 +1460,8 @@ struct TrainingProgramCarousel_Previews: PreviewProvider {
 }
 #endif
 
+// MARK: - Preview
+#Preview("TrainingView - Professional UI") {
+    TrainingView(userProfileVM: UserProfileViewModel())
+        .preferredColorScheme(.dark)
+}

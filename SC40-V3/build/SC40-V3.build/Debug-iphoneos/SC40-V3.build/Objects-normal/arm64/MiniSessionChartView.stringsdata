@@ -1,0 +1,16 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MiniSessionChartView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Splits",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 6
+        }
+      }
+    ]
+  },
+  "version": 1
+}

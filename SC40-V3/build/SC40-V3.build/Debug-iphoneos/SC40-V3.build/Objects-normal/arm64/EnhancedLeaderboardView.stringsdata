@@ -1,0 +1,80 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/EnhancedLeaderboardView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Leaderboard",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 98
+        }
+      },
+      {
+        "comment": "",
+        "key": "Compete with athletes worldwide",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "#%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 166
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your Rank",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 173
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@s",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "40-Yard Dash",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 186
+        }
+      },
+      {
+        "comment": "",
+        "key": "Personal Best",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@s",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 321
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 YD",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 326
+        }
+      }
+    ]
+  },
+  "version": 1
+}

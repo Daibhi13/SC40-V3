@@ -7,7 +7,7 @@ struct AdvancedAnalyticsView: View {
     @State private var selectedSport: SportType = .soccer
     @State private var showContent = false
     @State private var completedSessions: [TrainingSession] = []
-    @State private var personalBest: Double = 0.0
+    @State private var personalBest: Double = 5.25
     @State private var averageTime: Double = 0.0
     @State private var totalSprints: Int = 0
     @State private var weeklyYards: Int = 0
@@ -31,23 +31,9 @@ struct AdvancedAnalyticsView: View {
         case trackField = "Track & Field"
     }
     
-    // Helper function for tab icons
-    private func iconForTab(_ tab: AnalyticsTab) -> String {
-        switch tab {
-        case .performance:
-            return "chart.line.uptrend.xyaxis"
-        case .biomechanics:
-            return "waveform.path.ecg"
-        case .benchmarks:
-            return "target"
-        case .aiInsights:
-            return "brain.head.profile"
-        }
-    }
-    
     var body: some View {
         ZStack {
-            // Premium gradient background
+            // Premium gradient background matching your design
             LinearGradient(
                 gradient: Gradient(stops: [
                     .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
@@ -62,8 +48,8 @@ struct AdvancedAnalyticsView: View {
             .ignoresSafeArea(.all)
             
             ScrollView(showsIndicators: false) {
-                VStack(spacing: 24) {
-                    // Header with Personal Best
+                VStack(spacing: 0) {
+                    // Header with Personal Best - matching your design exactly
                     VStack(spacing: 20) {
                         // Personal Best Section
                         VStack(spacing: 12) {
@@ -74,7 +60,7 @@ struct AdvancedAnalyticsView: View {
                             
                             HStack(alignment: .top, spacing: 20) {
                                 VStack(alignment: .leading, spacing: 4) {
-                                    Text("5.25s")
+                                    Text(String(format: "%.2fs", personalBest))
                                         .font(.system(size: 48, weight: .bold))
                                         .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
                                     
@@ -111,7 +97,7 @@ struct AdvancedAnalyticsView: View {
                             }
                         }
                         
-                        // Stats Grid
+                        // Stats Grid - matching your design
                         HStack(spacing: 12) {
                             AnalyticsStatCard(
                                 icon: "bolt.fill",
@@ -144,87 +130,58 @@ struct AdvancedAnalyticsView: View {
                         }
                     }
                     .padding(.top, 40)
+                    .padding(.horizontal, 20)
                     
-                    // Enhanced Tab Selection with Horizontal Scroll
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(AnalyticsTab.allCases, id: \.self) { tab in
-                                Button(action: {
-                                    HapticManager.shared.light()
-                                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                        selectedTab = tab
-                                    }
-                                }) {
-                                    HStack(spacing: 6) {
-                                        // Tab icon
-                                        Image(systemName: iconForTab(tab))
-                                            .font(.system(size: 14, weight: .semibold))
-                                            .foregroundColor(selectedTab == tab ? .black : .white.opacity(0.8))
-                                        
-                                        Text(tab.rawValue)
-                                            .font(.system(size: 15, weight: .semibold))
-                                            .foregroundColor(selectedTab == tab ? .black : .white)
-                                            .lineLimit(1)
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 12)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .fill(
-                                                selectedTab == tab 
-                                                ? LinearGradient(
-                                                    colors: [Color(red: 1.0, green: 0.4, blue: 0.4), Color(red: 1.0, green: 0.5, blue: 0.3)],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                                : LinearGradient(
-                                                    colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)],
-                                                    startPoint: .leading,
-                                                    endPoint: .trailing
-                                                )
-                                            )
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 25)
-                                            .stroke(
-                                                selectedTab == tab 
-                                                ? Color.clear 
-                                                : Color.white.opacity(0.2), 
-                                                lineWidth: 1
-                                            )
-                                    )
-                                    .scaleEffect(selectedTab == tab ? 1.05 : 1.0)
-                                    .shadow(
-                                        color: selectedTab == tab 
-                                        ? Color(red: 1.0, green: 0.4, blue: 0.4).opacity(0.3) 
-                                        : Color.clear,
-                                        radius: selectedTab == tab ? 8 : 0,
-                                        x: 0,
-                                        y: selectedTab == tab ? 4 : 0
-                                    )
-                                }
-                                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedTab)
-                            }
-                        }
-                        .padding(.horizontal, 20)
+                    // Tab Selection - matching your design exactly
+                    HStack(spacing: 0) {
+                        TabButton(
+                            title: "Performance",
+                            icon: "chart.line.uptrend.xyaxis",
+                            isSelected: selectedTab == .performance,
+                            action: { selectedTab = .performance }
+                        )
+                        
+                        TabButton(
+                            title: "Biomechanics",
+                            icon: "waveform.path.ecg",
+                            isSelected: selectedTab == .biomechanics,
+                            action: { selectedTab = .biomechanics }
+                        )
+                        
+                        TabButton(
+                            title: "Benchmarks",
+                            icon: "target",
+                            isSelected: selectedTab == .benchmarks,
+                            action: { selectedTab = .benchmarks }
+                        )
+                        
+                        TabButton(
+                            title: "AI Insights",
+                            icon: "brain.head.profile",
+                            isSelected: selectedTab == .aiInsights,
+                            action: { selectedTab = .aiInsights }
+                        )
                     }
-                    .opacity(showContent ? 1 : 0)
-                    .animation(.easeInOut(duration: 0.8).delay(0.5), value: showContent)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 30)
                     
                     // Content based on selected tab
-                    switch selectedTab {
-                    case .performance:
-                        PerformanceAnalyticsView(showContent: showContent)
-                    case .biomechanics:
-                        BiomechanicsAnalyticsView(showContent: showContent)
-                    case .benchmarks:
-                        BenchmarksAnalyticsView(selectedSport: $selectedSport, showContent: showContent)
-                    case .aiInsights:
-                        AIInsightsAnalyticsView(showContent: showContent)
+                    VStack(spacing: 20) {
+                        switch selectedTab {
+                        case .performance:
+                            PerformanceTabContent(showContent: showContent)
+                        case .biomechanics:
+                            BiomechanicsTabContent(showContent: showContent)
+                        case .benchmarks:
+                            BenchmarksTabContent(selectedSport: $selectedSport, showContent: showContent)
+                        case .aiInsights:
+                            AIInsightsTabContent(showContent: showContent)
+                        }
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                    .padding(.bottom, 40)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 40)
             }
         }
         .onAppear {
@@ -1384,6 +1341,441 @@ struct AIInsightRow: View {
             Spacer()
         }
         .padding(.vertical, 8)
+    }
+}
+
+// MARK: - Tab Button Component
+
+struct TabButton: View {
+    let title: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? .black : .white.opacity(0.7))
+                
+                Text(title)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(isSelected ? .black : .white)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 25)
+                    .fill(
+                        isSelected 
+                        ? LinearGradient(
+                            colors: [Color(red: 1.0, green: 0.4, blue: 0.4), Color(red: 1.0, green: 0.5, blue: 0.3)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                        : LinearGradient(
+                            colors: [Color.white.opacity(0.1), Color.white.opacity(0.05)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 25)
+                    .stroke(
+                        isSelected ? Color.clear : Color.white.opacity(0.2), 
+                        lineWidth: 1
+                    )
+            )
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isSelected)
+    }
+}
+
+// MARK: - Performance Tab Content
+
+struct PerformanceTabContent: View {
+    let showContent: Bool
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Performance Progression Card
+            AnalyticsCard(
+                icon: "chart.line.uptrend.xyaxis",
+                title: "Performance Progression",
+                iconColor: .green,
+                showContent: showContent,
+                delay: 0.7
+            ) {
+                VStack(spacing: 16) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Improvement Rate")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                            Text("0.0%")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Sessions Tracked")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                            Text("0")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    // Chart placeholder
+                    VStack(spacing: 12) {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 40, weight: .medium))
+                            .foregroundColor(.white.opacity(0.3))
+                        
+                        Text("Complete more sessions to see\nyour progress")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(height: 120)
+                }
+            }
+            
+            // Performance Distribution Card
+            AnalyticsCard(
+                icon: "chart.bar.fill",
+                title: "Performance Distribution",
+                iconColor: .purple,
+                showContent: showContent,
+                delay: 0.9
+            ) {
+                VStack(spacing: 16) {
+                    Text("Sprint Time Zones")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    // Chart placeholder
+                    VStack(spacing: 12) {
+                        Image(systemName: "chart.bar.fill")
+                            .font(.system(size: 40, weight: .medium))
+                            .foregroundColor(.white.opacity(0.3))
+                        
+                        Text("Complete more sprints to see distribution")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(height: 100)
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Biomechanics Tab Content
+
+struct BiomechanicsTabContent: View {
+    let showContent: Bool
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Velocity Profile Card
+            AnalyticsCard(
+                icon: "waveform.path.ecg",
+                title: "Velocity Profile",
+                iconColor: .purple,
+                showContent: showContent,
+                delay: 0.7
+            ) {
+                VStack(spacing: 16) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Peak Velocity")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                            Text("-- mph")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.purple)
+                        }
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .trailing, spacing: 4) {
+                            Text("Avg Velocity")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.7))
+                            Text("-- mph")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    // Chart placeholder
+                    VStack(spacing: 12) {
+                        Image(systemName: "waveform.path.ecg")
+                            .font(.system(size: 40, weight: .medium))
+                            .foregroundColor(.white.opacity(0.3))
+                        
+                        Text("Complete more sessions to see\nvelocity profile")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(height: 100)
+                }
+            }
+            
+            // Performance Metrics Card
+            AnalyticsCard(
+                icon: "speedometer",
+                title: "Performance Metrics",
+                iconColor: .orange,
+                showContent: showContent,
+                delay: 0.9
+            ) {
+                VStack(spacing: 12) {
+                    PerformanceMetricRow(
+                        title: "Max Velocity",
+                        value: "-- mph",
+                        change: "--",
+                        isPositive: true,
+                        color: .purple
+                    )
+                    
+                    PerformanceMetricRow(
+                        title: "Consistency Score",
+                        value: "100.0%",
+                        change: "100%",
+                        isPositive: true,
+                        color: .green
+                    )
+                    
+                    PerformanceMetricRow(
+                        title: "Weekly Volume",
+                        value: "0 yards",
+                        change: "--",
+                        isPositive: true,
+                        color: .orange
+                    )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Benchmarks Tab Content
+
+struct BenchmarksTabContent: View {
+    @Binding var selectedSport: AdvancedAnalyticsView.SportType
+    let showContent: Bool
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Sport Selection Card
+            AnalyticsCard(
+                icon: "sportscourt.fill",
+                title: "Select Your Sport",
+                iconColor: .blue,
+                showContent: showContent,
+                delay: 0.7
+            ) {
+                HStack(spacing: 12) {
+                    SportSelectionButton(
+                        sport: .soccer,
+                        selectedSport: $selectedSport,
+                        icon: "⚽",
+                        title: "Soccer/Football"
+                    )
+                    
+                    SportSelectionButton(
+                        sport: .rugby,
+                        selectedSport: $selectedSport,
+                        icon: "🏉",
+                        title: "Rugby"
+                    )
+                    
+                    SportSelectionButton(
+                        sport: .americanFootball,
+                        selectedSport: $selectedSport,
+                        icon: "🏈",
+                        title: "American Football"
+                    )
+                }
+            }
+            
+            // Sport Benchmarks Card
+            AnalyticsCard(
+                icon: "figure.run",
+                title: "\(selectedSport.rawValue) Benchmarks",
+                iconColor: .green,
+                showContent: showContent,
+                delay: 0.9
+            ) {
+                VStack(spacing: 12) {
+                    BenchmarkRow(
+                        position: "Winger/Forward",
+                        average: "4.55s",
+                        userTime: "--",
+                        percentile: "--"
+                    )
+                    
+                    BenchmarkRow(
+                        position: "Midfielder",
+                        average: "4.65s",
+                        userTime: "--",
+                        percentile: "--"
+                    )
+                    
+                    BenchmarkRow(
+                        position: "Defender",
+                        average: "4.70s",
+                        userTime: "--",
+                        percentile: "--"
+                    )
+                    
+                    BenchmarkRow(
+                        position: "Goalkeeper",
+                        average: "4.80s",
+                        userTime: "--",
+                        percentile: "--"
+                    )
+                }
+            }
+            
+            // Performance Standards Card
+            AnalyticsCard(
+                icon: "star.fill",
+                title: "Performance Standards",
+                iconColor: Color(red: 1.0, green: 0.8, blue: 0.0),
+                showContent: showContent,
+                delay: 1.1
+            ) {
+                VStack(spacing: 12) {
+                    PerformanceStandardRow(
+                        level: "Elite (Top 5%)",
+                        time: "< 4.40s",
+                        icon: "crown.fill",
+                        color: Color(red: 1.0, green: 0.8, blue: 0.0)
+                    )
+                    
+                    PerformanceStandardRow(
+                        level: "Excellent (Top 15%)",
+                        time: "4.40-4.55s",
+                        icon: "star.fill",
+                        color: .orange
+                    )
+                    
+                    PerformanceStandardRow(
+                        level: "Good (Top 30%)",
+                        time: "4.55-4.70s",
+                        icon: "checkmark.circle.fill",
+                        color: .green
+                    )
+                    
+                    PerformanceStandardRow(
+                        level: "Average (Top 50%)",
+                        time: "4.70-4.85s",
+                        icon: "minus.circle.fill",
+                        color: .blue
+                    )
+                    
+                    PerformanceStandardRow(
+                        level: "Developing",
+                        time: "> 4.85s",
+                        icon: "arrow.up.circle.fill",
+                        color: .gray
+                    )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - AI Insights Tab Content
+
+struct AIInsightsTabContent: View {
+    let showContent: Bool
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Key Strengths Card
+            AnalyticsCard(
+                icon: "checkmark.circle.fill",
+                title: "Key Strengths",
+                iconColor: .green,
+                showContent: showContent,
+                delay: 0.7
+            ) {
+                VStack(spacing: 12) {
+                    Text("Analysis will appear here after\ncompleting more training sessions")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .multilineTextAlignment(.center)
+                        .frame(height: 60)
+                }
+            }
+            
+            // Growth Opportunities Card
+            AnalyticsCard(
+                icon: "exclamationmark.triangle.fill",
+                title: "Growth Opportunities",
+                iconColor: .orange,
+                showContent: showContent,
+                delay: 0.9
+            ) {
+                VStack(alignment: .leading, spacing: 12) {
+                    AIInsightRow(
+                        icon: "arrow.up.circle.fill",
+                        text: "More consistent training will\naccelerate progress",
+                        color: .orange
+                    )
+                    
+                    AIInsightRow(
+                        icon: "flame.fill",
+                        text: "Plyometric training will enhance\nexplosive power",
+                        color: .red
+                    )
+                }
+            }
+            
+            // AI Training Recommendations Card
+            AnalyticsCard(
+                icon: "brain.head.profile",
+                title: "AI Training Recommendations",
+                iconColor: .purple,
+                showContent: showContent,
+                delay: 1.1
+            ) {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack {
+                        Text("Plyometric Training")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        Text("MEDIUM")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.orange)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.orange.opacity(0.2))
+                            .cornerRadius(8)
+                    }
+                    
+                    Text("Add 2x weekly box jumps, bounds, and reactive exercises to improve explosive power and sprint performance.")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .lineSpacing(2)
+                }
+            }
+        }
     }
 }
 

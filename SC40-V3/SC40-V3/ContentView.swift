@@ -39,11 +39,11 @@ struct ContentView: View {
                     withAnimation { step = .stopwatchIntro }
                 })
             case .stopwatchIntro:
-                RecordCardView(onContinue: {
+                RecordCardView(userName: userProfileVM.profile.name, onContinue: {
                     withAnimation { step = .training }
                 })
             case .record:
-                RecordCardView(onContinue: { withAnimation { step = .training } })
+                RecordCardView(userName: userProfileVM.profile.name, onContinue: { withAnimation { step = .training } })
             case .training:
                 TrainingView(userProfileVM: userProfileVM)
             }
@@ -64,8 +64,10 @@ struct ContentView: View {
 }
 
 struct RecordCardView: View {
+    let userName: String
     var onContinue: () -> Void
     @State private var animateRunner = false
+    @State private var showQuickWinSession = false
     
     var body: some View {
         ZStack {
@@ -84,9 +86,9 @@ struct RecordCardView: View {
             VStack(spacing: 30) {
                 Spacer()
                 
-                // "Welcome, David!" with wave emoji
+                // "Welcome, [UserName]!" with wave emoji
                 HStack {
-                    Text("Welcome, David!")
+                    Text("Welcome, \(userName)!")
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.white)
                     Text("👋")
@@ -141,7 +143,9 @@ struct RecordCardView: View {
                 
                 // Buttons
                 VStack(spacing: 12) {
-                    Button(action: onContinue) {
+                    Button(action: {
+                        showQuickWinSession = true
+                    }) {
                         HStack {
                             Image(systemName: "play.fill")
                                 .font(.system(size: 16, weight: .bold))
@@ -169,6 +173,12 @@ struct RecordCardView: View {
             withAnimation {
                 animateRunner = true
             }
+        }
+        .sheet(isPresented: $showQuickWinSession) {
+            QuickWinWorkoutView(onComplete: {
+                showQuickWinSession = false
+                onContinue()
+            })
         }
     }
 }
@@ -226,7 +236,7 @@ struct CountdownView: View {
 }
 
 #Preview("4. Quick Win Introduction") {
-    RecordCardView(onContinue: {})
+    RecordCardView(userName: "David", onContinue: {})
         .preferredColorScheme(.dark)
 }
 

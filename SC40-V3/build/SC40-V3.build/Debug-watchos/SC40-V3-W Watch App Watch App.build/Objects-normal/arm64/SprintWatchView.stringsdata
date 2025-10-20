@@ -1,0 +1,96 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/SprintWatchView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "GPS Active",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Time",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest Period",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 79
+        }
+      },
+      {
+        "comment": "",
+        "key": "sec",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Target: %@ yd",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS: %@ yd",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 109
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld/%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 118
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ yd",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 121
+        }
+      },
+      {
+        "comment": "",
+        "key": "Heart Rate",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 126
+        }
+      },
+      {
+        "comment": "",
+        "key": "-- bpm",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 129
+        }
+      }
+    ]
+  },
+  "version": 1
+}

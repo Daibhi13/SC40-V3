@@ -1,0 +1,80 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsMonetizationView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Advanced Analytics",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 207
+        }
+      },
+      {
+        "comment": "",
+        "key": "PREMIUM FEATURE",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Advanced Analytics",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 51
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unlock Professional Performance Insights",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 56
+        }
+      },
+      {
+        "comment": "",
+        "key": "What You'll Get",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "UPGRADE TO PRO",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unlock Advanced Analytics",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 145
+        }
+      },
+      {
+        "comment": "",
+        "key": "Join Elite Athletes",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 192
+        }
+      },
+      {
+        "comment": "",
+        "key": "Used by professional trainers and elite athletes to optimize sprint performance and achieve breakthrough times.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 196
+        }
+      }
+    ]
+  },
+  "version": 1
+}

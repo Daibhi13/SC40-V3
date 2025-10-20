@@ -1,0 +1,24 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HistoryViewPreview.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "HistoryView Preview Disabled",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 80
+        }
+      },
+      {
+        "comment": "",
+        "key": "Preview disabled - needs model imports",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 95
+        }
+      }
+    ]
+  },
+  "version": 1
+}

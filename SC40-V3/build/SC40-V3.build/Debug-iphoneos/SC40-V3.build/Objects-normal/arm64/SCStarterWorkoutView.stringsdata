@@ -1,0 +1,240 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SCStarterWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "SPRINT COACH 40",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC STARTER / %lldYD",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld of %lld",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 131
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 156
+        }
+      },
+      {
+        "comment": "",
+        "key": "READY",
+        "location": {
+          "startingColumn": 67,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "GO!",
+        "location": {
+          "startingColumn": 77,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 175
+        }
+      },
+      {
+        "comment": "",
+        "key": "mph",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 183
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 189
+        }
+      },
+      {
+        "comment": "",
+        "key": "yards",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 197
+        }
+      },
+      {
+        "comment": "",
+        "key": "18:11",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 407
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep Log",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 396
+        }
+      },
+      {
+        "comment": "",
+        "key": "Live Workout Report",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 400
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 416
+        }
+      },
+      {
+        "comment": "",
+        "key": "YDS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 421
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 426
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 431
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINTS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 441
+        }
+      },
+      {
+        "comment": "",
+        "key": "Maximum effort • 100%",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 448
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 457
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 462
+        }
+      },
+      {
+        "comment": "",
+        "key": "•••",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 473
+        }
+      },
+      {
+        "comment": "",
+        "key": "—",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 478
+        }
+      },
+      {
+        "comment": "",
+        "key": "—",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 484
+        }
+      },
+      {
+        "comment": "",
+        "key": "SC Starter Complete!",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 571
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld × %lldyd Sprints",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 575
+        }
+      },
+      {
+        "comment": "",
+        "key": "Performance Summary",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 587
+        }
+      },
+      {
+        "comment": "",
+        "key": "What's Next?",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 620
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 662
+        }
+      }
+    ]
+  },
+  "version": 1
+}

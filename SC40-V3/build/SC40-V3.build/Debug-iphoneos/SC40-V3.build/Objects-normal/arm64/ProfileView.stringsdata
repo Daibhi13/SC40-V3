@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ProfileView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Profile",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manage your information",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 51
+        }
+      },
+      {
+        "comment": "",
+        "key": "Import From Apple Health",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Edit Profile",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 185
+        }
+      }
+    ]
+  },
+  "version": 1
+}

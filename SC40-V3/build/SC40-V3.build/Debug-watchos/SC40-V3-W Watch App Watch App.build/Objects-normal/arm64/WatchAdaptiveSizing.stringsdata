@@ -1,0 +1,128 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Utils Watch/WatchAdaptiveSizing.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Watch Adaptive Sizing",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Device: %@",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Spacing: %lldpx",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Padding: %lldpx",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 164
+        }
+      },
+      {
+        "comment": "",
+        "key": "Title Font",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "Headline Font",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "Body Font",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "Caption Font",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "42.85",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "Module Sizes",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "Small",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "Standard",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "Button Heights",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 243
+        }
+      },
+      {
+        "comment": "",
+        "key": "Height: %lldpx",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 243
+        }
+      },
+      {
+        "comment": "",
+        "key": "Adaptive Button",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 243
+        }
+      }
+    ]
+  },
+  "version": 1
+}

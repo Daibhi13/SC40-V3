@@ -15,99 +15,109 @@ struct SharePerformanceView: View {
     @State private var recipientEmail = ""
     @State private var showActivityView = false
     @State private var shareText = ""
+    @State private var isGenerating = false
     
-    enum ShareFormat: String, CaseIterable {
+    enum ShareFormat: String, CaseIterable, Identifiable {
         case pdf = "PDF Report"
         case csv = "CSV Data"
         case summary = "Summary"
+        
+        var id: String { rawValue }
+        
+        var description: String {
+            switch self {
+            case .pdf: return "Comprehensive report with detailed analysis and charts"
+            case .csv: return "Raw data export for analysis"
+            case .summary: return "Quick overview of key metrics"
+            }
+        }
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Share Training Data")
-                        .font(.title2.bold())
-                        .foregroundColor(.primary)
-                    
-                    // Format Selection
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Format")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        
-                        Picker("Format", selection: $selectedFormat) {
-                            ForEach(ShareFormat.allCases, id: \.self) { format in
-                                Text(format.rawValue).tag(format)
-                            }
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                    }
-                    
-                    // Data Selection
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Include Data")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Toggle("Personal Bests & Times", isOn: $includePersonalBests)
-                            Toggle("Training History", isOn: $includeTrainingHistory)
-                            Toggle("Progress Charts", isOn: $includeProgressCharts)
-                        }
-                    }
-                    
-                    // Recipient Email
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Recipient Email (Optional)")
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        
-                        TextField("coach@institution.edu", text: $recipientEmail)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocorrectionDisabled(true)
-                            .onSubmit {
-                                // Force lowercase when user submits
-                                recipientEmail = recipientEmail.lowercased()
-                            }
-                            .onChange(of: recipientEmail) { oldValue, newValue in
-                                // Convert to lowercase as user types
-                                if newValue != newValue.lowercased() {
-                                    recipientEmail = newValue.lowercased()
-                                }
-                            }
-                    }
-                }
-                .padding()
-                
-                Spacer()
-                
-                // Action Buttons
-                VStack(spacing: 12) {
-                    Button(action: generateAndShare) {
+        ZStack {
+            // Professional gradient background matching the design
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.1, green: 0.2, blue: 0.4),
+                    Color(red: 0.2, green: 0.3, blue: 0.6),
+                    Color(red: 0.3, green: 0.4, blue: 0.7)
+                ]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Header Section
+                    VStack(spacing: 20) {
+                        // Close Button
                         HStack {
-                            Image(systemName: "square.and.arrow.up")
-                            Text("Generate & Share")
+                            Spacer()
+                            Button(action: { dismiss() }) {
+                                Image(systemName: "xmark")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                    .frame(width: 32, height: 32)
+                                    .background(Color.white.opacity(0.2))
+                                    .clipShape(Circle())
+                            }
                         }
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 10)
+                        
+                        // Icon and Title
+                        VStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.yellow.opacity(0.2))
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: "doc.text.fill")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.yellow)
+                            }
+                            
+                            VStack(spacing: 8) {
+                                Text("Share Performance")
+                                    .font(.title.bold())
+                                    .foregroundColor(.white)
+                                
+                                Text("Professional Report for Coaches & Recruiters")
+                                    .font(.subheadline)
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
                     }
+                    .padding(.bottom, 30)
                     
-                    Button("Cancel", role: .cancel) {
-                        dismiss()
+                    // Content Sections
+                    VStack(spacing: 24) {
+                        // Report Format Section
+                        ReportFormatSection(selectedFormat: $selectedFormat)
+                        
+                        // Include in Report Section
+                        IncludeInReportSection(
+                            includePersonalBests: $includePersonalBests,
+                            includeTrainingHistory: $includeTrainingHistory,
+                            includeProgressCharts: $includeProgressCharts
+                        )
+                        
+                        // Send To Section
+                        SendToSection(recipientEmail: $recipientEmail)
+                        
+                        // Generate Button
+                        GenerateReportButton(
+                            isGenerating: $isGenerating,
+                            action: generateAndShare
+                        )
+                        
+                        // Professional Format Badge
+                        ProfessionalFormatBadge()
                     }
-                    .font(.subheadline)
-                }
-                .padding()
-            }
-            .navigationTitle("Share Performance")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Done") { dismiss() }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 40)
                 }
             }
         }
@@ -122,8 +132,14 @@ struct SharePerformanceView: View {
     }
     
     private func generateAndShare() {
-        shareText = generateReportContent()
-        showActivityView = true
+        isGenerating = true
+        
+        // Simulate report generation with delay for better UX
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            shareText = generateReportContent()
+            isGenerating = false
+            showActivityView = true
+        }
     }
     
     private func generateReportContent() -> String {
@@ -150,13 +166,16 @@ struct SharePerformanceView: View {
         let fileName = "SC40_Performance_\(selectedFormat.rawValue.replacingOccurrences(of: " ", with: "_"))_\(dateString)"
         
         // Create a custom activity item with proper file naming
+        #if canImport(UIKit)
         let shareItem = ShareableTextItem(
             text: shareText,
             fileName: fileName,
             format: selectedFormat
         )
-        
         return [shareItem]
+        #else
+        return [shareText]
+        #endif
     }
     
     private func generatePDFReport() -> String {
@@ -482,6 +501,298 @@ class ShareableTextItem: NSObject, UIActivityItemSource {
     }
 }
 #endif
+
+// MARK: - UI Components
+
+struct ReportFormatSection: View {
+    @Binding var selectedFormat: SharePerformanceView.ShareFormat
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "doc.text")
+                    .foregroundColor(.yellow)
+                Text("Report Format")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            
+            VStack(spacing: 12) {
+                ForEach(SharePerformanceView.ShareFormat.allCases) { format in
+                    FormatOptionCard(
+                        format: format,
+                        isSelected: selectedFormat == format
+                    ) {
+                        withAnimation(.spring(response: 0.3)) {
+                            selectedFormat = format
+                        }
+                    }
+                }
+            }
+            
+            Text(selectedFormat.description)
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.7))
+                .padding(.top, 8)
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        )
+    }
+}
+
+struct FormatOptionCard: View {
+    let format: SharePerformanceView.ShareFormat
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Text(format.rawValue)
+                    .font(.subheadline)
+                    .fontWeight(isSelected ? .semibold : .medium)
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.yellow)
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? Color.white.opacity(0.15) : Color.white.opacity(0.05))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? Color.yellow : Color.white.opacity(0.1), lineWidth: isSelected ? 2 : 1)
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct IncludeInReportSection: View {
+    @Binding var includePersonalBests: Bool
+    @Binding var includeTrainingHistory: Bool
+    @Binding var includeProgressCharts: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "checkmark.circle")
+                    .foregroundColor(.yellow)
+                Text("Include in Report")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            
+            VStack(spacing: 16) {
+                IncludeOptionRow(
+                    icon: "trophy.fill",
+                    title: "Personal Bests\n& Times",
+                    subtitle: "40-yard times,\nsplits,\nimprovements",
+                    isOn: $includePersonalBests,
+                    color: .yellow
+                )
+                
+                IncludeOptionRow(
+                    icon: "clock.arrow.circlepath",
+                    title: "Training History",
+                    subtitle: "Sessions,\nconsistency,\nattendance",
+                    isOn: $includeTrainingHistory,
+                    color: .blue
+                )
+                
+                IncludeOptionRow(
+                    icon: "chart.line.uptrend.xyaxis",
+                    title: "Progress Charts",
+                    subtitle: "Weekly\nimprovements,\ntrends",
+                    isOn: $includeProgressCharts,
+                    color: .purple
+                )
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        )
+    }
+}
+
+struct IncludeOptionRow: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    @Binding var isOn: Bool
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+                .frame(width: 32)
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            
+            Spacer()
+            
+            Toggle("", isOn: $isOn)
+                .toggleStyle(CustomToggleStyle())
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+struct CustomToggleStyle: ToggleStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        HStack {
+            configuration.label
+            
+            RoundedRectangle(cornerRadius: 16)
+                .fill(configuration.isOn ? Color.yellow : Color.white.opacity(0.3))
+                .frame(width: 50, height: 30)
+                .overlay(
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 26, height: 26)
+                        .offset(x: configuration.isOn ? 10 : -10)
+                        .animation(.spring(response: 0.3), value: configuration.isOn)
+                )
+                .onTapGesture {
+                    configuration.isOn.toggle()
+                }
+        }
+    }
+}
+
+struct SendToSection: View {
+    @Binding var recipientEmail: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Image(systemName: "envelope")
+                    .foregroundColor(.yellow)
+                Text("Send To (Optional)")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            
+            VStack(spacing: 12) {
+                TextField("coach@institution.edu", text: $recipientEmail)
+                    .font(.subheadline)
+                    .foregroundColor(.white)
+                    .padding(16)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            )
+                    )
+                    .autocorrectionDisabled(true)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                
+                Text("Enter coach or recruiter email address")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.6))
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        )
+    }
+}
+
+struct GenerateReportButton: View {
+    @Binding var isGenerating: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                if isGenerating {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                        .scaleEffect(0.8)
+                } else {
+                    Image(systemName: "lock.fill")
+                        .font(.headline)
+                }
+                
+                Text(isGenerating ? "Generating Report..." : "Generate Professional Report")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+            }
+            .foregroundColor(.black)
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.yellow)
+            )
+        }
+        .disabled(isGenerating)
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct ProfessionalFormatBadge: View {
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "info.circle.fill")
+                .foregroundColor(.blue)
+            
+            Text("Professional Format")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.1))
+        )
+    }
+}
 
 #Preview {
     SharePerformanceView()

@@ -1,0 +1,528 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/TrainingView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Coach 40",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings View",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Help & Info View",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "News View",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share with Teammates",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro Features",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "Performance Trends",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 95,
+          "startingLine": 65
+        }
+      },
+      {
+        "comment": "",
+        "key": "Help & Info",
+        "location": {
+          "startingColumn": 98,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "News",
+        "location": {
+          "startingColumn": 91,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share",
+        "location": {
+          "startingColumn": 102,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro Features",
+        "location": {
+          "startingColumn": 94,
+          "startingLine": 75
+        }
+      },
+      {
+        "comment": "",
+        "key": "Trends",
+        "location": {
+          "startingColumn": 100,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "Open menu",
+        "location": {
+          "startingColumn": 45,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opens the navigation menu",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 96
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro Features",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 178
+        }
+      },
+      {
+        "comment": "",
+        "key": "Accelerate",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 195
+        }
+      },
+      {
+        "comment": "",
+        "key": "6-Part Workout for W%lld/D%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 234
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 236
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 239
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Training",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 249
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 253
+        }
+      },
+      {
+        "comment": "",
+        "key": "Welcome, David!",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 450
+        }
+      },
+      {
+        "comment": "",
+        "key": "YOUR PERSONAL BEST",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 456
+        }
+      },
+      {
+        "comment": "",
+        "key": "5.25s",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 461
+        }
+      },
+      {
+        "comment": "",
+        "key": "40-Yard Dash",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 465
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 YARDS PROGRAM",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 478
+        }
+      },
+      {
+        "comment": "",
+        "key": "12-Week Training Program",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 483
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint Training",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 517
+        }
+      },
+      {
+        "comment": "",
+        "key": "Accel → Drive",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 551
+        }
+      },
+      {
+        "comment": "",
+        "key": "Up Next: Week 1, Day 1",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 546
+        }
+      },
+      {
+        "comment": "",
+        "key": "3×25yd",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 560
+        }
+      },
+      {
+        "comment": "",
+        "key": "Max",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 569
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scheduled for tomorrow",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 579
+        }
+      },
+      {
+        "comment": "",
+        "key": "DAY %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 630
+        }
+      },
+      {
+        "comment": "",
+        "key": "WEEK %lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 612
+        }
+      },
+      {
+        "comment": "",
+        "key": "PUSH YOUR LIMITS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 683
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 648
+        }
+      },
+      {
+        "comment": "",
+        "key": "×",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 651
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld YD",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 654
+        }
+      },
+      {
+        "comment": "",
+        "key": "RECOVERY",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 668
+        }
+      },
+      {
+        "comment": "",
+        "key": "ACTIVE",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 672
+        }
+      },
+      {
+        "comment": "",
+        "key": "PRO",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 799
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 Yards Program",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 839
+        }
+      },
+      {
+        "comment": "",
+        "key": "12-Week Training Program",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 843
+        }
+      },
+      {
+        "comment": "",
+        "key": "No sessions available",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 855
+        }
+      },
+      {
+        "comment": "",
+        "key": "12-Week Program",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 873
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld Sessions",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 879
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Session W%lld/D%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 913
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 915
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 918
+        }
+      },
+      {
+        "comment": "",
+        "key": "Every split matters. Chase the 40.",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 933
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint Training",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 953
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opens the adaptive workout hub to choose between iPhone and Apple Watch workouts.",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 954
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint Training",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 943
+        }
+      },
+      {
+        "comment": "",
+        "key": "Welcome, David!",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1376
+        }
+      },
+      {
+        "comment": "",
+        "key": "YOUR PERSONAL BEST",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1376
+        }
+      },
+      {
+        "comment": "",
+        "key": "5.25s",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1376
+        }
+      },
+      {
+        "comment": "",
+        "key": "40-Yard Dash",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1376
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 YARDS PROGRAM",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1413
+        }
+      },
+      {
+        "comment": "",
+        "key": "12-Week Training Program",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1413
+        }
+      },
+      {
+        "comment": "",
+        "key": "Up Next",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1413
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Hub",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1445
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Sprint Training",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 1445
+        }
+      }
+    ]
+  },
+  "version": 1
+}

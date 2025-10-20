@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */; };
+		06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312D12EA6374A001A07D7 /* WatchKit.framework */; };
 		06F6B2D32EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -35,6 +37,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
+		06D312D12EA6374A001A07D7 /* WatchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchKit.framework; sourceTree = DEVELOPER_DIR; };
 		06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -64,17 +68,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */,
+				06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06D312CE2EA63741001A07D7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				06D312D12EA6374A001A07D7 /* WatchKit.framework */,
+				06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		06F6B2AE2EA6324D00B4AE7A = {
 			isa = PBXGroup;
 			children = (
 				06F6B2B92EA6324D00B4AE7A /* SC40-V3 */,
 				06F6B2CA2EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */,
+				06D312CE2EA63741001A07D7 /* Frameworks */,
 				06F6B2B82EA6324D00B4AE7A /* Products */,
 			);
 			sourceTree = "<group>";

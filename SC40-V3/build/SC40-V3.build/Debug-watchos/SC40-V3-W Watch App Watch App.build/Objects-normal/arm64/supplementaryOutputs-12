@@ -1,0 +1,37 @@
+{
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/ControlWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ControlWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ControlWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ControlWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ControlWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ControlWatchView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/MainWorkoutWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MainWorkoutWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MainWorkoutWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MainWorkoutWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MainWorkoutWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MainWorkoutWatchView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/MusicWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MusicWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MusicWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MusicWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MusicWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/MusicWatchView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/RepLogSummaryFlowView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogSummaryFlowView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogSummaryFlowView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogSummaryFlowView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogSummaryFlowView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogSummaryFlowView.swiftdeps"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/RepLogWatchLiveView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogWatchLiveView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogWatchLiveView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogWatchLiveView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogWatchLiveView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RepLogWatchLiveView.swiftdeps"
+  }
+}

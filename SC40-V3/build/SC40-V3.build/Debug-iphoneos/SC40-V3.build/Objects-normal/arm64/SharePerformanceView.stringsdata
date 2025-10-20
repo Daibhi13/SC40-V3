@@ -1,0 +1,96 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SharePerformanceView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Share Performance",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 82
+        }
+      },
+      {
+        "comment": "",
+        "key": "Professional Report for Coaches & Recruiters",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Report Format",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 515
+        }
+      },
+      {
+        "comment": "",
+        "key": "Include in Report",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 594
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 664
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send To (Optional)",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 705
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enter coach or recruiter email address",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 727
+        }
+      },
+      {
+        "comment": "",
+        "key": "coach@institution.edu",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 711
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generating Report...",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 760
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generate Professional Report",
+        "location": {
+          "startingColumn": 62,
+          "startingLine": 760
+        }
+      },
+      {
+        "comment": "",
+        "key": "Professional Format",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 783
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PostSessionAnalyticsPanel.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Session Breakdown",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "Trends & Insights",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 26
+        }
+      },
+      {
+        "comment": "",
+        "key": "You improved 2.5% over last week.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your reaction time is in the top 10% of users.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 31
+        }
+      }
+    ]
+  },
+  "version": 1
+}

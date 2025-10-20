@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/SideMenuView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Menu",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 22
+        }
+      },
+      {
+        "comment": "",
+        "key": "Profile",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 11
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share Performance",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 19
+        }
+      }
+    ]
+  },
+  "version": 1
+}

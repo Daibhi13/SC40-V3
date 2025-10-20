@@ -1,0 +1,120 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/WelcomeView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Authentication Error",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "40",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 92
+        }
+      },
+      {
+        "comment": "",
+        "key": "Elite Sprint Training",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 99
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 143
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "40",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "Elite Sprint Training",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete Your Facebook Login",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enter your name to finish setting up your account",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "FIRST NAME",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "Continue",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 198
+        }
+      }
+    ]
+  },
+  "version": 1
+}

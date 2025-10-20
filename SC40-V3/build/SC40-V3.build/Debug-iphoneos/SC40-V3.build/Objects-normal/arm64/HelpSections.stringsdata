@@ -1,0 +1,272 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HelpSections.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "FAQ",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 39
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 43
+        }
+      },
+      {
+        "comment": "",
+        "key": "Getting Started",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 201
+        }
+      },
+      {
+        "comment": "",
+        "key": "🏃‍♂️ Getting Started",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 145
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your complete guide to Sprint Coach 40",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 149
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 205
+        }
+      },
+      {
+        "comment": "",
+        "key": "Subscription & Billing",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 271
+        }
+      },
+      {
+        "comment": "",
+        "key": "💳 Subscription & Billing",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 244
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manage your Sprint Coach 40 subscription",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 248
+        }
+      },
+      {
+        "comment": "",
+        "key": "Last updated: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 252
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 275
+        }
+      },
+      {
+        "comment": "",
+        "key": "Account Management",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 365
+        }
+      },
+      {
+        "comment": "",
+        "key": "👤 Account Management",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 309
+        }
+      },
+      {
+        "comment": "",
+        "key": "Manage your Sprint Coach 40 account",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 313
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 369
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training & Workouts",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 464
+        }
+      },
+      {
+        "comment": "",
+        "key": "🏃‍♂️ Training & Workouts",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 403
+        }
+      },
+      {
+        "comment": "",
+        "key": "Master your sprint training with Sprint Coach 40",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 407
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 468
+        }
+      },
+      {
+        "comment": "",
+        "key": "Technical Support",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 534
+        }
+      },
+      {
+        "comment": "",
+        "key": "🔧 Technical Support",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 507
+        }
+      },
+      {
+        "comment": "",
+        "key": "Troubleshooting and technical assistance",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 511
+        }
+      },
+      {
+        "comment": "",
+        "key": "Content version: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 515
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 538
+        }
+      },
+      {
+        "comment": "",
+        "key": "About Sprint Coach 40",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 631
+        }
+      },
+      {
+        "comment": "",
+        "key": "ℹ️ About Sprint Coach 40",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 575
+        }
+      },
+      {
+        "comment": "",
+        "key": "Professional sprint training in your pocket",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 579
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 635
+        }
+      },
+      {
+        "comment": "",
+        "key": "Legal & Privacy",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 701
+        }
+      },
+      {
+        "comment": "",
+        "key": "📄 Legal & Privacy",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 674
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your privacy and legal rights matter to us",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 678
+        }
+      },
+      {
+        "comment": "",
+        "key": "Compliance updated: %@",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 682
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 705
+        }
+      }
+    ]
+  },
+  "version": 1
+}

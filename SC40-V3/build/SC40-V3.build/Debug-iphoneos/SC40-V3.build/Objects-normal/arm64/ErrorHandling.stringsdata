@@ -1,0 +1,32 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/ErrorHandling.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Error",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 293
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 295
+        }
+      },
+      {
+        "comment": "",
+        "key": "Retry",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 300
+        }
+      }
+    ]
+  },
+  "version": 1
+}

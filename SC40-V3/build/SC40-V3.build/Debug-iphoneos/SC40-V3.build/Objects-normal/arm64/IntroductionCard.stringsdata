@@ -1,0 +1,40 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/IntroductionCard.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Welcome, %@!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 9
+        }
+      },
+      {
+        "comment": "",
+        "key": "YOUR PERSONAL BEST",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 15
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@s",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "40-Yard Dash",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 25
+        }
+      }
+    ]
+  },
+  "version": 1
+}

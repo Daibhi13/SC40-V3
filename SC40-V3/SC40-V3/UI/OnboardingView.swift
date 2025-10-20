@@ -23,6 +23,14 @@ struct OnboardingView: View {
         Double(pbSeconds) + Double(pbTenthsHundredths) / 100.0
     }
     
+    // Computed property to estimate total sessions in 12-week program
+    private var estimatedSessions: Int {
+        let trainingDaysPerWeek = daysAvailable >= 6 ? daysAvailable - 1 : daysAvailable // Account for recovery days
+        let totalTrainingDays = trainingDaysPerWeek * 12
+        let timeTrialDays = 4 // Weeks 1, 4, 8, 12
+        return totalTrainingDays + timeTrialDays
+    }
+    
     let feetRange = Array(4...7)
     let inchRange = Array(0...11)
     let ageRange = Array(8...100)
@@ -47,52 +55,80 @@ struct OnboardingView: View {
             ZStack {
                 backgroundGradient
                 
-                ScrollView {
-                    VStack(spacing: 24) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(spacing: 24) {
                         // Header with progress matching the design
                         VStack(spacing: 16) {
                             Text("Welcome, \(userName)!")
                                 .font(.system(size: 28, weight: .bold))
                                 .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
                             
                             Text("Let's build your personalized training program")
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(.white.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
                             
-                            // Progress bar matching the design
-                            HStack(spacing: 0) {
-                                ForEach(0..<5) { index in
-                                    Rectangle()
-                                        .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
-                                        .frame(height: 4)
-                                        .frame(maxWidth: .infinity)
+                            // Enhanced progress bar with animation
+                            VStack(spacing: 8) {
+                                HStack(spacing: 4) {
+                                    ForEach(0..<5) { index in
+                                        Rectangle()
+                                            .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                            .frame(height: 4)
+                                            .frame(maxWidth: .infinity)
+                                            .cornerRadius(2)
+                                    }
                                 }
+                                .padding(.horizontal, 20)
+                                
+                                Text("5 Questions • 2 minutes")
+                                    .font(.caption)
+                                    .foregroundColor(.white.opacity(0.6))
                             }
-                            .cornerRadius(2)
-                            .padding(.horizontal, 20)
                         }
-                        .padding(.top, 40)
+                        .padding(.top, 20)
                         .padding(.horizontal)
                         
-                        pbSection
-                        profileSection
-                        bodyMetricsSection
-                        scheduleSection
-                        leaderboardSection
+                        // Questions sections with improved spacing
+                        Group {
+                            pbSection
+                            profileSection
+                            bodyMetricsSection
+                            scheduleSection
+                            leaderboardSection
+                        }
                         
-                        Spacer(minLength: 80) // leaves space for sticky finish button
+                        // Extra bottom padding for sticky button
+                        Spacer(minLength: 120)
                     }
-                    .padding()
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
                 }
                 
-                // Sticky Finish Button
+                // Enhanced Sticky Finish Button
                 VStack {
                     Spacer()
+                    
+                    // Gradient fade overlay for better visual separation
+                    LinearGradient(
+                        colors: [
+                            Color.clear,
+                            Color.black.opacity(0.3),
+                            Color.black.opacity(0.8)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .frame(height: 60)
+                    .allowsHitTesting(false)
+                    
                     finishButton
-                        .padding()
-                        .glassEffect()
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
                         .background(
-                            Color.black
+                            Color.black.opacity(0.8)
                                 .ignoresSafeArea(edges: .bottom)
                         )
                 }
@@ -156,8 +192,12 @@ struct OnboardingView: View {
                         .frame(width: 80, height: 120)
                         .clipped()
                         .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.black.opacity(0.3))
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.4))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                                )
                         )
                     }
                     
@@ -189,8 +229,12 @@ struct OnboardingView: View {
                         .frame(width: 80, height: 120)
                         .clipped()
                         .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.black.opacity(0.3))
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.black.opacity(0.4))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                                )
                         )
                     }
                     
@@ -363,18 +407,53 @@ struct OnboardingView: View {
                         .cornerRadius(8)
                 }
             
-                VStack(alignment: .leading, spacing: 12) {
-                    Stepper("Age: \(age)", value: $age, in: 8...100)
-                        .foregroundColor(.white)
-                    
-                    HStack {
-                        Stepper("Height: \(heightFeet)ft \(heightInches)in", value: $heightFeet, in: 4...7)
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Age")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                            .bold()
+                        Stepper("Age: \(age)", value: $age, in: 8...100)
                             .foregroundColor(.white)
-                        Stepper("", value: $heightInches, in: 0...11)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.black.opacity(0.2))
+                            .cornerRadius(10)
                     }
                     
-                    Stepper("Weight: \(weight) lbs", value: $weight, in: 40...500)
-                        .foregroundColor(.white)
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Height")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                            .bold()
+                        HStack(spacing: 12) {
+                            Stepper("Height: \(heightFeet)ft \(heightInches)in", value: $heightFeet, in: 4...7)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.black.opacity(0.2))
+                                .cornerRadius(10)
+                            Stepper("", value: $heightInches, in: 0...11)
+                                .labelsHidden()
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.black.opacity(0.2))
+                                .cornerRadius(10)
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Weight")
+                            .foregroundColor(.yellow)
+                            .font(.caption)
+                            .bold()
+                        Stepper("Weight: \(weight) lbs", value: $weight, in: 40...500)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.black.opacity(0.2))
+                            .cornerRadius(10)
+                    }
                 }
             }
         }
@@ -404,8 +483,18 @@ struct OnboardingView: View {
                         .cornerRadius(8)
                 }
                 
-                Stepper("Days per week: \(daysAvailable)", value: $daysAvailable, in: 1...7)
-                    .foregroundColor(.white)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Training Frequency")
+                        .foregroundColor(.yellow)
+                        .font(.caption)
+                        .bold()
+                    Stepper("Days per week: \(daysAvailable)", value: $daysAvailable, in: 1...7)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.black.opacity(0.2))
+                        .cornerRadius(10)
+                }
             }
         }
     }
@@ -434,40 +523,60 @@ struct OnboardingView: View {
                         .cornerRadius(8)
                 }
                 
-                Picker("Opt in to Leaderboard", selection: $leaderboardOptIn) {
-                    Text("Yes").tag(true)
-                    Text("No").tag(false)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Join the global leaderboard and compete with other athletes?")
+                        .foregroundColor(.white.opacity(0.8))
+                        .font(.subheadline)
+                        .fixedSize(horizontal: false, vertical: true)
+                    
+                    Picker("Opt in to Leaderboard", selection: $leaderboardOptIn) {
+                        Text("Yes, I'm in!").tag(true)
+                        Text("No thanks").tag(false)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
                 }
-                .pickerStyle(SegmentedPickerStyle())
             }
         }
     }
     
-    // MARK: - Finish Button
+    // MARK: - Enhanced Finish Button
     private var finishButton: some View {
-        VStack(spacing: 12) {
-            // Summary card
-            HStack(spacing: 12) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(.green)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Ready to Start")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    Text("Your \(String(format: "%.2f", pb))s program is ready")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
+        VStack(spacing: 16) {
+            // Enhanced summary card with program details
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
+                    Image(systemName: "bolt.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.yellow)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Program Ready")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text("\(fitnessLevel) • \(daysAvailable) days/week • \(String(format: "%.2f", pb))s baseline")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    
+                    Spacer()
                 }
                 
-                Spacer()
+                // Program features preview
+                HStack(spacing: 16) {
+                    FeaturePreview(icon: "calendar", text: "12 Weeks", color: .blue)
+                    FeaturePreview(icon: "figure.run", text: "\(estimatedSessions) Sessions", color: .green)
+                    FeaturePreview(icon: "target", text: "Time Trials", color: .orange)
+                    if daysAvailable >= 6 {
+                        FeaturePreview(icon: "leaf", text: "Recovery", color: .mint)
+                    }
+                }
             }
             .padding()
             .background(Color.white.opacity(0.1))
             .cornerRadius(12)
             
             Button(action: {
+            // Save all user profile data
             userProfileVM.profile.name = userName
             userProfileVM.profile.gender = gender
             userProfileVM.profile.age = age
@@ -475,20 +584,23 @@ struct OnboardingView: View {
             userProfileVM.profile.weight = Double(weight)
             userProfileVM.profile.level = fitnessLevel
             userProfileVM.profile.baselineTime = pb
-            userProfileVM.profile.personalBests["40yd"] = pb // Also update the personalBests dictionary
+            userProfileVM.profile.personalBests["40yd"] = pb
             userProfileVM.profile.frequency = daysAvailable
             userProfileVM.profile.leaderboardOptIn = leaderboardOptIn
-            // userProfileVM.profile.sessions = [] // Removed - using UUID-based session management
             
             // Debug: Verify the personal best is set correctly
             print("🏃‍♂️ Onboarding: Setting personal best to \(pb)s")
-            print("🏃‍♂️ Onboarding: personalBests['40yd'] = \(userProfileVM.profile.personalBests["40yd"] ?? 0.0)")
-            print("🏃‍♂️ Onboarding: baselineTime = \(userProfileVM.profile.baselineTime)")
+            print("🏃‍♂️ Onboarding: Level = \(fitnessLevel), Frequency = \(daysAvailable) days/week")
             
-            // Generate the appropriate training program based on user's selections
-            userProfileVM.refreshAdaptiveProgram() // Re-enabled - session management fixed
+            // Generate comprehensive 12-week training program
+            generateTrainingProgram()
             
-                onComplete()
+            // Save level to UserDefaults for Watch app access
+            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+            UserDefaults.standard.set(daysAvailable, forKey: "userFrequency")
+            UserDefaults.standard.set(pb, forKey: "userBaselineTime")
+            
+            onComplete()
             }) {
                 HStack {
                     Text("Generate My Training Program")
@@ -512,15 +624,64 @@ struct OnboardingView: View {
         }
     }
     
-    // MARK: - Reusable Section Card
+    // MARK: - Enhanced Reusable Section Card
     private func sectionCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             content()
         }
-        .padding()
-        .glassEffect()
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.08))
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
+        )
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .shadow(color: .white.opacity(0.05), radius: 1, x: 0, y: 1)
+    }
+    
+    // MARK: - Training Program Generation
+    
+    /// Generates comprehensive 12-week training program based on user selections
+    private func generateTrainingProgram() {
+        print("🏃‍♂️ Generating 12-week program: Level=\(fitnessLevel), Frequency=\(daysAvailable)")
+        
+        // Create user preferences for program generation
+        let userPreferences = UserSessionPreferences(
+            favoriteTemplateIDs: userProfileVM.profile.favoriteSessionTemplateIDs,
+            preferredTemplateIDs: userProfileVM.profile.preferredSessionTemplateIDs,
+            dislikedTemplateIDs: userProfileVM.profile.dislikedSessionTemplateIDs,
+            allowRepeatingFavorites: userProfileVM.profile.allowRepeatingFavorites,
+            manualOverrides: userProfileVM.profile.manualSessionOverrides
+        )
+        
+        // Generate 12-week program with level-specific sessions
+        let weeklyPrograms = WeeklyProgramTemplate.generateWithUserPreferences(
+            level: fitnessLevel,
+            totalDaysPerWeek: daysAvailable,
+            userPreferences: userPreferences,
+            includeActiveRecovery: daysAvailable >= 6,
+            includeRestDay: daysAvailable >= 7
+        )
+        
+        print("📅 Generated \(weeklyPrograms.count) weeks of training")
+        
+        // Convert to training sessions and store in UserProfileViewModel
+        userProfileVM.refreshAdaptiveProgram()
+        
+        // Log program details for debugging
+        for (_, week) in weeklyPrograms.prefix(3).enumerated() {
+            print("Week \(week.weekNumber): \(week.sessions.count) sessions")
+            for session in week.sessions.prefix(2) {
+                if let template = session.sessionTemplate {
+                    print("  Day \(session.dayNumber): \(template.name) (\(template.focus))")
+                } else {
+                    print("  Day \(session.dayNumber): \(session.sessionType.rawValue)")
+                }
+            }
+        }
     }
     
     // MARK: - Helper Functions
@@ -573,6 +734,25 @@ extension Text {
         self
             .font(.headline.bold())
             .foregroundColor(.yellow)
+    }
+}
+
+// MARK: - Feature Preview Component
+struct FeaturePreview: View {
+    let icon: String
+    let text: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(color)
+            Text(text)
+                .font(.caption2)
+                .foregroundColor(.white.opacity(0.8))
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

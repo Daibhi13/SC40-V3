@@ -264,31 +264,12 @@ struct SprinterAnimationView: View {
         .preferredColorScheme(.dark)
 }
 
-#Preview("Multi-Device Preview") {
-    ForEach(["iPhone SE (3rd generation)", "iPhone 14", "iPhone 15 Pro Max"], id: \.self) { deviceName in
-        EntryIOSView()
-            .previewDevice(PreviewDevice(rawValue: deviceName))
-            .previewDisplayName(deviceName)
-            .preferredColorScheme(.dark)
-    }
+#Preview("EntryIOSView - Default") {
+    EntryIOSView()
 }
 
-#Preview("Individual Device Previews") {
-    Group {
-        EntryIOSView()
-            .previewDevice("iPhone SE (3rd generation)")
-            .previewDisplayName("iPhone SE (3rd gen)")
-            .preferredColorScheme(.dark)
-        
-        EntryIOSView()
-            .previewDevice("iPhone 14")
-            .previewDisplayName("iPhone 14")
-            .preferredColorScheme(.dark)
-        
-        EntryIOSView()
-            .previewDevice("iPhone 15 Pro Max")
-            .previewDisplayName("iPhone 15 Pro Max")
-            .preferredColorScheme(.dark)
-    }
+#Preview("EntryIOSView - Dark Mode") {
+    EntryIOSView()
+        .preferredColorScheme(.dark)
 }
 #endif

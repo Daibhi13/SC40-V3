@@ -245,13 +245,30 @@ struct CountdownView: View {
         .preferredColorScheme(.dark)
 }
 
-#Preview("ContentView - iPhone 14") {
-    ContentView()
-        .preferredColorScheme(.dark)
+#Preview {
+    ForEach(["iPhone SE (3rd generation)", "iPhone 14", "iPhone 15 Pro Max"], id: \.self) { deviceName in
+        ContentView()
+            .previewDevice(PreviewDevice(rawValue: deviceName))
+            .previewDisplayName(deviceName)
+    }
 }
 
-#Preview("ContentView - iPhone SE") {
-    ContentView()
-        .preferredColorScheme(.dark)
+#Preview("Individual Device Testing") {
+    Group {
+        ContentView()
+            .previewDevice("iPhone SE (3rd generation)")
+            .previewDisplayName("iPhone SE (3rd gen)")
+            .preferredColorScheme(.dark)
+        
+        ContentView()
+            .previewDevice("iPhone 14")
+            .previewDisplayName("iPhone 14")
+            .preferredColorScheme(.dark)
+        
+        ContentView()
+            .previewDevice("iPhone 15 Pro Max")
+            .previewDisplayName("iPhone 15 Pro Max")
+            .preferredColorScheme(.dark)
+    }
 }
 #endif

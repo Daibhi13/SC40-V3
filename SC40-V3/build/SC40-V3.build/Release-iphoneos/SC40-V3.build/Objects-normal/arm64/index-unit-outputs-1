@@ -1,4 +1,10 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveSprintProgram.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ComprehensiveSessionLibrary.o
@@ -39,7 +45,10 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileExtensions.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileViewModel.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutPlan.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/InstagramAuthService.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/LocationService.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/LoggingService.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsService.o
@@ -52,6 +61,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimer.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/BrandColors.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomButton.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmailSignupView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmptyStateView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/GlassEffect.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/IntroductionCard.o
@@ -59,6 +69,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/RecordCard.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneGPSStopwatchManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/PhoneWorkoutButton.o
@@ -72,6 +83,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveWorkoutHub.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsMonetizationView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CalendarRoadmapView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CoachingSettingsView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CombineView.o
@@ -79,6 +91,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/DashboardView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/DayDetailView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EditProfileView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Enhanced40YardSmartView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EnhancedLeaderboardView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EntryIOSView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/HamburgerSideMenu.o
@@ -105,6 +118,8 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ProPaywall.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/PurchaseManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinWorkoutView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralsView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReminderSettingsView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SCStarterConfigView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SCStarterWorkoutView.o
@@ -115,14 +130,12 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SharePerformanceView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ShareWithTeammatesView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuRow.o
-/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardButtonRow.o
-/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardDescription.o
-/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardImage.o
-/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardTitle.o
-/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SixPartWorkoutView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SocialFeaturesView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachProView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintNewsView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProWorkoutView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StarterProPurchaseView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StarterProView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StarterProWatchView.o
@@ -135,6 +148,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SessionDetailView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SessionListView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/TrainingProgramView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AppDelegate.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ContentView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Item.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SC40_V3_App.o

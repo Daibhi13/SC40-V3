@@ -21,6 +21,8 @@ struct TrainingView: View {
     @State private var selectedSession: TrainingSession?
     @State private var showMainProgramWorkout = false
     @State private var showSprintTimerPro = false
+    @State private var selectedSessionForWorkout: TrainingSession?
+    @State private var dynamicSessions: [TrainingSession] = []
 
     enum MenuSelection {
         case main
@@ -263,7 +265,7 @@ struct TrainingView: View {
         }
         .sheet(isPresented: $showMainProgramWorkout) {
             NavigationView {
-                MainProgramWorkoutView()
+                MainProgramWorkoutView(selectedSession: selectedSessionForWorkout)
                     .navigationTitle("Sprint Training")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
@@ -336,130 +338,203 @@ extension TrainingView {
         return cachedSessions
     }
 
-    // Static mock sessions to prevent recreation on every view update
-    // Static mock sessions for demo - representative of SessionLibrary quality
-    static let staticMockSessions: [TrainingSession] = [
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
-            week: 1,
-            day: 1,
-            type: "Speed",
-            focus: "Acceleration",
-            sprints: [SprintSet(distanceYards: 25, reps: 3, intensity: "max")],
-            accessoryWork: ["Dynamic warm-up", "A-skips", "Cool-down stretching"],
-            notes: "Focus on explosive starts"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000002")!,
-            week: 1,
-            day: 2,
-            type: "Speed",
-            focus: "Drive Phase",
-            sprints: [SprintSet(distanceYards: 30, reps: 4, intensity: "max")],
-            accessoryWork: ["Dynamic warm-up", "High knees", "Cool-down stretching"],
-            notes: "Maintain low body position"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000003")!,
-            week: 1,
-            day: 3,
-            type: "Plyometrics",
-            focus: "Power",
-            sprints: [SprintSet(distanceYards: 20, reps: 5, intensity: "explosive")],
-            accessoryWork: ["Jump training", "Reactive drills", "Recovery"],
-            notes: "Focus on explosive power"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000004")!,
-            week: 2,
-            day: 1,
-            type: "Speed",
-            focus: "Max Velocity",
-            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
-            accessoryWork: ["Flying starts", "Wicket runs", "Cool-down"],
-            notes: "Build top-end speed"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000005")!,
-            week: 2,
-            day: 2,
-            type: "Tempo",
-            focus: "Endurance",
-            sprints: [SprintSet(distanceYards: 60, reps: 4, intensity: "tempo")],
-            accessoryWork: ["Extended warm-up", "Tempo runs", "Recovery"],
-            notes: "Build speed endurance"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000006")!,
-            week: 2,
-            day: 3,
-            type: "Active Recovery",
-            focus: "Recovery",
-            sprints: [],
-            accessoryWork: ["20-30 min easy jog", "Dynamic stretching", "Foam rolling"],
-            notes: "Active recovery day"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000007")!,
-            week: 3,
-            day: 1,
-            type: "Speed",
-            focus: "Acceleration",
-            sprints: [SprintSet(distanceYards: 35, reps: 4, intensity: "max")],
-            accessoryWork: ["Block starts", "Drive phase", "Cool-down"],
-            notes: "Perfect your start technique"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000008")!,
-            week: 3,
-            day: 2,
-            type: "Flying Runs",
-            focus: "Top Speed",
-            sprints: [SprintSet(distanceYards: 50, reps: 3, intensity: "max")],
-            accessoryWork: ["Build-up runs", "Flying starts", "Recovery"],
-            notes: "Reach maximum velocity"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000009")!,
-            week: 3,
-            day: 3,
-            type: "Plyometrics",
-            focus: "Reactive Power",
-            sprints: [SprintSet(distanceYards: 25, reps: 4, intensity: "explosive")],
-            accessoryWork: ["Depth jumps", "Bounding", "Recovery"],
-            notes: "Develop reactive strength"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000010")!,
-            week: 4,
-            day: 1,
-            type: "Benchmark",
-            focus: "Assessment",
-            sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "test")],
-            accessoryWork: ["Extended warm-up", "Mental preparation", "Cool-down protocol"],
-            notes: "40-yard time trial - Week 4 assessment"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000011")!,
-            week: 4,
-            day: 2,
-            type: "Speed",
-            focus: "Competition Prep",
-            sprints: [SprintSet(distanceYards: 40, reps: 2, intensity: "race pace")],
-            accessoryWork: ["Race simulation", "Mental prep", "Recovery"],
-            notes: "Practice race conditions"
-        ),
-        TrainingSession(
-            id: UUID(uuidString: "00000000-0000-0000-0000-000000000012")!,
-            week: 4,
-            day: 3,
-            type: "Recovery",
-            focus: "Regeneration",
-            sprints: [],
-            accessoryWork: ["Light movement", "Massage", "Stretching"],
-            notes: "Full recovery session"
+    // Dynamic sessions generated based on user profile and SessionLibrary
+    private func generateDynamicSessions() -> [TrainingSession] {
+        let userLevel = userProfileVM.profile.level.lowercased()
+        let currentWeek = userProfileVM.profile.currentWeek
+        let frequency = userProfileVM.profile.frequency
+        
+        print("🏃‍♂️ TrainingView: Generating sessions for \(userProfileVM.profile.level) level, Week \(currentWeek), \(frequency) days/week")
+        
+        var sessions: [TrainingSession] = []
+        
+        // Generate sessions based on user level and current week
+        for day in 1...frequency {
+            let session = generateSessionForDay(
+                week: currentWeek,
+                day: day,
+                level: userLevel
+            )
+            sessions.append(session)
+        }
+        
+        return sessions
+    }
+    
+    private func generateSessionForDay(week: Int, day: Int, level: String) -> TrainingSession {
+        // Session patterns based on level
+        let sessionData = getSessionDataForLevel(level: level, week: week, day: day)
+        
+        return TrainingSession(
+            id: TrainingSession.stableSessionID(week: week, day: day),
+            week: week,
+            day: day,
+            type: sessionData.type,
+            focus: sessionData.focus,
+            sprints: sessionData.sprints,
+            accessoryWork: sessionData.accessoryWork,
+            notes: sessionData.notes
         )
-    ]
+    }
+    
+    private func getSessionDataForLevel(level: String, week: Int, day: Int) -> (type: String, focus: String, sprints: [SprintSet], accessoryWork: [String], notes: String) {
+        switch level {
+        case "beginner":
+            return generateBeginnerSession(week: week, day: day)
+        case "intermediate":
+            return generateIntermediateSession(week: week, day: day)
+        case "advanced":
+            return generateAdvancedSession(week: week, day: day)
+        case "elite":
+            return generateEliteSession(week: week, day: day)
+        default:
+            return generateBeginnerSession(week: week, day: day)
+        }
+    }
+    
+    private func generateBeginnerSession(week: Int, day: Int) -> (type: String, focus: String, sprints: [SprintSet], accessoryWork: [String], notes: String) {
+        let dayPattern = (day - 1) % 3
+        switch dayPattern {
+        case 0: // Day 1 - Acceleration
+            return (
+                type: "Acceleration",
+                focus: "First Step",
+                sprints: [SprintSet(distanceYards: 20, reps: 6, intensity: "moderate")],
+                accessoryWork: ["Dynamic warm-up", "A-Skip drill", "Wall drives", "Cool-down"],
+                notes: "Focus on explosive first step and low body position"
+            )
+        case 1: // Day 2 - Speed Development
+            return (
+                type: "Speed",
+                focus: "Drive Phase",
+                sprints: [SprintSet(distanceYards: 30, reps: 4, intensity: "high")],
+                accessoryWork: ["Dynamic warm-up", "High knees", "Butt kicks", "Cool-down"],
+                notes: "Maintain forward lean and powerful arm drive"
+            )
+        default: // Day 3 - Recovery/Technique
+            return (
+                type: "Technique",
+                focus: "Form Work",
+                sprints: [SprintSet(distanceYards: 25, reps: 3, intensity: "moderate")],
+                accessoryWork: ["Light warm-up", "Technique drills", "Flexibility", "Recovery"],
+                notes: "Focus on proper running form and technique"
+            )
+        }
+    }
+    
+    private func generateIntermediateSession(week: Int, day: Int) -> (type: String, focus: String, sprints: [SprintSet], accessoryWork: [String], notes: String) {
+        let dayPattern = (day - 1) % 3
+        switch dayPattern {
+        case 0: // Day 1 - Acceleration
+            return (
+                type: "Acceleration",
+                focus: "Drive Phase",
+                sprints: [SprintSet(distanceYards: 25, reps: 5, intensity: "high")],
+                accessoryWork: ["Dynamic warm-up", "Block starts", "Drive drills", "Strength", "Cool-down"],
+                notes: "Perfect your acceleration technique"
+            )
+        case 1: // Day 2 - Max Velocity
+            return (
+                type: "Speed",
+                focus: "Max Velocity",
+                sprints: [SprintSet(distanceYards: 40, reps: 4, intensity: "max")],
+                accessoryWork: ["Extended warm-up", "Flying starts", "Wicket runs", "Cool-down"],
+                notes: "Build to maximum velocity"
+            )
+        default: // Day 3 - Speed Endurance
+            return (
+                type: "Speed Endurance",
+                focus: "Conditioning",
+                sprints: [SprintSet(distanceYards: 50, reps: 3, intensity: "high")],
+                accessoryWork: ["Warm-up", "Tempo runs", "Recovery work", "Stretching"],
+                notes: "Maintain speed over longer distances"
+            )
+        }
+    }
+    
+    private func generateAdvancedSession(week: Int, day: Int) -> (type: String, focus: String, sprints: [SprintSet], accessoryWork: [String], notes: String) {
+        let dayPattern = (day - 1) % 4
+        switch dayPattern {
+        case 0: // Day 1 - Power/Acceleration
+            return (
+                type: "Power",
+                focus: "Explosive Starts",
+                sprints: [SprintSet(distanceYards: 30, reps: 6, intensity: "max")],
+                accessoryWork: ["Dynamic warm-up", "Block starts", "Power training", "Recovery"],
+                notes: "Maximum explosive power development"
+            )
+        case 1: // Day 2 - Max Velocity
+            return (
+                type: "Speed",
+                focus: "Top Speed",
+                sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                accessoryWork: ["Competition warm-up", "Flying runs", "Speed mechanics", "Cool-down"],
+                notes: "Reach and maintain maximum velocity"
+            )
+        case 2: // Day 3 - Speed Endurance
+            return (
+                type: "Speed Endurance",
+                focus: "Lactate Tolerance",
+                sprints: [SprintSet(distanceYards: 60, reps: 4, intensity: "high")],
+                accessoryWork: ["Extended warm-up", "Tempo work", "Recovery protocols"],
+                notes: "Maintain speed under fatigue"
+            )
+        default: // Day 4 - Recovery/Technique
+            return (
+                type: "Active Recovery",
+                focus: "Regeneration",
+                sprints: [SprintSet(distanceYards: 20, reps: 2, intensity: "easy")],
+                accessoryWork: ["Light movement", "Mobility work", "Massage", "Stretching"],
+                notes: "Active recovery and regeneration"
+            )
+        }
+    }
+    
+    private func generateEliteSession(week: Int, day: Int) -> (type: String, focus: String, sprints: [SprintSet], accessoryWork: [String], notes: String) {
+        let dayPattern = (day - 1) % 5
+        switch dayPattern {
+        case 0: // Day 1 - Power Development
+            return (
+                type: "Power",
+                focus: "Maximum Power",
+                sprints: [SprintSet(distanceYards: 35, reps: 6, intensity: "max")],
+                accessoryWork: ["Elite warm-up", "Block work", "Power training", "Recovery protocols"],
+                notes: "Elite-level power development"
+            )
+        case 1: // Day 2 - Speed/Velocity
+            return (
+                type: "Speed",
+                focus: "Peak Velocity",
+                sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                accessoryWork: ["Competition prep", "Flying starts", "Video analysis", "Recovery"],
+                notes: "Peak velocity development"
+            )
+        case 2: // Day 3 - Competition Simulation
+            return (
+                type: "Competition",
+                focus: "Race Preparation",
+                sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "race")],
+                accessoryWork: ["Race warm-up", "Mental prep", "Competition protocols"],
+                notes: "Simulate competition conditions"
+            )
+        case 3: // Day 4 - Speed Endurance
+            return (
+                type: "Speed Endurance",
+                focus: "Elite Conditioning",
+                sprints: [SprintSet(distanceYards: 75, reps: 3, intensity: "high")],
+                accessoryWork: ["Extended prep", "Lactate work", "Advanced recovery"],
+                notes: "Elite-level speed endurance"
+            )
+        default: // Day 5 - Recovery
+            return (
+                type: "Recovery",
+                focus: "Elite Recovery",
+                sprints: [SprintSet(distanceYards: 25, reps: 2, intensity: "easy")],
+                accessoryWork: ["Professional recovery", "Therapy", "Regeneration protocols"],
+                notes: "Professional recovery protocols"
+            )
+        }
+    }
 }
 
 // MARK: - TrainingView Methods
@@ -467,12 +542,7 @@ extension TrainingView {
 extension TrainingView {
     // Main dashboard matching the exact screenshot design
     func mainDashboard(profile: UserProfile, userProfileVM: UserProfileViewModel) -> some View {
-        let sessionsToShow: [TrainingSession]
-        if !profile.sessionIDs.isEmpty {
-            sessionsToShow = TrainingView.staticMockSessions
-        } else {
-            sessionsToShow = TrainingView.staticMockSessions
-        }
+        let sessionsToShow: [TrainingSession] = generateDynamicSessions()
         
         return ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -523,6 +593,7 @@ extension TrainingView {
                             ForEach(sessionsToShow.prefix(12), id: \.id) { session in
                                 TrainingSessionCard(session: session)
                                     .onTapGesture {
+                                        selectedSessionForWorkout = session
                                         showMainProgramWorkout = true
                                         #if os(iOS)
                                         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
@@ -540,6 +611,8 @@ extension TrainingView {
                     #if os(iOS)
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                     #endif
+                    // Use the first session as default when using Start button
+                    selectedSessionForWorkout = sessionsToShow.first
                     showMainProgramWorkout = true
                 }) {
                     HStack(spacing: 12) {
@@ -1717,6 +1790,6 @@ struct FeatureTag: View {
 
 extension TrainingView {
     private func getCurrentTrainingSession() -> TrainingSession? {
-        return TrainingView.staticMockSessions.first
+        return generateDynamicSessions().first
     }
 }

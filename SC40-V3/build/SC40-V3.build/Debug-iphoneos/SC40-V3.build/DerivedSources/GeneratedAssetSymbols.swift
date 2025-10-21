@@ -31,6 +31,9 @@ extension DeveloperToolsSupport.ColorResource {
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension DeveloperToolsSupport.ImageResource {
 
+    /// The "76" asset catalog image resource.
+    static let _76 = DeveloperToolsSupport.ImageResource(name: "76", bundle: resourceBundle)
+
     /// The "appstore" asset catalog image resource.
     static let appstore = DeveloperToolsSupport.ImageResource(name: "appstore", bundle: resourceBundle)
 
@@ -82,6 +85,15 @@ extension SwiftUI.ShapeStyle where Self == SwiftUI.Color {
 @available(macCatalyst, unavailable)
 extension AppKit.NSImage {
 
+    /// The "76" asset catalog image.
+    static var _76: AppKit.NSImage {
+#if !targetEnvironment(macCatalyst)
+        .init(resource: ._76)
+#else
+        .init()
+#endif
+    }
+
     /// The "appstore" asset catalog image.
     static var appstore: AppKit.NSImage {
 #if !targetEnvironment(macCatalyst)
@@ -125,6 +137,15 @@ extension AppKit.NSImage {
 @available(iOS 17.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension UIKit.UIImage {
+
+    /// The "76" asset catalog image.
+    static var _76: UIKit.UIImage {
+#if !os(watchOS)
+        .init(resource: ._76)
+#else
+        .init()
+#endif
+    }
 
     /// The "appstore" asset catalog image.
     static var appstore: UIKit.UIImage {

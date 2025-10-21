@@ -6,6 +6,8 @@ struct OnboardingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     var onComplete: () -> Void
     
+    @StateObject private var workflowManager = TrainingPreferencesWorkflow()
+    
     @State private var gender = "Male"
     @State private var age = 25
     @State private var heightFeet = 5
@@ -608,21 +610,38 @@ struct OnboardingView: View {
             print("📊 Session Selection: Level=\(fitnessLevel), Frequency=\(daysAvailable) days/week")
             print("🏃‍♂️ Onboarding: Level = \(fitnessLevel), Frequency = \(daysAvailable) days/week")
             
-            // Generate comprehensive 12-week training program
-            generateTrainingProgram()
-            
             // Save level to UserDefaults for Watch app access
             UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
             UserDefaults.standard.set(daysAvailable, forKey: "userFrequency")
             UserDefaults.standard.set(pb, forKey: "userBaselineTime")
             
-            onComplete()
+            // Trigger: user.training_preferences.submitted
+            Task {
+                await workflowManager.handleTrainingPreferencesSubmitted(
+                    userId: userName,
+                    level: fitnessLevel.lowercased(),
+                    daysPerWeek: daysAvailable,
+                    userProfileVM: userProfileVM
+                )
+                
+                // Complete onboarding after workflow finishes
+                await MainActor.run {
+                    onComplete()
+                }
+            }
             }) {
                 HStack {
-                    Text("Generate My Training Program")
-                        .font(.headline.bold())
-                    Image(systemName: "arrow.right")
-                        .font(.headline)
+                    if workflowManager.isProcessing {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                        Text(getWorkflowStatusText())
+                            .font(.headline.bold())
+                    } else {
+                        Text("Generate My Training Program")
+                            .font(.headline.bold())
+                        Image(systemName: "arrow.right")
+                            .font(.headline)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
@@ -740,6 +759,28 @@ struct OnboardingView: View {
             } else {
                 return "Elite"
             }
+        }
+    }
+    
+    /// Get workflow status text for UI display
+    private func getWorkflowStatusText() -> String {
+        switch workflowManager.workflowStatus {
+        case .idle:
+            return "Generate My Training Program"
+        case .validating:
+            return "Validating Inputs..."
+        case .allocatingSchedule:
+            return "Creating Schedule..."
+        case .fetchingSessions:
+            return "Loading Sessions..."
+        case .generatingPlan:
+            return "Building Your Plan..."
+        case .storingPlan:
+            return "Saving Plan..."
+        case .completed:
+            return "Plan Complete!"
+        case .error(let message):
+            return "Error: \(message)"
         }
     }
     

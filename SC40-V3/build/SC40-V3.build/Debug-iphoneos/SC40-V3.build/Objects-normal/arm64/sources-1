@@ -39,6 +39,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/SprintSetAndTrainingSession.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/TrainingEnvironment.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/TrainingLevel.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/TrainingPreferencesWorkflow.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/TrainingSession.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserOnboardingAndTraining.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserProfile.swift
@@ -69,6 +70,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/RecordCard.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/ReusableRecordCard.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/SprintCoachGradientBackground.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WaveAIRepLogView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/CompletePhoneWorkout.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneGPSStopwatchManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutButton.swift
@@ -133,6 +135,8 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SocialFeaturesView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintCoachProView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintNewsView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProPurchaseView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProWatchView.swift

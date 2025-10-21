@@ -18,6 +18,9 @@ import Combine
 struct MainProgramWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     
+    // Selected session from TrainingView
+    let selectedSession: TrainingSession?
+    
     // MARK: - Sprint Coach Integration
     // Sprint Coach automated coaching system
     
@@ -40,7 +43,6 @@ struct MainProgramWorkoutView: View {
     @State private var isGPSStopwatchActive: Bool = false
     @State private var drillsCompleted: Int = 0
     @State private var stridesCompleted: Int = 0
-    @State private var plyometricsCompleted: Int = 0
     
     // Legacy state for UI compatibility
     @State private var currentSession: WorkoutSession?
@@ -58,21 +60,19 @@ struct MainProgramWorkoutView: View {
         let drillSets: [DrillSet]
         let strideSets: [StrideSet]
         let sprintSets: [SessionSprintSet]
-        let plyometricSets: [PlyometricSet]
         
         // Enhanced engagement features
         let librarySession: LibrarySession?
         let sessionVariety: Double // 0.0-1.0 variety score
         let engagementScore: Double // 0.0-1.0 engagement prediction
         
-        init(week: Int, day: Int, level: Int, drillSets: [DrillSet], strideSets: [StrideSet], sprintSets: [SessionSprintSet], plyometricSets: [PlyometricSet], librarySession: LibrarySession? = nil, sessionVariety: Double = 0.5, engagementScore: Double = 0.5) {
+        init(week: Int, day: Int, level: Int, drillSets: [DrillSet], strideSets: [StrideSet], sprintSets: [SessionSprintSet], librarySession: LibrarySession? = nil, sessionVariety: Double = 0.5, engagementScore: Double = 0.5) {
             self.week = week
             self.day = day
             self.level = level
             self.drillSets = drillSets
             self.strideSets = strideSets
             self.sprintSets = sprintSets
-            self.plyometricSets = plyometricSets
             self.librarySession = librarySession
             self.sessionVariety = sessionVariety
             self.engagementScore = engagementScore
@@ -83,7 +83,6 @@ struct MainProgramWorkoutView: View {
             let drillSets = generateDrillSets(for: level)
             let strideSets = generateStrideSets(for: level)
             let sprintSets = generateSprintSets(for: week, day: day, level: level)
-            let plyometricSets = generatePlyometricSets(for: level)
             
             return SessionData(
                 week: week,
@@ -91,8 +90,7 @@ struct MainProgramWorkoutView: View {
                 level: level,
                 drillSets: drillSets,
                 strideSets: strideSets,
-                sprintSets: sprintSets,
-                plyometricSets: plyometricSets
+                sprintSets: sprintSets
             )
         }
         
@@ -124,7 +122,6 @@ struct MainProgramWorkoutView: View {
             // Generate supporting sets based on selected session
             let drillSets = generateAdaptiveDrillSets(for: level, session: selectedSession)
             let strideSets = generateAdaptiveStrideSets(for: level, session: selectedSession)
-            let plyometricSets = generateAdaptivePlyometricSets(for: level, session: selectedSession)
             
             // Convert selected session to sprint sets
             let sprintSets = convertToSessionSprintSets(from: selectedSession, week: week, level: level)
@@ -136,7 +133,6 @@ struct MainProgramWorkoutView: View {
                 drillSets: drillSets,
                 strideSets: strideSets,
                 sprintSets: sprintSets,
-                plyometricSets: plyometricSets,
                 librarySession: selectedSession,
                 sessionVariety: calculateSessionVariety(completedSessions: completedSessions),
                 engagementScore: calculateEngagementScore(session: selectedSession, week: week)
@@ -158,17 +154,6 @@ struct MainProgramWorkoutView: View {
             ]
         }
         
-        private static func generatePlyometricSets(for level: Int) -> [PlyometricSet] {
-            let baseReps = min(2 + level, 6) // 2-6 reps based on level
-            return [
-                PlyometricSet(name: "Broad Jumps", reps: baseReps, distance: 10, restTime: 90),
-                PlyometricSet(name: "Single Leg Bounds", reps: baseReps, distance: 15, restTime: 90),
-                PlyometricSet(name: "Box Jumps", reps: baseReps, distance: 0, restTime: 120), // Height-based
-                PlyometricSet(name: "Depth Jumps", reps: baseReps, distance: 0, restTime: 120),
-                PlyometricSet(name: "Lateral Bounds", reps: baseReps, distance: 12, restTime: 90),
-                PlyometricSet(name: "Split Jumps", reps: baseReps, distance: 0, restTime: 90)
-            ]
-        }
         
         private static func generateSprintSets(for week: Int, day: Int, level: Int) -> [SessionSprintSet] {
             // Dynamic sprint configuration based on progression
@@ -232,12 +217,6 @@ struct MainProgramWorkoutView: View {
         let intensity: String
     }
     
-    struct PlyometricSet {
-        let name: String
-        let reps: Int
-        let distance: Int // yards (0 for height-based exercises)
-        let restTime: Int // seconds
-    }
     
     struct RepData {
         let id = UUID()
@@ -249,7 +228,7 @@ struct MainProgramWorkoutView: View {
         let timestamp: Date
         
         enum RepType {
-            case drill, stride, sprint, plyometric
+            case drill, stride, sprint
         }
     }
     
@@ -294,7 +273,6 @@ struct MainProgramWorkoutView: View {
         case drill = "drill"
         case strides = "strides"
         case sprints = "sprints"
-        case plyometrics = "plyometrics"
         case resting = "resting"
         case cooldown = "cooldown"
         case completed = "completed"
@@ -306,7 +284,6 @@ struct MainProgramWorkoutView: View {
             case .drill: return "Drills"
             case .strides: return "Strides"
             case .sprints: return "Sprints"
-            case .plyometrics: return "Plyometrics"
             case .resting: return "Rest"
             case .cooldown: return "Cooldown"
             case .completed: return "Complete"
@@ -320,7 +297,6 @@ struct MainProgramWorkoutView: View {
             case .drill: return "GPS Stopwatch (20-yard clarity check)"
             case .strides: return "20 yards × 3 reps"
             case .sprints: return "Maximum effort sprints"
-            case .plyometrics: return "GPS Stopwatch (explosive power)"
             case .resting: return "Active recovery"
             case .cooldown: return "Stretch and recover"
             case .completed: return "Session complete!"
@@ -334,7 +310,6 @@ struct MainProgramWorkoutView: View {
             case .drill: return 600 // 10 minutes (with 1 min rest between sets)
             case .strides: return 480 // 8 minutes (3x20yd with 2min rest)
             case .sprints: return 0 // Dynamic based on Session Library
-            case .plyometrics: return 720 // 12 minutes (6 exercises with GPS timing)
             case .resting: return 0 // Dynamic based on Session Library
             case .cooldown: return 300 // 5 minutes
             case .completed: return 0
@@ -348,7 +323,6 @@ struct MainProgramWorkoutView: View {
             case .drill: return Color.indigo
             case .strides: return Color.purple
             case .sprints: return Color.green
-            case .plyometrics: return Color.red
             case .resting: return Color.yellow
             case .cooldown: return Color.blue
             case .completed: return Color.cyan
@@ -362,7 +336,6 @@ struct MainProgramWorkoutView: View {
             case .drill: return "figure.run.circle"
             case .strides: return "figure.run"
             case .sprints: return "bolt.fill"
-            case .plyometrics: return "figure.jumprope"
             case .resting: return "pause.fill"
             case .cooldown: return "figure.cooldown"
             case .completed: return "checkmark.circle.fill"
@@ -420,11 +393,10 @@ struct MainProgramWorkoutView: View {
         case .stretch: return 1
         case .drill: return 2
         case .strides: return 3
-        case .plyometrics: return 4
-        case .sprints: return 5
-        case .cooldown: return 6
-        case .resting: return 7
-        case .completed: return 8
+        case .sprints: return 4
+        case .cooldown: return 5
+        case .resting: return 6
+        case .completed: return 7
         }
     }
     
@@ -432,7 +404,6 @@ struct MainProgramWorkoutView: View {
         switch currentPhase {
         case .drill: return "Drills"
         case .strides: return "Strides"
-        case .plyometrics: return "Plyo"
         case .sprints: return "Sprint"
         default: return "30yd Sprint + Rest"
         }
@@ -442,7 +413,6 @@ struct MainProgramWorkoutView: View {
         switch currentPhase {
         case .drill: return ""
         case .strides: return ""
-        case .plyometrics: return ""
         case .sprints: return "(3 Reps)"
         default: return "(3 Reps)"
         }
@@ -450,7 +420,7 @@ struct MainProgramWorkoutView: View {
     
     private func isMainPhase() -> Bool {
         switch currentPhase {
-        case .drill, .strides, .plyometrics, .sprints:
+        case .drill, .strides, .sprints:
             return true
         default:
             return false
@@ -516,26 +486,7 @@ struct MainProgramWorkoutView: View {
         // Manually advance to next phase
         switch currentPhase {
         case .warmup:
-            showCoachingCue("Skipping to stretch phase! 🏃‍♂️")
-            currentPhase = .stretch
-        case .stretch:
-            showCoachingCue("Moving to activation drills! 💪")
-            currentPhase = .drill
-        case .drill:
-            showCoachingCue("Jumping to build-up strides! ⚡")
-            currentPhase = .strides
-        case .strides:
-            showCoachingCue("Fast forwarding to sprint phase! 🚀")
-            currentPhase = .sprints
-        case .sprints:
-            showCoachingCue("Advancing to explosive power! 💥")
-            currentPhase = .plyometrics
-        case .plyometrics:
-            showCoachingCue("Skipping to cool down! 🌟")
-            currentPhase = .cooldown
-        case .cooldown:
-            showCoachingCue("Workout complete! Great job! 🏆")
-            currentPhase = .completed
+            break
         default:
             break
         }
@@ -612,9 +563,6 @@ struct MainProgramWorkoutView: View {
                         self.showCoachingCue("You're flying! Time for maximum effort sprints 🚀")
                         self.currentPhase = .sprints
                     case .sprints:
-                        self.showCoachingCue("Incredible speed! Let's add some explosive power 💥")
-                        self.currentPhase = .plyometrics
-                    case .plyometrics:
                         self.showCoachingCue("Amazing work! Time to cool down and recover 🌟")
                         self.currentPhase = .cooldown
                     case .cooldown:
@@ -649,7 +597,7 @@ struct MainProgramWorkoutView: View {
     private func getCurrentDotIndex() -> Int {
         switch currentPhase {
         case .warmup, .stretch, .drill: return 0
-        case .strides, .plyometrics: return 1
+        case .strides: return 1
         case .sprints, .cooldown, .resting, .completed: return 2
         }
     }
@@ -660,7 +608,6 @@ struct MainProgramWorkoutView: View {
         case .stretch: return "STRETCH PHASE"
         case .drill: return "ACTIVATION DRILLS"
         case .strides: return "BUILD-UP STRIDES"
-        case .plyometrics: return "EXPLOSIVE POWER"
         case .sprints: return "MAXIMUM SPRINTS"
         case .cooldown: return "COOL DOWN"
         case .resting: return "RECOVERY"
@@ -723,12 +670,6 @@ struct MainProgramWorkoutView: View {
                         case .sprints:
                             // Sprints phase - show timer and sprint info
                             SprintsPhaseUI()
-                        case .plyometrics:
-                            // Plyometrics phase - show plyo info
-                            PlyometricsPhaseUI(
-                                sessionData: sessionData,
-                                onStartWorkout: startWorkout
-                            )
                         case .cooldown, .resting, .completed:
                             // Final phases - show completion
                             CompletionPhaseUI(
@@ -818,16 +759,24 @@ struct MainProgramWorkoutView: View {
     // MARK: - Sprint Coach 6-Phase Integration Methods
     
     private func setupSprintCoachWorkout() {
-        print("🏃‍♂️ Sprint Coach: Setting up 6-phase automated workout with Session Library")
+        print("🏃‍♂️ Sprint Coach: Setting up 6-phase automated workout")
         
-        // Load session data from Session Library with intelligent selection
-        sessionData = SessionData.getIntelligentSessionForDay(
-            week: getCurrentWeek(),
-            day: getCurrentDay(),
-            level: getUserLevel(),
-            userPreferences: getUserPreferences(),
-            completedSessions: getCompletedSessionHistory()
-        )
+        // Use selected session from TrainingView or fallback to intelligent selection
+        if let selected = selectedSession {
+            sessionData = convertTrainingSessionToSessionData(selected)
+            print("📚 Using selected session: \(selected.type) - \(selected.focus)")
+            print("📚 Sprint Configuration: \(selected.sprints.first?.reps ?? 4) reps at \(selected.sprints.first?.distanceYards ?? 40) yards")
+        } else {
+            // Fallback to intelligent selection
+            sessionData = SessionData.getIntelligentSessionForDay(
+                week: getCurrentWeek(),
+                day: getCurrentDay(),
+                level: getUserLevel(),
+                userPreferences: getUserPreferences(),
+                completedSessions: getCompletedSessionHistory()
+            )
+            print("📚 Using intelligent session selection")
+        }
         
         // Initialize first phase
         currentPhase = .warmup
@@ -837,8 +786,7 @@ struct MainProgramWorkoutView: View {
         // Set total reps based on session data
         if let session = sessionData {
             totalReps = session.sprintSets.first?.reps ?? 4
-            print("📚 Session Library: Loaded Week \(session.week), Day \(session.day), Level \(session.level)")
-            print("📚 Sprint Configuration: \(totalReps) reps at \(session.sprintSets.first?.distance ?? 40) yards")
+            print("📚 Session Configuration: \(totalReps) reps at \(session.sprintSets.first?.distance ?? 40) yards")
         }
         
         // Reset tracking arrays
@@ -849,9 +797,75 @@ struct MainProgramWorkoutView: View {
         // Voice coaching and haptics
         announcePhaseStart()
         provideHapticFeedback(type: .start)
+    }
+    
+    /// Converts TrainingSession from TrainingView to SessionData format
+    private func convertTrainingSessionToSessionData(_ trainingSession: TrainingSession) -> SessionData {
+        // Convert sprint sets
+        let sessionSprintSets = trainingSession.sprints.map { sprintSet in
+            SessionSprintSet(
+                reps: sprintSet.reps,
+                distance: sprintSet.distanceYards,
+                restTime: getRestTimeForDistance(distance: sprintSet.distanceYards),
+                intensity: sprintSet.intensity
+            )
+        }
         
-        // Start phase timer
-        startPhaseTimer()
+        // Generate drill sets based on session type
+        let drillSets = generateDrillSetsForSession(trainingSession)
+        
+        // Generate stride sets
+        let strideSets = generateStrideSetsForSession(trainingSession)
+        
+        return SessionData(
+            week: trainingSession.week,
+            day: trainingSession.day,
+            level: getLevelFromSessionType(trainingSession.type),
+            drillSets: drillSets,
+            strideSets: strideSets,
+            sprintSets: sessionSprintSets
+        )
+    }
+    
+    /// Generates drill sets based on training session
+    private func generateDrillSetsForSession(_ session: TrainingSession) -> [DrillSet] {
+        // Standard drill progression for all sessions
+        return [
+            DrillSet(name: "A-Skip", reps: 2, distance: 20),
+            DrillSet(name: "High Knees", reps: 2, distance: 20),
+            DrillSet(name: "Butt Kicks", reps: 2, distance: 20)
+        ]
+    }
+    
+    /// Generates stride sets based on training session
+    private func generateStrideSetsForSession(_ session: TrainingSession) -> [StrideSet] {
+        // Standard stride set for all sessions
+        return [
+            StrideSet(reps: 3, distance: 50, restTime: 120)
+        ]
+    }
+    
+    /// Gets rest time based on sprint distance
+    private func getRestTimeForDistance(distance: Int) -> Int {
+        switch distance {
+        case 0...20: return 90  // 1.5 minutes
+        case 21...30: return 120 // 2 minutes
+        case 31...40: return 180 // 3 minutes
+        case 41...50: return 240 // 4 minutes
+        default: return 300     // 5 minutes
+        }
+    }
+    
+    /// Converts session type to level number
+    private func getLevelFromSessionType(_ type: String) -> Int {
+        switch type.lowercased() {
+        case "acceleration": return 1
+        case "speed": return 2
+        case "power": return 3
+        case "competition": return 4
+        case "speed endurance": return 3
+        default: return 2
+        }
     }
     
     private func stopSprintCoachWorkout() {
@@ -905,8 +919,7 @@ struct MainProgramWorkoutView: View {
         case .warmup: return .stretch
         case .stretch: return .drill
         case .drill: return .strides
-        case .strides: return .plyometrics
-        case .plyometrics: return .sprints
+        case .strides: return .sprints
         case .sprints:
             if currentRep < totalReps {
                 return .resting
@@ -983,14 +996,6 @@ struct MainProgramWorkoutView: View {
             return session.drillSets.first?.distance ?? 20
         case .strides:
             return session.strideSets.first?.distance ?? 20
-        case .plyometrics:
-            // Get current plyometric exercise distance
-            let plyoIndex = plyometricsCompleted
-            if plyoIndex < session.plyometricSets.count {
-                let distance = session.plyometricSets[plyoIndex].distance
-                return distance > 0 ? distance : 10 // Default 10 yards for height-based exercises
-            }
-            return 10
         case .sprints:
             return session.sprintSets.first?.distance ?? 40
         default:
@@ -1008,11 +1013,6 @@ struct MainProgramWorkoutView: View {
             let maxSpeed = 18.0
             let acceleration = min(time * 2.0, maxSpeed)
             return acceleration + Double.random(in: -1.0...1.0)
-        case .plyometrics:
-            // Explosive power movements - short bursts of high speed
-            let maxSpeed = 20.0
-            let explosiveAcceleration = min(time * 4.0, maxSpeed)
-            return explosiveAcceleration + Double.random(in: -1.5...1.5)
         case .sprints:
             // Maximum effort for sprints
             let maxSpeed = 25.0
@@ -1027,7 +1027,6 @@ struct MainProgramWorkoutView: View {
         switch phase {
         case .drill: return .drill
         case .strides: return .stride
-        case .plyometrics: return .plyometric
         case .sprints: return .sprint
         default: return .sprint
         }
@@ -1037,7 +1036,6 @@ struct MainProgramWorkoutView: View {
         switch phase {
         case .drill: return drillsCompleted + 1
         case .strides: return stridesCompleted + 1
-        case .plyometrics: return plyometricsCompleted + 1
         case .sprints: return currentRep
         default: return 1
         }
@@ -1049,8 +1047,6 @@ struct MainProgramWorkoutView: View {
             drillsCompleted += 1
         case .strides:
             stridesCompleted += 1
-        case .plyometrics:
-            plyometricsCompleted += 1
         case .sprints:
             currentRep += 1
         default:
@@ -1077,18 +1073,6 @@ struct MainProgramWorkoutView: View {
             if stridesCompleted < totalStrides {
                 // Start 2-minute rest between strides
                 startRestPeriod(duration: 120, message: "2-minute rest between strides")
-            } else {
-                // Move to next phase
-                advanceToNextPhase()
-            }
-            
-        case .plyometrics:
-            let totalPlyometrics = session.plyometricSets.count
-            if plyometricsCompleted < totalPlyometrics {
-                // Get rest time for current plyometric exercise
-                let currentPlyoSet = session.plyometricSets[plyometricsCompleted - 1]
-                let restTime = currentPlyoSet.restTime
-                startRestPeriod(duration: restTime, message: "Rest between plyometric exercises")
             } else {
                 // Move to next phase
                 advanceToNextPhase()
@@ -1184,13 +1168,6 @@ struct MainProgramWorkoutView: View {
             print("🗣️ Voice Coach: Drill \(drillsCompleted + 1). GPS stopwatch active. Focus on form!")
         case .strides:
             print("🗣️ Voice Coach: Stride \(stridesCompleted + 1) of 3. Build up to 70% effort. GPS tracking...")
-        case .plyometrics:
-            if let session = sessionData, plyometricsCompleted < session.plyometricSets.count {
-                let exercise = session.plyometricSets[plyometricsCompleted]
-                print("🗣️ Voice Coach: \(exercise.name) - \(exercise.reps) reps. Explosive power! GPS tracking...")
-            } else {
-                print("🗣️ Voice Coach: Plyometric exercise. Explosive power! GPS tracking...")
-            }
         case .sprints:
             let distance = sessionData?.sprintSets.first?.distance ?? 40
             print("🗣️ Voice Coach: Sprint \(currentRep) of \(totalReps) at \(distance) yards. Ready... Set... Go!")
@@ -1208,8 +1185,6 @@ struct MainProgramWorkoutView: View {
             print("🗣️ Voice Coach: Drill complete! Time: \(timeString)s, Speed: \(speedString) mph. Great form!")
         case .strides:
             print("🗣️ Voice Coach: Stride complete! Time: \(timeString)s, Speed: \(speedString) mph. Nice acceleration!")
-        case .plyometrics:
-            print("🗣️ Voice Coach: Plyometric complete! Time: \(timeString)s, Speed: \(speedString) mph. Explosive power!")
         case .sprints:
             print("🗣️ Voice Coach: Sprint complete! Time: \(timeString)s, Speed: \(speedString) mph. Excellent effort!")
         default:
@@ -1267,8 +1242,6 @@ struct MainProgramWorkoutView: View {
             return "Technical drills for form and mechanics. Quality over speed."
         case .strides:
             return "Progressive acceleration runs. Build up to 70% effort."
-        case .plyometrics:
-            return "Explosive power exercises. Focus on maximum force production."
         case .sprints:
             return "Maximum effort sprints. Give it everything you've got!"
         case .resting:
@@ -1328,7 +1301,6 @@ struct MainProgramWorkoutView: View {
         switch type {
         case .drill: return .indigo
         case .stride: return .purple
-        case .plyometric: return .red
         case .sprint: return .yellow
         }
     }
@@ -1339,15 +1311,6 @@ struct MainProgramWorkoutView: View {
         switch repData.type {
         case .drill: return "1:00"
         case .stride: return "2:00"
-        case .plyometric:
-            // Get rest time from plyometric sets
-            if let plyoSet = session.plyometricSets.first {
-                let restTime = plyoSet.restTime
-                let minutes = restTime / 60
-                let seconds = restTime % 60
-                return String(format: "%d:%02d", minutes, seconds)
-            }
-            return "1:30"
         case .sprint:
             let restTime = session.sprintSets.first?.restTime ?? 180
             let minutes = restTime / 60
@@ -1371,12 +1334,6 @@ struct MainProgramWorkoutView: View {
             remaining.append((rep, 20))
         }
         
-        // Add remaining plyometrics
-        let totalPlyometrics = session.plyometricSets.count
-        for rep in (plyometricsCompleted + 1)...totalPlyometrics {
-            let distance = session.plyometricSets[rep - 1].distance
-            remaining.append((rep, distance > 0 ? distance : 10))
-        }
         
         // Add remaining sprints
         let sprintDistance = session.sprintSets.first?.distance ?? 40
@@ -1720,25 +1677,6 @@ extension MainProgramWorkoutView.SessionData {
         return [MainProgramWorkoutView.StrideSet(reps: reps, distance: 20, restTime: 120)]
     }
     
-    /// Generate adaptive plyometric sets based on selected session
-    static func generateAdaptivePlyometricSets(for level: Int, session: LibrarySession) -> [MainProgramWorkoutView.PlyometricSet] {
-        let baseReps = min(2 + level, 6)
-        let sessionFocus = session.focus.lowercased()
-        
-        if sessionFocus.contains("acceleration") {
-            return [
-                MainProgramWorkoutView.PlyometricSet(name: "Broad Jumps", reps: baseReps, distance: 10, restTime: 90),
-                MainProgramWorkoutView.PlyometricSet(name: "Single Leg Bounds", reps: baseReps, distance: 15, restTime: 90),
-                MainProgramWorkoutView.PlyometricSet(name: "Split Jumps", reps: baseReps, distance: 0, restTime: 90)
-            ]
-        } else {
-            return [
-                MainProgramWorkoutView.PlyometricSet(name: "Box Jumps", reps: baseReps, distance: 0, restTime: 120),
-                MainProgramWorkoutView.PlyometricSet(name: "Depth Jumps", reps: baseReps, distance: 0, restTime: 120),
-                MainProgramWorkoutView.PlyometricSet(name: "Lateral Bounds", reps: baseReps, distance: 12, restTime: 90)
-            ]
-        }
-    }
     
     /// Convert library session to sprint sets
     static func convertToSessionSprintSets(from session: LibrarySession, week: Int, level: Int) -> [MainProgramWorkoutView.SessionSprintSet] {
@@ -2231,9 +2169,8 @@ struct ProgressBar: View {
         case 1: return "STRETCH"
         case 2: return "DRILLS"
         case 3: return "STRIDES"
-        case 4: return "PLYO"
-        case 5: return "SPRINT"
-        case 6: return "COOL"
+        case 4: return "SPRINT"
+        case 5: return "COOL"
         default: return ""
         }
     }
@@ -2255,9 +2192,8 @@ struct ProgressBar: View {
         case .stretch: return 1
         case .drill: return 2
         case .strides: return 3
-        case .plyometrics: return 4
-        case .sprints: return 5
-        case .cooldown: return 6
+        case .sprints: return 4
+        case .cooldown: return 5
         default: return 0
         }
     }
@@ -2575,20 +2511,6 @@ struct SprintsPhaseUI: View {
     }
 }
 
-struct PlyometricsPhaseUI: View {
-    let sessionData: MainProgramWorkoutView.SessionData?
-    let onStartWorkout: () -> Void
-    
-    var body: some View {
-        VStack {
-            Text("Plyometrics Phase")
-                .font(.title)
-                .foregroundColor(.white)
-            Text("Explosive Power Training")
-                .foregroundColor(.white.opacity(0.8))
-        }
-    }
-}
 
 struct CompletionPhaseUI: View {
     let sessionData: MainProgramWorkoutView.SessionData?

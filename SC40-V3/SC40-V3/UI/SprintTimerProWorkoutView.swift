@@ -34,7 +34,7 @@ struct SprintTimerProWorkoutView: View {
     @State private var showCoachingMessage: Bool = false
     
     enum WorkoutPhase {
-        case warmup, stretch, drill, strides, sprints, plyometrics, cooldown, resting, completed
+        case warmup, stretch, drill, strides, sprints, cooldown, resting, completed
     }
     
     struct RepData {
@@ -116,14 +116,6 @@ struct SprintTimerProWorkoutView: View {
                         case .sprints:
                             // Sprints phase - show timer and sprint info
                             ProSprintsPhaseUI()
-                        case .plyometrics:
-                            // Plyometrics phase - show plyo info
-                            ProPlyometricsPhaseUI(
-                                distance: distance,
-                                reps: reps,
-                                restMinutes: restMinutes,
-                                onStartWorkout: startWorkout
-                            )
                         case .cooldown, .resting, .completed:
                             // Final phases - show completion
                             ProCompletionPhaseUI(
@@ -278,9 +270,6 @@ struct SprintTimerProWorkoutView: View {
             showCoachingCue("Fast forwarding to your custom \(distance)yd sprints! 🚀")
             currentPhase = .sprints
         case .sprints:
-            showCoachingCue("Advancing to explosive power! 💥")
-            currentPhase = .plyometrics
-        case .plyometrics:
             showCoachingCue("Skipping to cool down! 🌟")
             currentPhase = .cooldown
         case .cooldown:
@@ -369,9 +358,6 @@ struct SprintTimerProWorkoutView: View {
                         self.showCoachingCue("You're flying! Time for your custom \(self.distance)yd sprints 🚀")
                         self.currentPhase = .sprints
                     case .sprints:
-                        self.showCoachingCue("Incredible speed! Let's add some explosive power 💥")
-                        self.currentPhase = .plyometrics
-                    case .plyometrics:
                         self.showCoachingCue("Amazing work! Time to cool down and recover 🌟")
                         self.currentPhase = .cooldown
                     case .cooldown:
@@ -403,7 +389,7 @@ struct SprintTimerProWorkoutView: View {
     private func getCurrentDotIndex() -> Int {
         switch currentPhase {
         case .warmup, .stretch, .drill: return 0
-        case .strides, .plyometrics: return 1
+        case .strides: return 1
         case .sprints, .cooldown, .resting, .completed: return 2
         }
     }
@@ -414,7 +400,6 @@ struct SprintTimerProWorkoutView: View {
         case .stretch: return "STRETCH PHASE"
         case .drill: return "ACTIVATION DRILLS"
         case .strides: return "BUILD-UP STRIDES"
-        case .plyometrics: return "EXPLOSIVE POWER"
         case .sprints: return "CUSTOM SPRINTS"
         case .cooldown: return "COOL DOWN"
         case .resting: return "RECOVERY"
@@ -643,9 +628,8 @@ struct ProProgressBar: View {
         case 1: return "STRETCH"
         case 2: return "DRILLS"
         case 3: return "STRIDES"
-        case 4: return "PLYO"
-        case 5: return "SPRINT"
-        case 6: return "COOL"
+        case 4: return "SPRINT"
+        case 5: return "COOL"
         default: return ""
         }
     }
@@ -667,8 +651,7 @@ struct ProProgressBar: View {
         case .stretch: return 1
         case .drill: return 2
         case .strides: return 3
-        case .plyometrics: return 4
-        case .sprints: return 5
+        case .sprints: return 4
         case .cooldown: return 6
         default: return 0
         }
@@ -690,23 +673,6 @@ struct ProSprintsPhaseUI: View {
     }
 }
 
-struct ProPlyometricsPhaseUI: View {
-    let distance: Int
-    let reps: Int
-    let restMinutes: Int
-    let onStartWorkout: () -> Void
-    
-    var body: some View {
-        // Placeholder for plyometrics phase
-        VStack {
-            Text("Plyometrics Phase")
-                .font(.title)
-                .foregroundColor(.white)
-            Text("Explosive Power Training")
-                .foregroundColor(.white.opacity(0.8))
-        }
-    }
-}
 
 struct ProCompletionPhaseUI: View {
     let distance: Int

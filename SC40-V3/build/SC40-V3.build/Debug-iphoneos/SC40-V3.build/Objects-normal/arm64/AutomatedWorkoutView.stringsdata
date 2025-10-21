@@ -92,10 +92,26 @@
       },
       {
         "comment": "",
+        "key": "Rep Log",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 229
+        }
+      },
+      {
+        "comment": "",
+        "key": "Wave AI Integration Complete",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 232
+        }
+      },
+      {
+        "comment": "",
         "key": "Resume",
         "location": {
           "startingColumn": 50,
-          "startingLine": 305
+          "startingLine": 316
         }
       },
       {
@@ -103,7 +119,7 @@
         "key": "Pause",
         "location": {
           "startingColumn": 61,
-          "startingLine": 305
+          "startingLine": 316
         }
       },
       {
@@ -111,7 +127,7 @@
         "key": "Stop",
         "location": {
           "startingColumn": 26,
-          "startingLine": 326
+          "startingLine": 337
         }
       },
       {
@@ -119,7 +135,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 20,
-          "startingLine": 393
+          "startingLine": 404
         }
       },
       {
@@ -127,7 +143,7 @@
         "key": "Workout Complete!",
         "location": {
           "startingColumn": 22,
-          "startingLine": 359
+          "startingLine": 370
         }
       },
       {
@@ -135,7 +151,7 @@
         "key": "Great job! Your session has been saved.",
         "location": {
           "startingColumn": 22,
-          "startingLine": 363
+          "startingLine": 374
         }
       },
       {
@@ -143,7 +159,7 @@
         "key": "View Summary",
         "location": {
           "startingColumn": 26,
-          "startingLine": 376
+          "startingLine": 387
         }
       },
       {
@@ -151,7 +167,7 @@
         "key": "Summary",
         "location": {
           "startingColumn": 30,
-          "startingLine": 619
+          "startingLine": 630
         }
       },
       {
@@ -159,7 +175,7 @@
         "key": "Workout Summary",
         "location": {
           "startingColumn": 22,
-          "startingLine": 597
+          "startingLine": 608
         }
       },
       {
@@ -167,7 +183,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 28,
-          "startingLine": 623
+          "startingLine": 634
         }
       }
     ]

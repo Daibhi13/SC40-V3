@@ -77,21 +77,6 @@ struct MockTrainingData {
 // Preview provider for HistoryView
 struct HistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        let mockProfile = UserProfile(
-            name: "Test User",
-            email: "test@example.com",
-            gender: "Male",
-            age: 25,
-            height: 72.0,
-            weight: 180.0,
-            personalBests: [:],
-            level: "Intermediate",
-            baselineTime: 5.5,
-            frequency: 3,
-            currentWeek: 1,
-            currentDay: 1
-        )
-        
         HistoryView()
             .preferredColorScheme(.dark)
     }

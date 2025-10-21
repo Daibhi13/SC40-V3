@@ -1,4 +1,10 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Configuration/NewsAPIConfig.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/VoiceHapticsManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutAlgorithmEngine.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutDataRecorder.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutGPSManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutSessionManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutTimerManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveAI.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveSprintProgram.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/ComprehensiveSessionLibrary.swift
@@ -39,7 +45,10 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserProfileExtensions.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserProfileViewModel.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/WorkoutPlan.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/AuthenticationManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/ErrorHandling.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/FirebaseService.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/InstagramAuthService.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/LocationService.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/LoggingService.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/NewsService.swift
@@ -52,6 +61,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Shared/WorkoutTimer.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/BrandColors.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/CustomButton.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/EmailSignupView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/EmptyStateView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/GlassEffect.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/IntroductionCard.swift
@@ -59,6 +69,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/RecordCard.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/ReusableRecordCard.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/SprintCoachGradientBackground.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WaveAIRepLogView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/CompletePhoneWorkout.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneGPSStopwatchManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/PhoneWorkoutButton.swift
@@ -72,6 +83,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdaptiveWorkoutHub.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsMonetizationView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AutomatedWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CalendarRoadmapView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CoachingSettingsView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CombineView.swift
@@ -79,6 +91,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/DashboardView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/DayDetailView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/EditProfileView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Enhanced40YardSmartView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/EnhancedLeaderboardView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/EntryIOSView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HamburgerSideMenu.swift
@@ -105,6 +118,8 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ProPaywall.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/PurchaseManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/QuickWinView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/QuickWinWorkoutView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ReferralsView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ReminderSettingsView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SCStarterConfigView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SCStarterWorkoutView.swift
@@ -115,14 +130,12 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SharePerformanceView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ShareWithTeammatesView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SideMenuRow.swift
-/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardButtonRow.swift
-/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardDescription.swift
-/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardImage.swift
-/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardTitle.swift
-/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SixPartWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SocialFeaturesView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintCoachProView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintNewsView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProPurchaseView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProWatchView.swift
@@ -135,6 +148,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Views/SessionDetailView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Views/SessionListView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Views/TrainingProgramView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/AppDelegate.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/ContentView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Item.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/SC40_V3_App.swift

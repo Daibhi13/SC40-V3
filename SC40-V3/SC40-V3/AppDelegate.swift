@@ -46,27 +46,49 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
     
+    @available(iOS, introduced: 9.0, deprecated: 26.0, message: "Use scene(_:openURLContexts:) instead")
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        
-        // Handle Facebook URL
+        var handled = false
+
         #if canImport(FacebookCore)
-        // iOS 26.0+ compatible URL handling
-        let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String
-        let annotation = options[UIApplication.OpenURLOptionsKey.annotation]
-        
-        if ApplicationDelegate.shared.application(app, open: url, sourceApplication: sourceApplication, annotation: annotation) {
-            return true
+        if let sourceApplication = options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String {
+            let annotation = options[UIApplication.OpenURLOptionsKey.annotation]
+            if ApplicationDelegate.shared.application(app, open: url, sourceApplication: sourceApplication, annotation: annotation) {
+                handled = true
+            }
         }
         #endif
-        
-        // Handle Google Sign-In URL
+
         #if canImport(GoogleSignIn)
         if GIDSignIn.sharedInstance.handle(url) {
-            return true
+            handled = true
         }
         #endif
-        
-        return false
+
+        return handled
+    }
+}
+    
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    var window: UIWindow?
+
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let context = URLContexts.first else { return }
+        let url = context.url
+        let options = context.options
+
+        // Facebook URL handling
+        #if canImport(FacebookCore)
+        let _ = ApplicationDelegate.shared.application(UIApplication.shared,
+                                                       open: url,
+                                                       sourceApplication: options.sourceApplication,
+                                                       annotation: options.annotation)
+        #endif
+
+        // Google Sign-In URL handling
+        #if canImport(GoogleSignIn)
+        _ = GIDSignIn.sharedInstance.handle(url)
+        #endif
     }
 }
 #else

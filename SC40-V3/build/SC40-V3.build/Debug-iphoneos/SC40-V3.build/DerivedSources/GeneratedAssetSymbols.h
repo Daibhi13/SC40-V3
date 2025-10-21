@@ -6,6 +6,9 @@
 #define AC_SWIFT_PRIVATE
 #endif
 
+/// The "76" asset catalog image resource.
+static NSString * const ACImageName76 AC_SWIFT_PRIVATE = @"76";
+
 /// The "appstore" asset catalog image resource.
 static NSString * const ACImageNameAppstore AC_SWIFT_PRIVATE = @"appstore";
 

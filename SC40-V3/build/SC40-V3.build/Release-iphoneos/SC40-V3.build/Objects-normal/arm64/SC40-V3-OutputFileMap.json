@@ -8,6 +8,11 @@
     "pch" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SC40-V3-primary-Bridging-header.pch",
     "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SC40-V3-primary.swiftdeps"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/AppDelegate.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AppDelegate.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AppDelegate.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AppDelegate.o"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Configuration/NewsAPIConfig.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/NewsAPIConfig.bc",
@@ -22,6 +27,36 @@
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Item.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Item.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Item.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/VoiceHapticsManager.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/VoiceHapticsManager.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutAlgorithmEngine.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutAlgorithmEngine.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutDataRecorder.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutDataRecorder.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutGPSManager.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutGPSManager.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutSessionManager.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSessionManager.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Managers/WorkoutTimerManager.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTimerManager.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/AdaptiveAI.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdaptiveAI.o",
@@ -233,10 +268,25 @@
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SC40_V3_App.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SC40_V3_App.o"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/AuthenticationManager.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.o"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/ErrorHandling.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/FirebaseService.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/InstagramAuthService.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/InstagramAuthService.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/InstagramAuthService.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/InstagramAuthService.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/LocationService.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/LocationService.o",
@@ -318,6 +368,11 @@
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AdvancedAnalyticsView.o"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AutomatedWorkoutView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AutomatedWorkoutView.o"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CalendarRoadmapView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CalendarRoadmapView.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CalendarRoadmapView.bc",
@@ -342,6 +397,11 @@
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomButton.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomButton.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomButton.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/EmailSignupView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmailSignupView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmailSignupView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmailSignupView.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/EmptyStateView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EmptyStateView.o",
@@ -378,6 +438,11 @@
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.o"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WaveAIRepLogView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.o"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CustomStepper.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomStepper.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CustomStepper.bc",
@@ -397,6 +462,11 @@
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EditProfileView.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EditProfileView.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EditProfileView.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Enhanced40YardSmartView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Enhanced40YardSmartView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Enhanced40YardSmartView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/Enhanced40YardSmartView.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/EnhancedLeaderboardView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/EnhancedLeaderboardView.o",
@@ -528,6 +598,16 @@
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinView.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinView.o"
   },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/QuickWinWorkoutView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinWorkoutView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinWorkoutView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/QuickWinWorkoutView.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ReferralsView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralsView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralsView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralsView.o"
+  },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/ReminderSettingsView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReminderSettingsView.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReminderSettingsView.bc",
@@ -578,30 +658,10 @@
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuRow.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SideMenuRow.o"
   },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardButtonRow.swift" : {
-    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardButtonRow.o",
-    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardButtonRow.bc",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardButtonRow.o"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardDescription.swift" : {
-    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardDescription.o",
-    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardDescription.bc",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardDescription.o"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardImage.swift" : {
-    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardImage.o",
-    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardImage.bc",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardImage.o"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubCardTitle.swift" : {
-    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardTitle.o",
-    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardTitle.bc",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubCardTitle.o"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SmartHubView.swift" : {
-    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubView.o",
-    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubView.bc",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SmartHubView.o"
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SixPartWorkoutView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SixPartWorkoutView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SixPartWorkoutView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SixPartWorkoutView.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SocialFeaturesView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SocialFeaturesView.o",
@@ -617,6 +677,16 @@
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintNewsView.o",
     "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintNewsView.bc",
     "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintNewsView.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProView.o"
+  },
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProWorkoutView.swift" : {
+    "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProWorkoutView.o",
+    "llvm-bc" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProWorkoutView.bc",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintTimerProWorkoutView.o"
   },
   "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/StarterProPurchaseView.swift" : {
     "index-unit-output-path" : "/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StarterProPurchaseView.o",

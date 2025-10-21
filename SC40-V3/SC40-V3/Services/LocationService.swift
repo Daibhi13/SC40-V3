@@ -49,7 +49,7 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
         request.region = MKCoordinateRegion(center: location.coordinate, latitudinalMeters: 100, longitudinalMeters: 100)
 
         let search = MKLocalSearch(request: request)
-        search.start { [weak self] response, error in
+        search.start { [weak self] (response: MKLocalSearch.Response?, error: Error?) in
             // Ensure we have a strong self before hopping to the main queue
             guard let self = self else { return }
 
@@ -64,11 +64,45 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
                     return
                 }
 
-                // Use placemark for location details (compatible with all iOS versions)
+                // Extract county/state/country using CLPlacemark fields (portable across OS versions)
+                var county = ""
+                var state = ""
+                var country = ""
+
+                // Note: Using deprecated APIs that will be replaced in iOS 26.0
+                // TODO: Update to use MKReverseGeocodingRequest when iOS 26.0 APIs are available
                 let placemark = mapItem.placemark
-                self.county = placemark.subAdministrativeArea ?? ""
-                self.state = placemark.administrativeArea ?? ""
-                self.country = placemark.country ?? ""
+                
+                // Extract location data using available properties
+                if let admin = placemark.administrativeArea, !admin.isEmpty {
+                    state = admin
+                }
+                if let countryName = placemark.country, !countryName.isEmpty {
+                    country = countryName
+                }
+                if let subAdmin = placemark.subAdministrativeArea, !subAdmin.isEmpty {
+                    county = subAdmin
+                }
+
+                // As a final enrichment step, if any field is still empty, use CLGeocoder
+                // Note: CLGeocoder is deprecated in iOS 26.0, but we'll use it until replacement is available
+                if (county.isEmpty || state.isEmpty || country.isEmpty) {
+                    let geocoder = CLGeocoder()
+                    do {
+                        let placemarks = try await geocoder.reverseGeocodeLocation(location)
+                        if let pm = placemarks.first {
+                            if county.isEmpty { county = pm.subAdministrativeArea ?? county }
+                            if state.isEmpty { state = pm.administrativeArea ?? state }
+                            if country.isEmpty { country = pm.country ?? country }
+                        }
+                    } catch {
+                        self.errorMessage = "Failed to reverse geocode: \(error.localizedDescription)"
+                    }
+                }
+
+                self.county = county
+                self.state = state
+                self.country = country
 
                 print("📍 Location detected:")
                 print("   County: \(self.county)")
@@ -108,4 +142,3 @@ extension LocationService: CLLocationManagerDelegate {
         }
     }
 }
-

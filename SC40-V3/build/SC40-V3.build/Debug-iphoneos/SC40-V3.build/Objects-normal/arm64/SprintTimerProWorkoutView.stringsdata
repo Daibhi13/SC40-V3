@@ -1,0 +1,200 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Timer Pro",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT TIMER PRO",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 427
+        }
+      },
+      {
+        "comment": "",
+        "key": "CUSTOM WORKOUT / %lld Min",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 432
+        }
+      },
+      {
+        "comment": "",
+        "key": "PRO TIMER",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 486
+        }
+      },
+      {
+        "comment": "",
+        "key": "LET'S\nGO",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 503
+        }
+      },
+      {
+        "comment": "",
+        "key": "Strides Phase UI",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 664
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprints Phase UI",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 671
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Complete!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 686
+        }
+      },
+      {
+        "comment": "",
+        "key": "Great job on your %lldyd sprints!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 689
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep Log",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 707
+        }
+      },
+      {
+        "comment": "",
+        "key": "Live Workout Report",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 713
+        }
+      },
+      {
+        "comment": "",
+        "key": "18:12",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 717
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 727
+        }
+      },
+      {
+        "comment": "",
+        "key": "YDS",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 732
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 737
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 742
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 781
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 786
+        }
+      },
+      {
+        "comment": "",
+        "key": "...",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 797
+        }
+      },
+      {
+        "comment": "",
+        "key": "--",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 802
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lldm",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 808
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Complete!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 830
+        }
+      },
+      {
+        "comment": "",
+        "key": "You completed %lld × %lldyd sprints",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 834
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 837
+        }
+      }
+    ]
+  },
+  "version": 1
+}

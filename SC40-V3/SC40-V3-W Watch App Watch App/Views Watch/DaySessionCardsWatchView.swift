@@ -13,6 +13,8 @@ struct DaySessionCardsWatchView: View {
     @State private var currentWorkoutStep = 0 // 0: MainWorkout, 1: RepLog, 2: Sprint
     @State private var showRepLog = false
     @State private var showSprintView = false
+    @State private var showTimeTrialView = false
+    @State private var showSprintTimerProView = false
     @State private var hasShownWelcome = false
     @State private var forceRefresh = false
     
@@ -101,7 +103,8 @@ struct DaySessionCardsWatchView: View {
                 SessionCard(title: "10 yd Starts", subtitle: "8x10yd starts", weekDay: "W1/D1", type: "⚡ ACCEL"),
                 SessionCard(title: "20 yd Accel", subtitle: "6x20yd accel", weekDay: "W1/D2", type: "💨 SPEED"),
                 SessionCard(title: "40 yd Repeats", subtitle: "6x40yd repeats", weekDay: "W1/D3", type: "💨 SPEED"),
-                SessionCard(title: "40 yd Time Trial", subtitle: "1x40yd time trial", weekDay: "W4/D1", type: "🏃‍♂️ TEST")
+                SessionCard(title: "40 yd Time Trial", subtitle: "1x40yd time trial", weekDay: "W4/D1", type: "🏃‍♂️ TEST"),
+                SessionCard(title: "Sprint Timer Pro", subtitle: "Custom Sprint Workouts", weekDay: "Premium", type: "👑 PRO")
             ]
             cards.append(contentsOf: demoCards)
             return cards
@@ -386,6 +389,14 @@ struct DaySessionCardsWatchView: View {
                         }
                         return
                     }
+                    
+                    // Check for Sprint Timer Pro (index 5 = welcome + 4 demo cards + Sprint Timer Pro)
+                    if selectedSession == 5 {
+                        print("👑 Sprint Timer Pro selected - opening custom workout creator")
+                        showSprintTimerProView = true
+                        return
+                    }
+                    
                     print("🚀 Start button pressed for session: \(selectedSession)")
                     
                     // Get the selected session data to pass to workout views
@@ -506,6 +517,9 @@ struct DaySessionCardsWatchView: View {
             WorkoutFlowView(workoutVM: createWorkoutViewModel(), 
                            currentStep: $currentWorkoutStep,
                            onComplete: { showWorkoutFlow = false })
+        }
+        .fullScreenCover(isPresented: $showSprintTimerProView) {
+            SprintTimerProWatchView()
         }
         .focusable()
         .digitalCrownRotation(.constant(0.0), from: 0.0, through: Double(max(0, sessionCards.count - 1)), by: 1.0, sensitivity: .medium)

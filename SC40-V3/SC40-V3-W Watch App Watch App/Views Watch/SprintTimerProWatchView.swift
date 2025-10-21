@@ -74,7 +74,7 @@ struct SprintTimerProWatchView: View {
                 Spacer()
                 
                 Image(systemName: "crown.fill")
-                    .font(.system(size: WatchAdaptiveSizing.largeIconSize))
+                    .font(.system(size: WatchAdaptiveSizing.iconSize * 1.5))
                     .foregroundColor(.yellow)
                 
                 Spacer()
@@ -245,11 +245,9 @@ struct SprintTimerProWatchView: View {
     // MARK: - Computed Properties
     
     private var compactPickerHeight: CGFloat {
-        switch WatchAdaptiveSizing.deviceCategory {
-        case .ultra: return 70
-        case .large: return 65
-        case .standard: return 60
-        }
+        if WatchAdaptiveSizing.isUltra { return 70 }
+        if WatchAdaptiveSizing.isLarge { return 65 }
+        return 60
     }
     
     private var estimatedDuration: Int {
@@ -275,8 +273,7 @@ struct SprintTimerProWatchView: View {
                 SprintSet(
                     distanceYards: selectedDistance,
                     reps: selectedReps,
-                    intensity: "Custom",
-                    restMinutes: selectedRestMinutes
+                    intensity: "Custom"
                 )
             ],
             accessoryWork: [],
@@ -296,7 +293,14 @@ struct SprintTimerProWatchView: View {
             return nil
         }
         
-        return WorkoutWatchViewModel(session: currentSession)
+        // Create WorkoutWatchViewModel with custom parameters
+        let workoutVM = WorkoutWatchViewModel(totalReps: selectedReps, restTime: TimeInterval(selectedRestMinutes * 60))
+        
+        // Update with session distances
+        let distances = Array(repeating: selectedDistance, count: selectedReps)
+        workoutVM.updateFromSession(distances: distances)
+        
+        return workoutVM
     }
 }
 
@@ -310,12 +314,10 @@ struct SprintTimerProWatchView: View {
 #Preview("Sprint Timer Pro - Ultra") {
     SprintTimerProWatchView()
         .preferredColorScheme(.dark)
-        .previewDevice("Apple Watch Ultra 2 (49mm)")
 }
 
 #Preview("Sprint Timer Pro - Series 9") {
     SprintTimerProWatchView()
         .preferredColorScheme(.dark)
-        .previewDevice("Apple Watch Series 9 (45mm)")
 }
 #endif

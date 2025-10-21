@@ -263,4 +263,14 @@ struct SprinterAnimationView: View {
     TrainingView(userProfileVM: UserProfileViewModel())
         .preferredColorScheme(.dark)
 }
+
+#Preview("iPhone 14 - EntryIOSView") {
+    EntryIOSView()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("iPhone SE - EntryIOSView") {
+    EntryIOSView()
+        .preferredColorScheme(.dark)
+}
 #endif

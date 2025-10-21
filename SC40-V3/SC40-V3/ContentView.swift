@@ -244,4 +244,14 @@ struct CountdownView: View {
     TrainingView(userProfileVM: UserProfileViewModel())
         .preferredColorScheme(.dark)
 }
+
+#Preview("ContentView - iPhone 14") {
+    ContentView()
+        .preferredColorScheme(.dark)
+}
+
+#Preview("ContentView - iPhone SE") {
+    ContentView()
+        .preferredColorScheme(.dark)
+}
 #endif

@@ -30,7 +30,7 @@ func generateNextWeekAI(previousWeek: WeeklyProgram, weekNumber: Int, options: P
             recommendedAdjustments: [],
             fatigueScore: prevDay.hybridAI?.fatigueScore ?? 0,
             suggestedRest: prevDay.hybridAI?.suggestedRest ?? 90,
-            predictedPBs: Dictionary(uniqueKeysWithValues: newPhases.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) })
+            predictedPBs: Dictionary(uniqueKeysWithValues: newPhases.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) }) as [Phase: PredictedPB]
         )
         let dayProgram = DayProgram(
             dayNumber: prevDay.dayNumber,

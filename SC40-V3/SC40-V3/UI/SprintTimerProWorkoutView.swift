@@ -34,16 +34,55 @@ struct SprintTimerProWorkoutView: View {
     @State private var showCoachingMessage: Bool = false
     
     enum WorkoutPhase {
-        case warmup, stretch, drill, strides, sprints, cooldown, resting, completed
+        case warmup, stretch, drill, strides, sprints, resting, cooldown, completed
     }
     
-    struct RepData {
-        let rep: Int
-        let time: Double?
-        let isCompleted: Bool
-    }
+    // RepData model moved to Models/RepData.swift for shared use
     
     var body: some View {
+        SwipeableWorkoutContainer(
+            mainContent: {
+                mainProWorkoutView
+            },
+            controlContent: {
+                ProControlWorkoutView(
+                    isRunning: $isRunning,
+                    isPaused: $isPaused,
+                    currentPhase: $currentPhase,
+                    currentRep: $currentRep,
+                    totalReps: Binding.constant(reps),
+                    distance: Binding.constant(distance),
+                    restMinutes: Binding.constant(restMinutes),
+                    onPlayPause: togglePausePlay,
+                    onStop: {
+                        presentationMode.wrappedValue.dismiss()
+                    },
+                    onPrevious: {
+                        goToPreviousProPhase()
+                    },
+                    onNext: {
+                        advanceToNextProPhase()
+                    },
+                    onVolumeToggle: {
+                        toggleProVoiceCoaching()
+                    }
+                )
+            },
+            musicContent: {
+                MusicWorkoutView()
+            },
+            repLogContent: {
+                RepLogLiveView(
+                    completedReps: $completedReps,
+                    currentRep: $currentRep,
+                    totalReps: Binding.constant(reps),
+                    currentPhase: Binding.constant(convertToMainWorkoutPhase(currentPhase))
+                )
+            }
+        )
+    }
+    
+    private var mainProWorkoutView: some View {
         ZStack {
             // Same gradient background as MainProgramWorkoutView
             LinearGradient(
@@ -116,7 +155,7 @@ struct SprintTimerProWorkoutView: View {
                         case .sprints:
                             // Sprints phase - show timer and sprint info
                             ProSprintsPhaseUI()
-                        case .cooldown, .resting, .completed:
+                        case .resting, .cooldown, .completed:
                             // Final phases - show completion
                             ProCompletionPhaseUI(
                                 distance: distance,
@@ -270,6 +309,9 @@ struct SprintTimerProWorkoutView: View {
             showCoachingCue("Fast forwarding to your custom \(distance)yd sprints! 🚀")
             currentPhase = .sprints
         case .sprints:
+            showCoachingCue("Moving to recovery phase! 💪")
+            currentPhase = .resting
+        case .resting:
             showCoachingCue("Skipping to cool down! 🌟")
             currentPhase = .cooldown
         case .cooldown:
@@ -335,7 +377,7 @@ struct SprintTimerProWorkoutView: View {
     private func setupCustomWorkout() {
         // Initialize completed reps array
         completedReps = Array(1...reps).map { rep in
-            RepData(rep: rep, time: nil, isCompleted: false)
+            RepData(rep: rep, time: nil, isCompleted: false, repType: .sprint, distance: 40, timestamp: Date())
         }
     }
     
@@ -358,7 +400,10 @@ struct SprintTimerProWorkoutView: View {
                         self.showCoachingCue("You're flying! Time for your custom \(self.distance)yd sprints 🚀")
                         self.currentPhase = .sprints
                     case .sprints:
-                        self.showCoachingCue("Amazing work! Time to cool down and recover 🌟")
+                        self.showCoachingCue("Incredible speed! Time for recovery 💪")
+                        self.currentPhase = .resting
+                    case .resting:
+                        self.showCoachingCue("Perfect recovery! Time to cool down 🌟")
                         self.currentPhase = .cooldown
                     case .cooldown:
                         self.showCoachingCue("Custom workout complete! You crushed those \(self.distance)yd sprints! 🏆")
@@ -390,7 +435,7 @@ struct SprintTimerProWorkoutView: View {
         switch currentPhase {
         case .warmup, .stretch, .drill: return 0
         case .strides: return 1
-        case .sprints, .cooldown, .resting, .completed: return 2
+        case .sprints, .resting, .cooldown, .completed: return 2
         }
     }
     
@@ -401,9 +446,57 @@ struct SprintTimerProWorkoutView: View {
         case .drill: return "ACTIVATION DRILLS"
         case .strides: return "BUILD-UP STRIDES"
         case .sprints: return "CUSTOM SPRINTS"
+        case .resting: return "RECOVERY PHASE"
         case .cooldown: return "COOL DOWN"
-        case .resting: return "RECOVERY"
         case .completed: return "WORKOUT COMPLETE"
+        }
+    }
+    
+    private func goToPreviousProPhase() {
+        switch currentPhase {
+        case .stretch:
+            currentPhase = .warmup
+        case .drill:
+            currentPhase = .stretch
+        case .strides:
+            currentPhase = .drill
+        case .sprints:
+            currentPhase = .strides
+        case .resting:
+            currentPhase = .sprints
+        case .cooldown:
+            currentPhase = .resting
+        case .completed:
+            currentPhase = .cooldown
+        default:
+            break
+        }
+        
+        showCoachingCue("Moved to \(getCurrentPhaseName())")
+        
+        #if os(iOS)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        #endif
+    }
+    
+    private func toggleProVoiceCoaching() {
+        isProVoiceCoachingEnabled.toggle()
+        let message = isProVoiceCoachingEnabled ? "Voice coaching enabled 🔊" : "Voice coaching disabled 🔇"
+        showCoachingCue(message)
+    }
+    
+    @State private var isProVoiceCoachingEnabled = true
+    
+    private func convertToMainWorkoutPhase(_ phase: WorkoutPhase) -> MainProgramWorkoutView.WorkoutPhase {
+        switch phase {
+        case .warmup: return .warmup
+        case .stretch: return .stretch
+        case .drill: return .drill
+        case .strides: return .strides
+        case .sprints: return .sprints
+        case .resting: return .resting
+        case .cooldown: return .cooldown
+        case .completed: return .completed
         }
     }
 }
@@ -629,7 +722,8 @@ struct ProProgressBar: View {
         case 2: return "DRILLS"
         case 3: return "STRIDES"
         case 4: return "SPRINT"
-        case 5: return "COOL"
+        case 5: return "REST"
+        case 6: return "COOL"
         default: return ""
         }
     }
@@ -652,10 +746,19 @@ struct ProProgressBar: View {
         case .drill: return 2
         case .strides: return 3
         case .sprints: return 4
+        case .resting: return 5
         case .cooldown: return 6
         default: return 0
         }
     }
+    
+    // MARK: - Pro Control View Helper Methods
+    
+    private func showCoachingCue(_ message: String) {
+        print("🗣️ Coaching: \(message)")
+    }
+    
+    // Duplicate functions removed - they are now properly inside the main struct
 }
 
 // Placeholder components for other phases
@@ -694,7 +797,7 @@ struct ProCompletionPhaseUI: View {
 
 struct ProAdaptiveRepLogView: View {
     let currentPhase: SprintTimerProWorkoutView.WorkoutPhase
-    let completedReps: [SprintTimerProWorkoutView.RepData]
+    let completedReps: [RepData]
     let currentRep: Int
     let totalReps: Int
     let distance: Int
@@ -822,7 +925,7 @@ struct ProWorkoutCompletionView: View {
     let distance: Int
     let reps: Int
     let restMinutes: Int
-    let completedReps: [SprintTimerProWorkoutView.RepData]
+    let completedReps: [RepData]
     let onDismiss: () -> Void
     
     var body: some View {

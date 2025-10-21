@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 // MARK: - Partial Workout Session Model for Tracking
 struct PartialWorkoutSession {
@@ -218,19 +219,7 @@ struct MainProgramWorkoutView: View {
     }
     
     
-    struct RepData {
-        let id = UUID()
-        let type: RepType
-        let rep: Int
-        let distance: Int
-        let time: Double
-        let speed: Double
-        let timestamp: Date
-        
-        enum RepType {
-            case drill, stride, sprint
-        }
-    }
+    // RepData model moved to Models/RepData.swift for shared use
     
     // MARK: - Models
     
@@ -292,8 +281,8 @@ struct MainProgramWorkoutView: View {
         
         var description: String {
             switch self {
-            case .warmup: return "Light jog"
-            case .stretch: return "Dynamic mobility"
+            case .warmup: return "Light jog to prepare your body"
+            case .stretch: return "Dynamic mobility and activation"
             case .drill: return "GPS Stopwatch (20-yard clarity check)"
             case .strides: return "20 yards × 3 reps"
             case .sprints: return "Maximum effort sprints"
@@ -307,8 +296,8 @@ struct MainProgramWorkoutView: View {
             switch self {
             case .warmup: return 300 // 5 minutes
             case .stretch: return 300 // 5 minutes
-            case .drill: return 600 // 10 minutes (with 1 min rest between sets)
-            case .strides: return 480 // 8 minutes (3x20yd with 2min rest)
+            case .drill: return 360 // 6 minutes (with 1 min rest between sets)
+            case .strides: return 360 // 6 minutes (3x20yd with 2min rest)
             case .sprints: return 0 // Dynamic based on Session Library
             case .resting: return 0 // Dynamic based on Session Library
             case .cooldown: return 300 // 5 minutes
@@ -394,8 +383,8 @@ struct MainProgramWorkoutView: View {
         case .drill: return 2
         case .strides: return 3
         case .sprints: return 4
-        case .cooldown: return 5
-        case .resting: return 6
+        case .resting: return 5
+        case .cooldown: return 6
         case .completed: return 7
         }
     }
@@ -486,7 +475,19 @@ struct MainProgramWorkoutView: View {
         // Manually advance to next phase
         switch currentPhase {
         case .warmup:
-            break
+            currentPhase = .stretch
+        case .stretch:
+            currentPhase = .drill
+        case .drill:
+            currentPhase = .strides
+        case .strides:
+            currentPhase = .sprints
+        case .sprints:
+            currentPhase = .resting
+        case .resting:
+            currentPhase = .cooldown
+        case .cooldown:
+            currentPhase = .completed
         default:
             break
         }
@@ -563,7 +564,10 @@ struct MainProgramWorkoutView: View {
                         self.showCoachingCue("You're flying! Time for maximum effort sprints 🚀")
                         self.currentPhase = .sprints
                     case .sprints:
-                        self.showCoachingCue("Amazing work! Time to cool down and recover 🌟")
+                        self.showCoachingCue("Incredible speed! Time for recovery 💪")
+                        self.currentPhase = .resting
+                    case .resting:
+                        self.showCoachingCue("Perfect recovery! Time to cool down 🌟")
                         self.currentPhase = .cooldown
                     case .cooldown:
                         self.showCoachingCue("Session complete! You're getting faster every day! 🏆")
@@ -594,11 +598,54 @@ struct MainProgramWorkoutView: View {
         }
     }
     
+    // MARK: - Control View Helper Methods
+    
+    private func goToPreviousPhase() {
+        switch currentPhase {
+        case .stretch:
+            currentPhase = .warmup
+        case .drill:
+            currentPhase = .stretch
+        case .strides:
+            currentPhase = .drill
+        case .sprints:
+            currentPhase = .strides
+        case .resting:
+            currentPhase = .sprints
+        case .cooldown:
+            currentPhase = .resting
+        case .completed:
+            currentPhase = .cooldown
+        default:
+            break
+        }
+        
+        // Reset phase timer
+        phaseTimeRemaining = currentPhase.duration
+        showCoachingCue("Moved to \(currentPhase.title) phase")
+        
+        #if os(iOS)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        #endif
+    }
+    
+    @State private var isVoiceCoachingEnabled = true
+    
+    private func toggleVoiceCoaching() {
+        isVoiceCoachingEnabled.toggle()
+        let message = isVoiceCoachingEnabled ? "Voice coaching enabled 🔊" : "Voice coaching disabled 🔇"
+        showCoachingCue(message)
+        
+        #if os(iOS)
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        #endif
+    }
+    
     private func getCurrentDotIndex() -> Int {
         switch currentPhase {
         case .warmup, .stretch, .drill: return 0
         case .strides: return 1
-        case .sprints, .cooldown, .resting, .completed: return 2
+        case .sprints, .resting, .cooldown, .completed: return 2
         }
     }
     
@@ -609,13 +656,59 @@ struct MainProgramWorkoutView: View {
         case .drill: return "ACTIVATION DRILLS"
         case .strides: return "BUILD-UP STRIDES"
         case .sprints: return "MAXIMUM SPRINTS"
+        case .resting: return "RECOVERY PHASE"
         case .cooldown: return "COOL DOWN"
-        case .resting: return "RECOVERY"
         case .completed: return "SESSION COMPLETE"
         }
     }
     
     var body: some View {
+        SwipeableWorkoutContainer(
+            mainContent: {
+                mainWorkoutView
+            },
+            controlContent: {
+                ControlWorkoutView(
+                    isRunning: $isRunning,
+                    isPaused: $isPaused,
+                    currentPhase: $currentPhase,
+                    currentRep: $currentRep,
+                    totalReps: $totalReps,
+                    phaseTimeRemaining: $phaseTimeRemaining,
+                    onPlayPause: togglePausePlay,
+                    onStop: {
+                        stopSprintCoachWorkout()
+                        presentationMode.wrappedValue.dismiss()
+                    },
+                    onPrevious: {
+                        // Go to previous phase
+                        goToPreviousPhase()
+                    },
+                    onNext: {
+                        // Go to next phase
+                        advanceToNextPhase()
+                    },
+                    onVolumeToggle: {
+                        // Toggle voice coaching
+                        toggleVoiceCoaching()
+                    }
+                )
+            },
+            musicContent: {
+                MusicWorkoutView()
+            },
+            repLogContent: {
+                RepLogLiveView(
+                    completedReps: $completedReps,
+                    currentRep: $currentRep,
+                    totalReps: $totalReps,
+                    currentPhase: $currentPhase
+                )
+            }
+        )
+    }
+    
+    private var mainWorkoutView: some View {
         ZStack {
             // Premium gradient background matching the image
             LinearGradient(
@@ -670,7 +763,7 @@ struct MainProgramWorkoutView: View {
                         case .sprints:
                             // Sprints phase - show timer and sprint info
                             SprintsPhaseUI()
-                        case .cooldown, .resting, .completed:
+                        case .resting, .cooldown, .completed:
                             // Final phases - show completion
                             CompletionPhaseUI(
                                 sessionData: sessionData,
@@ -968,11 +1061,11 @@ struct MainProgramWorkoutView: View {
         
         // Record the rep data
         let repData = RepData(
-            type: getRepType(for: phase),
             rep: getCurrentRepNumber(for: phase),
-            distance: Int(currentDistance),
             time: sprintTime,
-            speed: currentSpeed,
+            isCompleted: true,
+            repType: getRepType(for: phase),
+            distance: Int(currentDistance),
             timestamp: Date()
         )
         completedReps.append(repData)
@@ -981,11 +1074,65 @@ struct MainProgramWorkoutView: View {
         announceRepComplete(repData: repData, phase: phase)
         provideHapticFeedback(type: .sprintComplete)
         
-        // Update phase-specific counters
-        updatePhaseProgress(for: phase)
+        // Update phase-specific counters and handle progression
+        updatePhaseCounters(for: phase)
         
-        // Determine next action based on phase
-        handlePhaseProgression(for: phase)
+        // Move to next phase or rep based on current state
+        determineNextAction(for: phase)
+    }
+    
+    private func updatePhaseCounters(for phase: WorkoutPhase) {
+        switch phase {
+        case .drill:
+            drillsCompleted += 1
+        case .strides:
+            stridesCompleted += 1
+        case .sprints:
+            // Sprint counter is handled separately
+            break
+        default:
+            break
+        }
+    }
+    
+    private func determineNextAction(for phase: WorkoutPhase) {
+        guard let session = sessionData else {
+            advanceToNextPhase()
+            return
+        }
+        
+        switch phase {
+        case .drill:
+            let totalDrills = session.drillSets.reduce(0) { $0 + $1.reps }
+            if drillsCompleted < totalDrills {
+                // Continue with next drill
+                startGPSStopwatch(for: .drill)
+            } else {
+                // Move to next phase
+                advanceToNextPhase()
+            }
+        case .strides:
+            let totalStrides = session.strideSets.first?.reps ?? 3
+            if stridesCompleted < totalStrides {
+                // Continue with next stride
+                startGPSStopwatch(for: .strides)
+            } else {
+                // Move to next phase
+                advanceToNextPhase()
+            }
+        case .sprints:
+            if currentRep < totalReps {
+                // Start rest period before next sprint
+                currentPhase = .resting
+                phaseTimeRemaining = session.sprintSets.first?.restTime ?? 180
+                startPhaseTimer()
+            } else {
+                // Move to cooldown
+                advanceToNextPhase()
+            }
+        default:
+            advanceToNextPhase()
+        }
     }
     
     private func getTargetDistance(for phase: WorkoutPhase) -> Int {
@@ -1038,58 +1185,6 @@ struct MainProgramWorkoutView: View {
         case .strides: return stridesCompleted + 1
         case .sprints: return currentRep
         default: return 1
-        }
-    }
-    
-    private func updatePhaseProgress(for phase: WorkoutPhase) {
-        switch phase {
-        case .drill:
-            drillsCompleted += 1
-        case .strides:
-            stridesCompleted += 1
-        case .sprints:
-            currentRep += 1
-        default:
-            break
-        }
-    }
-    
-    private func handlePhaseProgression(for phase: WorkoutPhase) {
-        guard let session = sessionData else { return }
-        
-        switch phase {
-        case .drill:
-            let totalDrillSets = session.drillSets.reduce(0) { $0 + $1.reps }
-            if drillsCompleted < totalDrillSets {
-                // Start 1-minute rest between drill sets
-                startRestPeriod(duration: 60, message: "1-minute rest between drill sets")
-            } else {
-                // Move to next phase
-                advanceToNextPhase()
-            }
-            
-        case .strides:
-            let totalStrides = session.strideSets.first?.reps ?? 3
-            if stridesCompleted < totalStrides {
-                // Start 2-minute rest between strides
-                startRestPeriod(duration: 120, message: "2-minute rest between strides")
-            } else {
-                // Move to next phase
-                advanceToNextPhase()
-            }
-            
-        case .sprints:
-            if currentRep <= totalReps {
-                // Start rest period based on session data
-                let restTime = session.sprintSets.first?.restTime ?? 180
-                startRestPeriod(duration: restTime, message: "Rest period between sprints")
-            } else {
-                // Move to cooldown
-                advanceToNextPhase()
-            }
-            
-        default:
-            break
         }
     }
     
@@ -1177,8 +1272,8 @@ struct MainProgramWorkoutView: View {
     }
     
     private func announceRepComplete(repData: RepData, phase: WorkoutPhase) {
-        let timeString = String(format: "%.2f", repData.time)
-        let speedString = String(format: "%.1f", repData.speed)
+        let timeString = String(format: "%.2f", repData.time ?? 0.0)
+        let speedString = String(format: "%.1f", repData.speed ?? 0.0)
         
         switch phase {
         case .drill:
@@ -1301,14 +1396,16 @@ struct MainProgramWorkoutView: View {
         switch type {
         case .drill: return .indigo
         case .stride: return .purple
-        case .sprint: return .yellow
+        case .sprint: return .green
+        case .warmup: return .orange
+        case .cooldown: return .cyan
         }
     }
     
     private func getRestTimeDisplay(for repData: RepData) -> String {
         guard let session = sessionData else { return "--" }
         
-        switch repData.type {
+        switch repData.repType {
         case .drill: return "1:00"
         case .stride: return "2:00"
         case .sprint:
@@ -1316,6 +1413,8 @@ struct MainProgramWorkoutView: View {
             let minutes = restTime / 60
             let seconds = restTime % 60
             return String(format: "%d:%02d", minutes, seconds)
+        case .warmup: return "0:30"
+        case .cooldown: return "0:30"
         }
     }
     
@@ -2529,7 +2628,7 @@ struct CompletionPhaseUI: View {
 
 struct AdaptiveRepLogView: View {
     let currentPhase: MainProgramWorkoutView.WorkoutPhase
-    let completedReps: [MainProgramWorkoutView.RepData]
+    let completedReps: [RepData]
     let currentRep: Int
     let totalReps: Int
     let sessionData: MainProgramWorkoutView.SessionData?

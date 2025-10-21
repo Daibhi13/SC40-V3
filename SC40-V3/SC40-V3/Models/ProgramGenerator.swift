@@ -49,7 +49,7 @@ func generateWeeklyProgramWithOverload(options: ProgramOptions, weekNumber: Int,
             let readinessScore = Double.random(in: 5...10)
             let main40yd = PhaseProgram(phase: .S, reps: day.reps, distance: 40, notes: day.notes, lastTime: nil, pb: options.pb40yd)
             let phases: [PhaseProgram] = [main40yd] + day.support
-            let predictedPBs = Dictionary(uniqueKeysWithValues: phases.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) })
+            let predictedPBs: [Phase: PredictedPB] = Dictionary(uniqueKeysWithValues: phases.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) })
             let hybridAI = HybridAISession(
                 recommendedAdjustments: [],
                 fatigueScore: fatigueScore,
@@ -133,7 +133,7 @@ func generateWeeklyProgramWithOverload(options: ProgramOptions, weekNumber: Int,
                 phasePrograms.append(base)
             }
         }
-        let predictedPBs = Dictionary(uniqueKeysWithValues: phasePrograms.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) })
+        let predictedPBs: [Phase: PredictedPB] = Dictionary(uniqueKeysWithValues: phasePrograms.map { ($0.phase, PredictedPB(value: $0.pb ?? 0, confidence: 0.7, trend: .stable)) })
         let hybridAI = HybridAISession(
             recommendedAdjustments: [],
             fatigueScore: fatigueScore,

@@ -18,6 +18,7 @@ enum AppFlowStep {
 struct ContentView: View {
     @State private var step: AppFlowStep = .welcome
     @StateObject private var userProfileVM = UserProfileViewModel()
+    @StateObject private var watchConnectivity = WatchConnectivityManager.shared
     
     var body: some View {
         ZStack {
@@ -36,6 +37,13 @@ struct ContentView: View {
                 OnboardingView(userName: name, userProfileVM: userProfileVM, onComplete: {
                     // Generate the full 12-week program immediately after onboarding
                     userProfileVM.refreshAdaptiveProgram()
+                    
+                    // Sync onboarding data to Apple Watch
+                    Task {
+                        await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
+                        await watchConnectivity.sync7StageWorkoutFlow()
+                    }
+                    
                     withAnimation { step = .stopwatchIntro }
                 })
             case .stopwatchIntro:

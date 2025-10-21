@@ -66,6 +66,24 @@ struct HybridAISession: Codable, Equatable, Hashable {
     var focusPhases: [Phase]?
     var readinessScore: Double?
     
+    init(recommendedAdjustments: [Adjustment]? = nil,
+         fatigueScore: Double? = nil,
+         fatigue: Double? = nil,
+         suggestedRest: Int? = nil,
+         predictedPBs: [Phase: PredictedPB]? = nil,
+         phaseTrends: [Phase: TrendDirection]? = nil,
+         focusPhases: [Phase]? = nil,
+         readinessScore: Double? = nil) {
+        self.recommendedAdjustments = recommendedAdjustments
+        self.fatigueScore = fatigueScore
+        self.fatigue = fatigue
+        self.suggestedRest = suggestedRest
+        self.predictedPBs = predictedPBs
+        self.phaseTrends = phaseTrends
+        self.focusPhases = focusPhases
+        self.readinessScore = readinessScore
+    }
+    
     static func == (lhs: HybridAISession, rhs: HybridAISession) -> Bool {
         lhs.recommendedAdjustments == rhs.recommendedAdjustments &&
         lhs.fatigueScore == rhs.fatigueScore &&

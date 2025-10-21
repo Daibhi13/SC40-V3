@@ -13,6 +13,7 @@ import UIKit
 
 struct TrainingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
+    @StateObject private var watchConnectivity = WatchConnectivityManager.shared
     @AppStorage("isProUser") private var isProUser: Bool = false
     @State private var showMenu = false
     @State private var selectedMenu: MenuSelection = .main
@@ -587,21 +588,21 @@ extension TrainingView {
                     }
                     .padding(.horizontal, 20)
                     
-                    // Horizontal Scrolling Training Cards - Nike Style
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 16) {
-                            ForEach(sessionsToShow.prefix(12), id: \.id) { session in
-                                TrainingSessionCard(session: session)
-                                    .onTapGesture {
-                                        selectedSessionForWorkout = session
-                                        showMainProgramWorkout = true
-                                        #if os(iOS)
-                                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                        #endif
-                                    }
+                    // Single Training Card View - Matching screenshot design
+                    if let currentSession = sessionsToShow.first {
+                        TrainingSessionCard(session: currentSession)
+                            .padding(.horizontal, 20)
+                            .onTapGesture {
+                                selectedSessionForWorkout = currentSession
+                                showMainProgramWorkout = true
+                                #if os(iOS)
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                #endif
                             }
-                        }
-                        .padding(.horizontal, 20)
+                    } else {
+                        // Placeholder when no sessions available
+                        PlaceholderTrainingCard()
+                            .padding(.horizontal, 20)
                     }
                 }
                 .padding(.bottom, 24)
@@ -755,104 +756,103 @@ extension TrainingView {
 }
 // Close TrainingView struct here
 
-// MARK: - TrainingSessionCard Component - Nike Style
+// MARK: - TrainingSessionCard Component - Screenshot Style
 struct TrainingSessionCard: View {
     let session: TrainingSession
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Header Section - Nike Style
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    // Week/Day Badge
-                    Text("WEEK \(session.week)")
+        VStack(alignment: .leading, spacing: 12) {
+            // Header Section - Matching screenshot
+            HStack {
+                // Week/Day Badge
+                Text("WEEK \(session.week)")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(12)
+                
+                Spacer()
+                
+                // Session Type Badge - Matching screenshot
+                Text(session.type.uppercased())
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(12)
+            }
+            
+            // Day and Focus - Matching screenshot layout
+            VStack(alignment: .leading, spacing: 4) {
+                Text("DAY \(session.day)")
+                    .font(.system(size: 32, weight: .black))
+                    .foregroundColor(.white)
+                
+                Text(session.focus.uppercased())
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(1.0)
+            }
+            
+            // Workout Details - Matching screenshot
+            HStack {
+                if let firstSprint = session.sprints.first {
+                    Text("\(firstSprint.reps)")
+                        .font(.system(size: 24, weight: .black))
+                        .foregroundColor(.white)
+                    Text("×")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                    Text("\(firstSprint.distanceYards) YD")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    // Intensity Badge - Matching screenshot
+                    Text(firstSprint.intensity.uppercased())
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(.black)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .background(Color.white)
                         .cornerRadius(12)
+                } else {
+                    Text("RECOVERY")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundColor(.white)
                     
                     Spacer()
                     
-                    // Session Type Badge
-                    Text(session.type.uppercased())
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white.opacity(0.8))
-                        .tracking(0.5)
+                    Text("ACTIVE")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 4)
+                        .background(Color.cyan)
+                        .cornerRadius(12)
                 }
-                
-                // Day and Focus
-                Text("DAY \(session.day)")
-                    .font(.system(size: 28, weight: .black))
-                    .foregroundColor(.white)
-                
-                Text(session.focus.uppercased())
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                    .tracking(1.0)
             }
-            .padding(.top, 20)
-            .padding(.horizontal, 20)
             
-            Spacer()
-            
-            // Workout Details - Nike Style
-            VStack(alignment: .leading, spacing: 6) {
-                if let firstSprint = session.sprints.first {
-                    HStack {
-                        Text("\(firstSprint.reps)")
-                            .font(.system(size: 24, weight: .black))
-                            .foregroundColor(.white)
-                        Text("×")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                        Text("\(firstSprint.distanceYards) YD")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
-                        Spacer()
-                        Text(firstSprint.intensity.uppercased())
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.white)
-                            .cornerRadius(8)
-                    }
-                } else {
-                    HStack {
-                        Text("RECOVERY")
-                            .font(.system(size: 18, weight: .black))
-                            .foregroundColor(.white)
-                        Spacer()
-                        Text("ACTIVE")
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundColor(.black)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.cyan)
-                            .cornerRadius(8)
-                    }
-                }
-                
-                // Motivational tagline - Nike style
-                Text("PUSH YOUR LIMITS")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                    .tracking(0.8)
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            // Motivational tagline
+            Text("PUSH YOUR LIMITS")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+                .tracking(0.8)
         }
-        .frame(width: 340, height: 160) // Wider cards as requested
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color.black,
-                            Color(red: 0.1, green: 0.1, blue: 0.1),
-                            Color.black
+                            Color.black.opacity(0.8),
+                            Color(red: 0.1, green: 0.1, blue: 0.1).opacity(0.9),
+                            Color.black.opacity(0.8)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -860,20 +860,102 @@ struct TrainingSessionCard: View {
                 )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3),
-                            Color.white.opacity(0.1)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
+                    Color.white.opacity(0.1),
                     lineWidth: 1
                 )
         )
-        .shadow(color: Color.black.opacity(0.3), radius: 8, x: 0, y: 4)
+        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+    }
+}
+
+// MARK: - Placeholder Training Card
+struct PlaceholderTrainingCard: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("WEEK 1")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(12)
+                
+                Spacer()
+                
+                Text("ACCELERATION")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(12)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text("DAY 1")
+                    .font(.system(size: 32, weight: .black))
+                    .foregroundColor(.white)
+                
+                Text("DRIVE PHASE")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(1.0)
+            }
+            
+            HStack {
+                Text("5")
+                    .font(.system(size: 24, weight: .black))
+                    .foregroundColor(.white)
+                Text("×")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white.opacity(0.6))
+                Text("25 YD")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Text("HIGH")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 4)
+                    .background(Color.white)
+                    .cornerRadius(12)
+            }
+            
+            Text("PUSH YOUR LIMITS")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+                .tracking(0.8)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color.black.opacity(0.8),
+                            Color(red: 0.1, green: 0.1, blue: 0.1).opacity(0.9),
+                            Color.black.opacity(0.8)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(
+                    Color.white.opacity(0.1),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
     }
 }
 

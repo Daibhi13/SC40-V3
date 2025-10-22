@@ -71,6 +71,11 @@ struct TrainingView: View {
             
             NavigationView {
                 ZStack {
+                    // Ensure background transparency for NavigationView content
+                    Color.clear
+                        .ignoresSafeArea()
+                        .background(.clear)
+                    
                     switch selectedMenu {
                     case .main:
                         AnyView(mainDashboard(profile: profile, userProfileVM: userProfileVM))
@@ -96,9 +101,9 @@ struct TrainingView: View {
                         AnyView(AdvancedAnalyticsView())
                     }
                 }
-                .background(Color.clear)
                 .navigationTitle("Sprint Coach 40")
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationBarHidden(false)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: { 
@@ -107,28 +112,67 @@ struct TrainingView: View {
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             #endif
                         }) {
-                            Image(systemName: "line.horizontal.3")
-                                .imageScale(.large)
-                                .foregroundColor(.yellow)
+                            ZStack {
+                                Circle()
+                                    .fill(Color.black.opacity(0.3))
+                                    .frame(width: 44, height: 44)
+                                
+                                Image(systemName: "line.horizontal.3")
+                                    .font(.system(size: 18, weight: .semibold))
+                                    .foregroundColor(.yellow)
+                            }
                         }
                         .accessibilityLabel("Open menu")
                         .accessibilityHint("Opens the navigation menu")
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack {
+                        HStack(spacing: 12) {
                             Circle()
                                 .fill(Color.red)
                                 .frame(width: 8, height: 8)
                             Image(systemName: "applewatch")
+                                .font(.system(size: 16))
                                 .foregroundColor(.yellow)
                             Image(systemName: "bell.fill")
+                                .font(.system(size: 16))
                                 .foregroundColor(.yellow)
                         }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.black.opacity(0.3))
+                        )
                     }
+                }
+                .navigationViewStyle(StackNavigationViewStyle())
+                .toolbarBackground(.visible, for: .navigationBar)
+                .toolbarBackground(Color.clear, for: .navigationBar)
+                .toolbarColorScheme(.dark, for: .navigationBar)
+                .preferredColorScheme(.dark)
+                .onAppear {
+                    // Configure NavigationView to use transparent background - TrainingView specific
+                    #if os(iOS)
+                    let appearance = UINavigationBarAppearance()
+                    appearance.configureWithTransparentBackground()
+                    appearance.backgroundColor = UIColor.clear
+                    appearance.shadowColor = UIColor.clear
+                    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+                    appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+                    
+                    // Apply only to this navigation controller instance
+                    if let navigationController = UIApplication.shared.windows.first?.rootViewController as? UINavigationController {
+                        navigationController.navigationBar.standardAppearance = appearance
+                        navigationController.navigationBar.compactAppearance = appearance
+                        navigationController.navigationBar.scrollEdgeAppearance = appearance
+                        navigationController.navigationBar.tintColor = UIColor.white
+                    }
+                    #endif
                 }
             }
             
+            // Hamburger Menu Overlay - ensure it appears on top
             if showMenu {
                 // Professional hamburger menu - exact match to screenshot
                 Color.black.opacity(0.4)
@@ -136,6 +180,7 @@ struct TrainingView: View {
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     }
+                    .zIndex(1000) // Ensure menu appears above all content
                 
                 HStack {
                     VStack(alignment: .leading, spacing: 0) {
@@ -246,6 +291,7 @@ struct TrainingView: View {
                     Spacer()
                 }
                 .transition(.move(edge: .leading))
+                .zIndex(1001) // Ensure menu content appears above overlay
             }
         }
         .sheet(item: $selectedSession) { session in
@@ -345,20 +391,31 @@ extension TrainingView {
         let currentWeek = userProfileVM.profile.currentWeek
         let frequency = userProfileVM.profile.frequency
         
-        print("🏃‍♂️ TrainingView: Generating sessions for \(userProfileVM.profile.level) level, Week \(currentWeek), \(frequency) days/week")
+        print("🏃‍♂️ TrainingView: Generating sessions for \(userProfileVM.profile.level) level, \(frequency) days/week across 12 weeks")
         
         var sessions: [TrainingSession] = []
         
-        // Generate sessions based on user level and current week
-        for day in 1...frequency {
-            let session = generateSessionForDay(
-                week: currentWeek,
-                day: day,
-                level: userLevel
-            )
-            sessions.append(session)
+        // Generate sessions for entire 12-week program (up to 85 sessions)
+        for week in 1...12 {
+            for day in 1...frequency {
+                let session = generateSessionForDay(
+                    week: week,
+                    day: day,
+                    level: userLevel
+                )
+                sessions.append(session)
+                
+                // Safety limit to prevent excessive sessions
+                if sessions.count >= 85 {
+                    break
+                }
+            }
+            if sessions.count >= 85 {
+                break
+            }
         }
         
+        print("🏃‍♂️ TrainingView: Generated \(sessions.count) total sessions for carousel")
         return sessions
     }
     
@@ -547,14 +604,14 @@ extension TrainingView {
         
         return ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                // Welcome Header - Exact match to screenshot
-                VStack(alignment: .leading, spacing: 16) {
+                // Welcome Header - Centered to match UI
+                VStack(alignment: .center, spacing: 16) {
                     Text("Welcome, David!")
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(maxWidth: .infinity, alignment: .center)
                     
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .center, spacing: 8) {
                         Text("YOUR PERSONAL BEST")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.white.opacity(0.7))
@@ -568,7 +625,7 @@ extension TrainingView {
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
@@ -588,21 +645,38 @@ extension TrainingView {
                     }
                     .padding(.horizontal, 20)
                     
-                    // Single Training Card View - Matching screenshot design
-                    if let currentSession = sessionsToShow.first {
-                        TrainingSessionCard(session: currentSession)
-                            .padding(.horizontal, 20)
-                            .onTapGesture {
-                                selectedSessionForWorkout = currentSession
-                                showMainProgramWorkout = true
-                                #if os(iOS)
-                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                #endif
+                    // Training Program Carousel - One card visible with scroll capability
+                    VStack(spacing: 16) {
+                        GeometryReader { geometry in
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 20) {
+                                    ForEach(sessionsToShow.indices, id: \.self) { index in
+                                        let session = sessionsToShow[index]
+                                        TrainingSessionCard(session: session)
+                                            .frame(width: geometry.size.width - 60) // Full width minus padding for one card
+                                            .onTapGesture {
+                                                selectedSessionForWorkout = session
+                                                showMainProgramWorkout = true
+                                                #if os(iOS)
+                                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                                #endif
+                                            }
+                                    }
+                                }
+                                .padding(.horizontal, 30)
                             }
-                    } else {
-                        // Placeholder when no sessions available
-                        PlaceholderTrainingCard()
-                            .padding(.horizontal, 20)
+                        }
+                        .frame(height: 200) // Fixed height for carousel
+                        
+                        // Page indicator dots - showing first 10 sessions
+                        HStack(spacing: 8) {
+                            ForEach(0..<min(10, sessionsToShow.count), id: \.self) { index in
+                                Circle()
+                                    .fill(index == 0 ? Color.white : Color.white.opacity(0.3))
+                                    .frame(width: 8, height: 8)
+                            }
+                        }
+                        .padding(.horizontal, 20)
                     }
                 }
                 .padding(.bottom, 24)
@@ -752,9 +826,11 @@ extension TrainingView {
                 .padding(.bottom, 20)
             }
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.clear)
     }
 }
-// Close TrainingView struct here
+// Close TrainingView extension here
 
 // MARK: - TrainingSessionCard Component - Screenshot Style
 struct TrainingSessionCard: View {

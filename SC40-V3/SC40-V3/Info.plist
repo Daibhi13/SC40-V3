@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>SC40 needs location access to accurately time your sprints and measure distances during training sessions.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>SC40 uses location services to provide precise sprint timing and distance measurement for optimal training results.</string>
+</dict>
+</plist>

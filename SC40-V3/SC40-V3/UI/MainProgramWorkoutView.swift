@@ -13,6 +13,9 @@ struct MainProgramWorkoutView: View {
     // Watch Integration
     @StateObject private var watchSessionManager = WatchSessionManager.shared
     
+    // Audio Integration
+    @StateObject private var audioManager = SimpleAudioManager.shared
+    
     // Enhanced Sprint Coach Integration
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes for warmup
@@ -636,6 +639,9 @@ struct MainProgramWorkoutView: View {
         completedReps = Array(1...totalReps).map { rep in
             RepData(rep: rep, time: nil, isCompleted: false, repType: RepData.RepType.sprint, distance: 40, timestamp: Date())
         }
+        
+        // Setup audio for workout
+        audioManager.updateWorkoutPhase(currentPhase)
     }
     
     private func isPhaseCompleted(_ phase: WorkoutPhase) -> Bool {
@@ -705,6 +711,9 @@ struct MainProgramWorkoutView: View {
         
         // Initialize workout with session data
         setupWorkoutFromSessionData()
+        
+        // Start workout music
+        audioManager.startWorkoutMusic()
         
         // Start voice coaching
         startVoiceCoaching()
@@ -936,8 +945,8 @@ struct MainProgramWorkoutView: View {
         // Start GPS sprint tracking
         gpsManager.startSprint()
         
-        // Provide feedback
-        announceVoiceCoaching("GPS sprint started! Run \(distanceYards) yards! 🏃‍♂️")
+        // Enhanced audio coaching for sprint start
+        audioManager.handleSprintStart()
         triggerHapticFeedback(.start)
     }
     
@@ -976,12 +985,8 @@ struct MainProgramWorkoutView: View {
         let time = result.time
         let accuracy = result.accuracy
         
-        // Provide completion feedback
-        if result.isAccurate {
-            announceVoiceCoaching("Sprint completed! Time: \(String(format: "%.2f", time)) seconds! 🎯")
-        } else {
-            announceVoiceCoaching("Sprint completed! GPS accuracy was limited. Time: \(String(format: "%.2f", time)) seconds ⚠️")
-        }
+        // Use AudioManager for enhanced coaching
+        audioManager.handleSprintComplete(time: time)
         
         // Complete the rep with GPS time
         completeCurrentRep(time: time)
@@ -1015,29 +1020,31 @@ struct MainProgramWorkoutView: View {
     private func handlePhaseCompletion() {
         phaseTimer?.invalidate()
         
+        let oldPhase = currentPhase
+        
         switch currentPhase {
         case .warmup:
             currentPhase = .stretch
             phaseTimeRemaining = WorkoutPhase.stretch.duration
-            announceVoiceCoaching("Warm-up complete! Time to stretch! 🤸‍♂️")
+            audioManager.updateWorkoutPhase(currentPhase)
             startPhaseTimer()
             
         case .stretch:
             currentPhase = .drill
             phaseTimeRemaining = WorkoutPhase.drill.duration
-            announceVoiceCoaching("Stretching done! Let's do some drills! 💪")
+            audioManager.updateWorkoutPhase(currentPhase)
             startPhaseTimer()
             
         case .drill:
             currentPhase = .strides
             phaseTimeRemaining = WorkoutPhase.strides.duration
-            announceVoiceCoaching("Drills complete! Time for strides! 🏃‍♂️")
+            audioManager.updateWorkoutPhase(currentPhase)
             startPhaseTimer()
             
         case .strides:
             currentPhase = .sprints
             currentRep = 1
-            announceVoiceCoaching("Strides done! Ready for sprint \(currentRep) of \(totalReps)! 🚀")
+            audioManager.updateWorkoutPhase(currentPhase)
             showCoachingCue("Sprint \(currentRep) of \(totalReps) - GO! ⚡")
             // Sprint phase is manually controlled by user/GPS
             

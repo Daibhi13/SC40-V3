@@ -395,6 +395,11 @@ SWIFT_CLASS("_TtC7SC40_V317ShareableTextItem")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+SWIFT_CLASS("_TtC7SC40_V318SimpleAudioManager")
+@interface SimpleAudioManager : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
 SWIFT_CLASS("_TtC7SC40_V319VoiceHapticsManager")
 @interface VoiceHapticsManager : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;

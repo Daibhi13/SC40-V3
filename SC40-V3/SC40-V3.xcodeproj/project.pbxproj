@@ -43,9 +43,22 @@
 		06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		06D9C5982EA95BFD007A315F /* Exceptions for "SC40-V3" folder in "SC40-V3" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 06F6B2B62EA6324D00B4AE7A /* SC40-V3 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		06F6B2B92EA6324D00B4AE7A /* SC40-V3 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				06D9C5982EA95BFD007A315F /* Exceptions for "SC40-V3" folder in "SC40-V3" target */,
+			);
 			path = "SC40-V3";
 			sourceTree = "<group>";
 		};
@@ -365,6 +378,8 @@
 				DEVELOPMENT_TEAM = H65MV3U65H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SC40-V3/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -401,6 +416,8 @@
 				DEVELOPMENT_TEAM = H65MV3U65H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SC40-V3/Info.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

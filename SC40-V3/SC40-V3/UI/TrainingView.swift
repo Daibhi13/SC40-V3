@@ -11,6 +11,10 @@ import UIKit
 // - TrainingSession from Models/SprintSetAndTrainingSession.swift
 // - SprintSet from Models/SprintSetAndTrainingSession.swift
 
+// MARK: - TrainingView
+// - Uses TrainingSession from Models/SprintSetAndTrainingSession.swift
+// - Uses SprintSet from Models/SprintSetAndTrainingSession.swift
+
 struct TrainingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     @StateObject private var watchConnectivity = WatchConnectivityManager.shared
@@ -24,20 +28,6 @@ struct TrainingView: View {
     @State private var showSprintTimerPro = false
     @State private var selectedSessionForWorkout: TrainingSession?
     @State private var dynamicSessions: [TrainingSession] = []
-
-    enum MenuSelection {
-        case main
-        case history
-        case leaderboard
-        case smartHub
-        case settings
-        case helpInfo
-        case news
-        case shareWithTeammates
-        case sharePerformance
-        case proFeatures
-        case performanceTrends
-    }
 
     var body: some View {
         let profile = userProfileVM.profile
@@ -1073,8 +1063,8 @@ struct PlaceholderTrainingCard: View {
 struct MenuItemRow: View {
     let icon: String
     let title: String
-    let selection: TrainingView.MenuSelection
-    @Binding var currentSelection: TrainingView.MenuSelection
+    let selection: MenuSelection
+    @Binding var currentSelection: MenuSelection
     @Binding var showMenu: Bool
     
     var body: some View {
@@ -1111,8 +1101,8 @@ struct MenuItemRow: View {
 struct MenuItemRowPremium: View {
     let icon: String
     let title: String
-    let selection: TrainingView.MenuSelection
-    @Binding var currentSelection: TrainingView.MenuSelection
+    let selection: MenuSelection
+    @Binding var currentSelection: MenuSelection
     @Binding var showMenu: Bool
     let showBadge: Bool
     let badgeColor: Color
@@ -1581,33 +1571,33 @@ struct HamburgerSideMenu<MenuType>: View {
             VStack(alignment: .leading, spacing: 0) {
                 Spacer().frame(height: 60)
                 Group {
-                    Button(action: { onSelect(TrainingView.MenuSelection.main as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.main as! MenuType) }) {
                         SideMenuRow(icon: "bolt.fill", label: "Sprint 40 yards")
                     }
                     .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(TrainingView.MenuSelection.history as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.history as! MenuType) }) {
                         SideMenuRow(icon: "clock.arrow.circlepath", label: "History")
                     }
                     .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(TrainingView.MenuSelection.leaderboard as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.leaderboard as! MenuType) }) {
                         SideMenuRow(icon: "chart.bar.xaxis", label: "Leaderboard")
                     }
                     .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(TrainingView.MenuSelection.smartHub as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.smartHub as! MenuType) }) {
                         SideMenuRow(icon: "lightbulb", label: "40 Yard Smart")
                     }
                     .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(TrainingView.MenuSelection.settings as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.settings as! MenuType) }) {
                         SideMenuRow(icon: "gearshape", label: "Settings")
                     }
                     .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(TrainingView.MenuSelection.helpInfo as! MenuType) }) {
+                    Button(action: { onSelect(MenuSelection.helpInfo as! MenuType) }) {
                         SideMenuRow(icon: "questionmark.circle", label: "Help & info")
                     }
                     .buttonStyle(PlainButtonStyle())
                 Divider().background(Color.white.opacity(0.2))
-                if let _ = MenuType.self as? TrainingView.MenuSelection.Type {
-                    Button(action: { onSelect(TrainingView.MenuSelection.shareWithTeammates as! MenuType) }) {
+                if let _ = MenuType.self as? MenuSelection.Type {
+                    Button(action: { onSelect(MenuSelection.shareWithTeammates as! MenuType) }) {
                         SideMenuRow(icon: "person.3.fill", label: "Share with Team Mates")
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -1615,7 +1605,7 @@ struct HamburgerSideMenu<MenuType>: View {
                     Spacer(minLength: 24)
                     HStack {
                         Spacer()
-                        Button(action: { onSelect(TrainingView.MenuSelection.proFeatures as! MenuType) }) {
+                        Button(action: { onSelect(MenuSelection.proFeatures as! MenuType) }) {
                             SideMenuRow(icon: "lock.shield", label: "Pro Features", color: .yellow)
                         }
                         .buttonStyle(PlainButtonStyle())
@@ -1716,7 +1706,7 @@ struct TrainingProgramCarousel_Previews: PreviewProvider {
             .fill(Color(red: 0.1, green: 0.2, blue: 0.4))
             .ignoresSafeArea()
 
-        HamburgerSideMenu(showMenu: .constant(true), onSelect: { (_: TrainingView.MenuSelection) in })
+        HamburgerSideMenu(showMenu: .constant(true), onSelect: { (_: MenuSelection) in })
             .preferredColorScheme(.dark)
     }
 }

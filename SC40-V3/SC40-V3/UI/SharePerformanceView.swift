@@ -7,6 +7,7 @@ import UIKit
 // MARK: - Share Performance View
 
 struct SharePerformanceView: View {
+    @ObservedObject var userProfileVM: UserProfileViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var selectedFormat: ShareFormat = .pdf
     @State private var includePersonalBests = true
@@ -795,5 +796,5 @@ struct ProfessionalFormatBadge: View {
 }
 
 #Preview {
-    SharePerformanceView()
+    SharePerformanceView(userProfileVM: UserProfileViewModel())
 }

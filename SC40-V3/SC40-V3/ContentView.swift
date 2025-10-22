@@ -44,7 +44,8 @@ struct ContentView: View {
                         await watchConnectivity.sync7StageWorkoutFlow()
                     }
                     
-                    withAnimation { step = .stopwatchIntro }
+                    // Navigate directly to TrainingView after onboarding completion
+                    withAnimation { step = .training }
                 })
             case .stopwatchIntro:
                 RecordCardView(userName: userProfileVM.profile.name, onContinue: {

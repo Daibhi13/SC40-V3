@@ -24,7 +24,7 @@ struct SideMenuView: View {
                 SettingsView(userProfileVM: userProfileVM)
             }
             .sheet(isPresented: $showSharePerformance) {
-                SharePerformanceView()
+                SharePerformanceView(userProfileVM: userProfileVM)
             }
         }
     }

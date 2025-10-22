@@ -1,8 +1,54 @@
 import SwiftUI
 
+// MARK: - Menu Selection Types
+enum HamburgerMenuSelection {
+    case main
+    case history
+    case leaderboard
+    case smartHub
+    case settings
+    case helpInfo
+    case news
+    case shareWithTeammates
+    case sharePerformance
+    case proFeatures
+    case performanceTrends
+}
+
+// MARK: - Menu Row Component
+struct HamburgerMenuRow: View {
+    let icon: String
+    let label: String
+    let color: Color
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(color)
+                    .font(.system(size: 20, weight: .medium))
+
+                Text(label)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(.white)
+
+                Spacer()
+            }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 20)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Hamburger Side Menu
 struct HamburgerSideMenu<MenuType>: View {
     @Binding var showMenu: Bool
     var onSelect: (MenuType) -> Void
+    
     var body: some View {
         ZStack(alignment: .leading) {
             // Premium semi-transparent overlay
@@ -22,43 +68,43 @@ struct HamburgerSideMenu<MenuType>: View {
 
                 // Menu items
                 VStack(spacing: 0) {
-                    SideMenuRow(icon: "bolt.fill", label: "Sprint 40 yards", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.main as! MenuType)
+                    HamburgerMenuRow(icon: "bolt.fill", label: "Sprint 40 yards", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.main as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "clock.arrow.circlepath", label: "History", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.history as! MenuType)
+                    HamburgerMenuRow(icon: "clock.arrow.circlepath", label: "History", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.history as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "chart.bar.xaxis", label: "Leaderboard", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.leaderboard as! MenuType)
+                    HamburgerMenuRow(icon: "chart.bar.xaxis", label: "Leaderboard", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.leaderboard as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "square.and.arrow.up", label: "Share Performance", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.sharePerformance as! MenuType)
+                    HamburgerMenuRow(icon: "square.and.arrow.up", label: "Share Performance", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.sharePerformance as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "lightbulb", label: "40 Yard Smart", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.smartHub as! MenuType)
+                    HamburgerMenuRow(icon: "lightbulb", label: "40 Yard Smart", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.smartHub as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "gearshape", label: "Settings", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.settings as! MenuType)
+                    HamburgerMenuRow(icon: "gearshape", label: "Settings", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.settings as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "questionmark.circle", label: "Help & info", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.helpInfo as! MenuType)
+                    HamburgerMenuRow(icon: "questionmark.circle", label: "Help & info", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.helpInfo as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
-                    SideMenuRow(icon: "newspaper", label: "News", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.news as! MenuType)
+                    HamburgerMenuRow(icon: "newspaper", label: "News", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.news as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
                 }
@@ -70,9 +116,9 @@ struct HamburgerSideMenu<MenuType>: View {
                     .padding(.horizontal, 20)
 
                 // Pro features section (if applicable)
-                if let _ = MenuType.self as? MenuSelection.Type {
-                    SideMenuRow(icon: "person.3.fill", label: "Share with Team Mates", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                        onSelect(MenuSelection.shareWithTeammates as! MenuType)
+                if let _ = MenuType.self as? HamburgerMenuSelection.Type {
+                    HamburgerMenuRow(icon: "person.3.fill", label: "Share with Team Mates", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        onSelect(HamburgerMenuSelection.shareWithTeammates as! MenuType)
                         withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                     })
 
@@ -80,8 +126,8 @@ struct HamburgerSideMenu<MenuType>: View {
 
                     HStack {
                         Spacer()
-                        SideMenuRow(icon: "lock.shield", label: "Pro Features", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                            onSelect(MenuSelection.proFeatures as! MenuType)
+                        HamburgerMenuRow(icon: "lock.shield", label: "Pro Features", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                            onSelect(HamburgerMenuSelection.proFeatures as! MenuType)
                             withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                         })
                         Spacer()
@@ -94,7 +140,7 @@ struct HamburgerSideMenu<MenuType>: View {
                 // Bottom section with Accelerate and social icons
                 VStack(spacing: 16) {
                     HStack {
-                        SideMenuRow(icon: "hare.fill", label: "Accelerate", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        HamburgerMenuRow(icon: "hare.fill", label: "Accelerate", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
                             // Accelerate action
                             withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
                         })

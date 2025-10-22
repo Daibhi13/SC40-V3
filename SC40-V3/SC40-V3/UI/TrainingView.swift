@@ -84,11 +84,11 @@ struct TrainingView: View {
                     case .shareWithTeammates:
                         AnyView(ShareWithTeammatesView())
                     case .sharePerformance:
-                        AnyView(SharePerformanceView())
+                        AnyView(SharePerformanceView(userProfileVM: userProfileVM))
                     case .proFeatures:
                         AnyView(ProFeaturesView())
                     case .performanceTrends:
-                        AnyView(AdvancedAnalyticsView())
+                        AnyView(AdvancedAnalyticsView(userProfileVM: userProfileVM))
                     }
                 }
                 .navigationTitle("Sprint Coach 40")

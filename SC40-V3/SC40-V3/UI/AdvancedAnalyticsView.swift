@@ -3,11 +3,16 @@ import SwiftUI
 import Charts
 
 struct AdvancedAnalyticsView: View {
+    @ObservedObject var userProfileVM: UserProfileViewModel
     @State private var selectedTab: AnalyticsTab = .performance
     @State private var selectedSport: SportType = .soccer
     @State private var showContent = false
     @State private var completedSessions: [TrainingSession] = []
-    @State private var personalBest: Double = 5.25
+    
+    // Computed property to get actual personal best from user profile
+    private var personalBest: Double {
+        userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime
+    }
     @State private var averageTime: Double = 0.0
     @State private var totalSprints: Int = 0
     @State private var weeklyYards: Int = 0
@@ -227,11 +232,7 @@ struct AdvancedAnalyticsView: View {
             completedSessions = sessions.filter { $0.isCompleted }
         }
         
-        // Load personal best
-        personalBest = UserDefaults.standard.double(forKey: "personalBest40Yard")
-        if personalBest == 0 {
-            personalBest = UserDefaults.standard.double(forKey: "personalBest")
-        }
+        // Personal best is now loaded from user profile via computed property
         
         calculateAnalytics()
     }
@@ -2028,5 +2029,5 @@ struct SplitAnalysisRow: View {
 }
 
 #Preview {
-    AdvancedAnalyticsView()
+    AdvancedAnalyticsView(userProfileVM: UserProfileViewModel())
 }

@@ -7,7 +7,7 @@
         "key": "Sprint Training",
         "location": {
           "startingColumn": 26,
-          "startingLine": 183
+          "startingLine": 214
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "SPRINT COACH 40",
         "location": {
           "startingColumn": 38,
-          "startingLine": 210
+          "startingLine": 241
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "WEEK %lld - DAY %lld / %lld Min",
         "location": {
           "startingColumn": 38,
-          "startingLine": 215
+          "startingLine": 246
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "SPEED BADGE",
         "location": {
           "startingColumn": 38,
-          "startingLine": 270
+          "startingLine": 316
         }
       },
       {
@@ -39,7 +39,39 @@
         "key": "LET'S\nGO",
         "location": {
           "startingColumn": 50,
-          "startingLine": 287
+          "startingLine": 333
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint %lld of %lld",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 344
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 348
+        }
+      },
+      {
+        "comment": "",
+        "key": "DONE",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 363
+        }
+      },
+      {
+        "comment": "",
+        "key": "Skip Rep",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 372
         }
       },
       {
@@ -47,7 +79,7 @@
         "key": "Rep Log",
         "location": {
           "startingColumn": 38,
-          "startingLine": 350
+          "startingLine": 434
         }
       },
       {
@@ -55,7 +87,7 @@
         "key": "Live Workout Report 18:12",
         "location": {
           "startingColumn": 38,
-          "startingLine": 356
+          "startingLine": 440
         }
       },
       {
@@ -63,7 +95,7 @@
         "key": "REP",
         "location": {
           "startingColumn": 38,
-          "startingLine": 363
+          "startingLine": 447
         }
       },
       {
@@ -71,7 +103,7 @@
         "key": "YDS",
         "location": {
           "startingColumn": 38,
-          "startingLine": 368
+          "startingLine": 452
         }
       },
       {
@@ -79,7 +111,7 @@
         "key": "TIME",
         "location": {
           "startingColumn": 38,
-          "startingLine": 373
+          "startingLine": 457
         }
       },
       {
@@ -87,7 +119,7 @@
         "key": "REST",
         "location": {
           "startingColumn": 38,
-          "startingLine": 378
+          "startingLine": 462
         }
       },
       {
@@ -95,7 +127,7 @@
         "key": "1",
         "location": {
           "startingColumn": 38,
-          "startingLine": 389
+          "startingLine": 473
         }
       },
       {
@@ -103,7 +135,7 @@
         "key": "40",
         "location": {
           "startingColumn": 38,
-          "startingLine": 394
+          "startingLine": 478
         }
       },
       {
@@ -111,7 +143,7 @@
         "key": "",
         "location": {
           "startingColumn": 38,
-          "startingLine": 399
+          "startingLine": 483
         }
       },
       {
@@ -119,7 +151,7 @@
         "key": "2m",
         "location": {
           "startingColumn": 38,
-          "startingLine": 404
+          "startingLine": 488
         }
       },
       {
@@ -127,7 +159,7 @@
         "key": "Sprint Coach Session Overview",
         "location": {
           "startingColumn": 18,
-          "startingLine": 876
+          "startingLine": 1099
         }
       },
       {
@@ -135,7 +167,7 @@
         "key": "Start Workout",
         "location": {
           "startingColumn": 24,
-          "startingLine": 881
+          "startingLine": 1104
         }
       },
       {
@@ -143,7 +175,7 @@
         "key": "Strides Phase",
         "location": {
           "startingColumn": 18,
-          "startingLine": 895
+          "startingLine": 1118
         }
       },
       {
@@ -151,7 +183,7 @@
         "key": "Build-up strides in progress...",
         "location": {
           "startingColumn": 18,
-          "startingLine": 898
+          "startingLine": 1121
         }
       },
       {
@@ -159,7 +191,7 @@
         "key": "Sprints Phase",
         "location": {
           "startingColumn": 18,
-          "startingLine": 908
+          "startingLine": 1131
         }
       },
       {
@@ -167,7 +199,7 @@
         "key": "Maximum sprint efforts!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 911
+          "startingLine": 1134
         }
       },
       {
@@ -175,7 +207,7 @@
         "key": "Phase Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 924
+          "startingLine": 1147
         }
       },
       {
@@ -183,23 +215,31 @@
         "key": "Great work on your session!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 927
+          "startingLine": 1150
         }
       },
       {
         "comment": "",
-        "key": "Rep Log",
+        "key": "Workout Phases",
         "location": {
           "startingColumn": 18,
-          "startingLine": 943
+          "startingLine": 1167
         }
       },
       {
         "comment": "",
-        "key": "Rep %lld of %lld",
+        "key": "Sprint %lld of %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1200
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 947
+          "startingLine": 1247
         }
       },
       {
@@ -207,7 +247,7 @@
         "key": "Workout Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1085
+          "startingLine": 1414
         }
       },
       {
@@ -215,7 +255,7 @@
         "key": "Great job on your Sprint Coach session!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1090
+          "startingLine": 1419
         }
       },
       {
@@ -223,7 +263,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 20,
-          "startingLine": 1109
+          "startingLine": 1438
         }
       },
       {
@@ -231,7 +271,7 @@
         "key": "Week %lld - Day %lld",
         "location": {
           "startingColumn": 26,
-          "startingLine": 1097
+          "startingLine": 1426
         }
       },
       {
@@ -239,7 +279,7 @@
         "key": "Completed %lld of %lld reps",
         "location": {
           "startingColumn": 26,
-          "startingLine": 1101
+          "startingLine": 1430
         }
       }
     ]

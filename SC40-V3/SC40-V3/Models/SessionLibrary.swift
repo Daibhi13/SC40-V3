@@ -16,6 +16,7 @@ struct SprintSessionTemplate: Codable, Identifiable, Hashable {
 enum LibrarySessionType: String, Codable, CaseIterable {
     case sprint = "Sprint"
     case activeRecovery = "Active Recovery"
+    case recovery = "Recovery"
     case rest = "Rest"
     case benchmark = "Benchmark"
     case tempo = "Tempo"
@@ -309,7 +310,37 @@ let sessionLibrary: [SprintSessionTemplate] = [
     SprintSessionTemplate(id: 237, name: "Mixed 5-25-45-65 yd Progressive", distance: 65, reps: 4, rest: 165, focus: "20-Yard Steps Universal", level: "All Levels", sessionType: LibrarySessionType.sprint),
     SprintSessionTemplate(id: 238, name: "Mixed Full 20-50-80-50-20 yd Pyramid", distance: 80, reps: 5, rest: 185, focus: "Universal Peak Training", level: "All Levels", sessionType: LibrarySessionType.sprint),
     SprintSessionTemplate(id: 239, name: "Mixed 12-36-60-84 yd Pattern", distance: 84, reps: 4, rest: 195, focus: "24-Yard Increments", level: "All Levels", sessionType: LibrarySessionType.sprint),
-    SprintSessionTemplate(id: 240, name: "Mixed 15-40-65-90 yd Ultimate", distance: 90, reps: 4, rest: 205, focus: "25-Yard Ultimate Build", level: "All Levels", sessionType: LibrarySessionType.sprint)
+    SprintSessionTemplate(id: 240, name: "Mixed 15-40-65-90 yd Ultimate", distance: 90, reps: 4, rest: 205, focus: "25-Yard Ultimate Build", level: "All Levels", sessionType: LibrarySessionType.sprint),
+
+    // MARK: - Recovery & Active Recovery Sessions (Starting at 241)
+    
+    // Recovery Sessions
+    SprintSessionTemplate(id: 241, name: "Beginner Recovery Flow A - Reset & Recharge", distance: 0, reps: 0, rest: 0, focus: "Gentle mobility and breathing", level: "Beginner", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 242, name: "Beginner Recovery Flow B - Grounded Mobility", distance: 0, reps: 0, rest: 0, focus: "Mobility and flexibility", level: "Beginner", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 243, name: "Beginner Recovery Flow C - Full Body Stretch", distance: 0, reps: 0, rest: 0, focus: "Full body flexibility", level: "Beginner", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 244, name: "Intermediate Recovery Flow A - Mobility Reset", distance: 0, reps: 0, rest: 0, focus: "Mobility and breathwork", level: "Intermediate", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 245, name: "Intermediate Recovery Flow B - Deep Tissue Recovery", distance: 0, reps: 0, rest: 0, focus: "Movement and flexibility", level: "Intermediate", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 246, name: "Intermediate Recovery Flow C - Breathe & Balance", distance: 0, reps: 0, rest: 0, focus: "Breathing and relaxation", level: "Intermediate", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 247, name: "Advanced Recovery Flow A - Full Reset Protocol", distance: 0, reps: 0, rest: 0, focus: "Mobility and deep breathing", level: "Advanced", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 248, name: "Advanced Recovery Flow B - Contrast Recovery", distance: 0, reps: 0, rest: 0, focus: "Movement reset and relaxation", level: "Advanced", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 249, name: "Advanced Recovery Flow C - Nervous System Downshift", distance: 0, reps: 0, rest: 0, focus: "Relaxation and mindfulness", level: "Advanced", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 250, name: "Elite Recovery Flow A - Pro Regeneration", distance: 0, reps: 0, rest: 0, focus: "Mobility and recovery breathing", level: "Elite", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 251, name: "Elite Recovery Flow B - Restoration Protocol", distance: 0, reps: 0, rest: 0, focus: "Full body restoration", level: "Elite", sessionType: LibrarySessionType.recovery),
+    SprintSessionTemplate(id: 252, name: "Elite Recovery Flow C - Parasympathetic Recovery", distance: 0, reps: 0, rest: 0, focus: "Deep relaxation and mobility", level: "Elite", sessionType: LibrarySessionType.recovery),
+
+    // Active Recovery Sessions
+    SprintSessionTemplate(id: 253, name: "Beginner Active Recovery A - Sprint Rhythm", distance: 0, reps: 0, rest: 0, focus: "Rhythm and mobility", level: "Beginner", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 254, name: "Beginner Active Recovery B - Mobility Flush", distance: 0, reps: 0, rest: 0, focus: "Light tempo and mobility", level: "Beginner", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 255, name: "Beginner Active Recovery C - Technical Flow", distance: 0, reps: 0, rest: 0, focus: "Technique and movement rhythm", level: "Beginner", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 256, name: "Intermediate Active Recovery A - Tempo Flush", distance: 0, reps: 0, rest: 0, focus: "Aerobic recovery and stride rhythm", level: "Intermediate", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 257, name: "Intermediate Active Recovery B - Mechanics & Flow", distance: 0, reps: 0, rest: 0, focus: "Technical stride rhythm", level: "Intermediate", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 258, name: "Intermediate Active Recovery C - Aerobic Flush", distance: 0, reps: 0, rest: 0, focus: "Blood flow and rhythm", level: "Intermediate", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 259, name: "Advanced Active Recovery A - Tempo + Mobility", distance: 0, reps: 0, rest: 0, focus: "Movement rhythm and posture", level: "Advanced", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 260, name: "Advanced Active Recovery B - Technical Reset", distance: 0, reps: 0, rest: 0, focus: "Sprint form and rhythm", level: "Advanced", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 261, name: "Advanced Active Recovery C - Flush Circuit", distance: 0, reps: 0, rest: 0, focus: "Aerobic maintenance and flow", level: "Advanced", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 262, name: "Elite Active Recovery A - Sprint Rhythm Maintenance", distance: 0, reps: 0, rest: 0, focus: "Elite stride rhythm", level: "Elite", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 263, name: "Elite Active Recovery B - Elite Flow Session", distance: 0, reps: 0, rest: 0, focus: "Technical control and rhythm", level: "Elite", sessionType: LibrarySessionType.activeRecovery),
+    SprintSessionTemplate(id: 264, name: "Elite Active Recovery C - CNS Light Stimulus", distance: 0, reps: 0, rest: 0, focus: "Nervous system refresh", level: "Elite", sessionType: LibrarySessionType.activeRecovery)
 ]
 
 // MARK: - Comprehensive Session Templates

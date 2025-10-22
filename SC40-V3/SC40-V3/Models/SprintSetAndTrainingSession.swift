@@ -60,6 +60,7 @@ public struct TrainingSession: Codable, Identifiable, Sendable {
         let baseString = "00000000-0000-\(weekString)-\(dayString)-000000000000"
         return UUID(uuidString: baseString) ?? UUID()
     }
+    
 }
 
 // MARK: - SC40 Example Session (Algorithm Friendly)

@@ -5,6 +5,7 @@ struct MainProgramWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     
     let sessionData: SessionData?
+    let onWorkoutCompleted: ((CompletedWorkoutData) -> Void)?
     
     // Enhanced Sprint Coach Integration
     @State private var currentPhase: WorkoutPhase = .warmup
@@ -104,6 +105,8 @@ struct MainProgramWorkoutView: View {
     struct SessionData {
         let week: Int
         let day: Int
+        let sessionName: String
+        let sessionFocus: String
         let sprintSets: [SprintSet]
         let drillSets: [DrillSet]
         let strideSets: [StrideSet]
@@ -112,6 +115,34 @@ struct MainProgramWorkoutView: View {
         let estimatedDuration: Int
         let variety: Double
         let engagement: Double
+    }
+    
+    // Completed Workout Data Model
+    struct CompletedWorkoutData {
+        let originalSession: SessionData
+        let completedReps: [RepData]
+        let totalDuration: TimeInterval
+        let averageTime: Double?
+        let bestTime: Double?
+        let completionRate: Double
+        let effortLevel: Int?
+        let notes: String?
+        let completionDate: Date
+        
+        init(originalSession: SessionData, completedReps: [RepData], totalDuration: TimeInterval) {
+            self.originalSession = originalSession
+            self.completedReps = completedReps
+            self.totalDuration = totalDuration
+            self.completionDate = Date()
+            
+            // Calculate performance metrics
+            let completedTimes = completedReps.compactMap { $0.time }
+            self.averageTime = completedTimes.isEmpty ? nil : completedTimes.reduce(0, +) / Double(completedTimes.count)
+            self.bestTime = completedTimes.min()
+            self.completionRate = Double(completedReps.filter { $0.isCompleted }.count) / Double(completedReps.count)
+            self.effortLevel = nil // Can be set by user
+            self.notes = nil // Can be set by user
+        }
     }
     
     struct SprintSet {
@@ -215,6 +246,21 @@ struct MainProgramWorkoutView: View {
                                 Text("WEEK \(sessionData?.week ?? 1) - DAY \(sessionData?.day ?? 1) / \(calculateTotalDuration()) Min")
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.white)
+                                
+                                // Session Name and Focus
+                                if let session = sessionData {
+                                    VStack(spacing: 4) {
+                                        Text(session.sessionName.uppercased())
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(.yellow)
+                                            .tracking(1)
+                                        
+                                        Text(session.sessionFocus.uppercased())
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                    }
+                                }
                             }
                             .padding(.top, 20)
                             
@@ -292,8 +338,46 @@ struct MainProgramWorkoutView: View {
                                     }
                                 }
                                 .padding(.bottom, 20)
+                            } else if currentPhase == .sprints {
+                                // Sprint Phase Controls - Rep Completion
+                                VStack(spacing: 16) {
+                                    Text("Sprint \(currentRep) of \(totalReps)")
+                                        .font(.system(size: 18, weight: .bold))
+                                        .foregroundColor(.yellow)
+                                    
+                                    Text("\(getMainSprintDistance()) yards")
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.8))
+                                    
+                                    // Complete Rep Button
+                                    Button(action: { completeCurrentRep() }) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(Color.green)
+                                                .frame(width: 100, height: 100)
+                                            
+                                            VStack(spacing: 4) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .font(.system(size: 24, weight: .bold))
+                                                    .foregroundColor(.white)
+                                                Text("DONE")
+                                                    .font(.system(size: 12, weight: .bold))
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                    }
+                                    
+                                    // Skip Rep Button (smaller)
+                                    Button(action: skipCurrentRep) {
+                                        Text("Skip Rep")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                            .underline()
+                                    }
+                                }
+                                .padding(.bottom, 20)
                             } else {
-                                // Workout Controls (Pause/Play + Fast Forward)
+                                // General Workout Controls (Pause/Play + Fast Forward)
                                 HStack(spacing: 24) {
                                     // Pause/Play Button
                                     Button(action: togglePausePlay) {
@@ -632,6 +716,179 @@ struct MainProgramWorkoutView: View {
         showCoachingCue("Skipping to \(nextPhaseName)! ⏭️")
     }
     
+    // MARK: - Rep Completion Logic
+    
+    private func completeCurrentRep(time: Double? = nil) {
+        guard currentRep <= totalReps else { return }
+        
+        // Update the completed rep with actual data
+        let repIndex = currentRep - 1
+        if repIndex < completedReps.count {
+            completedReps[repIndex] = RepData(
+                rep: currentRep,
+                time: time,
+                isCompleted: true,
+                repType: .sprint,
+                distance: getMainSprintDistance(),
+                timestamp: Date()
+            )
+        }
+        
+        // Provide feedback
+        if let time = time {
+            announceVoiceCoaching("Rep \(currentRep) completed in \(String(format: "%.2f", time)) seconds! 🎯")
+            showCoachingCue("Rep \(currentRep): \(String(format: "%.2f", time))s ⚡")
+        } else {
+            announceVoiceCoaching("Rep \(currentRep) completed! 💪")
+            showCoachingCue("Rep \(currentRep) completed! ✅")
+        }
+        
+        // Haptic feedback for rep completion
+        triggerHapticFeedback(.medium)
+        
+        // Move to next rep or complete workout
+        if currentRep < totalReps {
+            currentRep += 1
+            startRestPeriod()
+        } else {
+            completeSprintPhase()
+        }
+    }
+    
+    private func startRestPeriod() {
+        currentPhase = .resting
+        let restTime = getRestTime()
+        phaseTimeRemaining = restTime
+        
+        announceVoiceCoaching("Rest for \(restTime / 60) minutes. Prepare for rep \(currentRep)! ⏱️")
+        showCoachingCue("Rest: \(restTime / 60) min - Rep \(currentRep) next 🔄")
+        
+        // Start rest timer
+        startPhaseTimer()
+    }
+    
+    private func completeSprintPhase() {
+        currentPhase = .cooldown
+        phaseTimeRemaining = WorkoutPhase.cooldown.duration
+        
+        announceVoiceCoaching("All sprints completed! Time to cool down! 🌟")
+        showCoachingCue("Sprint phase complete! Cool down time 🎉")
+        
+        // Start cooldown timer
+        startPhaseTimer()
+    }
+    
+    private func recordSprintTime(_ time: Double) {
+        // This would be called from GPS stopwatch or manual timing
+        completeCurrentRep(time: time)
+    }
+    
+    private func skipCurrentRep() {
+        // Allow user to skip a rep if needed (injury, equipment issues, etc.)
+        completeCurrentRep(time: nil)
+        announceVoiceCoaching("Rep \(currentRep - 1) skipped. Moving to next! ⏭️")
+    }
+    
+    // MARK: - Phase Timer Management
+    
+    private func startPhaseTimer() {
+        phaseTimer?.invalidate()
+        phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if phaseTimeRemaining > 0 {
+                phaseTimeRemaining -= 1
+            } else {
+                handlePhaseCompletion()
+            }
+        }
+    }
+    
+    private func startPhaseProgression() {
+        // Start the overall workout progression
+        startPhaseTimer()
+        providePhaseCoaching()
+    }
+    
+    private func handlePhaseCompletion() {
+        phaseTimer?.invalidate()
+        
+        switch currentPhase {
+        case .warmup:
+            currentPhase = .stretch
+            phaseTimeRemaining = WorkoutPhase.stretch.duration
+            announceVoiceCoaching("Warm-up complete! Time to stretch! 🤸‍♂️")
+            startPhaseTimer()
+            
+        case .stretch:
+            currentPhase = .drill
+            phaseTimeRemaining = WorkoutPhase.drill.duration
+            announceVoiceCoaching("Stretching done! Let's do some drills! 💪")
+            startPhaseTimer()
+            
+        case .drill:
+            currentPhase = .strides
+            phaseTimeRemaining = WorkoutPhase.strides.duration
+            announceVoiceCoaching("Drills complete! Time for strides! 🏃‍♂️")
+            startPhaseTimer()
+            
+        case .strides:
+            currentPhase = .sprints
+            currentRep = 1
+            announceVoiceCoaching("Strides done! Ready for sprint \(currentRep) of \(totalReps)! 🚀")
+            showCoachingCue("Sprint \(currentRep) of \(totalReps) - GO! ⚡")
+            // Sprint phase is manually controlled by user/GPS
+            
+        case .sprints:
+            // This is handled by completeCurrentRep()
+            break
+            
+        case .resting:
+            // Rest period complete, ready for next sprint
+            if currentRep <= totalReps {
+                currentPhase = .sprints
+                announceVoiceCoaching("Rest complete! Ready for sprint \(currentRep) of \(totalReps)! 🚀")
+                showCoachingCue("Sprint \(currentRep) of \(totalReps) - GO! ⚡")
+            }
+            
+        case .cooldown:
+            currentPhase = .completed
+            completeWorkout()
+            
+        case .completed:
+            break
+        }
+    }
+    
+    private func completeWorkout() {
+        // Stop all timers
+        phaseTimer?.invalidate()
+        workoutTimer?.invalidate()
+        
+        // Stop GPS tracking
+        stopGPSStopwatch()
+        
+        // Create completion data and send back to TrainingView
+        if let sessionData = sessionData {
+            let completedWorkout = CompletedWorkoutData(
+                originalSession: sessionData,
+                completedReps: completedReps,
+                totalDuration: TimeInterval(calculateTotalDuration() * 60) // Convert minutes to seconds
+            )
+            
+            // Call completion callback
+            onWorkoutCompleted?(completedWorkout)
+        }
+        
+        // Final coaching
+        announceVoiceCoaching("Workout complete! Great job! 🎉")
+        showCoachingCue("Workout Complete! 🏆")
+        
+        // Show completion sheet
+        showCompletionSheet = true
+        
+        // Haptic feedback
+        triggerHapticFeedback(.end)
+    }
+    
     // MARK: - Voice Coaching Integration
     
     private func startVoiceCoaching() {
@@ -718,40 +975,6 @@ struct MainProgramWorkoutView: View {
         // This could include periodic motivation, progress updates, etc.
     }
 
-    private func startPhaseProgression() {
-        Timer.scheduledTimer(withTimeInterval: 8.0, repeats: true) { timer in
-            DispatchQueue.main.async {
-                withAnimation(.easeInOut(duration: 1.2)) {
-                    switch self.currentPhase {
-                    case .warmup:
-                        self.showCoachingCue("Great warm-up! Time to stretch those muscles ")
-                        self.currentPhase = .stretch
-                    case .stretch:
-                        self.showCoachingCue("Perfect! Let's move to activation drills ")
-                        self.currentPhase = .drill
-                    case .drill:
-                        self.showCoachingCue("Excellent form! Ready for build-up strides? ")
-                        self.currentPhase = .strides
-                    case .strides:
-                        self.showCoachingCue("You're flying! Time for your sprints ")
-                        self.currentPhase = .sprints
-                    case .sprints:
-                        self.showCoachingCue("Incredible speed! Time for recovery ")
-                        self.currentPhase = .resting
-                    case .resting:
-                        self.showCoachingCue("Perfect recovery! Time to cool down ")
-                        self.currentPhase = .cooldown
-                    case .cooldown:
-                        self.showCoachingCue("Sprint Coach workout complete! ")
-                        self.currentPhase = .completed
-                        timer.invalidate()
-                    default:
-                        timer.invalidate()
-                    }
-                }
-            }
-        }
-    }
 
     private func advanceToNextPhase() {
         switch currentPhase {
@@ -939,18 +1162,124 @@ struct AdaptiveRepLogView: View {
     let sessionData: MainProgramWorkoutView.SessionData?
     
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Rep Log")
+        VStack(spacing: 12) {
+            // Header
+            Text("Workout Phases")
                 .font(.headline)
                 .foregroundColor(.white)
             
-            Text("Rep \(currentRep) of \(totalReps)")
-                .foregroundColor(.white.opacity(0.8))
+            // Phase breakdown
+            VStack(spacing: 8) {
+                // Drills Phase
+                PhaseRowView(
+                    phase: "DRILLS",
+                    count: sessionData?.drillSets.count ?? 3,
+                    isActive: currentPhase == .drill,
+                    isCompleted: isPhaseCompleted(.drill)
+                )
+                
+                // Strides Phase
+                PhaseRowView(
+                    phase: "STRIDES", 
+                    count: sessionData?.strideSets.count ?? 4,
+                    isActive: currentPhase == .strides,
+                    isCompleted: isPhaseCompleted(.strides)
+                )
+                
+                // Sprints Phase
+                PhaseRowView(
+                    phase: "SPRINTS",
+                    count: sessionData?.sprintSets.count ?? totalReps,
+                    isActive: [.sprints, .resting].contains(currentPhase),
+                    isCompleted: isPhaseCompleted(.sprints)
+                )
+            }
+            
+            // Current rep indicator for sprint phase
+            if [.sprints, .resting].contains(currentPhase) {
+                Text("Sprint \(currentRep) of \(totalReps)")
+                    .font(.subheadline)
+                    .foregroundColor(.yellow)
+            }
         }
         .padding()
         .background(Color.black.opacity(0.3))
         .cornerRadius(12)
         .padding(.horizontal)
+    }
+    
+    private func isPhaseCompleted(_ phase: MainProgramWorkoutView.WorkoutPhase) -> Bool {
+        switch phase {
+        case .drill:
+            return currentPhase.rawValue > MainProgramWorkoutView.WorkoutPhase.drill.rawValue
+        case .strides:
+            return currentPhase.rawValue > MainProgramWorkoutView.WorkoutPhase.strides.rawValue
+        case .sprints:
+            return currentPhase == .completed
+        default:
+            return false
+        }
+    }
+}
+
+struct PhaseRowView: View {
+    let phase: String
+    let count: Int
+    let isActive: Bool
+    let isCompleted: Bool
+    
+    var body: some View {
+        HStack {
+            // Phase icon
+            Image(systemName: phaseIcon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(phaseColor)
+                .frame(width: 24)
+            
+            // Phase name
+            Text(phase)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            // Count
+            Text("\(count)")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(phaseColor)
+            
+            // Status indicator
+            Image(systemName: statusIcon)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(phaseColor)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isActive ? Color.white.opacity(0.1) : Color.clear)
+        )
+    }
+    
+    private var phaseIcon: String {
+        switch phase {
+        case "DRILLS": return "figure.run"
+        case "STRIDES": return "figure.walk"
+        case "SPRINTS": return "bolt.fill"
+        default: return "circle"
+        }
+    }
+    
+    private var phaseColor: Color {
+        if isCompleted { return .green }
+        if isActive { return .yellow }
+        return .white.opacity(0.6)
+    }
+    
+    private var statusIcon: String {
+        if isCompleted { return "checkmark.circle.fill" }
+        if isActive { return "play.circle.fill" }
+        return "circle"
     }
 }
 
@@ -1133,5 +1462,5 @@ struct MainWorkoutCompletionView: View {
 }
 
 #Preview {
-    MainProgramWorkoutView(sessionData: nil)
+    MainProgramWorkoutView(sessionData: nil, onWorkoutCompleted: nil)
 }

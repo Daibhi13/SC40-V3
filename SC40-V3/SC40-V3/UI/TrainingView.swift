@@ -197,10 +197,15 @@ struct TrainingView: View {
         }
         .sheet(isPresented: $showMainProgramWorkout) {
             NavigationView {
-                MainProgramWorkoutView(sessionData: nil)
-                    .navigationTitle("Sprint Training")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
+                MainProgramWorkoutView(
+                    sessionData: convertToSessionData(selectedSessionForWorkout),
+                    onWorkoutCompleted: { completedWorkout in
+                        handleWorkoutCompletion(completedWorkout)
+                    }
+                )
+                .navigationTitle("Sprint Training")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button("Done") {
                                 showMainProgramWorkout = false
@@ -214,6 +219,136 @@ struct TrainingView: View {
         .sheet(isPresented: $showSprintTimerPro) {
             SprintTimerProView()
         }
+    }
+    
+    // MARK: - Workout Completion Handler
+    
+    private func handleWorkoutCompletion(_ completedWorkout: MainProgramWorkoutView.CompletedWorkoutData) {
+        print("🏆 Workout completed! Session: \(completedWorkout.originalSession.sessionName)")
+        print("📊 Completion rate: \(String(format: "%.1f", completedWorkout.completionRate * 100))%")
+        
+        if let avgTime = completedWorkout.averageTime {
+            print("⏱️ Average time: \(String(format: "%.2f", avgTime))s")
+        }
+        
+        if let bestTime = completedWorkout.bestTime {
+            print("🚀 Best time: \(String(format: "%.2f", bestTime))s")
+        }
+        
+        // Update user progress
+        updateUserProgress(with: completedWorkout)
+        
+        // Mark session as completed
+        markSessionAsCompleted(completedWorkout.originalSession)
+        
+        // Close workout view
+        showMainProgramWorkout = false
+    }
+    
+    private func updateUserProgress(with completedWorkout: MainProgramWorkoutView.CompletedWorkoutData) {
+        // Update user profile with completed session
+        // This would integrate with UserProfileViewModel when available
+        print("📈 Updating user progress for Week \(completedWorkout.originalSession.week), Day \(completedWorkout.originalSession.day)")
+        
+        // Store workout data for history/analytics
+        // This could be saved to Core Data, UserDefaults, or cloud storage
+    }
+    
+    private func markSessionAsCompleted(_ sessionData: MainProgramWorkoutView.SessionData) {
+        // Find and mark the corresponding training session as completed
+        if let sessionIndex = dynamicSessions.firstIndex(where: { 
+            $0.week == sessionData.week && $0.day == sessionData.day 
+        }) {
+            // Update the session status (would need to add isCompleted property to TrainingSession)
+            print("✅ Marked session W\(sessionData.week)D\(sessionData.day) as completed")
+        }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func convertToSessionData(_ session: TrainingSession?) -> MainProgramWorkoutView.SessionData? {
+        guard let session = session else { return nil }
+        
+        // Convert each sprint with its reps into individual SprintSets for MainProgramWorkoutView
+        var convertedSprintSets: [MainProgramWorkoutView.SprintSet] = []
+        
+        for sprint in session.sprints {
+            // Create one SprintSet for each rep in the sprint
+            for _ in 0..<sprint.reps {
+                convertedSprintSets.append(
+                    MainProgramWorkoutView.SprintSet(
+                        distance: sprint.distanceYards,
+                        restTime: getRestTimeForDistance(sprint.distanceYards),
+                        targetTime: nil
+                    )
+                )
+            }
+        }
+        
+        let convertedDrillSets = session.accessoryWork.map { drill in
+            MainProgramWorkoutView.DrillSet(
+                name: drill,
+                duration: 60, // 1 minute default
+                restTime: 30  // 30 seconds rest
+            )
+        }
+        
+        let convertedStrideSets = [
+            MainProgramWorkoutView.StrideSet(
+                distance: 60,
+                restTime: 90
+            )
+        ]
+        
+        return MainProgramWorkoutView.SessionData(
+            week: session.week,
+            day: session.day,
+            sessionName: session.type,
+            sessionFocus: session.focus,
+            sprintSets: convertedSprintSets,
+            drillSets: convertedDrillSets,
+            strideSets: convertedStrideSets,
+            sessionType: session.type,
+            level: getLevelFromType(session),
+            estimatedDuration: calculateEstimatedDuration(session),
+            variety: 0.8,
+            engagement: 0.9
+        )
+    }
+    
+    private func getRestTimeForDistance(_ distance: Int) -> Int {
+        // Rest time in seconds based on distance
+        switch distance {
+        case 0...20: return 60   // 1 minute
+        case 21...40: return 120 // 2 minutes
+        case 41...60: return 180 // 3 minutes
+        case 61...80: return 240 // 4 minutes
+        default: return 300      // 5 minutes
+        }
+    }
+    
+    private func getLevelFromType(_ session: TrainingSession) -> Int {
+        // Determine level based on session type and sprint distances
+        let maxDistance = session.sprints.map { $0.distanceYards }.max() ?? 20
+        switch maxDistance {
+        case 0...30: return 1    // Beginner
+        case 31...60: return 2   // Intermediate
+        case 61...80: return 3   // Advanced
+        default: return 4        // Elite
+        }
+    }
+    
+    private func calculateEstimatedDuration(_ session: TrainingSession) -> Int {
+        // Calculate total session duration in minutes
+        let sprintTime = session.sprints.reduce(0) { total, sprint in
+            let restTime = getRestTimeForDistance(sprint.distanceYards)
+            return total + (sprint.reps * (10 + restTime)) // 10 seconds per sprint + rest
+        }
+        let drillTime = session.accessoryWork.count * 90 // 90 seconds per drill
+        let strideTime = 4 * 90 // 4 strides with 90 seconds each
+        let warmupCooldown = 600 // 10 minutes total
+        
+        return (sprintTime + drillTime + strideTime + warmupCooldown) / 60
     }
 }
 
@@ -270,38 +405,257 @@ extension TrainingView {
         return cachedSessions
     }
 
-    // Dynamic sessions generated based on user profile and SessionLibrary
+    // Dynamic sessions generated based on user profile and ComprehensiveSessionLibrary
     private func generateDynamicSessions() -> [TrainingSession] {
-        let userLevel = userProfileVM.profile.level.lowercased()
+        let userLevel = userProfileVM.profile.level
         let currentWeek = userProfileVM.profile.currentWeek
         let frequency = userProfileVM.profile.frequency
         
-        print("🏃‍♂️ TrainingView: Generating sessions for \(userProfileVM.profile.level) level, \(frequency) days/week across 12 weeks")
+        print("🏃‍♂️ TrainingView: Generating sessions for \(userLevel) level, \(frequency) days/week across 12 weeks")
         
         var sessions: [TrainingSession] = []
         
-        // Generate sessions for entire 12-week program (up to 85 sessions)
+        // Get appropriate sessions based on user level with proper progression
+        let levelSessions = getSessionsForUserLevel(userLevel)
+        
+        print("🏃‍♂️ TrainingView: Found \(levelSessions.count) sessions for \(userLevel) level")
+        
+        // Generate sessions for 12-week program based on frequency (days per week)
+        var sessionIndex = 0
         for week in 1...12 {
             for day in 1...frequency {
-                let session = generateSessionForDay(
-                    week: week,
-                    day: day,
-                    level: userLevel
-                )
-                sessions.append(session)
+                if sessionIndex < levelSessions.count {
+                    let librarySession = levelSessions[sessionIndex]
+                    let session = convertLibrarySessionToTrainingSession(
+                        librarySession: librarySession,
+                        week: week,
+                        day: day
+                    )
+                    sessions.append(session)
+                    sessionIndex += 1
+                } else {
+                    // Cycle through sessions if we need more than available
+                    let cycleIndex = sessionIndex % levelSessions.count
+                    let librarySession = levelSessions[cycleIndex]
+                    let session = convertLibrarySessionToTrainingSession(
+                        librarySession: librarySession,
+                        week: week,
+                        day: day
+                    )
+                    sessions.append(session)
+                    sessionIndex += 1
+                }
                 
                 // Safety limit to prevent excessive sessions
-                if sessions.count >= 85 {
+                if sessions.count >= 84 { // 12 weeks × 7 days max
                     break
                 }
             }
-            if sessions.count >= 85 {
+            if sessions.count >= 84 {
                 break
             }
         }
         
         print("🏃‍♂️ TrainingView: Generated \(sessions.count) total sessions for carousel")
         return sessions
+    }
+    
+    // Get sessions appropriate for user level with proper progression and recovery sessions
+    private func getSessionsForUserLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        let frequency = userProfileVM.profile.frequency
+        
+        // Get sprint sessions based on level
+        var sprintSessions: [ComprehensiveSprintSession] = []
+        
+        switch userLevel.lowercased() {
+        case "beginner":
+            let beginnerSessions = sessionLibrary.filter { 
+                $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            let earlyIntermediate = sessionLibrary.filter { 
+                $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance <= 60 
+            }.prefix(5).map { convertSessionLibraryToComprehensive($0) }
+            sprintSessions = beginnerSessions + Array(earlyIntermediate)
+            
+        case "intermediate":
+            let intermediateSessions = sessionLibrary.filter { 
+                $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            let earlyAdvanced = sessionLibrary.filter { 
+                $0.level.lowercased() == "advanced" && $0.sessionType == .sprint && $0.distance <= 80 
+            }.prefix(8).map { convertSessionLibraryToComprehensive($0) }
+            sprintSessions = intermediateSessions + Array(earlyAdvanced)
+            
+        case "advanced":
+            let advancedSessions = sessionLibrary.filter { 
+                $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            let lateIntermediate = sessionLibrary.filter { 
+                $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 50 
+            }.suffix(5).map { convertSessionLibraryToComprehensive($0) }
+            sprintSessions = Array(lateIntermediate) + advancedSessions
+            
+        case "elite":
+            let allAdvanced = sessionLibrary.filter { 
+                $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            let eliteIntermediate = sessionLibrary.filter { 
+                $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 60 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            // Get actual Elite sessions from the new library
+            let eliteSessions = sessionLibrary.filter { 
+                $0.level.lowercased() == "elite" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+            sprintSessions = eliteIntermediate + allAdvanced + eliteSessions
+            
+        default:
+            sprintSessions = sessionLibrary.filter { 
+                $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
+            }.map { convertSessionLibraryToComprehensive($0) }
+        }
+        
+        // Add recovery sessions based on frequency
+        if frequency >= 4 {
+            // 4-7 days: Add actual recovery and active recovery sessions
+            let recoverySessions = getRecoverySessionsForLevel(userLevel)
+            let activeRecoverySessions = getActiveRecoverySessionsForLevel(userLevel)
+            
+            // Interleave recovery sessions with sprint sessions
+            var combinedSessions: [ComprehensiveSprintSession] = []
+            let totalSessions = sprintSessions.count
+            let recoveryInterval = max(3, totalSessions / (recoverySessions.count + activeRecoverySessions.count))
+            
+            var sprintIndex = 0
+            var recoveryIndex = 0
+            var activeRecoveryIndex = 0
+            
+            for i in 0..<totalSessions + recoverySessions.count + activeRecoverySessions.count {
+                if i % recoveryInterval == 0 && i > 0 {
+                    // Add recovery or active recovery session
+                    if recoveryIndex < recoverySessions.count && i % (recoveryInterval * 2) == 0 {
+                        combinedSessions.append(recoverySessions[recoveryIndex])
+                        recoveryIndex += 1
+                    } else if activeRecoveryIndex < activeRecoverySessions.count {
+                        combinedSessions.append(activeRecoverySessions[activeRecoveryIndex])
+                        activeRecoveryIndex += 1
+                    }
+                }
+                
+                if sprintIndex < sprintSessions.count {
+                    combinedSessions.append(sprintSessions[sprintIndex])
+                    sprintIndex += 1
+                }
+            }
+            
+            return combinedSessions
+        } else {
+            // 1-3 days: Just return sprint sessions (rest days will be handled as generic "Rest" cards)
+            return sprintSessions
+        }
+    }
+    
+    // Get recovery sessions for user level from SessionLibrary
+    private func getRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        let recoverySessions = sessionLibrary.filter { 
+            $0.sessionType == .recovery && 
+            ($0.level.lowercased() == userLevel.lowercased() || $0.level.lowercased() == "all levels")
+        }
+        
+        return recoverySessions.map { session in
+            ComprehensiveSprintSession(
+                id: session.id,
+                name: session.name,
+                distanceYards: 0, // Recovery sessions have no distance
+                reps: 0,
+                restSeconds: 0,
+                focus: session.focus,
+                level: session.level
+            )
+        }
+    }
+    
+    // Get active recovery sessions for user level from SessionLibrary  
+    private func getActiveRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        let activeRecoverySessions = sessionLibrary.filter { 
+            $0.sessionType == .activeRecovery && 
+            ($0.level.lowercased() == userLevel.lowercased() || $0.level.lowercased() == "all levels")
+        }
+        
+        return activeRecoverySessions.map { session in
+            ComprehensiveSprintSession(
+                id: session.id,
+                name: session.name,
+                distanceYards: 0, // Active recovery sessions have no distance
+                reps: 0,
+                restSeconds: 0,
+                focus: session.focus,
+                level: session.level
+            )
+        }
+    }
+    
+    // Convert SessionLibrary format to ComprehensiveSprintSession format
+    private func convertSessionLibraryToComprehensive(_ session: SprintSessionTemplate) -> ComprehensiveSprintSession {
+        return ComprehensiveSprintSession(
+            id: session.id,
+            name: session.name,
+            distanceYards: session.distance,
+            reps: session.reps,
+            restSeconds: session.rest,
+            focus: session.focus,
+            level: session.level
+        )
+    }
+    
+    // Convert ComprehensiveSprintSession to TrainingSession
+    private func convertLibrarySessionToTrainingSession(
+        librarySession: ComprehensiveSprintSession,
+        week: Int,
+        day: Int
+    ) -> TrainingSession {
+        let sprintSet = SprintSet(
+            distanceYards: librarySession.distanceYards,
+            reps: librarySession.reps,
+            intensity: getIntensityFromDistance(librarySession.distanceYards)
+        )
+        
+        return TrainingSession(
+            id: TrainingSession.stableSessionID(week: week, day: day),
+            week: week,
+            day: day,
+            type: librarySession.name,
+            focus: librarySession.focus,
+            sprints: [sprintSet],
+            accessoryWork: getAccessoryWorkForSession(librarySession),
+            notes: "Rest: \(librarySession.restSeconds / 60) minutes between reps"
+        )
+    }
+    
+    private func getIntensityFromDistance(_ distance: Int) -> String {
+        switch distance {
+        case 0...20: return "moderate"
+        case 21...40: return "high"
+        case 41...60: return "max"
+        default: return "all-out"
+        }
+    }
+    
+    private func getAccessoryWorkForSession(_ session: ComprehensiveSprintSession) -> [String] {
+        var accessoryWork = ["Dynamic warm-up"]
+        
+        switch session.focus.lowercased() {
+        case let focus where focus.contains("acceleration"):
+            accessoryWork.append(contentsOf: ["A-Skip drill", "Wall drives", "Starts practice"])
+        case let focus where focus.contains("speed"):
+            accessoryWork.append(contentsOf: ["High knees", "Butt kicks", "Flying runs"])
+        case let focus where focus.contains("drive"):
+            accessoryWork.append(contentsOf: ["Drive phase drills", "Arm action work"])
+        default:
+            accessoryWork.append(contentsOf: ["Sprint drills", "Form work"])
+        }
+        
+        accessoryWork.append("Cool-down")
+        return accessoryWork
     }
     
     private func generateSessionForDay(week: Int, day: Int, level: String) -> TrainingSession {
@@ -768,43 +1122,113 @@ struct TrainingSessionCard: View {
                     .tracking(1.0)
             }
             
-            // Workout Details - Matching screenshot
-            HStack {
-                if let firstSprint = session.sprints.first {
-                    Text("\(firstSprint.reps)")
-                        .font(.system(size: 24, weight: .black))
-                        .foregroundColor(.white)
-                    Text("×")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
-                    Text("\(firstSprint.distanceYards) YD")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    // Intensity Badge - Matching screenshot
-                    Text(firstSprint.intensity.uppercased())
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.white)
-                        .cornerRadius(12)
-                } else {
-                    Text("RECOVERY")
-                        .font(.system(size: 18, weight: .black))
-                        .foregroundColor(.white)
-                    
-                    Spacer()
-                    
-                    Text("ACTIVE")
-                        .font(.system(size: 11, weight: .bold))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.cyan)
-                        .cornerRadius(12)
+            // Workout Details - Enhanced with rest periods and recovery session handling
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    if let firstSprint = session.sprints.first, firstSprint.distanceYards > 0 {
+                        // Sprint session display
+                        Text("\(firstSprint.reps)")
+                            .font(.system(size: 24, weight: .black))
+                            .foregroundColor(.white)
+                        Text("×")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                        Text("\(firstSprint.distanceYards) YD")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        // Intensity Badge
+                        Text(firstSprint.intensity.uppercased())
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(Color.white)
+                            .cornerRadius(12)
+                    } else if isRecoverySession(session) {
+                        // Recovery or Active Recovery session display
+                        Text(getRecoveryDisplayText(session))
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        Text(getRecoveryTypeDisplay(session))
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(getRecoveryBadgeColor(session))
+                            .cornerRadius(12)
+                    } else {
+                        // Generic rest day for 1-3 day frequencies
+                        Text("REST")
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        Text("RECOVERY")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 4)
+                            .background(Color.gray)
+                            .cornerRadius(12)
+                    }
+                }
+                
+                // Rest Period and Level Information
+                HStack {
+                    if let firstSprint = session.sprints.first, firstSprint.distanceYards > 0 {
+                        // Sprint session rest info
+                        Text("REST: \(getRestTimeDisplay(firstSprint.distanceYards))")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.yellow)
+                        
+                        Spacer()
+                        
+                        // Level Badge
+                        Text(getLevelDisplay())
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.cyan)
+                            .cornerRadius(8)
+                    } else if isRecoverySession(session) {
+                        // Recovery session info
+                        Text("FOCUS: \(session.focus.uppercased())")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.green)
+                        
+                        Spacer()
+                        
+                        Text(session.type.uppercased())
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.green.opacity(0.3))
+                            .cornerRadius(8)
+                    } else {
+                        // Rest day info
+                        Text("COMPLETE REST DAY")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.gray)
+                        
+                        Spacer()
+                        
+                        Text("RECOVERY")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.gray.opacity(0.3))
+                            .cornerRadius(8)
+                    }
                 }
             }
             
@@ -862,6 +1286,74 @@ struct TrainingSessionCard: View {
                 .padding(2)
         )
         .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 6)
+    }
+    
+    // Helper functions for displaying rest time and level
+    private func getRestTimeDisplay(_ distance: Int) -> String {
+        let restSeconds = getRestTimeForDistance(distance)
+        let minutes = restSeconds / 60
+        return "\(minutes) MIN"
+    }
+    
+    private func getRestTimeForDistance(_ distance: Int) -> Int {
+        // Use the actual rest times from the session library
+        // Find matching session in library for more accurate rest time
+        if let matchingSession = sessionLibrary.first(where: { $0.distance == distance && $0.sessionType == .sprint }) {
+            return matchingSession.rest
+        }
+        
+        // Fallback to calculated rest times
+        switch distance {
+        case 0...20: return 60   // 1 minute
+        case 21...40: return 120 // 2 minutes
+        case 41...60: return 180 // 3 minutes
+        case 61...80: return 240 // 4 minutes
+        default: return 300      // 5 minutes
+        }
+    }
+    
+    private func getLevelDisplay() -> String {
+        let maxDistance = session.sprints.map { $0.distanceYards }.max() ?? 20
+        switch maxDistance {
+        case 0...30: return "BEGINNER"
+        case 31...60: return "INTERMEDIATE"
+        case 61...80: return "ADVANCED"
+        default: return "ELITE"
+        }
+    }
+    
+    // Helper functions for recovery sessions
+    private func isRecoverySession(_ session: TrainingSession) -> Bool {
+        return session.type.lowercased().contains("recovery") || 
+               session.focus.lowercased().contains("recovery") ||
+               session.focus.lowercased().contains("mobility") ||
+               session.focus.lowercased().contains("breathing")
+    }
+    
+    private func getRecoveryDisplayText(_ session: TrainingSession) -> String {
+        if session.type.lowercased().contains("active recovery") {
+            return "ACTIVE RECOVERY"
+        } else if session.type.lowercased().contains("recovery") {
+            return "RECOVERY"
+        } else {
+            return "RECOVERY"
+        }
+    }
+    
+    private func getRecoveryTypeDisplay(_ session: TrainingSession) -> String {
+        if session.type.lowercased().contains("active") {
+            return "ACTIVE"
+        } else {
+            return "PASSIVE"
+        }
+    }
+    
+    private func getRecoveryBadgeColor(_ session: TrainingSession) -> Color {
+        if session.type.lowercased().contains("active") {
+            return Color.green
+        } else {
+            return Color.blue
+        }
     }
 }
 

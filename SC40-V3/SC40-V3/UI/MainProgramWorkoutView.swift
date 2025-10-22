@@ -1,11 +1,18 @@
 import SwiftUI
 import Foundation
+import Combine
+
+// MARK: - Performance Optimized View Structure
+// This file contains the main workout view with optimized components for better performance
 
 struct MainProgramWorkoutView: View {
     @Environment(\.presentationMode) var presentationMode
     
     let sessionData: SessionData?
     let onWorkoutCompleted: ((CompletedWorkoutData) -> Void)?
+    
+    // Auto-sync with Apple Watch
+    @StateObject private var syncManager = WorkoutSyncManager.shared
     
     // GPS Integration
     @StateObject private var gpsManager = GPSManager()
@@ -191,8 +198,9 @@ struct MainProgramWorkoutView: View {
     var body: some View {
         mainWorkoutView
         .onAppear {
-            setupSprintCoachWorkout()
+            setupWorkoutFromSessionData()
             setupWatchIntegration()
+            setupAutoSyncWithWatch()
         }
         .onReceive(NotificationCenter.default.publisher(for: .watchWorkoutStartRequested)) { notification in
             if let sessionId = notification.object as? UUID {
@@ -224,161 +232,447 @@ struct MainProgramWorkoutView: View {
     // MARK: - Main Workout View (exact copy of SprintTimerProWorkoutView UI)
     private var mainWorkoutView: some View {
         ZStack {
-            // Same gradient background as SprintTimerProWorkoutView
+            // Enhanced gradient background with depth and sophistication
             LinearGradient(
                 colors: [
-                    Color(red: 0.15, green: 0.2, blue: 0.35),
-                    Color(red: 0.2, green: 0.25, blue: 0.45),
-                    Color(red: 0.25, green: 0.3, blue: 0.5)
+                    Color(red: 0.08, green: 0.12, blue: 0.25),
+                    Color(red: 0.12, green: 0.18, blue: 0.35),
+                    Color(red: 0.18, green: 0.25, blue: 0.45),
+                    Color(red: 0.22, green: 0.28, blue: 0.52)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
             .ignoresSafeArea()
             
+            // Subtle overlay pattern for texture
+            Rectangle()
+                .fill(
+                    RadialGradient(
+                        colors: [
+                            Color.white.opacity(0.02),
+                            Color.clear,
+                            Color.black.opacity(0.05)
+                        ],
+                        center: .topTrailing,
+                        startRadius: 100,
+                        endRadius: 800
+                    )
+                )
+                .ignoresSafeArea()
+            
             VStack(spacing: 0) {
-                // Header - Same as SprintTimerProWorkoutView
+                // Enhanced Header with glassmorphism effect
                 HStack {
                     Button(action: {
                         stopWorkoutEarly()
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "xmark")
-                            .font(.system(size: 18, weight: .medium))
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
-                            .frame(width: 32, height: 32)
-                            .background(Color.white.opacity(0.2))
-                            .clipShape(Circle())
+                            .frame(width: 40, height: 40)
+                            .background(
+                                ZStack {
+                                    Circle()
+                                        .fill(.ultraThinMaterial)
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                }
+                            )
+                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
+                    .scaleEffect(1.0)
+                    .animation(.easeInOut(duration: 0.15), value: false)
                     
                     Spacer()
                     
-                    Text("Sprint Training")
-                        .font(.system(size: 20, weight: .bold))
-                        .foregroundColor(.white)
+                    VStack(spacing: 2) {
+                        Text("SPRINT COACH")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.white.opacity(0.8))
+                            .tracking(2)
+                        
+                        Text("Training Session")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                            .tracking(0.5)
+                    }
                     
                     Spacer()
                     
                     Button(action: {
-                        // Settings or info
+                        // Settings or info with haptic feedback
+                        let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+                        impactFeedback.impactOccurred()
                     }) {
-                        Image(systemName: "info.circle")
-                            .font(.system(size: 18, weight: .medium))
+                        Image(systemName: "info.circle.fill")
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
-                            .frame(width: 32, height: 32)
-                            .background(Color.white.opacity(0.2))
-                            .clipShape(Circle())
+                            .frame(width: 40, height: 40)
+                            .background(
+                                ZStack {
+                                    Circle()
+                                        .fill(.ultraThinMaterial)
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                }
+                            )
+                            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
                     }
+                    .scaleEffect(1.0)
+                    .animation(.easeInOut(duration: 0.15), value: false)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 10)
+                .padding(.horizontal, 24)
+                .padding(.top, 16)
+                .padding(.bottom, 8)
                 
                 // Scrollable Content - Same structure as SprintTimerProWorkoutView
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
-                        // Session Overview UI - Exact copy from SprintTimerProWorkoutView
-                        VStack(spacing: 24) {
-                            // Session Header
-                            VStack(spacing: 8) {
-                                Text("SPRINT COACH 40")
-                                    .font(.system(size: 14, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .tracking(2)
+                        // Enhanced Session Overview with glassmorphism cards
+                        VStack(spacing: 32) {
+                            // Session Header Card
+                            VStack(spacing: 16) {
+                                // Program Badge
+                                HStack(spacing: 8) {
+                                    Image(systemName: "bolt.circle.fill")
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundColor(.orange)
+                                    
+                                    Text("SPRINT COACH 40")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .tracking(1.5)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    Capsule()
+                                        .fill(.ultraThinMaterial)
+                                        .overlay(
+                                            Capsule()
+                                                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+                                        )
+                                )
                                 
-                                Text("WEEK \(sessionData?.week ?? 1) - DAY \(sessionData?.day ?? 1) / \(calculateTotalDuration()) Min")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.white)
+                                // Week and Day Info
+                                HStack(spacing: 16) {
+                                    VStack(spacing: 4) {
+                                        Text("WEEK")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                            .tracking(1)
+                                        
+                                        Text("\(sessionData?.week ?? 1)")
+                                            .font(.system(size: 28, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    
+                                    Rectangle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 1, height: 40)
+                                    
+                                    VStack(spacing: 4) {
+                                        Text("DAY")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                            .tracking(1)
+                                        
+                                        Text("\(sessionData?.day ?? 1)")
+                                            .font(.system(size: 28, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                    
+                                    Rectangle()
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 1, height: 40)
+                                    
+                                    VStack(spacing: 4) {
+                                        Text("DURATION")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                            .tracking(1)
+                                        
+                                        Text("\(calculateTotalDuration())m")
+                                            .font(.system(size: 28, weight: .bold))
+                                            .foregroundColor(.white)
+                                    }
+                                }
                                 
                                 // Session Name and Focus
                                 if let session = sessionData {
-                                    VStack(spacing: 4) {
-                                        Text(session.sessionName.uppercased())
-                                            .font(.system(size: 16, weight: .bold))
-                                            .foregroundColor(.yellow)
-                                            .tracking(1)
-                                        
-                                        Text(session.sessionFocus.uppercased())
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.7))
-                                            .tracking(0.5)
-                                    }
-                                }
-                            }
-                            .padding(.top, 20)
-                            
-                            // C25K Style Session Overview - Accurate from SessionLibrary
-                            VStack(spacing: 0) {
-                                // Main Session Info Bar (C25K Style)
-                                HStack(spacing: 0) {
-                                    // Warmup Section
-                                    VStack(spacing: 4) {
-                                        Text("5 Min")
-                                            .font(.system(size: 16, weight: .bold))
+                                    VStack(spacing: 8) {
+                                        Text(session.sessionName)
+                                            .font(.system(size: 22, weight: .bold))
                                             .foregroundColor(.white)
-                                        Text("Warm")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.8))
-                                        Text("Up")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.8))
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(currentPhase == .warmup ? Color.orange.opacity(0.8) : Color.white.opacity(0.1))
-                                    
-                                    // Main Sprint Section - Dynamic from SessionData
-                                    VStack(spacing: 4) {
-                                        Text("\(calculateSprintDuration()) Min")
-                                            .font(.system(size: 16, weight: .bold))
-                                            .foregroundColor(.white)
-                                        Text(getSessionDescription())
-                                            .font(.system(size: 11, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.9))
                                             .multilineTextAlignment(.center)
                                             .lineLimit(2)
+                                        
+                                        Text(session.sessionFocus.uppercased())
+                                            .font(.system(size: 13, weight: .semibold))
+                                            .foregroundColor(.orange)
+                                            .tracking(1)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 24)
+                            .padding(.horizontal, 20)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(.ultraThinMaterial)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(
+                                                LinearGradient(
+                                                    colors: [
+                                                        Color.white.opacity(0.2),
+                                                        Color.white.opacity(0.05)
+                                                    ],
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 1
+                                            )
+                                    )
+                            )
+                            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 24)
+                            
+                            // Enhanced Live Metrics Dashboard with glassmorphism
+                            VStack(spacing: 20) {
+                                // Dashboard Header
+                                HStack {
+                                    HStack(spacing: 8) {
+                                        Circle()
+                                            .fill(Color.green)
+                                            .frame(width: 8, height: 8)
+                                            .scaleEffect(1.0)
+                                            .animation(
+                                                Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                                                value: isRunning
+                                            )
+                                        
+                                        Text("LIVE METRICS")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.9))
+                                            .tracking(1.2)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Text("REAL-TIME DATA")
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(.white.opacity(0.6))
+                                        .tracking(0.8)
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                // Primary Live Metrics Row
+                                HStack(spacing: 12) {
+                                    // Enhanced Distance Box
+                                    VStack(spacing: 6) {
+                                        Image(systemName: "location.fill")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.blue.opacity(0.8))
+                                        
+                                        Text("DISTANCE")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        
+                                        Text(formatLiveDistance(gpsManager.distance))
+                                            .font(.system(size: 20, weight: .bold))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("YARDS")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.blue.opacity(0.8))
                                     }
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 16)
-                                    .background([.sprints, .resting].contains(currentPhase) ? Color.red.opacity(0.8) : Color.white.opacity(0.1))
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(.ultraThinMaterial)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(
+                                                        LinearGradient(
+                                                            colors: [
+                                                                Color.blue.opacity(0.4),
+                                                                Color.blue.opacity(0.1)
+                                                            ],
+                                                            startPoint: .topLeading,
+                                                            endPoint: .bottomTrailing
+                                                        ),
+                                                        lineWidth: 1.5
+                                                    )
+                                            )
+                                    )
+                                    .shadow(color: .blue.opacity(0.2), radius: 8, x: 0, y: 4)
                                     
-                                    // Cooldown Section
+                                    // Enhanced Time Box
+                                    VStack(spacing: 6) {
+                                        Image(systemName: "timer")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.green.opacity(0.8))
+                                        
+                                        Text("TIME")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        
+                                        Text(formatLiveTime(gpsManager.elapsedTime))
+                                            .font(.system(size: 20, weight: .bold))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("LIVE")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.green.opacity(0.8))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(.ultraThinMaterial)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(
+                                                        LinearGradient(
+                                                            colors: [
+                                                                Color.green.opacity(0.4),
+                                                                Color.green.opacity(0.1)
+                                                            ],
+                                                            startPoint: .topLeading,
+                                                            endPoint: .bottomTrailing
+                                                        ),
+                                                        lineWidth: 1.5
+                                                    )
+                                            )
+                                    )
+                                    .shadow(color: .green.opacity(0.2), radius: 8, x: 0, y: 4)
+                                    
+                                    // Enhanced Speed Box
+                                    VStack(spacing: 6) {
+                                        Image(systemName: "speedometer")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.orange.opacity(0.8))
+                                        
+                                        Text("SPEED")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        
+                                        Text(formatLiveSpeed(gpsManager.currentSpeed))
+                                            .font(.system(size: 20, weight: .bold))
+                                            .foregroundColor(.white)
+                                        
+                                        Text("MPH")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.orange.opacity(0.8))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(.ultraThinMaterial)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(
+                                                        LinearGradient(
+                                                            colors: [
+                                                                Color.orange.opacity(0.4),
+                                                                Color.orange.opacity(0.1)
+                                                            ],
+                                                            startPoint: .topLeading,
+                                                            endPoint: .bottomTrailing
+                                                        ),
+                                                        lineWidth: 1.5
+                                                    )
+                                            )
+                                    )
+                                    .shadow(color: .orange.opacity(0.2), radius: 8, x: 0, y: 4)
+                                }
+                                
+                                // Secondary Metrics Row
+                                HStack(spacing: 12) {
+                                    // Countdown Box
                                     VStack(spacing: 4) {
-                                        Text("5 Min")
+                                        Text("COUNTDOWN")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        Text(formatCountdownDisplay(phaseTimeRemaining))
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(phaseTimeRemaining < 30 ? .red : .white)
+                                        Text("LEFT")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(Color.purple.opacity(0.3))
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.purple.opacity(0.5), lineWidth: 1)
+                                    )
+                                    
+                                    // Progress Box
+                                    VStack(spacing: 4) {
+                                        Text("PROGRESS")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        Text("\(Int(getLiveProgressPercentage()))%")
                                             .font(.system(size: 16, weight: .bold))
                                             .foregroundColor(.white)
-                                        Text("Cool")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.8))
-                                        Text("Down")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.8))
+                                        Text("DONE")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
                                     }
                                     .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(currentPhase == .cooldown ? Color.cyan.opacity(0.8) : Color.white.opacity(0.1))
-                                }
-                                .cornerRadius(12)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                )
-                                
-                                // C25K Style Progress Indicators
-                                HStack(spacing: 4) {
-                                    ForEach(0..<7, id: \.self) { index in
-                                        Rectangle()
-                                            .fill(getPhaseColor(for: index))
-                                            .frame(height: 8)
-                                            .cornerRadius(4)
+                                    .padding(.vertical, 10)
+                                    .background(Color.yellow.opacity(0.3))
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.yellow.opacity(0.5), lineWidth: 1)
+                                    )
+                                    
+                                    // GPS Status Box
+                                    VStack(spacing: 4) {
+                                        Text("GPS")
+                                            .font(.system(size: 9, weight: .bold))
+                                            .foregroundColor(.white.opacity(0.7))
+                                            .tracking(0.5)
+                                        Text(getLiveGPSStatus())
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(getLiveGPSStatusColor())
+                                        Text("STATUS")
+                                            .font(.system(size: 8, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
                                     }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(Color.cyan.opacity(0.3))
+                                    .cornerRadius(10)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .stroke(Color.cyan.opacity(0.5), lineWidth: 1)
+                                    )
                                 }
-                                .padding(.top, 8)
+                                
+                                // Colorful Moving Timeline
+                                ColorfulMovingTimeline(
+                                    currentPhase: currentPhase,
+                                    phaseProgress: getPhaseProgress(),
+                                    isRunning: isRunning
+                                )
                             }
                             .padding(.horizontal, 20)
-                            
-                            // 7-Phase Progress Bar
-                            ProgressBar(currentPhase: currentPhase, totalPhases: 7)
-                                .padding(.horizontal, 20)
                             
                             // Speed Badge
                             VStack(spacing: 16) {
@@ -500,52 +794,83 @@ struct MainProgramWorkoutView: View {
                                         .foregroundColor(.white.opacity(0.8))
                                     }
                                     
-                                    // Live Performance Data
-                                    if gpsManager.isTracking {
-                                        VStack(spacing: 12) {
-                                            HStack(spacing: 20) {
-                                                VStack {
-                                                    Text("DISTANCE")
-                                                        .font(.system(size: 10, weight: .medium))
-                                                        .foregroundColor(.white.opacity(0.7))
-                                                    Text(gpsManager.distanceString)
-                                                        .font(.system(size: 16, weight: .bold))
-                                                        .foregroundColor(.white)
-                                                }
-                                                
-                                                VStack {
-                                                    Text("TIME")
-                                                        .font(.system(size: 10, weight: .medium))
-                                                        .foregroundColor(.white.opacity(0.7))
-                                                    Text(gpsManager.timeString)
-                                                        .font(.system(size: 16, weight: .bold))
-                                                        .foregroundColor(.white)
-                                                }
-                                                
-                                                VStack {
-                                                    Text("SPEED")
-                                                        .font(.system(size: 10, weight: .medium))
-                                                        .foregroundColor(.white.opacity(0.7))
-                                                    Text(gpsManager.speedString)
-                                                        .font(.system(size: 16, weight: .bold))
+                                    
+                                    // Enhanced Workout Controls in Sprint Section
+                                    VStack(spacing: 16) {
+                                        // Main Control Row
+                                        HStack(spacing: 20) {
+                                            // Pause/Play Button
+                                            Button(action: togglePausePlay) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(isPaused ? Color.green : Color.orange)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                                                        .font(.system(size: 24, weight: .bold))
                                                         .foregroundColor(.white)
                                                 }
                                             }
                                             
-                                            // Sprint Progress Bar
-                                            let targetDistanceMeters = Double(getMainSprintDistance()) * 0.9144
-                                            let progress = min(gpsManager.distance / targetDistanceMeters, 1.0)
-                                            ProgressView(value: progress)
-                                                .progressViewStyle(LinearProgressViewStyle(tint: .orange))
-                                                .scaleEffect(x: 1, y: 3, anchor: .center)
+                                            // Fast Forward Button
+                                            Button(action: fastForward) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Color.blue)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: "forward.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                            
+                                            // Stop Button with Warning
+                                            Button(action: showStopWorkoutWarning) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Color.red)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: "stop.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
                                         }
-                                        .padding(.vertical, 16)
-                                        .padding(.horizontal, 20)
-                                        .background(Color.black.opacity(0.2))
-                                        .cornerRadius(12)
+                                        
+                                        // Control Labels
+                                        HStack(spacing: 20) {
+                                            Text(isPaused ? "RESUME" : "PAUSE")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                            
+                                            Text("SKIP")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                            
+                                            Text("STOP")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                        }
                                     }
+                                    .padding(.bottom, 20)
+                                }
+                                .padding(.bottom, 20)
+                            } else if currentPhase == .drill || currentPhase == .strides {
+                                // Dynamic Live Tracking for Drills and Strides
+                                VStack(spacing: 20) {
+                                    // Current Phase Display
+                                    Text(getCurrentPhaseName().uppercased())
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .tracking(1)
                                     
-                                    // Enhanced Workout Controls in Sprint Section
+                                    
+                                    // Enhanced Workout Controls for Drills/Strides
                                     VStack(spacing: 16) {
                                         // Main Control Row
                                         HStack(spacing: 20) {
@@ -841,6 +1166,18 @@ struct MainProgramWorkoutView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.bottom, 20)
+                        
+                        // Enhanced Live Rep Log at bottom
+                        EnhancedLiveRepLog(
+                            currentPhase: currentPhase,
+                            completedReps: completedReps,
+                            currentRep: currentRep,
+                            totalReps: totalReps,
+                            sessionData: sessionData,
+                            gpsManager: gpsManager
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 100) // Extra padding for safe area
                     }
                 }
             }
@@ -864,38 +1201,11 @@ struct MainProgramWorkoutView: View {
                                             .stroke(Color.orange, lineWidth: 2)
                                     )
                             )
-                            .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+                            .padding(.vertical, 8)
                     }
-                    .padding(.horizontal, 30)
-                    .transition(.asymmetric(
-                        insertion: .scale.combined(with: .opacity),
-                        removal: .opacity
-                    ))
                 }
-                Spacer()
             }
-            .padding(.top, 100)
         )
-        .alert("Stop Workout?", isPresented: $showStopWarning) {
-            Button("Cancel", role: .cancel) { }
-            Button("Stop Workout", role: .destructive) {
-                stopWorkoutEarly()
-            }
-        } message: {
-            Text("Are you sure you want to stop this workout? Your progress will be saved as an incomplete session.")
-        }
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func setupSprintCoachWorkout() {
-        totalReps = sessionData?.sprintSets.count ?? 4
-        completedReps = Array(1...totalReps).map { rep in
-            RepData(rep: rep, time: nil, isCompleted: false, repType: RepData.RepType.sprint, distance: 40, timestamp: Date())
-        }
-        
-        // Setup audio for workout
-        audioManager.updateWorkoutPhase(currentPhase)
     }
     
     private func isPhaseCompleted(_ phase: WorkoutPhase) -> Bool {
@@ -1681,6 +1991,87 @@ struct MainProgramWorkoutView: View {
         // or if GPS accuracy is poor, or if user has been waiting too long
         return !gpsManager.isReadyForSprint || gpsManager.gpsStatus == .error || gpsManager.gpsStatus == .denied
     }
+    
+    private func getTotalRepsForPhase() -> Int {
+        switch currentPhase {
+        case .drill:
+            return sessionData?.drillSets.count ?? 4
+        case .strides:
+            return sessionData?.strideSets.count ?? 3
+        case .sprints:
+            return sessionData?.sprintSets.count ?? 6
+        default:
+            return 1
+        }
+    }
+    
+    private func getTargetDistanceForPhase() -> Int {
+        switch currentPhase {
+        case .drill:
+            return 20 // Drills are typically 20 yards
+        case .strides:
+            return sessionData?.strideSets.first?.distance ?? 20
+        case .sprints:
+            return getMainSprintDistance()
+        default:
+            return 20
+        }
+    }
+    
+    // MARK: - Live Metrics Helper Functions
+    
+    private func formatLiveDistance(_ distance: Double) -> String {
+        let yards = distance * 1.09361 // Convert meters to yards
+        return String(format: "%.1f", yards)
+    }
+    
+    private func formatLiveTime(_ time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+    
+    private func formatLiveSpeed(_ speed: Double) -> String {
+        let mph = speed * 2.237 // Convert m/s to mph
+        return String(format: "%.1f", mph)
+    }
+    
+    private func formatCountdownDisplay(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getLiveProgressPercentage() -> Double {
+        let targetDistanceMeters = Double(getTargetDistanceForPhase()) * 0.9144
+        return min((gpsManager.distance / targetDistanceMeters) * 100, 100)
+    }
+    
+    private func getLiveGPSStatus() -> String {
+        if gpsManager.isTracking {
+            return "ACTIVE"
+        } else if gpsManager.isReadyForSprint {
+            return "READY"
+        } else {
+            return "WAIT"
+        }
+    }
+    
+    private func getLiveGPSStatusColor() -> Color {
+        if gpsManager.isTracking {
+            return .green
+        } else if gpsManager.isReadyForSprint {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+    
+    private func getPhaseProgress() -> Double {
+        let totalDuration = Double(currentPhase.duration)
+        let elapsed = totalDuration - Double(phaseTimeRemaining)
+        return min(elapsed / totalDuration, 1.0)
+    }
 
     // MARK: - Automatic Workout Flow Functions
 
@@ -1913,24 +2304,190 @@ struct MainProgramWorkoutView: View {
     }
     
     private func resetWorkoutState() {
+        currentPhase = .warmup
         isRunning = false
         isPaused = false
-        currentPhase = .warmup
         currentRep = 1
-        phaseTimeRemaining = WorkoutPhase.warmup.duration
-        completedReps = []
+        phaseTimeRemaining = 0
+        completedReps.removeAll()
         
-        // Reset live tracking
-        isLiveTracking = false
-        currentDistance = 0.0
-        currentTime = 0.0
-        currentSpeed = 0.0
-        sprintStartTime = nil
+        // Reset timers
+        phaseTimer?.invalidate()
+        workoutTimer?.invalidate()
+        liveTimer?.invalidate()
         
-        // Reset session metrics
-        sessionBestTime = nil
-        sessionAverageTime = 0.0
-        totalDistanceCovered = 0.0
+        // Reset GPS
+        gpsManager.stopSprint()
+        
+        // Sync reset state to Apple Watch
+        syncWorkoutStateToWatch()
+        
+        print("🔄 Workout state reset and synced to Apple Watch")
+    }
+    
+    // MARK: - Auto-Sync with Apple Watch Integration
+    
+    private func setupAutoSyncWithWatch() {
+        // Listen for watch sync requests
+        NotificationCenter.default.addObserver(
+            forName: .watchRequestedSync,
+            object: nil,
+            queue: .main
+        ) { _ in
+            self.performFullSyncToWatch()
+        }
+        
+        // Listen for watch state changes
+        NotificationCenter.default.addObserver(
+            forName: .watchWorkoutStateChanged,
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let watchState = notification.object as? WatchWorkoutStateSync {
+                self.handleWatchStateChange(watchState)
+            }
+        }
+        
+        // Sync initial state
+        syncWorkoutStateToWatch()
+        syncUIConfigurationToWatch()
+        syncCoachingPreferencesToWatch()
+        syncSessionDataToWatch()
+        
+        print("🔄 Auto-sync with Apple Watch initialized")
+    }
+    
+    private func syncWorkoutStateToWatch() {
+        let syncState = WorkoutSyncState(
+            currentPhase: currentPhase.rawValue,
+            phaseTimeRemaining: phaseTimeRemaining,
+            isRunning: isRunning,
+            isPaused: isPaused,
+            currentRep: currentRep,
+            totalReps: totalReps,
+            completedReps: completedReps.map { rep in
+                RepDataSync(
+                    rep: rep.rep ?? 0,
+                    time: rep.time,
+                    distance: rep.distance,
+                    isCompleted: rep.isCompleted,
+                    repType: rep.repType.rawValue,
+                    timestamp: Date()
+                )
+            },
+            sessionId: UUID().uuidString,
+            timestamp: Date()
+        )
+        
+        syncManager.syncWorkoutState(syncState)
+    }
+    
+    private func syncUIConfigurationToWatch() {
+        let uiConfig = UIConfigurationSync(
+            primaryColor: "orange",
+            secondaryColor: "blue",
+            fontScale: 1.0,
+            hapticIntensity: "medium",
+            animationSpeed: 1.0,
+            displayMode: "enhanced",
+            timestamp: Date()
+        )
+        
+        syncManager.syncUIConfiguration(uiConfig)
+    }
+    
+    private func syncCoachingPreferencesToWatch() {
+        let coachingPrefs = CoachingPreferencesSync(
+            isVoiceCoachingEnabled: isVoiceCoachingEnabled,
+            voiceRate: 0.6,
+            voiceVolume: 0.9,
+            coachingFrequency: "normal",
+            motivationalLevel: "high",
+            language: "en-US",
+            timestamp: Date()
+        )
+        
+        syncManager.syncCoachingPreferences(coachingPrefs)
+    }
+    
+    private func syncSessionDataToWatch() {
+        guard let session = sessionData else { return }
+        
+        let sessionSync = SessionDataSync(
+            week: session.week,
+            day: session.day,
+            sessionName: session.sessionName,
+            sessionFocus: session.sessionFocus,
+            estimatedDuration: session.estimatedDuration,
+            sprintSets: session.sprintSets.map { sprint in
+                SprintSetSync(
+                    distance: sprint.distance,
+                    restTime: sprint.restTime,
+                    targetTime: nil,
+                    intensity: "max"
+                )
+            },
+            drillSets: session.drillSets.map { drill in
+                DrillSetSync(
+                    name: drill.name,
+                    duration: drill.duration,
+                    restTime: drill.restTime,
+                    description: drill.description ?? ""
+                )
+            },
+            strideSets: session.strideSets.map { stride in
+                StrideSetSync(
+                    distance: stride.distance,
+                    restTime: stride.restTime,
+                    intensity: "progressive"
+                )
+            },
+            timestamp: Date()
+        )
+        
+        syncManager.syncSessionData(sessionSync)
+    }
+    
+    private func syncLiveMetricsToWatch() {
+        let liveMetrics = LiveMetricsSync(
+            distance: gpsManager.distance,
+            elapsedTime: gpsManager.elapsedTime,
+            currentSpeed: gpsManager.currentSpeed,
+            heartRate: nil,
+            calories: nil,
+            timestamp: Date()
+        )
+        
+        syncManager.syncLiveMetrics(liveMetrics)
+    }
+    
+    private func performFullSyncToWatch() {
+        syncWorkoutStateToWatch()
+        syncUIConfigurationToWatch()
+        syncCoachingPreferencesToWatch()
+        syncSessionDataToWatch()
+        syncLiveMetricsToWatch()
+        
+        print("📱 Full sync performed to Apple Watch")
+    }
+    
+    private func handleWatchStateChange(_ watchState: WatchWorkoutStateSync) {
+        if let action = watchState.requestedAction {
+            switch action {
+            case "pause":
+                if isRunning { pauseWorkout() }
+            case "resume":
+                if isPaused { resumeWorkout() }
+            case "next":
+                fastForward()
+            case "complete":
+                completeWorkout()
+            default:
+                break
+            }
+        }
+        
+        print("⌚ Handled watch state change: \(watchState.requestedAction ?? "state update")")
     }
 }
 
@@ -2572,6 +3129,1182 @@ struct WorkoutSprintRow: View {
         if isCompleted { return "checkmark.circle.fill" }
         if isActive { return "play.circle.fill" }
         return "circle"
+    }
+}
+
+// MARK: - Dynamic Live Tracker Component
+struct DynamicLiveTracker: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    let gpsManager: GPSManager
+    let currentRep: Int
+    let totalReps: Int
+    let targetDistance: Int
+    let phaseTimeRemaining: Int
+    let isLiveTracking: Bool
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Rep Progress Indicator
+            VStack(spacing: 8) {
+                HStack {
+                    ForEach(1...totalReps, id: \.self) { rep in
+                        Circle()
+                            .fill(rep < currentRep ? Color.green : 
+                                  rep == currentRep ? getPhaseColor() : 
+                                  Color.white.opacity(0.3))
+                            .frame(width: 12, height: 12)
+                    }
+                }
+                Text("\(currentPhase.displayName) \(currentRep) of \(totalReps)")
+                    .font(.system(size: 18, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Text("\(targetDistance) yards")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            
+            // Live GPS Stopwatch & Distance Display
+            VStack(spacing: 12) {
+                // Primary Metrics Row
+                HStack(spacing: 0) {
+                    // Live Distance
+                    VStack(spacing: 4) {
+                        Text("DISTANCE")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text(formatDistance(gpsManager.distance))
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Text("|")
+                        .font(.system(size: 20, weight: .thin))
+                        .foregroundColor(.white.opacity(0.3))
+                    
+                    // GPS Stopwatch
+                    VStack(spacing: 4) {
+                        Text("TIME")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text(formatStopwatchTime(gpsManager.elapsedTime))
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Text("|")
+                        .font(.system(size: 20, weight: .thin))
+                        .foregroundColor(.white.opacity(0.3))
+                    
+                    // Live Speed
+                    VStack(spacing: 4) {
+                        Text("SPEED")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text(formatSpeed(gpsManager.currentSpeed))
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 16)
+                .padding(.horizontal, 20)
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(12)
+                
+                // Secondary Metrics Row
+                HStack(spacing: 0) {
+                    // Countdown Timer
+                    VStack(spacing: 4) {
+                        Text("COUNTDOWN")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text(formatCountdownTime(phaseTimeRemaining))
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(phaseTimeRemaining < 30 ? .orange : .white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Text("|")
+                        .font(.system(size: 20, weight: .thin))
+                        .foregroundColor(.white.opacity(0.3))
+                    
+                    // Yard Tracker Progress
+                    VStack(spacing: 4) {
+                        Text("PROGRESS")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text("\(Int(getProgressPercentage()))%")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    Text("|")
+                        .font(.system(size: 20, weight: .thin))
+                        .foregroundColor(.white.opacity(0.3))
+                    
+                    // GPS Status
+                    VStack(spacing: 4) {
+                        Text("GPS")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                        Text(getGPSStatusText())
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(getGPSStatusColor())
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 20)
+                .background(Color.black.opacity(0.2))
+                .cornerRadius(12)
+                
+                // Yard Tracker Progress Bar
+                let targetDistanceMeters = Double(targetDistance) * 0.9144
+                let progress = min(gpsManager.distance / targetDistanceMeters, 1.0)
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("0 yds")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                        Spacer()
+                        Text("\(targetDistance) yds")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    
+                    ProgressView(value: progress)
+                        .progressViewStyle(LinearProgressViewStyle(tint: getPhaseColor()))
+                        .scaleEffect(x: 1, y: 4, anchor: .center)
+                        .background(Color.white.opacity(0.2))
+                        .cornerRadius(2)
+                }
+                .padding(.horizontal, 20)
+            }
+        }
+    }
+    
+    private func getPhaseColor() -> Color {
+        switch currentPhase {
+        case .drill: return .blue
+        case .strides: return .purple
+        case .sprints: return .orange
+        default: return .white
+        }
+    }
+    
+    private func formatDistance(_ distance: Double) -> String {
+        let yards = distance * 1.09361 // Convert meters to yards
+        return String(format: "%.1f", yards)
+    }
+    
+    private func formatStopwatchTime(_ time: TimeInterval) -> String {
+        let minutes = Int(time) / 60
+        let seconds = Int(time) % 60
+        let milliseconds = Int((time.truncatingRemainder(dividingBy: 1)) * 100)
+        return String(format: "%d:%02d.%02d", minutes, seconds, milliseconds)
+    }
+    
+    private func formatSpeed(_ speed: Double) -> String {
+        let mph = speed * 2.237 // Convert m/s to mph
+        return String(format: "%.1f", mph)
+    }
+    
+    private func formatCountdownTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getProgressPercentage() -> Double {
+        let targetDistanceMeters = Double(targetDistance) * 0.9144
+        return min((gpsManager.distance / targetDistanceMeters) * 100, 100)
+    }
+    
+    private func getGPSStatusText() -> String {
+        if gpsManager.isTracking {
+            return "ACTIVE"
+        } else if gpsManager.isReadyForSprint {
+            return "READY"
+        } else {
+            return "WAIT"
+        }
+    }
+    
+    private func getGPSStatusColor() -> Color {
+        if gpsManager.isTracking {
+            return .green
+        } else if gpsManager.isReadyForSprint {
+            return .orange
+        } else {
+            return .red
+        }
+    }
+}
+
+// MARK: - Colorful Moving Timeline Component
+struct ColorfulMovingTimeline: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    let phaseProgress: Double
+    let isRunning: Bool
+    
+    @State private var animationOffset: CGFloat = 0
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            // Timeline Header
+            HStack {
+                Text("WORKOUT TIMELINE")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(1)
+                Spacer()
+                Text(currentPhase.displayName.uppercased())
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(getPhaseColor())
+                    .tracking(1)
+            }
+            
+            // Moving Timeline Bar
+            ZStack(alignment: .leading) {
+                // Background Track
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.black.opacity(0.3))
+                    .frame(height: 16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                
+                // Phase Segments
+                HStack(spacing: 2) {
+                    ForEach(getAllPhases(), id: \.self) { phase in
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(getSegmentColor(for: phase))
+                            .frame(height: 12)
+                            .opacity(getSegmentOpacity(for: phase))
+                    }
+                }
+                .padding(.horizontal, 2)
+                
+                // Moving Progress Indicator
+                HStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(
+                            LinearGradient(
+                                colors: [getPhaseColor(), getPhaseColor().opacity(0.6)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: getProgressWidth(), height: 16)
+                        .overlay(
+                            // Animated shimmer effect
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.0),
+                                            Color.white.opacity(0.3),
+                                            Color.white.opacity(0.0)
+                                        ],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .offset(x: animationOffset)
+                                .mask(RoundedRectangle(cornerRadius: 8))
+                        )
+                    Spacer()
+                }
+                
+                // Current Phase Pulse Indicator
+                if isRunning {
+                    HStack {
+                        Spacer()
+                        Circle()
+                            .fill(getPhaseColor())
+                            .frame(width: 8, height: 8)
+                            .scaleEffect(isRunning ? 1.5 : 1.0)
+                            .opacity(isRunning ? 0.8 : 1.0)
+                            .animation(
+                                Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                                value: isRunning
+                            )
+                            .offset(x: getProgressWidth() - 4)
+                        Spacer()
+                    }
+                }
+            }
+            
+            // Phase Labels
+            HStack {
+                ForEach(getAllPhases(), id: \.self) { phase in
+                    Text(phase.shortName)
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(phase == currentPhase ? getPhaseColor() : .white.opacity(0.5))
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .onAppear {
+            startShimmerAnimation()
+        }
+        .onChange(of: isRunning) { running in
+            if running {
+                startShimmerAnimation()
+            }
+        }
+    }
+    
+    private func getAllPhases() -> [MainProgramWorkoutView.WorkoutPhase] {
+        return [.warmup, .stretch, .drill, .strides, .sprints, .resting, .cooldown]
+    }
+    
+    private func getPhaseColor() -> Color {
+        switch currentPhase {
+        case .warmup: return .orange
+        case .stretch: return .pink
+        case .drill: return .blue
+        case .strides: return .purple
+        case .sprints: return .red
+        case .resting: return .yellow
+        case .cooldown: return .cyan
+        case .completed: return .green
+        }
+    }
+    
+    private func getSegmentColor(for phase: MainProgramWorkoutView.WorkoutPhase) -> Color {
+        switch phase {
+        case .warmup: return .orange
+        case .stretch: return .pink
+        case .drill: return .blue
+        case .strides: return .purple
+        case .sprints: return .red
+        case .resting: return .yellow
+        case .cooldown: return .cyan
+        case .completed: return .green
+        }
+    }
+    
+    private func getSegmentOpacity(for phase: MainProgramWorkoutView.WorkoutPhase) -> Double {
+        let allPhases = getAllPhases()
+        guard let currentIndex = allPhases.firstIndex(of: currentPhase),
+              let phaseIndex = allPhases.firstIndex(of: phase) else { return 0.3 }
+        
+        if phaseIndex < currentIndex {
+            return 1.0 // Completed phases
+        } else if phaseIndex == currentIndex {
+            return 0.8 // Current phase
+        } else {
+            return 0.3 // Future phases
+        }
+    }
+    
+    private func getProgressWidth() -> CGFloat {
+        let allPhases = getAllPhases()
+        guard let currentIndex = allPhases.firstIndex(of: currentPhase) else { return 0 }
+        
+        let totalPhases = Double(allPhases.count)
+        let completedPhases = Double(currentIndex)
+        let currentPhaseProgress = phaseProgress
+        
+        let totalProgress = (completedPhases + currentPhaseProgress) / totalPhases
+        return CGFloat(totalProgress) * 300 // Approximate timeline width
+    }
+    
+    private func startShimmerAnimation() {
+        guard isRunning else { return }
+        
+        withAnimation(
+            Animation.linear(duration: 2.0).repeatForever(autoreverses: false)
+        ) {
+            animationOffset = 100
+        }
+    }
+}
+
+// MARK: - WorkoutPhase Extension
+extension MainProgramWorkoutView.WorkoutPhase {
+    var displayName: String {
+        switch self {
+        case .drill: return "Drill"
+        case .strides: return "Stride"
+        case .sprints: return "Sprint"
+        default: return "Exercise"
+        }
+    }
+    
+    var shortName: String {
+        switch self {
+        case .warmup: return "WARM"
+        case .stretch: return "STRCH"
+        case .drill: return "DRILL"
+        case .strides: return "STRD"
+        case .sprints: return "SPRNT"
+        case .resting: return "REST"
+        case .cooldown: return "COOL"
+        case .completed: return "DONE"
+        }
+    }
+}
+
+// MARK: - Performance Optimized Subviews
+
+/// Optimized header view with session information
+struct WorkoutHeaderView: View {
+    let sessionData: MainProgramWorkoutView.SessionData?
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            // Session Title
+            if let session = sessionData {
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Week \(session.week)")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.8))
+                        
+                        Spacer()
+                        
+                        Text("Day \(session.day)")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
+                    
+                    Text(session.sessionName)
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    
+                    Text(session.sessionFocus.uppercased())
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(0.5)
+                }
+            }
+        }
+        .padding(.top, 20)
+    }
+}
+
+/// Optimized metrics dashboard with lazy loading
+struct OptimizedMetricsDashboard: View {
+    let gpsManager: GPSManager
+    let phaseTimeRemaining: Int
+    
+    // Performance optimization: Use @State for expensive calculations
+    @State private var cachedDistance: String = "0.0"
+    @State private var cachedTime: String = "0:00"
+    @State private var cachedSpeed: String = "0.0"
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Primary Metrics Row
+            HStack(spacing: 12) {
+                MetricBox(
+                    title: "DISTANCE",
+                    value: cachedDistance,
+                    unit: "YARDS",
+                    color: .blue
+                )
+                
+                MetricBox(
+                    title: "TIME",
+                    value: cachedTime,
+                    unit: "LIVE",
+                    color: .green
+                )
+                
+                MetricBox(
+                    title: "SPEED",
+                    value: cachedSpeed,
+                    unit: "MPH",
+                    color: .orange
+                )
+            }
+            
+            // Secondary Metrics Row
+            HStack(spacing: 12) {
+                MetricBox(
+                    title: "COUNTDOWN",
+                    value: formatCountdownTime(phaseTimeRemaining),
+                    unit: "LEFT",
+                    color: .purple,
+                    isSmall: true,
+                    isUrgent: phaseTimeRemaining < 30
+                )
+                
+                MetricBox(
+                    title: "PROGRESS",
+                    value: "\(Int(getProgressPercentage()))%",
+                    unit: "DONE",
+                    color: .yellow,
+                    isSmall: true
+                )
+                
+                MetricBox(
+                    title: "GPS",
+                    value: getGPSStatus(),
+                    unit: "STATUS",
+                    color: .cyan,
+                    isSmall: true,
+                    statusColor: getGPSStatusColor()
+                )
+            }
+        }
+        .onReceive(Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()) { _ in
+            updateCachedValues()
+        }
+    }
+    
+    private func updateCachedValues() {
+        let yards = gpsManager.distance * 1.09361
+        cachedDistance = String(format: "%.1f", yards)
+        
+        let minutes = Int(gpsManager.elapsedTime) / 60
+        let seconds = Int(gpsManager.elapsedTime) % 60
+        cachedTime = String(format: "%d:%02d", minutes, seconds)
+        
+        let mph = gpsManager.currentSpeed * 2.237
+        cachedSpeed = String(format: "%.1f", mph)
+    }
+    
+    private func formatCountdownTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getProgressPercentage() -> Double {
+        // Simplified calculation for performance
+        return min((gpsManager.distance / 36.576) * 100, 100) // 40 yards in meters
+    }
+    
+    private func getGPSStatus() -> String {
+        if gpsManager.isTracking { return "ACTIVE" }
+        else if gpsManager.isReadyForSprint { return "READY" }
+        else { return "WAIT" }
+    }
+    
+    private func getGPSStatusColor() -> Color {
+        if gpsManager.isTracking { return .green }
+        else if gpsManager.isReadyForSprint { return .orange }
+        else { return .red }
+    }
+}
+
+/// Reusable metric box component
+struct MetricBox: View {
+    let title: String
+    let value: String
+    let unit: String
+    let color: Color
+    var isSmall: Bool = false
+    var isUrgent: Bool = false
+    var statusColor: Color?
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.system(size: isSmall ? 9 : 10, weight: .bold))
+                .foregroundColor(.white.opacity(0.7))
+                .tracking(0.5)
+            
+            Text(value)
+                .font(.system(size: isSmall ? 16 : 18, weight: .bold))
+                .foregroundColor(statusColor ?? (isUrgent ? .red : .white))
+            
+            Text(unit)
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, isSmall ? 10 : 12)
+        .background(color.opacity(0.3))
+        .cornerRadius(isSmall ? 10 : 12)
+        .overlay(
+            RoundedRectangle(cornerRadius: isSmall ? 10 : 12)
+                .stroke(color.opacity(0.5), lineWidth: 1)
+        )
+    }
+}
+
+/// Optimized workout controls with haptic feedback
+struct OptimizedWorkoutControls: View {
+    let isPaused: Bool
+    let onTogglePause: () -> Void
+    let onFastForward: () -> Void
+    let onStop: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Main Control Row
+            HStack(spacing: 20) {
+                ControlButton(
+                    icon: isPaused ? "play.fill" : "pause.fill",
+                    color: isPaused ? .green : .orange,
+                    isActive: true,
+                    action: onTogglePause
+                )
+                
+                ControlButton(
+                    icon: "forward.fill",
+                    color: .blue,
+                    isActive: true,
+                    action: onFastForward
+                )
+                
+                ControlButton(
+                    icon: "stop.fill",
+                    color: .red,
+                    isActive: true,
+                    action: onStop
+                )
+            }
+            
+            // Control Labels
+            HStack(spacing: 20) {
+                Text(isPaused ? "RESUME" : "PAUSE")
+                    .controlLabel()
+                
+                Text("SKIP")
+                    .controlLabel()
+                
+                Text("STOP")
+                    .controlLabel()
+            }
+        }
+        .padding(.bottom, 20)
+    }
+}
+
+
+/// Optimized phase display with smooth transitions
+struct PhaseDisplayView: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    let currentRep: Int
+    let totalReps: Int
+    let targetDistance: Int
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            // Phase Progress Dots
+            HStack {
+                ForEach(1...totalReps, id: \.self) { rep in
+                    Circle()
+                        .fill(rep < currentRep ? Color.green : 
+                              rep == currentRep ? currentPhase.color : 
+                              Color.white.opacity(0.3))
+                        .frame(width: 12, height: 12)
+                        .scaleEffect(rep == currentRep ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.3), value: currentRep)
+                }
+            }
+            
+            Text("\(currentPhase.title) \(currentRep) of \(totalReps)")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(.white)
+            
+            Text("\(targetDistance) yards")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white.opacity(0.8))
+        }
+        .transition(.opacity.combined(with: .scale))
+    }
+}
+
+// MARK: - View Extensions for Performance
+
+extension Text {
+    func controlLabel() -> some View {
+        self
+            .font(.system(size: 10, weight: .medium))
+            .foregroundColor(.white.opacity(0.8))
+            .frame(width: 75)
+    }
+}
+
+extension View {
+    /// Performance optimization: Reduce view updates
+    func onlyUpdateWhen<T: Hashable>(_ value: T) -> some View {
+        self.id(value)
+    }
+    
+    /// Add accessibility support
+    func workoutAccessibility(label: String, hint: String? = nil) -> some View {
+        self
+            .accessibilityLabel(label)
+            .accessibilityHint(hint ?? "")
+            .accessibilityAddTraits(.isButton)
+    }
+}
+
+// MARK: - Enhanced Live Rep Log Component
+
+/// Enhanced live rep log with real-time updates and detailed performance metrics
+struct EnhancedLiveRepLog: View {
+    let currentPhase: MainProgramWorkoutView.WorkoutPhase
+    let completedReps: [RepData]
+    let currentRep: Int
+    let totalReps: Int
+    let sessionData: MainProgramWorkoutView.SessionData?
+    let gpsManager: GPSManager
+    
+    @State private var isExpanded: Bool = true
+    @State private var selectedTab: RepLogTab = .current
+    
+    enum RepLogTab: String, CaseIterable {
+        case current = "CURRENT"
+        case completed = "COMPLETED"
+        case stats = "STATS"
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Header with expand/collapse
+            HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "list.bullet.clipboard")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.orange)
+                    
+                    Text("LIVE REP LOG")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .tracking(1)
+                }
+                
+                Spacer()
+                
+                // Live indicator
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 8, height: 8)
+                        .scaleEffect(1.0)
+                        .animation(
+                            Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                            value: currentPhase
+                        )
+                    
+                    Text("LIVE")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.red)
+                }
+                
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        isExpanded.toggle()
+                    }
+                }) {
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.up")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.black.opacity(0.8))
+            
+            if isExpanded {
+                VStack(spacing: 0) {
+                    // Tab selector
+                    HStack(spacing: 0) {
+                        ForEach(RepLogTab.allCases, id: \.self) { tab in
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    selectedTab = tab
+                                }
+                            }) {
+                                VStack(spacing: 4) {
+                                    Text(tab.rawValue)
+                                        .font(.system(size: 12, weight: .semibold))
+                                        .foregroundColor(selectedTab == tab ? .orange : .white.opacity(0.6))
+                                    
+                                    Rectangle()
+                                        .fill(selectedTab == tab ? Color.orange : Color.clear)
+                                        .frame(height: 2)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+                    
+                    // Content based on selected tab
+                    Group {
+                        switch selectedTab {
+                        case .current:
+                            currentRepContent
+                        case .completed:
+                            completedRepsContent
+                        case .stats:
+                            statsContent
+                        }
+                    }
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
+                }
+                .background(Color.black.opacity(0.6))
+            }
+        }
+        .background(Color.black.opacity(0.4))
+        .cornerRadius(12)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+        )
+    }
+    
+    @ViewBuilder
+    private var currentRepContent: some View {
+        VStack(spacing: 12) {
+            // Current phase and rep info
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("CURRENT PHASE")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                    
+                    Text(currentPhase.title.uppercased())
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(currentPhase.color)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text("REP PROGRESS")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                    
+                    Text("\(currentRep) / \(totalReps)")
+                        .font(.system(size: 16, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            }
+            
+            // Live metrics for current rep
+            if currentPhase == .sprints || currentPhase == .strides || currentPhase == .drill {
+                VStack(spacing: 8) {
+                    Text("LIVE METRICS")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                    
+                    HStack(spacing: 16) {
+                        LiveMetricItem(
+                            title: "DISTANCE",
+                            value: String(format: "%.1f", gpsManager.distance * 1.09361),
+                            unit: "YDS"
+                        )
+                        
+                        LiveMetricItem(
+                            title: "TIME",
+                            value: formatTime(gpsManager.elapsedTime),
+                            unit: "SEC"
+                        )
+                        
+                        LiveMetricItem(
+                            title: "SPEED",
+                            value: String(format: "%.1f", gpsManager.currentSpeed * 2.237),
+                            unit: "MPH"
+                        )
+                    }
+                }
+            }
+            
+            // Target for current rep
+            if let targetDistance = getTargetDistanceForCurrentRep() {
+                HStack {
+                    Text("TARGET:")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                    
+                    Text("\(targetDistance) yards")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.orange)
+                    
+                    Spacer()
+                    
+                    let progress = min((gpsManager.distance * 1.09361) / Double(targetDistance), 1.0)
+                    Text("\(Int(progress * 100))% complete")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(progress >= 1.0 ? .green : .white.opacity(0.8))
+                }
+            }
+        }
+        .padding(16)
+    }
+    
+    @ViewBuilder
+    private var completedRepsContent: some View {
+        ScrollView {
+            LazyVStack(spacing: 8) {
+                ForEach(completedReps.indices, id: \.self) { index in
+                    let rep = completedReps[index]
+                    CompletedRepRow(rep: rep, index: index + 1)
+                }
+                
+                if completedReps.isEmpty {
+                    VStack(spacing: 8) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 24))
+                            .foregroundColor(.white.opacity(0.5))
+                        
+                        Text("No completed reps yet")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .padding(.vertical, 20)
+                }
+            }
+            .padding(16)
+        }
+        .frame(maxHeight: 200)
+    }
+    
+    @ViewBuilder
+    private var statsContent: some View {
+        VStack(spacing: 16) {
+            // Performance stats
+            HStack(spacing: 16) {
+                StatBox(
+                    title: "BEST TIME",
+                    value: getBestTime(),
+                    color: .green
+                )
+                
+                StatBox(
+                    title: "AVG TIME",
+                    value: getAverageTime(),
+                    color: .blue
+                )
+                
+                StatBox(
+                    title: "TOTAL DISTANCE",
+                    value: getTotalDistance(),
+                    color: .purple
+                )
+            }
+            
+            // Phase completion
+            VStack(spacing: 8) {
+                Text("PHASE COMPLETION")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white.opacity(0.8))
+                
+                HStack(spacing: 12) {
+                    PhaseCompletionIndicator(
+                        phase: "DRILLS",
+                        completed: getCompletedCount(.drill),
+                        total: sessionData?.drillSets.count ?? 0,
+                        color: .blue
+                    )
+                    
+                    PhaseCompletionIndicator(
+                        phase: "STRIDES",
+                        completed: getCompletedCount(.stride),
+                        total: sessionData?.strideSets.count ?? 0,
+                        color: .purple
+                    )
+                    
+                    PhaseCompletionIndicator(
+                        phase: "SPRINTS",
+                        completed: getCompletedCount(.sprint),
+                        total: sessionData?.sprintSets.count ?? 0,
+                        color: .orange
+                    )
+                }
+            }
+        }
+        .padding(16)
+    }
+    
+    // Helper functions
+    private func getTargetDistanceForCurrentRep() -> Int? {
+        switch currentPhase {
+        case .drill:
+            return 20
+        case .strides:
+            return sessionData?.strideSets.first?.distance ?? 20
+        case .sprints:
+            return sessionData?.sprintSets.first?.distance ?? 40
+        default:
+            return nil
+        }
+    }
+    
+    private func formatTime(_ time: TimeInterval) -> String {
+        return String(format: "%.1f", time)
+    }
+    
+    private func getBestTime() -> String {
+        let times = completedReps.compactMap { $0.time }
+        guard let best = times.min() else { return "--" }
+        return String(format: "%.2fs", best)
+    }
+    
+    private func getAverageTime() -> String {
+        let times = completedReps.compactMap { $0.time }
+        guard !times.isEmpty else { return "--" }
+        let average = times.reduce(0, +) / Double(times.count)
+        return String(format: "%.2fs", average)
+    }
+    
+    private func getTotalDistance() -> String {
+        let totalYards = completedReps.reduce(0) { $0 + $1.distance }
+        return "\(totalYards) yds"
+    }
+    
+    private func getCompletedCount(_ type: RepData.RepType) -> Int {
+        return completedReps.filter { $0.repType == type && $0.isCompleted }.count
+    }
+}
+
+// MARK: - Supporting Components for Enhanced Rep Log
+
+struct LiveMetricItem: View {
+    let title: String
+    let value: String
+    let unit: String
+    
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(title)
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+            
+            Text(value)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+            
+            Text(unit)
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+struct CompletedRepRow: View {
+    let rep: RepData
+    let index: Int
+    
+    var body: some View {
+        HStack {
+            // Rep number and type
+            HStack(spacing: 8) {
+                Text("\(index)")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
+                    .frame(width: 24, height: 24)
+                    .background(rep.repType.uiColor.opacity(0.3))
+                    .clipShape(Circle())
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(rep.repType.displayName)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Text("\(rep.distance) yards")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+            }
+            
+            Spacer()
+            
+            // Time and status
+            VStack(alignment: .trailing, spacing: 2) {
+                if let time = rep.time {
+                    Text(String(format: "%.2fs", time))
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.green)
+                } else {
+                    Text("--")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white.opacity(0.5))
+                }
+                
+                Image(systemName: rep.isCompleted ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 12))
+                    .foregroundColor(rep.isCompleted ? .green : .white.opacity(0.5))
+            }
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.05))
+        .cornerRadius(8)
+    }
+}
+
+struct StatBox: View {
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(title)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+            
+            Text(value)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(color)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .background(color.opacity(0.1))
+        .cornerRadius(8)
+    }
+}
+
+struct PhaseCompletionIndicator: View {
+    let phase: String
+    let completed: Int
+    let total: Int
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(phase)
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+            
+            Text("\(completed)/\(total)")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(color)
+            
+            ProgressView(value: total > 0 ? Double(completed) / Double(total) : 0)
+                .progressViewStyle(LinearProgressViewStyle(tint: color))
+                .scaleEffect(x: 1, y: 2, anchor: .center)
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - RepData Extensions
+
+extension RepData.RepType {
+    var uiColor: Color {
+        switch self {
+        case .drill: return .blue
+        case .stride: return .purple
+        case .sprint: return .orange
+        case .warmup: return .yellow
+        case .cooldown: return .cyan
+        }
     }
 }
 

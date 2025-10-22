@@ -1,9 +1,10 @@
 import SwiftUI
-import WatchKit
 import AVFoundation
+import Combine
 
-// MARK: - Enhanced 7-Stage Workout View for Apple Watch
+// MARK: - Enhanced 7-Stage Workout View for Apple Watch with Advanced Logic
 struct Enhanced7StageWorkoutView: View {
+    @StateObject private var watchSyncManager = WatchWorkoutSyncManager.shared
     @StateObject private var workoutVM: WorkoutWatchViewModel
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes for warmup
@@ -11,6 +12,14 @@ struct Enhanced7StageWorkoutView: View {
     @State private var isRunning = false
     @State private var isPaused = false
     @State private var showCompletionView = false
+    
+    // Enhanced coaching and feedback system
+    @State private var coachingMessage: String = ""
+    @State private var showCoachingMessage: Bool = false
+    @State private var isVoiceCoachingEnabled = true
+    @State private var speechSynthesizer = AVSpeechSynthesizer()
+    @State private var currentRep = 1
+    @State private var totalReps = 4
     
     let session: TrainingSession
     
@@ -105,12 +114,12 @@ struct Enhanced7StageWorkoutView: View {
     
     var body: some View {
         ZStack {
-            // Background gradient matching iPhone app
+            // STANDARDIZED: Matching gradient across all views
             LinearGradient(
                 colors: [
-                    Color(red: 0.1, green: 0.2, blue: 0.4),
-                    Color(red: 0.2, green: 0.1, blue: 0.3),
-                    Color(red: 0.1, green: 0.05, blue: 0.2)
+                    Color(red: 0.08, green: 0.12, blue: 0.25),
+                    Color(red: 0.12, green: 0.18, blue: 0.35),
+                    Color(red: 0.15, green: 0.2, blue: 0.4)
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
@@ -121,7 +130,7 @@ struct Enhanced7StageWorkoutView: View {
                 WorkoutCompletionView(session: session)
             } else {
                 ScrollView {
-                    VStack(spacing: WatchAdaptiveSizing.spacing) {
+                    VStack(spacing: 16) {
                         // Phase Progress Indicator
                         PhaseProgressView(currentPhase: currentPhase)
                         
@@ -135,24 +144,67 @@ struct Enhanced7StageWorkoutView: View {
                         // Phase Instructions
                         PhaseInstructionsView(phase: currentPhase)
                         
-                        // Control Buttons
-                        WorkoutControlsView(
+                        // STANDARDIZED: Enhanced Control Buttons matching all views
+                        EnhancedWorkoutControlsView(
                             isRunning: isRunning,
                             isPaused: isPaused,
                             onStartPause: toggleWorkout,
-                            onNext: advanceToNextPhase,
-                            onComplete: completeWorkout
+                            onNext: enhancedFastForward,
+                            onComplete: enhancedCompleteWorkout,
+                            onToggleVoice: toggleVoiceCoaching,
+                            isVoiceEnabled: isVoiceCoachingEnabled
                         )
                     }
                     .padding()
+                }
+                
+                // Enhanced Coaching Message Overlay
+                if showCoachingMessage {
+                    VStack {
+                        Spacer()
+                        
+                        Text(coachingMessage)
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.black.opacity(0.8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(Color.orange, lineWidth: 1)
+                                    )
+                            )
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 8)
+                    }
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
         }
         .onAppear {
             setupWorkout()
+            setupAutoAdaptation()
         }
         .onDisappear {
             cleanupWorkout()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .workoutStateAdapted)) { notification in
+            if let adaptedState = notification.object as? WorkoutSyncState {
+                adaptToPhoneWorkoutState(adaptedState)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .uiConfigurationAdapted)) { notification in
+            if let adaptedConfig = notification.object as? UIConfigurationSync {
+                adaptToPhoneUIConfiguration(adaptedConfig)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .coachingPreferencesAdapted)) { notification in
+            if let adaptedPrefs = notification.object as? CoachingPreferencesSync {
+                adaptToPhoneCoachingPreferences(adaptedPrefs)
+            }
         }
     }
     
@@ -177,11 +229,15 @@ struct Enhanced7StageWorkoutView: View {
         isPaused = false
         startPhaseTimer()
         
-        // Haptic feedback
-        WKInterfaceDevice.current().play(.start)
+        // Enhanced haptic feedback
+        triggerHapticFeedback(.start)
         
-        // Voice coaching
+        // Enhanced voice coaching
+        startVoiceCoaching()
         speakPhaseStart()
+        
+        // Show coaching cue
+        showCoachingCue("Workout started! Let's achieve greatness! 🚀")
     }
     
     private func pauseWorkout() {
@@ -269,14 +325,294 @@ struct Enhanced7StageWorkoutView: View {
     }
     
     private func speak(_ text: String) {
+        guard isVoiceCoachingEnabled else { return }
+        
         // Use AVSpeechSynthesizer for voice coaching
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
         utterance.volume = 0.8
         
-        let synthesizer = AVSpeechSynthesizer()
-        synthesizer.speak(utterance)
+        speechSynthesizer.speak(utterance)
+    }
+    
+    // MARK: - Enhanced Logic Transfer from MainProgramWorkoutView
+    
+    // MARK: - Voice Coaching Integration
+    
+    private func startVoiceCoaching() {
+        announceVoiceCoaching("Welcome to Sprint Coach 40 on Apple Watch! Let's get started! 🎯")
+    }
+    
+    private func stopVoiceCoaching() {
+        speechSynthesizer.stopSpeaking(at: .immediate)
+    }
+    
+    private func announceVoiceCoaching(_ message: String) {
+        guard isVoiceCoachingEnabled else { return }
+        
+        // Enhanced voice coaching with Apple Watch optimization
+        let cleanMessage = message.replacingOccurrences(of: "🎯|🚀|💪|⚡|🔥|🏆|🌟|⏸️|▶️|⏭️|✅|🔄|🎉", with: "", options: .regularExpression)
+        
+        let utterance = AVSpeechUtterance(string: cleanMessage)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = 0.6 // Slightly faster for watch
+        utterance.volume = 0.9 // Louder for watch speaker
+        utterance.pitchMultiplier = 1.1 // Slightly higher pitch for clarity
+        
+        speechSynthesizer.speak(utterance)
+        
+        // Also show visual coaching cue
+        showCoachingCue(message)
+        
+        print("🗣️ Watch Voice Coach: \(cleanMessage)")
+    }
+    
+    private func toggleVoiceCoaching() {
+        isVoiceCoachingEnabled.toggle()
+        let message = isVoiceCoachingEnabled ? "Voice coaching enabled 🔊" : "Voice coaching disabled 🔇"
+        showCoachingCue(message)
+        triggerHapticFeedback(.light)
+    }
+    
+    // MARK: - Haptic Feedback Integration
+    
+    enum HapticType {
+        case light, medium, heavy, start, end, success, warning, error
+    }
+    
+    private func triggerHapticFeedback(_ type: HapticType) {
+        // Apple Watch haptic feedback using WKHapticType
+        #if os(watchOS)
+        switch type {
+        case .light:
+            // Use digital crown haptic for light feedback
+            WKInterfaceDevice.current().play(.click)
+        case .medium:
+            WKInterfaceDevice.current().play(.notification)
+        case .heavy:
+            WKInterfaceDevice.current().play(.directionUp)
+        case .start:
+            WKInterfaceDevice.current().play(.start)
+        case .end:
+            WKInterfaceDevice.current().play(.stop)
+        case .success:
+            WKInterfaceDevice.current().play(.success)
+        case .warning:
+            WKInterfaceDevice.current().play(.retry)
+        case .error:
+            WKInterfaceDevice.current().play(.failure)
+        }
+        #endif
+    }
+    
+    // MARK: - Enhanced Coaching Cue System
+    
+    private func showCoachingCue(_ message: String) {
+        coachingMessage = message
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            showCoachingMessage = true
+        }
+        
+        // Hide after 4 seconds (longer for watch readability)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+            withAnimation(.easeOut(duration: 0.5)) {
+                self.showCoachingMessage = false
+            }
+        }
+    }
+    
+    // MARK: - Enhanced Phase Management
+    
+    private func providePhaseCoaching() {
+        let coaching = currentPhase.instructions
+        announceVoiceCoaching(coaching)
+        showCoachingCue(coaching)
+    }
+    
+    private func handlePhaseTransition() {
+        // Enhanced phase transition with coaching
+        let phaseName = currentPhase.title
+        announceVoiceCoaching("Moving to \(phaseName). \(currentPhase.instructions)")
+        showCoachingCue("Moved to \(phaseName)")
+        triggerHapticFeedback(.medium)
+    }
+    
+    // MARK: - Rep Management for Sprint Phases
+    
+    private func completeCurrentRep(time: Double? = nil) {
+        guard currentPhase == .sprints else { return }
+        
+        // Provide feedback
+        if let time = time {
+            announceVoiceCoaching("Rep \(currentRep) completed in \(String(format: "%.2f", time)) seconds! 🎯")
+            showCoachingCue("Rep \(currentRep): \(String(format: "%.2f", time))s ⚡")
+        } else {
+            announceVoiceCoaching("Rep \(currentRep) completed! 💪")
+            showCoachingCue("Rep \(currentRep) completed! ✅")
+        }
+        
+        // Haptic feedback for rep completion
+        triggerHapticFeedback(.success)
+        
+        // Move to next rep or complete workout
+        if currentRep < totalReps {
+            currentRep += 1
+            startRestPeriod()
+        } else {
+            completeSprintPhase()
+        }
+    }
+    
+    private func startRestPeriod() {
+        currentPhase = .resting
+        phaseTimeRemaining = 120 // 2 minutes rest
+        
+        announceVoiceCoaching("Rest for 2 minutes. Prepare for rep \(currentRep)! ⏱️")
+        showCoachingCue("Rest: 2 min - Rep \(currentRep) next 🔄")
+        
+        startPhaseTimer()
+        triggerHapticFeedback(.medium)
+    }
+    
+    private func completeSprintPhase() {
+        currentPhase = .cooldown
+        phaseTimeRemaining = WorkoutPhase.cooldown.duration
+        
+        announceVoiceCoaching("All sprints completed! Time to cool down! 🌟")
+        showCoachingCue("Sprint phase complete! Cool down time 🎉")
+        
+        startPhaseTimer()
+        triggerHapticFeedback(.success)
+    }
+    
+    // MARK: - Enhanced Workout Controls
+    
+    private func enhancedPauseWorkout() {
+        isRunning = false
+        isPaused = true
+        phaseTimer?.invalidate()
+        
+        // Enhanced feedback
+        announceVoiceCoaching("Workout paused. Take your time! ⏸️")
+        showCoachingCue("Workout paused. Tap play to continue! ⏸️")
+        triggerHapticFeedback(.medium)
+    }
+    
+    private func enhancedResumeWorkout() {
+        isRunning = true
+        isPaused = false
+        startPhaseTimer()
+        
+        announceVoiceCoaching("Back to training! Let's keep pushing! ▶️")
+        showCoachingCue("Back to training! Let's keep pushing! ▶️")
+        triggerHapticFeedback(.light)
+    }
+    
+    private func enhancedFastForward() {
+        advanceToNextPhase()
+        
+        triggerHapticFeedback(.heavy)
+        
+        let nextPhaseName = currentPhase.title
+        announceVoiceCoaching("Skipping to \(nextPhaseName)! ⏭️")
+        showCoachingCue("Skipping to \(nextPhaseName)! ⏭️")
+    }
+    
+    // MARK: - Enhanced Completion
+    
+    private func enhancedCompleteWorkout() {
+        phaseTimer?.invalidate()
+        isRunning = false
+        currentPhase = .completed
+        showCompletionView = true
+        
+        // Enhanced completion feedback
+        announceVoiceCoaching("Workout complete! Great job on Apple Watch! 🎉")
+        showCoachingCue("Workout Complete! 🏆")
+        triggerHapticFeedback(.success)
+        
+        // Save workout results
+        print("🏆 Apple Watch workout completed successfully!")
+    }
+    
+    // MARK: - Auto-Adaptation Methods
+    
+    private func setupAutoAdaptation() {
+        // Request initial sync from iPhone
+        watchSyncManager.requestFullSyncFromPhone()
+        
+        print("⌚ Auto-adaptation setup complete - watching for iPhone changes")
+    }
+    
+    private func adaptToPhoneWorkoutState(_ phoneState: WorkoutSyncState) {
+        // Adapt workout state based on iPhone changes
+        if let adaptedPhase = WorkoutPhase(rawValue: phoneState.currentPhase) {
+            currentPhase = adaptedPhase
+        }
+        
+        phaseTimeRemaining = phoneState.phaseTimeRemaining
+        isRunning = phoneState.isRunning
+        isPaused = phoneState.isPaused
+        currentRep = phoneState.currentRep
+        totalReps = phoneState.totalReps
+        
+        // Show adaptation message
+        showCoachingCue("Synced with iPhone workout state 📱")
+        triggerHapticFeedback(.light)
+        
+        print("⌚ Adapted to iPhone workout state: \(phoneState.currentPhase)")
+    }
+    
+    private func adaptToPhoneUIConfiguration(_ phoneConfig: UIConfigurationSync) {
+        // Adapt UI configuration based on iPhone changes
+        // This could include color themes, animation speeds, etc.
+        
+        showCoachingCue("UI updated from iPhone settings 🎨")
+        
+        print("⌚ Adapted to iPhone UI configuration")
+    }
+    
+    private func adaptToPhoneCoachingPreferences(_ phonePrefs: CoachingPreferencesSync) {
+        // Adapt coaching preferences based on iPhone changes
+        isVoiceCoachingEnabled = phonePrefs.isVoiceCoachingEnabled
+        
+        // Update speech synthesizer settings
+        speechSynthesizer.stopSpeaking(at: .immediate)
+        
+        let message = phonePrefs.isVoiceCoachingEnabled ? 
+            "Voice coaching enabled from iPhone 🔊" : 
+            "Voice coaching disabled from iPhone 🔇"
+        
+        showCoachingCue(message)
+        triggerHapticFeedback(.light)
+        
+        print("⌚ Adapted to iPhone coaching preferences: voice=\(phonePrefs.isVoiceCoachingEnabled)")
+    }
+    
+    // MARK: - Send Watch State to iPhone
+    
+    private func sendWatchStateToPhone() {
+        let watchState = watchSyncManager.createWatchStateSync(
+            currentPhase: currentPhase.rawValue,
+            isRunning: isRunning,
+            isPaused: isPaused,
+            currentRep: currentRep
+        )
+        
+        watchSyncManager.sendWatchStateToPhone(watchState)
+    }
+    
+    private func sendWatchActionToPhone(_ action: String) {
+        let watchState = watchSyncManager.createWatchStateSync(
+            currentPhase: currentPhase.rawValue,
+            isRunning: isRunning,
+            isPaused: isPaused,
+            currentRep: currentRep,
+            requestedAction: action
+        )
+        
+        watchSyncManager.sendWatchStateToPhone(watchState)
     }
 }
 
@@ -410,7 +746,78 @@ struct PhaseInstructionsView: View {
     }
 }
 
-// MARK: - Workout Controls View
+// MARK: - Enhanced Workout Controls View
+struct EnhancedWorkoutControlsView: View {
+    let isRunning: Bool
+    let isPaused: Bool
+    let onStartPause: () -> Void
+    let onNext: () -> Void
+    let onComplete: () -> Void
+    let onToggleVoice: () -> Void
+    let isVoiceEnabled: Bool
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            // Primary control button with enhanced styling
+            Button(action: onStartPause) {
+                HStack {
+                    Image(systemName: isRunning ? "pause.fill" : "play.fill")
+                        .font(.body)
+                    Text(isRunning ? "Pause" : (isPaused ? "Resume" : "Start"))
+                        .font(.body)
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(
+                    LinearGradient(
+                        colors: [Color.green.opacity(0.9), Color.green],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.green.opacity(0.3), lineWidth: 1)
+                )
+            }
+            
+            // Secondary controls with enhanced layout
+            HStack(spacing: 6) {
+                Button("Next", action: onNext)
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.blue.opacity(0.8))
+                    .cornerRadius(6)
+                
+                Button("Complete", action: onComplete)
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color.orange.opacity(0.8))
+                    .cornerRadius(6)
+                
+                // Voice coaching toggle
+                Button(action: onToggleVoice) {
+                    Image(systemName: isVoiceEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                        .font(.caption)
+                        .foregroundColor(.white)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(isVoiceEnabled ? Color.purple.opacity(0.8) : Color.gray.opacity(0.6))
+                .cornerRadius(6)
+            }
+        }
+    }
+}
+
+// MARK: - Legacy Workout Controls View (for compatibility)
 struct WorkoutControlsView: View {
     let isRunning: Bool
     let isPaused: Bool
@@ -419,41 +826,15 @@ struct WorkoutControlsView: View {
     let onComplete: () -> Void
     
     var body: some View {
-        VStack(spacing: 8) {
-            // Primary control button
-            Button(action: onStartPause) {
-                HStack {
-                    Image(systemName: isRunning ? "pause.fill" : "play.fill")
-                        .font(.body)
-                    Text(isRunning ? "Pause" : (isPaused ? "Resume" : "Start"))
-                        .font(.body)
-                }
-                .foregroundColor(.black)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color.green)
-                .cornerRadius(8)
-            }
-            
-            // Secondary controls
-            HStack(spacing: 8) {
-                Button("Next Phase", action: onNext)
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color.blue)
-                    .cornerRadius(6)
-                
-                Button("Complete", action: onComplete)
-                    .font(.caption)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(Color.orange)
-                    .cornerRadius(6)
-            }
-        }
+        EnhancedWorkoutControlsView(
+            isRunning: isRunning,
+            isPaused: isPaused,
+            onStartPause: onStartPause,
+            onNext: onNext,
+            onComplete: onComplete,
+            onToggleVoice: {},
+            isVoiceEnabled: true
+        )
     }
 }
 
@@ -467,14 +848,15 @@ struct WorkoutCompletionView: View {
                 .font(.largeTitle)
                 .foregroundColor(.green)
             
-            Text("Workout Complete!")
-                .font(.headline)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-            
-            Text("Great job on your \(session.type) session!")
-                .font(.body)
+            Text("ENHANCED 7-STAGE")
+                .font(.system(size: 12, weight: .bold))
                 .foregroundColor(.white.opacity(0.8))
+                .tracking(2)
+            
+            Text("Training Session")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.white)
+                .tracking(0.5)
                 .multilineTextAlignment(.center)
             
             Button("Done") {

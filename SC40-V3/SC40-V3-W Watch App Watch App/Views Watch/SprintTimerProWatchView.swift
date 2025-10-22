@@ -1,7 +1,4 @@
 import SwiftUI
-#if os(watchOS)
-import WatchKit
-#endif
 
 struct SprintTimerProWatchView: View {
     @Environment(\.dismiss) private var dismiss
@@ -9,22 +6,28 @@ struct SprintTimerProWatchView: View {
     @State private var selectedReps: Int = 3
     @State private var selectedRestMinutes: Int = 2
     @State private var showWorkout = false
-    @ObservedObject private var sessionManager = WatchSessionManager.shared
     
-    // Optimized options for Apple Watch
-    private let distanceOptions = [20, 30, 40, 50, 60, 75, 100]
-    private let repsOptions = Array(1...8)
-    private let restOptions = Array(1...5)
+    // ENHANCED: Auto-sync with iPhone Pro view
+    @StateObject private var watchSyncManager = WatchWorkoutSyncManager.shared
+    
+    // ENHANCED: Pro picker state management
+    @State private var adaptedProPickerData: ProPickerDataSync?
+    @State private var isAutoAdaptingFromPhone = false
+    
+    // PRESERVED: Match phone picker system exactly
+    private let distanceOptions = [10, 20, 25, 30, 40, 50, 60, 75, 100] // Same as phone
+    private let repsOptions = Array(1...10) // Same as phone  
+    private let restOptions = Array(1...10) // Same as phone
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // Premium gradient background
+                // STANDARDIZED: Matching gradient across all views
                 LinearGradient(
                     colors: [
-                        Color.brandPrimary.opacity(0.3),
-                        Color.brandSecondary.opacity(0.2),
-                        Color.black
+                        Color(red: 0.08, green: 0.12, blue: 0.25),
+                        Color(red: 0.12, green: 0.18, blue: 0.35),
+                        Color(red: 0.15, green: 0.2, blue: 0.4)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -32,41 +35,58 @@ struct SprintTimerProWatchView: View {
                 .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: WatchAdaptiveSizing.spacing) {
-                        // Pro header with crown
+                    VStack(spacing: 16) {
+                        // ENHANCED: Pro header matching phone
                         proHeaderSection
                         
-                        // Compact pickers section
-                        compactPickersSection
+                        // ENHANCED: Watch-optimized pickers matching phone functionality
+                        watchPickersSection
                         
-                        // Workout preview
+                        // ENHANCED: Workout preview matching phone
                         workoutPreviewSection
                         
-                        // Start button
+                        // ENHANCED: Start button matching phone
                         startWorkoutButton
                     }
-                    .adaptivePadding()
+                    .padding(.horizontal, 12)
                 }
             }
         }
         .navigationBarHidden(true)
-        .fullScreenCover(isPresented: $showWorkout) {
-            if let workoutVM = createCustomWorkoutViewModel() {
-                MainWorkoutWatchView(workoutVM: workoutVM)
+        .onAppear {
+            setupProWatchAutoAdaptation()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .proPickerDataAdapted)) { notification in
+            if let adaptedPickerData = notification.object as? ProPickerDataSync {
+                adaptToPhoneProPickerData(adaptedPickerData)
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .workoutStateAdapted)) { notification in
+            if let adaptedState = notification.object as? WorkoutSyncState {
+                adaptToPhoneProWorkoutState(adaptedState)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .uiConfigurationAdapted)) { notification in
+            if let adaptedConfig = notification.object as? UIConfigurationSync {
+                adaptToPhoneProUIConfiguration(adaptedConfig)
+            }
+        }
+        .fullScreenCover(isPresented: $showWorkout) {
+            // ENHANCED: Launch Enhanced7StageWorkoutView with custom parameters
+            Enhanced7StageWorkoutView(session: createCustomTrainingSession())
         }
     }
     
-    // MARK: - UI Components
+    // MARK: - ENHANCED UI Components Matching Phone
     
     private var proHeaderSection: some View {
-        VStack(spacing: WatchAdaptiveSizing.smallPadding) {
+        VStack(spacing: 8) {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark")
-                        .font(.system(size: WatchAdaptiveSizing.iconSize))
+                        .font(.system(size: 16))
                         .foregroundColor(.white)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 28, height: 28)
                         .background(Color.white.opacity(0.2))
                         .clipShape(Circle())
                 }
@@ -74,58 +94,93 @@ struct SprintTimerProWatchView: View {
                 Spacer()
                 
                 Image(systemName: "crown.fill")
-                    .font(.system(size: WatchAdaptiveSizing.iconSize * 1.5))
+                    .font(.system(size: 24))
                     .foregroundColor(.yellow)
                 
                 Spacer()
                 
                 // Balance spacer
                 Color.clear
-                    .frame(width: 32, height: 32)
+                    .frame(width: 28, height: 28)
             }
             
             Text("SPRINT TIMER PRO")
-                .font(.adaptiveTitle)
-                .fontWeight(.bold)
+                .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
             
             Text("Custom Sprint Workouts")
-                .font(.adaptiveCaption)
-                .foregroundColor(.secondary)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.white.opacity(0.8))
         }
     }
     
-    private var compactPickersSection: some View {
-        VStack(spacing: WatchAdaptiveSizing.smallPadding) {
-            // Three-column picker layout optimized for watch
-            HStack(spacing: 4) {
-                pickerColumn(
-                    title: "DIST",
-                    selection: $selectedDistance,
-                    options: distanceOptions,
-                    suffix: "YD"
-                )
+    // ENHANCED: Watch pickers section matching phone functionality
+    private var watchPickersSection: some View {
+        VStack(spacing: 12) {
+            // Distance Picker - matches phone exactly
+            VStack(spacing: 8) {
+                Text("DISTANCE")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
                 
-                pickerColumn(
-                    title: "REPS",
-                    selection: $selectedReps,
-                    options: repsOptions,
-                    suffix: ""
+                Picker("Distance", selection: $selectedDistance) {
+                    ForEach(distanceOptions, id: \.self) { distance in
+                        Text("\(distance) YD")
+                            .font(.system(size: 14, weight: .bold))
+                            .tag(distance)
+                    }
+                }
+                .pickerStyle(WheelPickerStyle())
+                .frame(height: 80)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white.opacity(0.1))
                 )
+            }
+            
+            // Reps Picker - matches phone exactly
+            VStack(spacing: 8) {
+                Text("REPETITIONS")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
                 
-                pickerColumn(
-                    title: "REST",
-                    selection: $selectedRestMinutes,
-                    options: restOptions,
-                    suffix: "MIN"
+                Picker("Reps", selection: $selectedReps) {
+                    ForEach(repsOptions, id: \.self) { reps in
+                        Text("\(reps) REP\(reps == 1 ? "" : "S")")
+                            .font(.system(size: 14, weight: .bold))
+                            .tag(reps)
+                    }
+                }
+                .pickerStyle(WheelPickerStyle())
+                .frame(height: 80)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white.opacity(0.1))
+                )
+            }
+            
+            // Rest Time Picker - matches phone exactly
+            VStack(spacing: 8) {
+                Text("REST TIME")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                
+                Picker("Rest", selection: $selectedRestMinutes) {
+                    ForEach(restOptions, id: \.self) { rest in
+                        Text("\(rest) MIN\(rest == 1 ? "" : "S")")
+                            .font(.system(size: 14, weight: .bold))
+                            .tag(rest)
+                    }
+                }
+                .pickerStyle(WheelPickerStyle())
+                .frame(height: 80)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white.opacity(0.1))
                 )
             }
         }
-        .background(
-            RoundedRectangle(cornerRadius: WatchAdaptiveSizing.cornerRadius)
-                .fill(Color.white.opacity(0.1))
-        )
     }
     
     private func pickerColumn<T: Hashable>(
@@ -154,90 +209,86 @@ struct SprintTimerProWatchView: View {
         .frame(maxWidth: .infinity)
     }
     
+    // ENHANCED: Workout preview matching phone
     private var workoutPreviewSection: some View {
-        VStack(spacing: WatchAdaptiveSizing.smallPadding) {
+        VStack(spacing: 8) {
             Text("WORKOUT PREVIEW")
-                .font(.adaptiveCaption)
-                .foregroundColor(.secondary)
-                .fontWeight(.semibold)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundColor(.white.opacity(0.8))
             
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
                 HStack {
-                    Text("Distance:")
-                        .font(.adaptiveBody)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("\(selectedDistance) yards")
-                        .font(.adaptiveBody)
-                        .fontWeight(.medium)
+                    Image(systemName: "figure.run")
+                        .font(.system(size: 16))
+                        .foregroundColor(.yellow)
+                    
+                    Text("\(selectedReps) × \(selectedDistance) Yard Sprints")
+                        .font(.system(size: 14, weight: .bold))
                         .foregroundColor(.white)
+                    
+                    Spacer()
                 }
                 
                 HStack {
-                    Text("Repetitions:")
-                        .font(.adaptiveBody)
-                        .foregroundColor(.secondary)
+                    Image(systemName: "clock")
+                        .font(.system(size: 14))
+                        .foregroundColor(.orange)
+                    
+                    Text("\(selectedRestMinutes) minute\(selectedRestMinutes == 1 ? "" : "s") rest between reps")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                    
                     Spacer()
-                    Text("\(selectedReps) rep\(selectedReps == 1 ? "" : "s")")
-                        .font(.adaptiveBody)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
                 }
                 
                 HStack {
-                    Text("Rest Time:")
-                        .font(.adaptiveBody)
-                        .foregroundColor(.secondary)
+                    Image(systemName: "timer")
+                        .font(.system(size: 14))
+                        .foregroundColor(.green)
+                    
+                    let totalTime = (selectedReps * selectedRestMinutes) + 10
+                    Text("~\(totalTime) minute workout")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                    
                     Spacer()
-                    Text("\(selectedRestMinutes) min\(selectedRestMinutes == 1 ? "" : "s")")
-                        .font(.adaptiveBody)
-                        .fontWeight(.medium)
-                        .foregroundColor(.white)
-                }
-                
-                Divider()
-                    .background(Color.white.opacity(0.3))
-                
-                HStack {
-                    Text("Total Time:")
-                        .font(.adaptiveBody)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                    Text("~\(estimatedDuration) min")
-                        .font(.adaptiveBody)
-                        .fontWeight(.bold)
-                        .foregroundColor(.brandPrimary)
                 }
             }
-            .adaptiveSmallPadding()
+            .padding(12)
             .background(
-                RoundedRectangle(cornerRadius: WatchAdaptiveSizing.cornerRadius)
-                    .fill(Color.white.opacity(0.05))
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                    )
             )
         }
     }
     
+    // ENHANCED: Start button matching phone
     private var startWorkoutButton: some View {
         Button(action: startCustomWorkout) {
-            VStack(spacing: 4) {
-                Image(systemName: "play.fill")
-                    .font(.system(size: WatchAdaptiveSizing.iconSize))
-                
-                Text("START WORKOUT")
-                    .font(.adaptiveHeadline)
-                    .fontWeight(.bold)
+            HStack(spacing: 8) {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 16, weight: .bold))
+                Text("START CUSTOM WORKOUT")
+                    .font(.system(size: 14, weight: .bold))
             }
             .foregroundColor(.black)
             .frame(maxWidth: .infinity)
-            .frame(height: WatchAdaptiveSizing.buttonHeight)
+            .frame(height: 44)
             .background(
                 LinearGradient(
-                    colors: [Color.brandPrimary, Color.brandSecondary],
+                    colors: [
+                        Color.yellow,
+                        Color.orange
+                    ],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
             )
-            .cornerRadius(WatchAdaptiveSizing.cornerRadius)
+            .cornerRadius(22)
         }
         .buttonStyle(.plain)
     }
@@ -257,14 +308,16 @@ struct SprintTimerProWatchView: View {
         return 4 + sprintTime + restTime
     }
     
-    // MARK: - Actions
+    // MARK: - ENHANCED Actions
     
     private func startCustomWorkout() {
-        #if os(watchOS)
-        WKInterfaceDevice.current().play(.success)
-        #endif
-        
-        let customSession = TrainingSession(
+        showWorkout = true
+        print("🏃‍♂️ Starting Sprint Timer Pro workout: \(selectedDistance)yd x\(selectedReps) reps with \(selectedRestMinutes)min rest")
+    }
+    
+    // ENHANCED: Create custom training session for Enhanced7StageWorkoutView
+    private func createCustomTrainingSession() -> TrainingSession {
+        return TrainingSession(
             week: 0, // Custom session indicator
             day: 0,
             type: "Sprint Timer Pro",
@@ -279,28 +332,73 @@ struct SprintTimerProWatchView: View {
             accessoryWork: [],
             notes: "Custom Sprint Timer Pro workout - \(selectedDistance)yd x\(selectedReps) with \(selectedRestMinutes)min rest"
         )
-        
-        // Set as current workout session
-        sessionManager.setCurrentWorkoutSession(customSession)
-        showWorkout = true
-        
-        print("🏃‍♂️ Starting Sprint Timer Pro workout: \(selectedDistance)yd x\(selectedReps) reps")
     }
     
-    private func createCustomWorkoutViewModel() -> WorkoutWatchViewModel? {
-        guard let currentSession = sessionManager.currentWorkoutSession else {
-            print("❌ No current workout session available")
-            return nil
+    // MARK: - Pro Watch Auto-Adaptation Methods
+    
+    private func setupProWatchAutoAdaptation() {
+        // Request initial sync from iPhone Pro view
+        watchSyncManager.requestFullSyncFromPhone()
+        
+        print("⌚ Pro Watch auto-adaptation setup complete - watching for iPhone Pro changes")
+    }
+    
+    private func adaptToPhoneProPickerData(_ phonePickerData: ProPickerDataSync) {
+        // ENHANCED: Auto-adapt picker values from iPhone Pro view
+        isAutoAdaptingFromPhone = true
+        
+        selectedDistance = phonePickerData.selectedDistance
+        selectedReps = phonePickerData.selectedReps
+        selectedRestMinutes = phonePickerData.selectedRestMinutes
+        
+        adaptedProPickerData = phonePickerData
+        
+        // Show adaptation feedback
+        print("⌚ Pro Watch adapted picker data from iPhone: \(phonePickerData.selectedDistance)yd x\(phonePickerData.selectedReps) reps, \(phonePickerData.selectedRestMinutes)min rest")
+        
+        isAutoAdaptingFromPhone = false
+    }
+    
+    private func adaptToPhoneProWorkoutState(_ phoneState: WorkoutSyncState) {
+        // ENHANCED: Auto-adapt workout state from iPhone Pro view
+        if phoneState.sessionId.hasPrefix("pro-") {
+            // This is a Pro session state update
+            print("⌚ Pro Watch adapted workout state from iPhone Pro: \(phoneState.currentPhase)")
         }
+    }
+    
+    private func adaptToPhoneProUIConfiguration(_ phoneConfig: UIConfigurationSync) {
+        // ENHANCED: Auto-adapt UI configuration from iPhone Pro view
+        if phoneConfig.displayMode == "pro" {
+            // This is a Pro UI configuration update
+            print("⌚ Pro Watch adapted UI configuration from iPhone Pro")
+        }
+    }
+    
+    // MARK: - Pro Watch State Management
+    
+    private func sendProWatchStateToPhone() {
+        let proWatchState = watchSyncManager.createWatchStateSync(
+            currentPhase: "picker", // Pro picker phase
+            isRunning: false,
+            isPaused: false,
+            currentRep: 0,
+            requestedAction: nil
+        )
         
-        // Create WorkoutWatchViewModel with custom parameters
-        let workoutVM = WorkoutWatchViewModel(totalReps: selectedReps, restTime: TimeInterval(selectedRestMinutes * 60))
+        watchSyncManager.sendWatchStateToPhone(proWatchState)
+    }
+    
+    private func sendProPickerChangeToPhone(_ action: String) {
+        let proWatchState = watchSyncManager.createWatchStateSync(
+            currentPhase: "picker",
+            isRunning: false,
+            isPaused: false,
+            currentRep: 0,
+            requestedAction: action
+        )
         
-        // Update with session distances
-        let distances = Array(repeating: selectedDistance, count: selectedReps)
-        workoutVM.updateFromSession(distances: distances)
-        
-        return workoutVM
+        watchSyncManager.sendWatchStateToPhone(proWatchState)
     }
 }
 

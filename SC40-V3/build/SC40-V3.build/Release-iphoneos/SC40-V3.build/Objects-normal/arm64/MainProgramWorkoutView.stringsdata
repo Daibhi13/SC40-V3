@@ -4,90 +4,194 @@
     "Localizable": [
       {
         "comment": "",
-        "key": "Stop Workout?",
+        "key": "SPRINT COACH",
         "location": {
-          "startingColumn": 16,
-          "startingLine": 879
+          "startingColumn": 30,
+          "startingLine": 287
         }
       },
       {
         "comment": "",
-        "key": "Sprint Training",
+        "key": "Training Session",
         "location": {
-          "startingColumn": 26,
-          "startingLine": 256
+          "startingColumn": 30,
+          "startingLine": 292
         }
       },
       {
         "comment": "",
         "key": "SPRINT COACH 40",
         "location": {
-          "startingColumn": 38,
-          "startingLine": 283
+          "startingColumn": 42,
+          "startingLine": 339
         }
       },
       {
         "comment": "",
-        "key": "WEEK %lld - DAY %lld / %lld Min",
-        "location": {
-          "startingColumn": 38,
-          "startingLine": 288
-        }
-      },
-      {
-        "comment": "",
-        "key": "5 Min",
+        "key": "WEEK",
         "location": {
           "startingColumn": 46,
-          "startingLine": 315
+          "startingLine": 358
         }
       },
       {
         "comment": "",
-        "key": "Warm",
+        "key": "%lld",
         "location": {
           "startingColumn": 46,
-          "startingLine": 318
+          "startingLine": 363
         }
       },
       {
         "comment": "",
-        "key": "Up",
+        "key": "DAY",
         "location": {
           "startingColumn": 46,
-          "startingLine": 321
+          "startingLine": 373
         }
       },
       {
         "comment": "",
-        "key": "%lld Min",
+        "key": "%lld",
         "location": {
           "startingColumn": 46,
-          "startingLine": 331
+          "startingLine": 378
         }
       },
       {
         "comment": "",
-        "key": "5 Min",
+        "key": "DURATION",
         "location": {
           "startingColumn": 46,
-          "startingLine": 346
+          "startingLine": 388
         }
       },
       {
         "comment": "",
-        "key": "Cool",
+        "key": "%lldm",
         "location": {
           "startingColumn": 46,
-          "startingLine": 349
+          "startingLine": 393
         }
       },
       {
         "comment": "",
-        "key": "Down",
+        "key": "REAL-TIME DATA",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 462
+        }
+      },
+      {
+        "comment": "",
+        "key": "LIVE METRICS",
         "location": {
           "startingColumn": 46,
-          "startingLine": 352
+          "startingLine": 454
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "YARDS",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 486
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 518
+        }
+      },
+      {
+        "comment": "",
+        "key": "LIVE",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 527
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 559
+        }
+      },
+      {
+        "comment": "",
+        "key": "MPH",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 568
+        }
+      },
+      {
+        "comment": "",
+        "key": "COUNTDOWN",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 599
+        }
+      },
+      {
+        "comment": "",
+        "key": "LEFT",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 606
+        }
+      },
+      {
+        "comment": "",
+        "key": "PROGRESS",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 621
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 625
+        }
+      },
+      {
+        "comment": "",
+        "key": "DONE",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 628
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 643
+        }
+      },
+      {
+        "comment": "",
+        "key": "STATUS",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 650
         }
       },
       {
@@ -95,7 +199,7 @@
         "key": "SPEED BADGE",
         "location": {
           "startingColumn": 38,
-          "startingLine": 399
+          "startingLine": 689
         }
       },
       {
@@ -103,7 +207,7 @@
         "key": "LET'S\nGO",
         "location": {
           "startingColumn": 50,
-          "startingLine": 416
+          "startingLine": 706
         }
       },
       {
@@ -111,7 +215,7 @@
         "key": "|",
         "location": {
           "startingColumn": 46,
-          "startingLine": 447
+          "startingLine": 737
         }
       },
       {
@@ -119,7 +223,7 @@
         "key": "|",
         "location": {
           "startingColumn": 46,
-          "startingLine": 463
+          "startingLine": 753
         }
       },
       {
@@ -127,7 +231,7 @@
         "key": "SINCE\nSTART",
         "location": {
           "startingColumn": 50,
-          "startingLine": 437
+          "startingLine": 727
         }
       },
       {
@@ -135,7 +239,7 @@
         "key": "NEXT:\n%@",
         "location": {
           "startingColumn": 50,
-          "startingLine": 453
+          "startingLine": 743
         }
       },
       {
@@ -143,7 +247,7 @@
         "key": "TIME\nLEFT",
         "location": {
           "startingColumn": 50,
-          "startingLine": 469
+          "startingLine": 759
         }
       },
       {
@@ -151,7 +255,7 @@
         "key": "Sprint %lld of %lld",
         "location": {
           "startingColumn": 46,
-          "startingLine": 495
+          "startingLine": 785
         }
       },
       {
@@ -159,31 +263,7 @@
         "key": "%lld yards",
         "location": {
           "startingColumn": 42,
-          "startingLine": 498
-        }
-      },
-      {
-        "comment": "",
-        "key": "DISTANCE",
-        "location": {
-          "startingColumn": 58,
-          "startingLine": 508
-        }
-      },
-      {
-        "comment": "",
-        "key": "TIME",
-        "location": {
-          "startingColumn": 58,
-          "startingLine": 517
-        }
-      },
-      {
-        "comment": "",
-        "key": "SPEED",
-        "location": {
-          "startingColumn": 58,
-          "startingLine": 526
+          "startingLine": 788
         }
       },
       {
@@ -191,7 +271,7 @@
         "key": "SKIP",
         "location": {
           "startingColumn": 50,
-          "startingLine": 599
+          "startingLine": 845
         }
       },
       {
@@ -199,7 +279,7 @@
         "key": "STOP",
         "location": {
           "startingColumn": 50,
-          "startingLine": 604
+          "startingLine": 850
         }
       },
       {
@@ -207,7 +287,7 @@
         "key": "RESUME",
         "location": {
           "startingColumn": 61,
-          "startingLine": 594
+          "startingLine": 840
         }
       },
       {
@@ -215,7 +295,39 @@
         "key": "PAUSE",
         "location": {
           "startingColumn": 72,
-          "startingLine": 594
+          "startingLine": 840
+        }
+      },
+      {
+        "comment": "",
+        "key": "SKIP",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 920
+        }
+      },
+      {
+        "comment": "",
+        "key": "STOP",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 925
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESUME",
+        "location": {
+          "startingColumn": 61,
+          "startingLine": 915
+        }
+      },
+      {
+        "comment": "",
+        "key": "PAUSE",
+        "location": {
+          "startingColumn": 72,
+          "startingLine": 915
         }
       },
       {
@@ -223,7 +335,7 @@
         "key": "SKIP",
         "location": {
           "startingColumn": 46,
-          "startingLine": 665
+          "startingLine": 986
         }
       },
       {
@@ -231,7 +343,7 @@
         "key": "STOP",
         "location": {
           "startingColumn": 46,
-          "startingLine": 670
+          "startingLine": 991
         }
       },
       {
@@ -239,7 +351,7 @@
         "key": "RESUME",
         "location": {
           "startingColumn": 57,
-          "startingLine": 660
+          "startingLine": 981
         }
       },
       {
@@ -247,7 +359,7 @@
         "key": "PAUSE",
         "location": {
           "startingColumn": 68,
-          "startingLine": 660
+          "startingLine": 981
         }
       },
       {
@@ -255,7 +367,7 @@
         "key": "Workout Status",
         "location": {
           "startingColumn": 38,
-          "startingLine": 702
+          "startingLine": 1023
         }
       },
       {
@@ -263,7 +375,7 @@
         "key": "CURRENT",
         "location": {
           "startingColumn": 42,
-          "startingLine": 717
+          "startingLine": 1038
         }
       },
       {
@@ -271,7 +383,7 @@
         "key": "SPRINT",
         "location": {
           "startingColumn": 46,
-          "startingLine": 730
+          "startingLine": 1051
         }
       },
       {
@@ -279,7 +391,7 @@
         "key": "%lld of %lld",
         "location": {
           "startingColumn": 46,
-          "startingLine": 733
+          "startingLine": 1054
         }
       },
       {
@@ -287,7 +399,7 @@
         "key": "TIME",
         "location": {
           "startingColumn": 46,
-          "startingLine": 739
+          "startingLine": 1060
         }
       },
       {
@@ -295,7 +407,7 @@
         "key": "Complete Workout",
         "location": {
           "startingColumn": 38,
-          "startingLine": 758
+          "startingLine": 1079
         }
       },
       {
@@ -303,31 +415,7 @@
         "key": "Session Library",
         "location": {
           "startingColumn": 38,
-          "startingLine": 764
-        }
-      },
-      {
-        "comment": "",
-        "key": "Cancel",
-        "location": {
-          "startingColumn": 20,
-          "startingLine": 880
-        }
-      },
-      {
-        "comment": "",
-        "key": "Stop Workout",
-        "location": {
-          "startingColumn": 20,
-          "startingLine": 881
-        }
-      },
-      {
-        "comment": "",
-        "key": "Are you sure you want to stop this workout? Your progress will be saved as an incomplete session.",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 885
+          "startingLine": 1085
         }
       },
       {
@@ -335,7 +423,7 @@
         "key": "Sprint Coach Session Overview",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1949
+          "startingLine": 2336
         }
       },
       {
@@ -343,7 +431,7 @@
         "key": "Start Workout",
         "location": {
           "startingColumn": 24,
-          "startingLine": 1954
+          "startingLine": 2341
         }
       },
       {
@@ -351,7 +439,7 @@
         "key": "Strides Phase",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1968
+          "startingLine": 2355
         }
       },
       {
@@ -359,7 +447,7 @@
         "key": "Build-up strides in progress...",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1971
+          "startingLine": 2358
         }
       },
       {
@@ -367,7 +455,7 @@
         "key": "Sprints Phase",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1981
+          "startingLine": 2368
         }
       },
       {
@@ -375,7 +463,7 @@
         "key": "Maximum sprint efforts!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1984
+          "startingLine": 2371
         }
       },
       {
@@ -383,7 +471,7 @@
         "key": "Phase Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1997
+          "startingLine": 2384
         }
       },
       {
@@ -391,7 +479,7 @@
         "key": "Great work on your session!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2000
+          "startingLine": 2387
         }
       },
       {
@@ -399,7 +487,7 @@
         "key": "Workout Phases",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2017
+          "startingLine": 2404
         }
       },
       {
@@ -407,7 +495,7 @@
         "key": "Sprint %lld of %lld",
         "location": {
           "startingColumn": 22,
-          "startingLine": 2050
+          "startingLine": 2437
         }
       },
       {
@@ -415,7 +503,7 @@
         "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2097
+          "startingLine": 2484
         }
       },
       {
@@ -423,7 +511,7 @@
         "key": "Workout Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2332
+          "startingLine": 2719
         }
       },
       {
@@ -431,7 +519,7 @@
         "key": "Great job on your Sprint Coach session!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2337
+          "startingLine": 2724
         }
       },
       {
@@ -439,7 +527,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 20,
-          "startingLine": 2356
+          "startingLine": 2743
         }
       },
       {
@@ -447,7 +535,7 @@
         "key": "Week %lld - Day %lld",
         "location": {
           "startingColumn": 26,
-          "startingLine": 2344
+          "startingLine": 2731
         }
       },
       {
@@ -455,7 +543,7 @@
         "key": "Completed %lld of %lld reps",
         "location": {
           "startingColumn": 26,
-          "startingLine": 2348
+          "startingLine": 2735
         }
       },
       {
@@ -463,7 +551,7 @@
         "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2442
+          "startingLine": 2829
         }
       },
       {
@@ -471,7 +559,7 @@
         "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 2502
+          "startingLine": 2889
         }
       },
       {
@@ -479,7 +567,7 @@
         "key": "%lld Yard Sprint",
         "location": {
           "startingColumn": 22,
-          "startingLine": 2513
+          "startingLine": 2900
         }
       },
       {
@@ -487,7 +575,7 @@
         "key": "%lldmin rest",
         "location": {
           "startingColumn": 22,
-          "startingLine": 2517
+          "startingLine": 2904
         }
       },
       {
@@ -495,7 +583,7 @@
         "key": "ACTIVE",
         "location": {
           "startingColumn": 26,
-          "startingLine": 2538
+          "startingLine": 2925
         }
       },
       {
@@ -503,7 +591,319 @@
         "key": "--",
         "location": {
           "startingColumn": 26,
-          "startingLine": 2542
+          "startingLine": 2929
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ %lld of %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 2988
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 2992
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3013
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3029
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3003
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3019
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3035
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3064
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3080
+        }
+      },
+      {
+        "comment": "",
+        "key": "COUNTDOWN",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3054
+        }
+      },
+      {
+        "comment": "",
+        "key": "PROGRESS",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3070
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%%",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3074
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3086
+        }
+      },
+      {
+        "comment": "",
+        "key": "0 yds",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3106
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yds",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3110
+        }
+      },
+      {
+        "comment": "",
+        "key": "WORKOUT TIMELINE",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 3196
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week %lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3403
+        }
+      },
+      {
+        "comment": "",
+        "key": "Day %lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3409
+        }
+      },
+      {
+        "comment": "",
+        "key": "SKIP",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 3610
+        }
+      },
+      {
+        "comment": "",
+        "key": "STOP",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 3613
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESUME",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 3607
+        }
+      },
+      {
+        "comment": "",
+        "key": "PAUSE",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 3607
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ %lld of %lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 3644
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 3648
+        }
+      },
+      {
+        "comment": "",
+        "key": "LIVE REP LOG",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3711
+        }
+      },
+      {
+        "comment": "",
+        "key": "LIVE",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3730
+        }
+      },
+      {
+        "comment": "",
+        "key": "CURRENT PHASE",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3805
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP PROGRESS",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3817
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld / %lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3821
+        }
+      },
+      {
+        "comment": "",
+        "key": "LIVE METRICS",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3830
+        }
+      },
+      {
+        "comment": "",
+        "key": "TARGET:",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3859
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3863
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld%% complete",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 3870
+        }
+      },
+      {
+        "comment": "",
+        "key": "No completed reps yet",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 3894
+        }
+      },
+      {
+        "comment": "",
+        "key": "PHASE COMPLETION",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 3932
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 4037
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 4049
+        }
+      },
+      {
+        "comment": "",
+        "key": "--",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 4064
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld/%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 4115
         }
       }
     ]

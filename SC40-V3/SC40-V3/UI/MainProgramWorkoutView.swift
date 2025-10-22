@@ -665,7 +665,7 @@ struct MainProgramWorkoutView: View {
     var body: some View {
         SwipeableWorkoutContainer(
             mainContent: {
-                mainWorkoutView
+                canvasWorkoutView
             },
             controlContent: {
                 ControlWorkoutView(
@@ -706,6 +706,367 @@ struct MainProgramWorkoutView: View {
                 )
             }
         )
+    }
+    
+    // MARK: - Canvas-Based Workout View
+    private var canvasWorkoutView: some View {
+        ZStack {
+            // Background gradient
+            LinearGradient(
+                colors: [
+                    Color(red: 0.15, green: 0.2, blue: 0.35),
+                    Color(red: 0.2, green: 0.25, blue: 0.45),
+                    Color(red: 0.25, green: 0.3, blue: 0.5)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                // Header with close button
+                HStack {
+                    Spacer()
+                    
+                    Button(action: {
+                        stopSprintCoachWorkout()
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 18, weight: .medium))
+                            .foregroundColor(.white)
+                            .frame(width: 32, height: 32)
+                            .background(Color.white.opacity(0.2))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                
+                // Canvas Drawing Area with Touch Interaction
+                Canvas { context, size in
+                    drawWorkoutInterface(context: context, size: size)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture { location in
+                    handleCanvasTap(at: location)
+                }
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            handleCanvasDrag(at: value.location)
+                        }
+                        .onEnded { value in
+                            handleCanvasDragEnd(at: value.location)
+                        }
+                )
+                
+                // Phase indicator dots (keep as SwiftUI for interactivity)
+                VStack(spacing: 12) {
+                    HStack(spacing: 8) {
+                        ForEach(0..<3, id: \.self) { index in
+                            Circle()
+                                .fill(index == getCurrentDotIndex() ? Color.orange : Color.white.opacity(0.3))
+                                .frame(width: 8, height: 8)
+                                .scaleEffect(index == getCurrentDotIndex() ? 1.3 : 1.0)
+                                .animation(.spring(response: 0.5, dampingFraction: 0.7), value: currentPhase)
+                        }
+                    }
+                    
+                    Text(getCurrentPhaseName())
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.orange)
+                        .animation(.easeInOut(duration: 0.3), value: currentPhase)
+                }
+                .padding(.vertical, 16)
+            }
+        }
+        .overlay(
+            // Coaching message overlay
+            VStack {
+                if showCoachingMessage {
+                    Text(coachingMessage)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(Color.orange.opacity(0.9))
+                        .cornerRadius(12)
+                        .padding(.horizontal, 40)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+                Spacer()
+            }
+            .animation(.spring(response: 0.6, dampingFraction: 0.8), value: showCoachingMessage)
+        )
+    }
+    
+    // MARK: - Canvas Drawing Function
+    private func drawWorkoutInterface(context: GraphicsContext, size: CGSize) {
+        let centerX = size.width / 2
+        let centerY = size.height / 2
+        
+        // Draw session header
+        drawSessionHeader(context: context, size: size)
+        
+        // Draw main timer circle based on current phase
+        drawMainTimer(context: context, centerX: centerX, centerY: centerY * 0.6)
+        
+        // Draw phase cards
+        drawPhaseCards(context: context, size: size, centerY: centerY)
+        
+        // Draw progress bar
+        drawProgressBar(context: context, size: size, centerY: centerY * 1.4)
+        
+        // Draw rep log
+        drawRepLog(context: context, size: size, centerY: centerY * 1.7)
+    }
+    
+    private func drawSessionHeader(context: GraphicsContext, size: CGSize) {
+        let sessionInfo = getSessionInfo()
+        
+        // Draw "SPRINT COACH 40" title
+        var titleContext = context
+        titleContext.translateBy(x: size.width / 2, y: 60)
+        titleContext.draw(
+            Text("SPRINT COACH 40")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.white.opacity(0.8)),
+            at: .zero,
+            anchor: .center
+        )
+        
+        // Draw session info
+        var sessionContext = context
+        sessionContext.translateBy(x: size.width / 2, y: 85)
+        sessionContext.draw(
+            Text("WEEK \(sessionInfo.week) - DAY \(sessionInfo.day) / \(sessionInfo.duration) Min")
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.white),
+            at: .zero,
+            anchor: .center
+        )
+    }
+    
+    private func drawMainTimer(context: GraphicsContext, centerX: CGFloat, centerY: CGFloat) {
+        let radius: CGFloat = 80
+        let strokeWidth: CGFloat = 8
+        
+        // Draw outer circle
+        let outerCircle = Path { path in
+            path.addEllipse(in: CGRect(
+                x: centerX - radius,
+                y: centerY - radius,
+                width: radius * 2,
+                height: radius * 2
+            ))
+        }
+        
+        context.stroke(
+            outerCircle,
+            with: .color(.white.opacity(0.3)),
+            lineWidth: strokeWidth
+        )
+        
+        // Draw progress arc
+        let progress = Double(300 - phaseTimeRemaining) / 300.0 // Assuming 5 min phases
+        let progressPath = Path { path in
+            path.addArc(
+                center: CGPoint(x: centerX, y: centerY),
+                radius: radius,
+                startAngle: .degrees(-90),
+                endAngle: .degrees(-90 + 360 * progress),
+                clockwise: false
+            )
+        }
+        
+        context.stroke(
+            progressPath,
+            with: .color(.orange),
+            style: StrokeStyle(lineWidth: strokeWidth, lineCap: .round)
+        )
+        
+        // Draw time text
+        let timeText = formatTime(phaseTimeRemaining)
+        var timeContext = context
+        timeContext.translateBy(x: centerX, y: centerY - 10)
+        timeContext.draw(
+            Text(timeText)
+                .font(.system(size: 32, weight: .bold))
+                .foregroundColor(.white),
+            at: .zero,
+            anchor: .center
+        )
+        
+        // Draw phase name
+        var phaseContext = context
+        phaseContext.translateBy(x: centerX, y: centerY + 15)
+        phaseContext.draw(
+            Text(currentPhase.rawValue.uppercased())
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.orange),
+            at: .zero,
+            anchor: .center
+        )
+    }
+    
+    private func drawPhaseCards(context: GraphicsContext, size: CGSize, centerY: CGFloat) {
+        let cardWidth: CGFloat = 100
+        let cardHeight: CGFloat = 80
+        let spacing: CGFloat = 12
+        let totalWidth = cardWidth * 3 + spacing * 2
+        let startX = (size.width - totalWidth) / 2
+        let cardY = centerY + 60
+        
+        let phases = ["Warm\nUp", "Sprint\n+ Rest", "Cool\nDown"]
+        let durations = ["5 Min", "15 Min", "5 Min"]
+        let isActiveArray = [currentPhase == .warmup, 
+                            [.strides, .sprints].contains(currentPhase), 
+                            currentPhase == .cooldown]
+        
+        for i in 0..<3 {
+            let cardX = startX + CGFloat(i) * (cardWidth + spacing)
+            
+            // Draw card background
+            let cardRect = CGRect(x: cardX, y: cardY, width: cardWidth, height: cardHeight)
+            let cardPath = Path(roundedRect: cardRect, cornerRadius: 12)
+            
+            let cardColor = isActiveArray[i] ? Color.orange.opacity(0.3) : Color.white.opacity(0.1)
+            context.fill(cardPath, with: .color(cardColor))
+            context.stroke(cardPath, with: .color(isActiveArray[i] ? .orange : .white.opacity(0.3)), lineWidth: 1)
+            
+            // Draw duration
+            var durationContext = context
+            durationContext.translateBy(x: cardX + cardWidth/2, y: cardY + 20)
+            durationContext.draw(
+                Text(durations[i])
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(isActiveArray[i] ? .orange : .white.opacity(0.8)),
+                at: .zero,
+                anchor: .center
+            )
+            
+            // Draw phase name
+            var phaseContext = context
+            phaseContext.translateBy(x: cardX + cardWidth/2, y: cardY + 50)
+            phaseContext.draw(
+                Text(phases[i])
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center),
+                at: .zero,
+                anchor: .center
+            )
+        }
+    }
+    
+    private func drawProgressBar(context: GraphicsContext, size: CGSize, centerY: CGFloat) {
+        let barWidth = size.width - 40
+        let barHeight: CGFloat = 6
+        let barX = (size.width - barWidth) / 2
+        
+        // Background bar
+        let backgroundRect = CGRect(x: barX, y: centerY, width: barWidth, height: barHeight)
+        let backgroundPath = Path(roundedRect: backgroundRect, cornerRadius: barHeight/2)
+        context.fill(backgroundPath, with: .color(.white.opacity(0.2)))
+        
+        // Progress bar
+        let phaseProgress = getPhaseProgress()
+        let progressWidth = barWidth * phaseProgress
+        let progressRect = CGRect(x: barX, y: centerY, width: progressWidth, height: barHeight)
+        let progressPath = Path(roundedRect: progressRect, cornerRadius: barHeight/2)
+        context.fill(progressPath, with: .color(.orange))
+    }
+    
+    private func drawRepLog(context: GraphicsContext, size: CGSize, centerY: CGFloat) {
+        // Draw rep log header
+        var headerContext = context
+        headerContext.translateBy(x: size.width / 2, y: centerY)
+        headerContext.draw(
+            Text("Rep Log")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white),
+            at: .zero,
+            anchor: .center
+        )
+        
+        // Draw current rep info
+        var repContext = context
+        repContext.translateBy(x: size.width / 2, y: centerY + 25)
+        repContext.draw(
+            Text("Rep \(currentRep) of \(totalReps)")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.white.opacity(0.8)),
+            at: .zero,
+            anchor: .center
+        )
+    }
+    
+    // MARK: - Helper Functions for Canvas
+    private func getSessionInfo() -> (week: Int, day: Int, duration: Int) {
+        if let session = sessionData {
+            return (week: session.week, day: session.day, duration: 47)
+        }
+        return (week: 1, day: 1, duration: 47)
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getPhaseProgress() -> Double {
+        let phaseIndex = WorkoutPhase.allCases.firstIndex(of: currentPhase) ?? 0
+        return Double(phaseIndex) / Double(WorkoutPhase.allCases.count - 1)
+    }
+    
+    // MARK: - Touch Interaction Handlers
+    private func handleCanvasTap(at location: CGPoint) {
+        // Handle taps on different UI elements
+        if isTimerCircleArea(location) {
+            // Tap on timer circle - toggle play/pause
+            togglePausePlay()
+        } else if let cardIndex = getPhaseCardIndex(at: location) {
+            // Tap on phase card - jump to that phase
+            jumpToPhase(cardIndex)
+        }
+    }
+    
+    private func handleCanvasDrag(at location: CGPoint) {
+        // Handle drag gestures for interactive elements
+        // Could be used for scrubbing through time or adjusting values
+    }
+    
+    private func handleCanvasDragEnd(at location: CGPoint) {
+        // Handle end of drag gesture
+    }
+    
+    private func isTimerCircleArea(_ location: CGPoint) -> Bool {
+        // Check if tap is within timer circle area
+        // This would need the actual canvas size to calculate properly
+        return false // Placeholder
+    }
+    
+    private func getPhaseCardIndex(at location: CGPoint) -> Int? {
+        // Determine which phase card was tapped
+        // Return card index (0-2) or nil if no card was tapped
+        return nil // Placeholder
+    }
+    
+    private func jumpToPhase(_ cardIndex: Int) {
+        // Jump to the selected phase
+        switch cardIndex {
+        case 0:
+            currentPhase = .warmup
+        case 1:
+            currentPhase = .sprints
+        case 2:
+            currentPhase = .cooldown
+        default:
+            break
+        }
     }
     
     private var mainWorkoutView: some View {

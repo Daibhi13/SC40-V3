@@ -102,8 +102,8 @@ struct OnboardingView: View {
                             leaderboardSection
                         }
                         
-                        // Extra bottom padding for sticky button
-                        Spacer(minLength: 120)
+                        // Extra bottom padding for sticky button - increased to prevent overlap
+                        Spacer(minLength: 200)
                     }
                     .padding(.horizontal)
                     .padding(.bottom, 20)

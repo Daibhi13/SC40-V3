@@ -619,7 +619,17 @@ extension TrainingView {
                         
                         Text("5.25s")
                             .font(.system(size: 64, weight: .bold))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 1.0, green: 0.9, blue: 0.7),  // Light cream
+                                        Color(red: 1.0, green: 0.8, blue: 0.4),  // Golden yellow
+                                        Color(red: 0.9, green: 0.7, blue: 0.3)   // Darker gold
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
                         
                         Text("40-Yard Dash")
                             .font(.system(size: 16, weight: .medium))
@@ -926,9 +936,9 @@ struct TrainingSessionCard: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color.black.opacity(0.8),
-                            Color(red: 0.1, green: 0.1, blue: 0.1).opacity(0.9),
-                            Color.black.opacity(0.8)
+                            Color(red: 0.15, green: 0.1, blue: 0.25).opacity(0.9),  // Dark purple
+                            Color(red: 0.1, green: 0.05, blue: 0.2).opacity(0.95),  // Darker purple
+                            Color(red: 0.05, green: 0.05, blue: 0.15).opacity(0.9)  // Very dark purple
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -936,13 +946,37 @@ struct TrainingSessionCard: View {
                 )
         )
         .overlay(
+            // Double frame outline - outer frame
             RoundedRectangle(cornerRadius: 16)
                 .stroke(
-                    Color.white.opacity(0.1),
-                    lineWidth: 1
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.5
                 )
         )
-        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .overlay(
+            // Double frame outline - inner frame
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.2),
+                            Color.white.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+                .padding(2)
+        )
+        .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 6)
     }
 }
 

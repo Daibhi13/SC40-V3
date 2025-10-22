@@ -209,24 +209,24 @@ struct TrainingView: View {
                         
                         // Menu items
                         VStack(alignment: .leading, spacing: 0) {
-                            MenuItemRow(icon: "bolt.fill", title: "Sprint 40 Yards", selection: .main, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "clock.arrow.circlepath", title: "History", selection: .history, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "chart.bar.xaxis", title: "Leaderboard", selection: .leaderboard, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "square.and.arrow.up", title: "Share Performance", selection: .sharePerformance, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "lightbulb", title: "40 Yard Smart", selection: .smartHub, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "bolt.fill", title: "Sprint 40 Yards", selection: .main, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "clock.arrow.circlepath", title: "History", selection: .history, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "chart.bar.xaxis", title: "Leaderboard", selection: .leaderboard, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "square.and.arrow.up", title: "Share Performance", selection: .sharePerformance, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "lightbulb", title: "40 Yard Smart", selection: .smartHub, currentSelection: $selectedMenu, showMenu: $showMenu)
                             
                             // Advanced Analytics with PRO badge
-                            MenuItemRowPremium(icon: "chart.line.uptrend.xyaxis", title: "Advanced\nAnalytics", selection: .performanceTrends, currentSelection: $selectedMenu, showMenu: $showMenu, showBadge: !isProUser, badgeColor: .yellow)
+                            MenuItemButton(icon: "chart.line.uptrend.xyaxis", title: "Advanced Analytics", selection: .performanceTrends, currentSelection: $selectedMenu, showMenu: $showMenu, isPremium: !isProUser)
                             
-                            MenuItemRow(icon: "gearshape", title: "Settings", selection: .settings, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "questionmark.circle", title: "Help & Info", selection: .helpInfo, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemRow(icon: "newspaper", title: "News", selection: .news, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "gearshape", title: "Settings", selection: .settings, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "questionmark.circle", title: "Help & Info", selection: .helpInfo, currentSelection: $selectedMenu, showMenu: $showMenu)
+                            MenuItemButton(icon: "newspaper", title: "News", selection: .news, currentSelection: $selectedMenu, showMenu: $showMenu)
                         }
                         
                         Spacer()
                         
                         // Share with Teammates
-                        MenuItemRow(icon: "person.3.fill", title: "Share with Teammates", selection: .shareWithTeammates, currentSelection: $selectedMenu, showMenu: $showMenu)
+                        MenuItemButton(icon: "person.3.fill", title: "Share with Teammates", selection: .shareWithTeammates, currentSelection: $selectedMenu, showMenu: $showMenu)
                             .padding(.bottom, 24)
                         
                         // Pro Features button
@@ -1983,5 +1983,63 @@ struct FeatureTag: View {
 extension TrainingView {
     private func getCurrentTrainingSession() -> TrainingSession? {
         return generateDynamicSessions().first
+    }
+}
+
+// MARK: - MenuItemButton Component
+
+struct MenuItemButton: View {
+    let icon: String
+    let title: String
+    let selection: MenuSelection
+    @Binding var currentSelection: MenuSelection
+    @Binding var showMenu: Bool
+    var isPremium: Bool = false
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                currentSelection = selection
+                showMenu = false
+            }
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
+        }) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .frame(width: 20)
+                
+                Text(title)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if isPremium {
+                    Text("PRO")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.yellow)
+                        .cornerRadius(8)
+                }
+                
+                if currentSelection == selection {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.yellow)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
+            .background(
+                currentSelection == selection ? 
+                Color.white.opacity(0.1) : Color.clear
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }

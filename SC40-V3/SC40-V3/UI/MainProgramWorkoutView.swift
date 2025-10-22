@@ -2356,7 +2356,7 @@ struct SessionOverviewUI: View {
                 )
                 
                 PhaseCard(
-                    duration: "6 Min",
+                    duration: "15 Min",
                     title: getMainPhaseTitle(),
                     subtitle: getMainPhaseSubtitle(),
                     isActive: false,

@@ -1,0 +1,144 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/SprintTimerProView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Timer Pro",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT TIMER PRO",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 71
+        }
+      },
+      {
+        "comment": "",
+        "key": "Custom Sprint Workouts",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 86
+        }
+      },
+      {
+        "comment": "",
+        "key": "Distance",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 91
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld YD",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "REPETITIONS",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 108
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reps",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 113
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld REP%@",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 115
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST TIME",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 130
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 135
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld MIN%@",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 137
+        }
+      },
+      {
+        "comment": "",
+        "key": "WORKOUT PREVIEW",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld × %lld Yard Sprints",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 165
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld minute%@ rest between reps",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "~%lld minute workout",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 190
+        }
+      },
+      {
+        "comment": "",
+        "key": "START CUSTOM WORKOUT",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 216
+        }
+      }
+    ]
+  },
+  "version": 1
+}

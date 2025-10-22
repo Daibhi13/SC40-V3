@@ -28,11 +28,24 @@ struct MainProgramWorkoutView: View {
     @State private var phaseTimer: Timer?
     @State private var workoutTimer: Timer?
     
+    // Live Tracking State
+    @State private var currentDistance: Double = 0.0
+    @State private var currentTime: TimeInterval = 0.0
+    @State private var currentSpeed: Double = 0.0
+    @State private var isLiveTracking = false
+    @State private var sprintStartTime: Date?
+    @State private var liveTimer: Timer?
+    
     // C25K-style coaching
     @State private var coachingMessage: String = ""
     @State private var showCoachingMessage: Bool = false
     @State private var isVoiceCoachingEnabled = true
     @State private var isGPSStopwatchActive = false
+    
+    // Live Performance Metrics
+    @State private var sessionBestTime: Double?
+    @State private var sessionAverageTime: Double = 0.0
+    @State private var totalDistanceCovered: Double = 0.0
     
     enum WorkoutPhase: String, CaseIterable {
         case warmup = "warmup"
@@ -289,32 +302,73 @@ struct MainProgramWorkoutView: View {
                             }
                             .padding(.top, 20)
                             
-                            // Phase Overview Cards
-                            HStack(spacing: 12) {
-                                PhaseCard(
-                                    duration: "5 Min",
-                                    title: "Warm",
-                                    subtitle: "Up",
-                                    isActive: currentPhase == .warmup,
-                                    isCompleted: isPhaseCompleted(.warmup)
+                            // C25K Style Session Overview - Accurate from SessionLibrary
+                            VStack(spacing: 0) {
+                                // Main Session Info Bar (C25K Style)
+                                HStack(spacing: 0) {
+                                    // Warmup Section
+                                    VStack(spacing: 4) {
+                                        Text("5 Min")
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(.white)
+                                        Text("Warm")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                        Text("Up")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(currentPhase == .warmup ? Color.orange.opacity(0.8) : Color.white.opacity(0.1))
+                                    
+                                    // Main Sprint Section - Dynamic from SessionData
+                                    VStack(spacing: 4) {
+                                        Text("\(calculateSprintDuration()) Min")
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(.white)
+                                        Text(getSessionDescription())
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.9))
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(2)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background([.sprints, .resting].contains(currentPhase) ? Color.red.opacity(0.8) : Color.white.opacity(0.1))
+                                    
+                                    // Cooldown Section
+                                    VStack(spacing: 4) {
+                                        Text("5 Min")
+                                            .font(.system(size: 16, weight: .bold))
+                                            .foregroundColor(.white)
+                                        Text("Cool")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                        Text("Down")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(currentPhase == .cooldown ? Color.cyan.opacity(0.8) : Color.white.opacity(0.1))
+                                }
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                 )
                                 
-                                PhaseCard(
-                                    duration: "\(calculateSprintDuration()) Min",
-                                    title: "\(getMainSprintDistance())yd Sprint",
-                                    subtitle: "+ Rest",
-                                    subtitle2: "(\(getTotalReps()) Reps)",
-                                    isActive: [.sprints, .resting].contains(currentPhase),
-                                    isCompleted: isPhaseCompleted(.sprints)
-                                )
-                                
-                                PhaseCard(
-                                    duration: "5 Min",
-                                    title: "Cool",
-                                    subtitle: "Down",
-                                    isActive: currentPhase == .cooldown,
-                                    isCompleted: isPhaseCompleted(.cooldown)
-                                )
+                                // C25K Style Progress Indicators
+                                HStack(spacing: 4) {
+                                    ForEach(0..<7, id: \.self) { index in
+                                        Rectangle()
+                                            .fill(getPhaseColor(for: index))
+                                            .frame(height: 8)
+                                            .cornerRadius(4)
+                                    }
+                                }
+                                .padding(.top, 8)
                             }
                             .padding(.horizontal, 20)
                             
@@ -364,115 +418,127 @@ struct MainProgramWorkoutView: View {
                                 }
                                 .padding(.bottom, 20)
                             } else if currentPhase == .sprints {
-                                // Sprint Phase Controls - GPS Integration
-                                VStack(spacing: 16) {
-                                    Text("Sprint \(currentRep) of \(totalReps)")
+                                // Live Tracking Display (C25K Style)
+                                VStack(spacing: 20) {
+                                    // Current Phase Display
+                                    Text(currentPhase.title.uppercased() + " \(formatTime(Int(phaseTimeRemaining)))")
+                                        .font(.system(size: 28, weight: .bold))
+                                        .foregroundColor(.white)
+                                        .tracking(1)
+                                    
+                                    // Live Metrics Bar (C25K Style)
+                                    HStack(spacing: 0) {
+                                        // Since Start
+                                        VStack(spacing: 4) {
+                                            Text("SINCE\nSTART")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .multilineTextAlignment(.center)
+                                            Text(formatTime(Int(currentTime)))
+                                                .font(.system(size: 16, weight: .bold))
+                                                .foregroundColor(.white)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        
+                                        Text("|")
+                                            .font(.system(size: 20, weight: .thin))
+                                            .foregroundColor(.white.opacity(0.3))
+                                        
+                                        // Next: Rep/Rest
+                                        VStack(spacing: 4) {
+                                            Text("NEXT:\n\(currentPhase == .sprints ? "REST" : "REP")")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .multilineTextAlignment(.center)
+                                            Text(getNextPhaseTime())
+                                                .font(.system(size: 16, weight: .bold))
+                                                .foregroundColor(.white)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        
+                                        Text("|")
+                                            .font(.system(size: 20, weight: .thin))
+                                            .foregroundColor(.white.opacity(0.3))
+                                        
+                                        // Time Left
+                                        VStack(spacing: 4) {
+                                            Text("TIME\nLEFT")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .multilineTextAlignment(.center)
+                                            Text(formatTime(calculateTimeLeft()))
+                                                .font(.system(size: 16, weight: .bold))
+                                                .foregroundColor(.white)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                    }
+                                    .padding(.vertical, 16)
+                                    .padding(.horizontal, 20)
+                                    .background(Color.black.opacity(0.3))
+                                    .cornerRadius(12)
+                                    
+                                    // Sprint Progress Indicator
+                                    VStack(spacing: 8) {
+                                        HStack {
+                                            ForEach(1...totalReps, id: \.self) { rep in
+                                                Circle()
+                                                    .fill(rep < currentRep ? Color.green : 
+                                                          rep == currentRep ? Color.yellow : 
+                                                          Color.white.opacity(0.3))
+                                                    .frame(width: 12, height: 12)
+                                            }
+                                        }
+                                        Text("Sprint \(currentRep) of \(totalReps)")
                                         .font(.system(size: 18, weight: .bold))
-                                        .foregroundColor(.yellow)
                                     
                                     Text("\(getMainSprintDistance()) yards")
                                         .font(.system(size: 14, weight: .medium))
                                         .foregroundColor(.white.opacity(0.8))
-                                    
-                                    // GPS Status Indicator
-                                    HStack(spacing: 8) {
-                                        Circle()
-                                            .fill(gpsManager.gpsStatus.color)
-                                            .frame(width: 8, height: 8)
-                                        Text(gpsManager.gpsStatus.displayText)
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.7))
                                     }
                                     
-                                    // GPS Data Display (when tracking)
+                                    // Live Performance Data
                                     if gpsManager.isTracking {
-                                        VStack(spacing: 4) {
+                                        VStack(spacing: 12) {
                                             HStack(spacing: 20) {
                                                 VStack {
+                                                    Text("DISTANCE")
+                                                        .font(.system(size: 10, weight: .medium))
+                                                        .foregroundColor(.white.opacity(0.7))
                                                     Text(gpsManager.distanceString)
                                                         .font(.system(size: 16, weight: .bold))
-                                                        .foregroundColor(.cyan)
-                                                    Text("Distance")
-                                                        .font(.system(size: 10))
-                                                        .foregroundColor(.white.opacity(0.6))
+                                                        .foregroundColor(.white)
                                                 }
                                                 
                                                 VStack {
+                                                    Text("TIME")
+                                                        .font(.system(size: 10, weight: .medium))
+                                                        .foregroundColor(.white.opacity(0.7))
                                                     Text(gpsManager.timeString)
                                                         .font(.system(size: 16, weight: .bold))
-                                                        .foregroundColor(.yellow)
-                                                    Text("Time")
-                                                        .font(.system(size: 10))
-                                                        .foregroundColor(.white.opacity(0.6))
+                                                        .foregroundColor(.white)
                                                 }
                                                 
                                                 VStack {
+                                                    Text("SPEED")
+                                                        .font(.system(size: 10, weight: .medium))
+                                                        .foregroundColor(.white.opacity(0.7))
                                                     Text(gpsManager.speedString)
                                                         .font(.system(size: 16, weight: .bold))
-                                                        .foregroundColor(.green)
-                                                    Text("Speed")
-                                                        .font(.system(size: 10))
-                                                        .foregroundColor(.white.opacity(0.6))
-                                                }
-                                            }
-                                        }
-                                        .padding(.vertical, 8)
-                                    }
-                                    
-                                    // Sprint Control Buttons
-                                    if !gpsManager.isTracking {
-                                        // Start Sprint Button
-                                        Button(action: startGPSSprint) {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(gpsManager.isReadyForSprint ? Color.green : Color.gray)
-                                                    .frame(width: 100, height: 100)
-                                                
-                                                VStack(spacing: 4) {
-                                                    Image(systemName: "location.fill")
-                                                        .font(.system(size: 24, weight: .bold))
-                                                        .foregroundColor(.white)
-                                                    Text("START")
-                                                        .font(.system(size: 12, weight: .bold))
                                                         .foregroundColor(.white)
                                                 }
                                             }
+                                            
+                                            // Sprint Progress Bar
+                                            let targetDistanceMeters = Double(getMainSprintDistance()) * 0.9144
+                                            let progress = min(gpsManager.distance / targetDistanceMeters, 1.0)
+                                            ProgressView(value: progress)
+                                                .progressViewStyle(LinearProgressViewStyle(tint: .orange))
+                                                .scaleEffect(x: 1, y: 3, anchor: .center)
                                         }
-                                        .disabled(!gpsManager.isReadyForSprint)
-                                    } else {
-                                        // Stop Sprint Button
-                                        Button(action: stopGPSSprint) {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(Color.red)
-                                                    .frame(width: 100, height: 100)
-                                                
-                                                VStack(spacing: 4) {
-                                                    Image(systemName: "stop.fill")
-                                                        .font(.system(size: 24, weight: .bold))
-                                                        .foregroundColor(.white)
-                                                    Text("STOP")
-                                                        .font(.system(size: 12, weight: .bold))
-                                                        .foregroundColor(.white)
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
-                                    // Manual Complete Button (fallback)
-                                    Button(action: { completeCurrentRep() }) {
-                                        Text("Complete Manually")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.6))
-                                            .underline()
-                                    }
-                                    
-                                    // Skip Rep Button
-                                    Button(action: skipCurrentRep) {
-                                        Text("Skip Rep")
-                                            .font(.system(size: 12, weight: .medium))
-                                            .foregroundColor(.white.opacity(0.6))
-                                            .underline()
+                                        .padding(.vertical, 16)
+                                        .padding(.horizontal, 20)
+                                        .background(Color.black.opacity(0.2))
+                                        .cornerRadius(12)
                                     }
                                 }
                                 .padding(.bottom, 20)
@@ -528,70 +594,148 @@ struct MainProgramWorkoutView: View {
                         }
                         .padding(.vertical, 16)
                         
-                        // Rep Log Section - Exact copy from image
-                        VStack(alignment: .leading, spacing: 12) {
+                        // Dynamic Workout Summary - Updates as workout progresses
+                        VStack(alignment: .leading, spacing: 8) {
                             HStack {
-                                Text("Rep Log")
+                                Text("Workout Status")
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(.white)
                                 
                                 Spacer()
                                 
-                                Text("Live Workout Report 18:12")
+                                Text(getCurrentPhaseStatus())
+                                    .font(.system(size: 12, weight: .medium))
+                                    .foregroundColor(.orange)
+                            }
+                            
+                            // Dynamic progress summary
+                            HStack(spacing: 16) {
+                                // Current phase indicator
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("CURRENT")
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundColor(.white.opacity(0.6))
+                                    Text(getCurrentPhaseName())
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundColor(.orange)
+                                }
+                                
+                                Spacer()
+                                
+                                // Progress indicator
+                                if currentPhase == .sprints || currentPhase == .resting {
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text("SPRINT")
+                                            .font(.system(size: 10, weight: .semibold))
+                                            .foregroundColor(.white.opacity(0.6))
+                                        Text("\(currentRep) of \(totalReps)")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.yellow)
+                                    }
+                                } else {
+                                    VStack(alignment: .trailing, spacing: 2) {
+                                        Text("TIME")
+                                            .font(.system(size: 10, weight: .semibold))
+                                            .foregroundColor(.white.opacity(0.6))
+                                        Text(getPhaseTimeDisplay())
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundColor(.cyan)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
+                        .background(Color.white.opacity(0.05))
+                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        
+                        // Complete Workout Breakdown - All Drills, Strides, and Sprints
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Complete Workout")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.white)
+                                
+                                Spacer()
+                                
+                                Text("Session Library")
                                     .font(.system(size: 12, weight: .medium))
                                     .foregroundColor(.white.opacity(0.7))
                             }
                             
-                            // Rep Log Table Header
-                            HStack {
-                                Text("REP")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .frame(width: 40, alignment: .leading)
-                                
-                                Text("YDS")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .frame(width: 40, alignment: .leading)
-                                
-                                Text("TIME")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                Text("REST")
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .frame(width: 50, alignment: .trailing)
+                            ScrollView(.vertical, showsIndicators: false) {
+                                VStack(spacing: 12) {
+                                    // DRILLS SECTION - List all individual drills
+                                    if let session = sessionData, !session.drillSets.isEmpty {
+                                        WorkoutSectionHeader(
+                                            title: "DRILLS (\(session.drillSets.count))",
+                                            icon: "figure.run",
+                                            isActive: currentPhase == .drill,
+                                            isCompleted: isPhaseCompleted(.drill)
+                                        )
+                                        
+                                        ForEach(Array(session.drillSets.enumerated()), id: \.offset) { index, drill in
+                                            WorkoutItemRow(
+                                                number: index + 1,
+                                                name: drill.name,
+                                                details: "\(drill.duration/60)min • \(drill.restTime/60)min rest",
+                                                isActive: currentPhase == .drill,
+                                                isCompleted: isPhaseCompleted(.drill)
+                                            )
+                                        }
+                                    }
+                                    
+                                    // STRIDES SECTION - List all individual strides
+                                    if let session = sessionData, !session.strideSets.isEmpty {
+                                        WorkoutSectionHeader(
+                                            title: "STRIDES (\(session.strideSets.count))",
+                                            icon: "figure.walk",
+                                            isActive: currentPhase == .strides,
+                                            isCompleted: isPhaseCompleted(.strides)
+                                        )
+                                        
+                                        ForEach(Array(session.strideSets.enumerated()), id: \.offset) { index, stride in
+                                            WorkoutItemRow(
+                                                number: index + 1,
+                                                name: "\(stride.distance) Yard Stride",
+                                                details: "Build-up • \(stride.restTime/60)min rest",
+                                                isActive: currentPhase == .strides,
+                                                isCompleted: isPhaseCompleted(.strides)
+                                            )
+                                        }
+                                    }
+                                    
+                                    // SPRINTS SECTION - List all individual sprints with live tracking
+                                    if let session = sessionData, !session.sprintSets.isEmpty {
+                                        WorkoutSectionHeader(
+                                            title: "SPRINTS (\(session.sprintSets.count))",
+                                            icon: "bolt.fill",
+                                            isActive: [.sprints, .resting].contains(currentPhase),
+                                            isCompleted: isPhaseCompleted(.sprints)
+                                        )
+                                        
+                                        ForEach(Array(session.sprintSets.enumerated()), id: \.offset) { index, sprint in
+                                            let repNumber = index + 1
+                                            let isCurrentRep = repNumber == currentRep && [.sprints, .resting].contains(currentPhase)
+                                            let isCompletedRep = repNumber < currentRep || isPhaseCompleted(.sprints)
+                                            let repTime = completedReps.first(where: { $0.rep == repNumber })?.time
+                                            
+                                            WorkoutSprintRow(
+                                                number: repNumber,
+                                                distance: sprint.distance,
+                                                restTime: sprint.restTime/60,
+                                                time: repTime,
+                                                isActive: isCurrentRep,
+                                                isCompleted: isCompletedRep,
+                                                targetTime: sprint.targetTime
+                                            )
+                                        }
+                                    }
+                                }
+                                .padding(.vertical, 8)
                             }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(Color.white.opacity(0.1))
-                            
-                            // Sample Rep Row
-                            HStack {
-                                Text("1")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
-                                    .frame(width: 40, alignment: .leading)
-                                
-                                Text("40")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
-                                    .frame(width: 40, alignment: .leading)
-                                
-                                Text("")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                Text("2m")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
-                                    .frame(width: 50, alignment: .trailing)
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
+                            .frame(maxHeight: 300) // Limit height for scrolling
                         }
                         .padding(.horizontal, 20)
                         .padding(.bottom, 20)
@@ -725,9 +869,6 @@ struct MainProgramWorkoutView: View {
         startPhaseProgression()
         
         // Initialize GPS stopwatch for sprint tracking
-        initializeGPSStopwatch()
-        
-        showCoachingCue("Let's begin your Sprint Coach 40 workout! 🚀")
     }
     
     private func stopSprintCoachWorkout() {
@@ -747,7 +888,7 @@ struct MainProgramWorkoutView: View {
         // Provide haptic feedback
         triggerHapticFeedback(.end)
         
-        showCoachingCue("Workout stopped. Great effort! 💪")
+        showCoachingCue("Workout stopped. Great effort! ")
     }
     
     private func togglePausePlay() {
@@ -1045,8 +1186,11 @@ struct MainProgramWorkoutView: View {
             currentPhase = .sprints
             currentRep = 1
             audioManager.updateWorkoutPhase(currentPhase)
-            showCoachingCue("Sprint \(currentRep) of \(totalReps) - GO! ⚡")
-            // Sprint phase is manually controlled by user/GPS
+            
+            // Automatically start GPS monitoring for movement detection
+            startAutomaticSprintDetection()
+            
+            showCoachingCue("Sprint \(currentRep) of \(totalReps) - Ready for automatic detection! ⚡")
             
         case .sprints:
             // This is handled by completeCurrentRep()
@@ -1056,8 +1200,12 @@ struct MainProgramWorkoutView: View {
             // Rest period complete, ready for next sprint
             if currentRep <= totalReps {
                 currentPhase = .sprints
+                
+                // Automatically prepare for next sprint detection
+                startAutomaticSprintDetection()
+                
                 announceVoiceCoaching("Rest complete! Ready for sprint \(currentRep) of \(totalReps)! 🚀")
-                showCoachingCue("Sprint \(currentRep) of \(totalReps) - GO! ⚡")
+                showCoachingCue("Sprint \(currentRep) of \(totalReps) - Movement detection active! ⚡")
             }
             
         case .cooldown:
@@ -1293,6 +1441,291 @@ struct MainProgramWorkoutView: View {
         }
         return (week: 1, day: 1, duration: 47)
     }
+    
+    // MARK: - Session Description Functions
+    
+    private func getDrillsDescription(_ drillSets: [DrillSet]) -> String {
+        if drillSets.isEmpty { return "No drills scheduled" }
+        
+        let drillNames = drillSets.map { $0.name }.joined(separator: ", ")
+        let totalDuration = drillSets.reduce(0) { $0 + $1.duration }
+        return "\(drillSets.count) drills • \(totalDuration/60)min • \(drillNames)"
+    }
+    
+    private func getStridesDescription(_ strideSets: [StrideSet]) -> String {
+        if strideSets.isEmpty { return "No strides scheduled" }
+        
+        let firstStride = strideSets.first!
+        let restMinutes = firstStride.restTime / 60
+        return "\(strideSets.count) x \(firstStride.distance) yards • \(restMinutes)min rest"
+    }
+    
+    private func getSprintsDescription(_ sprintSets: [SprintSet]) -> String {
+        if sprintSets.isEmpty { return "No sprints scheduled" }
+        
+        let firstSprint = sprintSets.first!
+        let restMinutes = firstSprint.restTime / 60
+        return "\(sprintSets.count) x \(firstSprint.distance) yards • \(restMinutes)min rest"
+    }
+    
+    // MARK: - Dynamic Summary Functions
+    
+    private func getCurrentPhaseStatus() -> String {
+        switch currentPhase {
+        case .warmup: return "Warming Up"
+        case .stretch: return "Stretching"
+        case .drill: return "Drill Phase"
+        case .strides: return "Build-Up Strides"
+        case .sprints: return "Sprint \(currentRep)/\(totalReps)"
+        case .resting: return "Rest Period"
+        case .cooldown: return "Cooling Down"
+        case .completed: return "Complete!"
+        }
+    }
+    
+    private func getPhaseTimeDisplay() -> String {
+        let minutes = phaseTimeRemaining / 60
+        let seconds = phaseTimeRemaining % 60
+        return String(format: "%d:%02d", minutes, seconds)
+    }
+    
+    // MARK: - Automatic Movement Detection Functions
+    
+    private func getMovementDetectionColor() -> Color {
+        if gpsManager.isTracking {
+            return .green // Currently tracking movement
+        } else if gpsManager.isReadyForSprint {
+            return .orange // Ready to detect movement
+        } else {
+            return .red // GPS not ready
+        }
+    }
+    
+    private func getMovementDetectionStatus() -> String {
+        if gpsManager.isTracking {
+            return "Tracking Sprint"
+        } else if gpsManager.isReadyForSprint {
+            return "Ready - Waiting for Movement"
+        } else {
+            return "GPS Acquiring Signal"
+        }
+    }
+    
+    private func getMovementInstructions() -> String {
+        if gpsManager.isTracking {
+            return "Sprint detected! Keep running to complete the \(getMainSprintDistance()) yards"
+        } else if gpsManager.isReadyForSprint {
+            return "Start your sprint when ready. Movement will be detected automatically."
+        } else {
+            return "Please wait while GPS acquires your location for automatic sprint detection"
+        }
+    }
+    
+    private func shouldShowManualControls() -> Bool {
+        // Show manual controls if GPS has been trying for more than 30 seconds
+        // or if GPS accuracy is poor, or if user has been waiting too long
+        return !gpsManager.isReadyForSprint || gpsManager.gpsStatus == .error || gpsManager.gpsStatus == .denied
+    }
+    
+    private func startManualSprint() {
+        // Fallback for poor GPS - start manual timing
+        let distanceYards = Double(getMainSprintDistance())
+        gpsManager.setSprintDistance(yards: distanceYards)
+        gpsManager.startSprint()
+        startLiveTracking()
+        announceVoiceCoaching("Manual sprint started! Run your \(getMainSprintDistance()) yards!")
+        triggerHapticFeedback(.start)
+    }
+
+    // MARK: - Automatic Workout Flow Functions
+
+    private func startAutomaticSprintDetection() {
+// ... (rest of the code remains the same)
+        // Set up GPS for automatic sprint detection
+        guard gpsManager.isAuthorized else {
+            gpsManager.requestLocationPermission()
+            return
+        }
+        
+        // Configure GPS for automatic sprint detection
+        let distanceYards = Double(getMainSprintDistance())
+        gpsManager.setSprintDistance(yards: distanceYards)
+        
+        // Set up automatic detection callbacks
+        setupAutomaticDetectionCallbacks()
+        
+        // Automatically start GPS sprint tracking
+        gpsManager.startSprint()
+        
+        announceVoiceCoaching("GPS tracking active. Start your sprint when ready!")
+        showCoachingCue("Ready for automatic sprint detection 🎯")
+    }
+    
+    private func setupAutomaticDetectionCallbacks() {
+        // Callback when sprint distance is completed
+        gpsManager.onSprintCompleted = { (result: SprintResult) in
+            Task { @MainActor in
+                // Handle sprint completion with GPS result
+                let time = result.time
+                // Use AudioManager for enhanced coaching
+                // audioManager.handleSprintComplete(time: time)
+                
+                // Complete the rep with GPS time
+                // completeCurrentRep(time: time)
+                
+                // Provide performance feedback
+                if time < 5.0 { // Under 5 seconds for 40 yards is quite good
+                    print("Excellent speed! \(String(format: "%.2f", time)) seconds! 🔥")
+                } else {
+                    print("Sprint complete! \(String(format: "%.2f", time)) seconds! 💪")
+                }
+            }
+        }
+        
+        // Callback for progress updates during sprint
+        gpsManager.onDistanceUpdate = { (distance: Double, time: TimeInterval) in
+            Task { @MainActor in
+                // Provide audio feedback at milestones
+                let distanceYards = distance / 0.9144
+                let targetYards = 40.0 // Default sprint distance
+                
+                if distanceYards >= targetYards * 0.5 && distanceYards < targetYards * 0.6 {
+                    print("Halfway! Keep pushing! 💪")
+                } else if distanceYards >= targetYards * 0.8 && distanceYards < targetYards * 0.9 {
+                    print("Almost there! Final push! 🚀")
+                }
+            }
+        }
+    }
+    
+    // MARK: - C25K Style Helper Functions
+    
+    private func getSessionDescription() -> String {
+        guard let session = sessionData else { return "Sprint Training" }
+        
+        // Get sprint info from session data
+        let distance = getMainSprintDistance()
+        let reps = getTotalReps()
+        let restTime = getRestTime()
+        
+        return "\(distance)yd × \(reps) reps\n\(restTime)s rest"
+    }
+    
+    private func getPhaseColor(for index: Int) -> Color {
+        let phases: [WorkoutPhase] = [.warmup, .stretch, .drill, .strides, .sprints, .resting, .cooldown]
+        guard index < phases.count else { return Color.white.opacity(0.3) }
+        
+        let phase = phases[index]
+        let currentIndex = phases.firstIndex(of: currentPhase) ?? 0
+        
+        if index < currentIndex {
+            return Color.green // Completed
+        } else if index == currentIndex {
+            return phase.color // Current phase
+        } else {
+            return Color.white.opacity(0.3) // Upcoming
+        }
+    }
+    
+    private func formatTime(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getNextPhaseTime() -> String {
+        switch currentPhase {
+        case .sprints:
+            return formatTime(getRestTime())
+        case .resting:
+            return formatTime(Int(getMainSprintDistance() * 2)) // Estimated sprint time
+        default:
+            return "1:00"
+        }
+    }
+    
+    private func calculateTimeLeft() -> Int {
+        // Calculate total remaining time in workout
+        let remainingReps = totalReps - currentRep + 1
+        let sprintTime = Int(getMainSprintDistance() * 2) // Rough estimate
+        let restTime = getRestTime()
+        let cooldownTime = currentPhase.rawValue == "cooldown" ? 0 : 300
+        
+        return (remainingReps * (sprintTime + restTime)) + cooldownTime
+    }
+    
+    
+    private func startLiveTracking() {
+        guard !isLiveTracking else { return }
+        
+        isLiveTracking = true
+        sprintStartTime = Date()
+        currentDistance = 0.0
+        currentTime = 0.0
+        currentSpeed = 0.0
+        
+        // Start live timer for updates
+        liveTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            updateLiveMetrics()
+        }
+        
+        // Start GPS tracking
+        gpsManager.startSprint()
+    }
+    
+    private func stopLiveTracking() {
+        isLiveTracking = false
+        liveTimer?.invalidate()
+        liveTimer = nil
+        
+        // Record performance
+        if let bestTime = sessionBestTime {
+            if currentTime < bestTime {
+                sessionBestTime = currentTime
+            }
+        } else {
+            sessionBestTime = currentTime
+        }
+        
+        // Update session averages
+        let completedSprints = Double(currentRep - 1)
+        sessionAverageTime = (sessionAverageTime * completedSprints + currentTime) / Double(currentRep)
+        totalDistanceCovered += currentDistance
+    }
+    
+    private func updateLiveMetrics() {
+        guard let startTime = sprintStartTime, isLiveTracking else { return }
+        
+        // Update time
+        currentTime = Date().timeIntervalSince(startTime)
+        
+        // Simulate GPS data (replace with actual GPS data)
+        if gpsManager.isTracking {
+            currentDistance = gpsManager.distance / 0.9144 // Convert to yards
+            currentSpeed = gpsManager.currentSpeed * 2.237 // Convert to mph
+        } else {
+            // Simulate realistic sprint progression
+            let targetDistance = Double(getMainSprintDistance())
+            let progress = min(currentTime / 6.0, 1.0) // Assume 6 second sprint
+            currentDistance = targetDistance * progress
+            
+            // Simulate speed curve (acceleration → max → deceleration)
+            if progress < 0.3 {
+                currentSpeed = progress * 60.0 // Accelerating to 18 mph
+            } else if progress < 0.8 {
+                currentSpeed = 18.0 // Max speed
+            } else {
+                currentSpeed = 18.0 * (1.0 - (progress - 0.8) * 2.0) // Deceleration
+            }
+        }
+        
+        // Check for sprint completion
+        if currentDistance >= Double(getMainSprintDistance()) {
+            completeCurrentRep()
+        }
+    }
+    
+    
 }
 
 // MARK: - Phase UI Components (Placeholder implementations)
@@ -1494,6 +1927,74 @@ struct PhaseRowView: View {
     }
 }
 
+struct SessionPhaseRow: View {
+    let title: String
+    let details: String
+    let isActive: Bool
+    let isCompleted: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                // Phase icon
+                Image(systemName: phaseIcon)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(phaseColor)
+                    .frame(width: 20)
+                
+                // Phase title
+                Text(title)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                // Status indicator
+                Image(systemName: statusIcon)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(phaseColor)
+            }
+            
+            // Phase details
+            Text(details)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+                .padding(.leading, 20)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isActive ? Color.white.opacity(0.1) : Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(phaseColor.opacity(0.3), lineWidth: 1)
+                )
+        )
+    }
+    
+    private var phaseIcon: String {
+        switch title {
+        case "DRILLS": return "figure.run"
+        case "STRIDES": return "figure.walk"
+        case "SPRINTS": return "bolt.fill"
+        default: return "circle"
+        }
+    }
+    
+    private var phaseColor: Color {
+        if isCompleted { return .green }
+        if isActive { return .yellow }
+        return .white.opacity(0.6)
+    }
+    
+    private var statusIcon: String {
+        if isCompleted { return "checkmark.circle.fill" }
+        if isActive { return "play.circle.fill" }
+        return "circle"
+    }
+}
+
 struct PhaseCard: View {
     let duration: String
     let title: String
@@ -1669,6 +2170,202 @@ struct MainWorkoutCompletionView: View {
                 endPoint: .bottomTrailing
             )
         )
+    }
+}
+
+// MARK: - New Workout Breakdown Components
+
+struct WorkoutSectionHeader: View {
+    let title: String
+    let icon: String
+    let isActive: Bool
+    let isCompleted: Bool
+    
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(headerColor)
+                .frame(width: 24)
+            
+            Text(title)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            Image(systemName: statusIcon)
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(headerColor)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(isActive ? headerColor.opacity(0.2) : Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(headerColor.opacity(0.5), lineWidth: 1)
+                )
+        )
+    }
+    
+    private var headerColor: Color {
+        if isCompleted { return .green }
+        if isActive { return .orange }
+        return .white.opacity(0.6)
+    }
+    
+    private var statusIcon: String {
+        if isCompleted { return "checkmark.circle.fill" }
+        if isActive { return "play.circle.fill" }
+        return "circle"
+    }
+}
+
+struct WorkoutItemRow: View {
+    let number: Int
+    let name: String
+    let details: String
+    let isActive: Bool
+    let isCompleted: Bool
+    
+    var body: some View {
+        HStack {
+            // Number
+            Text("\(number)")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(rowColor)
+                .frame(width: 24, height: 24)
+                .background(
+                    Circle()
+                        .fill(rowColor.opacity(0.2))
+                )
+            
+            // Content
+            VStack(alignment: .leading, spacing: 2) {
+                Text(name)
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white)
+                
+                Text(details)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            
+            Spacer()
+            
+            // Status
+            Image(systemName: statusIcon)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(rowColor)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isActive ? Color.white.opacity(0.08) : Color.white.opacity(0.02))
+        )
+    }
+    
+    private var rowColor: Color {
+        if isCompleted { return .green }
+        if isActive { return .orange }
+        return .white.opacity(0.6)
+    }
+    
+    private var statusIcon: String {
+        if isCompleted { return "checkmark.circle.fill" }
+        if isActive { return "play.circle.fill" }
+        return "circle"
+    }
+}
+
+struct WorkoutSprintRow: View {
+    let number: Int
+    let distance: Int
+    let restTime: Int
+    let time: Double?
+    let isActive: Bool
+    let isCompleted: Bool
+    let targetTime: Double?
+    
+    var body: some View {
+        HStack {
+            // Sprint number
+            Text("\(number)")
+                .font(.system(size: 12, weight: .bold))
+                .foregroundColor(rowColor)
+                .frame(width: 24, height: 24)
+                .background(
+                    Circle()
+                        .fill(rowColor.opacity(0.2))
+                )
+            
+            // Sprint details
+            VStack(alignment: .leading, spacing: 2) {
+                Text("\(distance) Yard Sprint")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white)
+                
+                Text("\(restTime)min rest")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            
+            Spacer()
+            
+            // Time display
+            VStack(alignment: .trailing, spacing: 2) {
+                if let time = time {
+                    Text(String(format: "%.2fs", time))
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.yellow)
+                    
+                    if let target = targetTime {
+                        let difference = time - target
+                        Text(difference < 0 ? String(format: "%.2fs", difference) : String(format: "+%.2fs", difference))
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(difference < 0 ? .green : .red)
+                    }
+                } else if isActive {
+                    Text("ACTIVE")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundColor(.orange)
+                } else {
+                    Text("--")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.white.opacity(0.5))
+                }
+            }
+            
+            // Status
+            Image(systemName: statusIcon)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(rowColor)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(isActive ? Color.white.opacity(0.08) : Color.white.opacity(0.02))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(isActive ? Color.orange.opacity(0.3) : Color.clear, lineWidth: 1)
+                )
+        )
+    }
+    
+    private var rowColor: Color {
+        if isCompleted { return .green }
+        if isActive { return .orange }
+        return .white.opacity(0.6)
+    }
+    
+    private var statusIcon: String {
+        if isCompleted { return "checkmark.circle.fill" }
+        if isActive { return "play.circle.fill" }
+        return "circle"
     }
 }
 

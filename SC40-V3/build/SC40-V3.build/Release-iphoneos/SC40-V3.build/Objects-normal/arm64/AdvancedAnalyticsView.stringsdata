@@ -1,0 +1,448 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/AdvancedAnalyticsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "PERSONAL BEST",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "40 Yard Dash",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 72
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 81
+        }
+      },
+      {
+        "comment": "",
+        "key": "Consistency",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 94
+        }
+      },
+      {
+        "comment": "",
+        "key": "Improvement Rate",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 382
+        }
+      },
+      {
+        "comment": "",
+        "key": "0.0%",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 385
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sessions Tracked",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 393
+        }
+      },
+      {
+        "comment": "",
+        "key": "0",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 396
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sessions to see your progress",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 409
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 418
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 419
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 431
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 432
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Time Zones",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sprints to see distribution",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 488
+        }
+      },
+      {
+        "comment": "",
+        "key": "Zone",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 497
+        }
+      },
+      {
+        "comment": "",
+        "key": "Count",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 498
+        }
+      },
+      {
+        "comment": "",
+        "key": "Peak Velocity",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 593
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg Velocity",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 604
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sessions to see velocity profile",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 620
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 629
+        }
+      },
+      {
+        "comment": "",
+        "key": "Velocity",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 630
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 642
+        }
+      },
+      {
+        "comment": "",
+        "key": "Velocity",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 643
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1304
+        }
+      },
+      {
+        "comment": "",
+        "key": "•",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1308
+        }
+      },
+      {
+        "comment": "",
+        "key": "You: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1311
+        }
+      },
+      {
+        "comment": "",
+        "key": "Improvement Rate",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1465
+        }
+      },
+      {
+        "comment": "",
+        "key": "0.0%",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1468
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sessions Tracked",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1476
+        }
+      },
+      {
+        "comment": "",
+        "key": "0",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1479
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sessions to see\nyour progress",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1491
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Time Zones",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1509
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sprints to see distribution",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1519
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export comprehensive training data for coaches\nand institutions",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1537
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recruiting Card",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1553
+        }
+      },
+      {
+        "comment": "",
+        "key": "Professional 1-page summary",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1556
+        }
+      },
+      {
+        "comment": "",
+        "key": "Coaching Analysis",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1583
+        }
+      },
+      {
+        "comment": "",
+        "key": "Detailed performance breakdown",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1586
+        }
+      },
+      {
+        "comment": "",
+        "key": "Raw Data Export",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1607
+        }
+      },
+      {
+        "comment": "",
+        "key": "JSON",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 1614
+        }
+      },
+      {
+        "comment": "",
+        "key": "CSV",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 1622
+        }
+      },
+      {
+        "comment": "",
+        "key": "PDF",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 1630
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share with Coach",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1648
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send to School",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1658
+        }
+      },
+      {
+        "comment": "",
+        "key": "GPS-Verified • Cross-Device Validated",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1672
+        }
+      },
+      {
+        "comment": "",
+        "key": "Peak Velocity",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1702
+        }
+      },
+      {
+        "comment": "",
+        "key": "-- mph",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1705
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg Velocity",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1713
+        }
+      },
+      {
+        "comment": "",
+        "key": "-- mph",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1716
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete more sessions to see\nvelocity profile",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1728
+        }
+      },
+      {
+        "comment": "",
+        "key": "Analysis will appear here after\ncompleting more training sessions",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1919
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add 2x weekly box jumps, bounds, and reactive exercises to improve explosive power and sprint performance.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1975
+        }
+      },
+      {
+        "comment": "",
+        "key": "Plyometric Training",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1960
+        }
+      },
+      {
+        "comment": "",
+        "key": "MEDIUM",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1966
+        }
+      }
+    ]
+  },
+  "version": 1
+}

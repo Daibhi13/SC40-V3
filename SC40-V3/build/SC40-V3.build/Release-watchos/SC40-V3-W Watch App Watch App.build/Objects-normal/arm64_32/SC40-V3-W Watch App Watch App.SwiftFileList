@@ -28,6 +28,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/SprintPhaseWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/WarmupWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/ControlWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/GPSSprintWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/MainWorkoutWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/MusicWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/RepLogSummaryFlowView.swift
@@ -35,8 +36,10 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/SprintWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/TimeTrialWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/DaySessionCardsWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Enhanced7StageWorkoutView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/iPhoneSetupInstructionsView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/OnboardingRequiredView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/SprintTimerProWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/StarterProWatchView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/SummaryReportView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/WatchConnectivityStatusView.swift

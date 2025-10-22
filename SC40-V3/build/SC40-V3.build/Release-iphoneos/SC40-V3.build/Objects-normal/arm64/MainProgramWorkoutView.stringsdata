@@ -1,0 +1,416 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/MainProgramWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Training",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 252
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH 40",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 279
+        }
+      },
+      {
+        "comment": "",
+        "key": "WEEK %lld - DAY %lld / %lld Min",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 284
+        }
+      },
+      {
+        "comment": "",
+        "key": "5 Min",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 311
+        }
+      },
+      {
+        "comment": "",
+        "key": "Warm",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 314
+        }
+      },
+      {
+        "comment": "",
+        "key": "Up",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 317
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld Min",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 327
+        }
+      },
+      {
+        "comment": "",
+        "key": "5 Min",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 342
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cool",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 345
+        }
+      },
+      {
+        "comment": "",
+        "key": "Down",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 348
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED BADGE",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 395
+        }
+      },
+      {
+        "comment": "",
+        "key": "LET'S\nGO",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 412
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 443
+        }
+      },
+      {
+        "comment": "",
+        "key": "|",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 459
+        }
+      },
+      {
+        "comment": "",
+        "key": "SINCE\nSTART",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 433
+        }
+      },
+      {
+        "comment": "",
+        "key": "NEXT:\n%@",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 449
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME\nLEFT",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 465
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint %lld of %lld",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 491
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 494
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 504
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 513
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPEED",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 522
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Status",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 600
+        }
+      },
+      {
+        "comment": "",
+        "key": "CURRENT",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 615
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 628
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld of %lld",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 631
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 637
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete Workout",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 656
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session Library",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 662
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach Session Overview",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1743
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Workout",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 1748
+        }
+      },
+      {
+        "comment": "",
+        "key": "Strides Phase",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1762
+        }
+      },
+      {
+        "comment": "",
+        "key": "Build-up strides in progress...",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1765
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprints Phase",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1775
+        }
+      },
+      {
+        "comment": "",
+        "key": "Maximum sprint efforts!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1778
+        }
+      },
+      {
+        "comment": "",
+        "key": "Phase Complete!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1791
+        }
+      },
+      {
+        "comment": "",
+        "key": "Great work on your session!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1794
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Phases",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1811
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint %lld of %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1844
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1891
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Complete!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 2126
+        }
+      },
+      {
+        "comment": "",
+        "key": "Great job on your Sprint Coach session!",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 2131
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 2150
+        }
+      },
+      {
+        "comment": "",
+        "key": "Week %lld - Day %lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 2138
+        }
+      },
+      {
+        "comment": "",
+        "key": "Completed %lld of %lld reps",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 2142
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 2236
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 2296
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld Yard Sprint",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 2307
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lldmin rest",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 2311
+        }
+      },
+      {
+        "comment": "",
+        "key": "ACTIVE",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 2332
+        }
+      },
+      {
+        "comment": "",
+        "key": "--",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 2336
+        }
+      }
+    ]
+  },
+  "version": 1
+}

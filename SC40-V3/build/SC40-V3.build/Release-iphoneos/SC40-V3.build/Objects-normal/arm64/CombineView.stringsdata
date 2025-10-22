@@ -1,0 +1,16 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/CombineView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Combine View",
+        "location": {
+          "startingColumn": 14,
+          "startingLine": 6
+        }
+      }
+    ]
+  },
+  "version": 1
+}

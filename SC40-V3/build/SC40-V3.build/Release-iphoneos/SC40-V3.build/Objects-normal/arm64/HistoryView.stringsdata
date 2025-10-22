@@ -1,0 +1,120 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HistoryView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Training History",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 95
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Progress",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 203
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training Times",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 477
+        }
+      },
+      {
+        "comment": "",
+        "key": "Best: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 536
+        }
+      },
+      {
+        "comment": "",
+        "key": "Session Environment",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 569
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export Data",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 771
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export Training History",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 739
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export your training data to share with coaches or for analysis",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 743
+        }
+      },
+      {
+        "comment": "",
+        "key": "Export as CSV",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 750
+        }
+      },
+      {
+        "comment": "",
+        "key": "Share Summary",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 755
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 776
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Training History Yet",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 822
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete your first training session to see your progress here!",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 826
+        }
+      },
+      {
+        "comment": "",
+        "key": "After each session, you'll see:",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 834
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,352 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/HelpInfoView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 182
+        }
+      },
+      {
+        "comment": "",
+        "key": "Help & Info",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 49
+        }
+      },
+      {
+        "comment": "",
+        "key": "Get support and learn more about Sprint Coach 40",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 53
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 162
+        }
+      },
+      {
+        "comment": "",
+        "key": "support@sprintcoach40.com",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 166
+        }
+      },
+      {
+        "comment": "",
+        "key": "Version 1.0.0",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 170
+        }
+      },
+      {
+        "comment": "",
+        "key": "To cancel your Sprint Coach 40 membership or subscription, go to your Apple ID subscriptions in Settings, select Sprint Coach 40, and tap 'Cancel Subscription'. For help, contact Accelerate support.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "Refunds are processed through the App Store. Open your Apple receipt email and follow the 'Report a Problem' link, or visit reportaproblem.apple.com. For issues, contact Accelerate support.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 233
+        }
+      },
+      {
+        "comment": "",
+        "key": "To restore a previous purchase, go to Settings > Profile > Restore Purchases in the Sprint Coach 40 app. Make sure you're signed in with the same Apple ID.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 235
+        }
+      },
+      {
+        "comment": "",
+        "key": "To upgrade to a Lifetime Membership, visit the Pro Features section in the app and select 'Upgrade to Lifetime'.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 237
+        }
+      },
+      {
+        "comment": "",
+        "key": "To reset your training plan, go to Settings > Training Plan > Reset. This will clear your current progress and start a new plan.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 239
+        }
+      },
+      {
+        "comment": "",
+        "key": "Lifetime Membership gives you unlimited access to all Sprint Coach 40 features, updates, and Pro content for a one-time fee.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 241
+        }
+      },
+      {
+        "comment": "",
+        "key": "Update your payment method in your Apple ID settings under Payment & Shipping. The app uses your Apple account for all purchases.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 243
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your email address is managed through your Apple ID. For in-app communications, update your profile in Settings > Profile.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 245
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Coach 40 uses your Apple ID for authentication. Change your password in your Apple ID settings.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "If you lost your training history, ensure you're signed in with the correct Apple ID and iCloud is enabled. For further help, contact Accelerate support.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 249
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your data is automatically backed up with iCloud if enabled. To export, use the History > Export PDF feature in the app.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 251
+        }
+      },
+      {
+        "comment": "",
+        "key": "Enable iCloud sync in Settings. Make sure you're signed in with the same Apple ID on all devices.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 253
+        }
+      },
+      {
+        "comment": "",
+        "key": "Go to the Training tab and tap 'Start New Plan'. You can select your level and goals.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 255
+        }
+      },
+      {
+        "comment": "",
+        "key": "Adjust your training level in Settings > Coaching Settings. Choose Beginner, Intermediate, Advanced, or Pro.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 257
+        }
+      },
+      {
+        "comment": "",
+        "key": "Set reminders in Settings > Reminders. Enable push notifications in iOS Settings > Notifications > Sprint Coach 40.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 259
+        }
+      },
+      {
+        "comment": "",
+        "key": "Access the Smart Hub from the main menu for sprinting guidance, drills, form tips, and more.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 261
+        }
+      },
+      {
+        "comment": "",
+        "key": "Opt in to the Leaderboard in Settings > Profile. Your best times will be ranked with other US sprinters.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 263
+        }
+      },
+      {
+        "comment": "",
+        "key": "To sync with Apple Watch, ensure Bluetooth is enabled and both devices are signed in to the same Apple ID. Open the Watch app and follow the pairing instructions.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 265
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connect your Bluetooth headphones in the Watch's Settings > Bluetooth. Use Spotify on your Watch for music during workouts.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 267
+        }
+      },
+      {
+        "comment": "",
+        "key": "Connect your Bluetooth headphones in the Watch's Settings > Bluetooth. Use Apple Music on your Watch for music during workouts.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 269
+        }
+      },
+      {
+        "comment": "",
+        "key": "If you have issues syncing, restart both your iPhone and Watch, and ensure both apps are up to date.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 271
+        }
+      },
+      {
+        "comment": "",
+        "key": "For direct support, use the 'Send us a message' button or email support@sprintcoach40.com.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 273
+        }
+      },
+      {
+        "comment": "",
+        "key": "Try restarting the app and your device. If issues persist, contact Accelerate support with details.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 275
+        }
+      },
+      {
+        "comment": "",
+        "key": "Use the 'Send us a message' button to contact Accelerate with your feedback or suggestions.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 277
+        }
+      },
+      {
+        "comment": "",
+        "key": "To delete your account and all data, contact support@sprintcoach40.com with your request.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 279
+        }
+      },
+      {
+        "comment": "",
+        "key": "View our privacy policy in Settings > Privacy or at sprintcoach40.com/privacy. Your data is protected and never sold.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 281
+        }
+      },
+      {
+        "comment": "",
+        "key": "Detailed information coming soon.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 283
+        }
+      },
+      {
+        "comment": "",
+        "key": "Contact Support",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 513
+        }
+      },
+      {
+        "comment": "",
+        "key": "📧 Contact Support",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 439
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send us a message and we'll get back to you",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 443
+        }
+      },
+      {
+        "comment": "",
+        "key": "Email",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 452
+        }
+      },
+      {
+        "comment": "",
+        "key": "your.email@example.com",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 456
+        }
+      },
+      {
+        "comment": "",
+        "key": "Subject",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 461
+        }
+      },
+      {
+        "comment": "",
+        "key": "Brief description of your issue",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 465
+        }
+      },
+      {
+        "comment": "",
+        "key": "Message",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 470
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send Message",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 490
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 517
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -47,6 +47,10 @@ struct MainProgramWorkoutView: View {
     @State private var sessionAverageTime: Double = 0.0
     @State private var totalDistanceCovered: Double = 0.0
     
+    // Stop Workout Warning
+    @State private var showStopWarning = false
+    @State private var workoutStartTime: Date?
+    
     enum WorkoutPhase: String, CaseIterable {
         case warmup = "warmup"
         case stretch = "stretch"
@@ -236,7 +240,7 @@ struct MainProgramWorkoutView: View {
                 // Header - Same as SprintTimerProWorkoutView
                 HStack {
                     Button(action: {
-                        stopSprintCoachWorkout()
+                        stopWorkoutEarly()
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "xmark")
@@ -540,35 +544,133 @@ struct MainProgramWorkoutView: View {
                                         .background(Color.black.opacity(0.2))
                                         .cornerRadius(12)
                                     }
+                                    
+                                    // Enhanced Workout Controls in Sprint Section
+                                    VStack(spacing: 16) {
+                                        // Main Control Row
+                                        HStack(spacing: 20) {
+                                            // Pause/Play Button
+                                            Button(action: togglePausePlay) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(isPaused ? Color.green : Color.orange)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                            
+                                            // Fast Forward Button
+                                            Button(action: fastForward) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Color.blue)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: "forward.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                            
+                                            // Stop Button with Warning
+                                            Button(action: showStopWorkoutWarning) {
+                                                ZStack {
+                                                    Circle()
+                                                        .fill(Color.red)
+                                                        .frame(width: 75, height: 75)
+                                                    
+                                                    Image(systemName: "stop.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                        }
+                                        
+                                        // Control Labels
+                                        HStack(spacing: 20) {
+                                            Text(isPaused ? "RESUME" : "PAUSE")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                            
+                                            Text("SKIP")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                            
+                                            Text("STOP")
+                                                .font(.system(size: 10, weight: .medium))
+                                                .foregroundColor(.white.opacity(0.8))
+                                                .frame(width: 75)
+                                        }
+                                    }
+                                    .padding(.bottom, 20)
                                 }
                                 .padding(.bottom, 20)
                             } else {
-                                // General Workout Controls (Pause/Play + Fast Forward)
-                                HStack(spacing: 24) {
-                                    // Pause/Play Button
-                                    Button(action: togglePausePlay) {
-                                        ZStack {
-                                            Circle()
-                                                .fill(isPaused ? Color.green : Color.orange)
-                                                .frame(width: 80, height: 80)
-                                            
-                                            Image(systemName: isPaused ? "play.fill" : "pause.fill")
-                                                .font(.system(size: 28, weight: .bold))
-                                                .foregroundColor(.white)
+                                // Enhanced Workout Controls (Pause/Play + Forward + Stop)
+                                VStack(spacing: 16) {
+                                    // Main Control Row
+                                    HStack(spacing: 20) {
+                                        // Pause/Play Button
+                                        Button(action: togglePausePlay) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(isPaused ? Color.green : Color.orange)
+                                                    .frame(width: 75, height: 75)
+                                                
+                                                Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                                                    .font(.system(size: 24, weight: .bold))
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        
+                                        // Fast Forward Button
+                                        Button(action: fastForward) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.blue)
+                                                    .frame(width: 75, height: 75)
+                                                
+                                                Image(systemName: "forward.fill")
+                                                    .font(.system(size: 24, weight: .bold))
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        
+                                        // Stop Button with Warning
+                                        Button(action: showStopWorkoutWarning) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.red)
+                                                    .frame(width: 75, height: 75)
+                                                
+                                                Image(systemName: "stop.fill")
+                                                    .font(.system(size: 24, weight: .bold))
+                                                    .foregroundColor(.white)
+                                            }
                                         }
                                     }
                                     
-                                    // Fast Forward Button
-                                    Button(action: fastForward) {
-                                        ZStack {
-                                            Circle()
-                                                .fill(Color.blue)
-                                                .frame(width: 80, height: 80)
-                                            
-                                            Image(systemName: "forward.fill")
-                                                .font(.system(size: 28, weight: .bold))
-                                                .foregroundColor(.white)
-                                        }
+                                    // Control Labels
+                                    HStack(spacing: 20) {
+                                        Text(isPaused ? "RESUME" : "PAUSE")
+                                            .font(.system(size: 10, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                            .frame(width: 75)
+                                        
+                                        Text("SKIP")
+                                            .font(.system(size: 10, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                            .frame(width: 75)
+                                        
+                                        Text("STOP")
+                                            .font(.system(size: 10, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.8))
+                                            .frame(width: 75)
                                     }
                                 }
                                 .padding(.bottom, 20)
@@ -774,6 +876,14 @@ struct MainProgramWorkoutView: View {
             }
             .padding(.top, 100)
         )
+        .alert("Stop Workout?", isPresented: $showStopWarning) {
+            Button("Cancel", role: .cancel) { }
+            Button("Stop Workout", role: .destructive) {
+                stopWorkoutEarly()
+            }
+        } message: {
+            Text("Are you sure you want to stop this workout? Your progress will be saved as an incomplete session.")
+        }
     }
     
     // MARK: - Helper Methods
@@ -866,31 +976,10 @@ struct MainProgramWorkoutView: View {
         triggerHapticFeedback(.start)
         
         // Start phase progression with timers
-        startPhaseProgression()
-        
-        // Initialize GPS stopwatch for sprint tracking
-    }
     
-    private func stopSprintCoachWorkout() {
-        isRunning = false
-        isPaused = false
-        
-        // Stop all timers
-        phaseTimer?.invalidate()
-        workoutTimer?.invalidate()
-        
-        // Stop GPS tracking
-        stopGPSStopwatch()
-        
-        // Stop voice coaching
-        stopVoiceCoaching()
-        
-        // Provide haptic feedback
-        triggerHapticFeedback(.end)
-        
-        showCoachingCue("Workout stopped. Great effort! ")
+    // Initialize GPS stopwatch for sprint tracking
     }
-    
+
     private func togglePausePlay() {
         isPaused.toggle()
         
@@ -908,9 +997,44 @@ struct MainProgramWorkoutView: View {
         guard let session = sessionData else { return }
         
         totalReps = getTotalReps()
-        completedReps = Array(1...totalReps).map { rep in
-            RepData(rep: rep, time: nil, isCompleted: false, repType: RepData.RepType.sprint, distance: getMainSprintDistance(), timestamp: Date())
+        
+        // Initialize Rep Log with both strides and sprints
+        var allReps: [RepData] = []
+        
+        // Add stride reps to Rep Log
+        for (index, strideSet) in session.strideSets.enumerated() {
+            let strideRep = RepData(
+                rep: index + 1,
+                time: nil,
+                isCompleted: false,
+                repType: .stride,
+                distance: strideSet.distance,
+                timestamp: Date()
+            )
+            allReps.append(strideRep)
         }
+        
+        // Add sprint reps to Rep Log
+        for (index, sprintSet) in session.sprintSets.enumerated() {
+            let sprintRep = RepData(
+                rep: index + 1,
+                time: nil,
+                isCompleted: false,
+                repType: .sprint,
+                distance: sprintSet.distance,
+                timestamp: Date()
+            )
+            allReps.append(sprintRep)
+        }
+        
+        // If no session data, create default reps
+        if allReps.isEmpty {
+            allReps = Array(1...totalReps).map { rep in
+                RepData(rep: rep, time: nil, isCompleted: false, repType: RepData.RepType.sprint, distance: getMainSprintDistance(), timestamp: Date())
+            }
+        }
+        
+        completedReps = allReps
         
         // Set phase durations based on session
         phaseTimeRemaining = currentPhase.duration
@@ -968,15 +1092,44 @@ struct MainProgramWorkoutView: View {
     private func completeCurrentRep(time: Double? = nil) {
         guard currentRep <= totalReps else { return }
         
+        // Determine current rep type and distance based on workout phase
+        let currentRepType: RepData.RepType
+        let currentDistance: Int
+        
+        switch currentPhase {
+        case .strides:
+            currentRepType = .stride
+            currentDistance = sessionData?.strideSets.first?.distance ?? 20
+        case .sprints:
+            currentRepType = .sprint
+            currentDistance = getMainSprintDistance()
+        default:
+            currentRepType = .sprint
+            currentDistance = getMainSprintDistance()
+        }
+        
+        // Find the correct rep to update based on type and current phase
+        var repIndex = -1
+        var repCounter = 0
+        
+        for (index, rep) in completedReps.enumerated() {
+            if rep.repType == currentRepType && !rep.isCompleted {
+                repCounter += 1
+                if repCounter == currentRep {
+                    repIndex = index
+                    break
+                }
+            }
+        }
+        
         // Update the completed rep with actual data
-        let repIndex = currentRep - 1
-        if repIndex < completedReps.count {
+        if repIndex >= 0 && repIndex < completedReps.count {
             completedReps[repIndex] = RepData(
                 rep: currentRep,
                 time: time,
                 isCompleted: true,
-                repType: .sprint,
-                distance: getMainSprintDistance(),
+                repType: currentRepType,
+                distance: currentDistance,
                 timestamp: Date()
             )
         }
@@ -1007,8 +1160,10 @@ struct MainProgramWorkoutView: View {
         let restTime = getRestTime()
         phaseTimeRemaining = restTime
         
-        announceVoiceCoaching("Rest for \(restTime / 60) minutes. Prepare for rep \(currentRep)! ⏱️")
-        showCoachingCue("Rest: \(restTime / 60) min - Rep \(currentRep) next 🔄")
+        // Enhanced rest coaching with session library data
+        let restMinutes = restTime / 60
+        announceVoiceCoaching("Rest for \(restMinutes) minutes. Prepare for rep \(currentRep)! ⏱️")
+        showCoachingCue("Rest: \(restMinutes) min - Rep \(currentRep) next 🔄")
         
         // Start rest timer
         startPhaseTimer()
@@ -1526,21 +1681,10 @@ struct MainProgramWorkoutView: View {
         // or if GPS accuracy is poor, or if user has been waiting too long
         return !gpsManager.isReadyForSprint || gpsManager.gpsStatus == .error || gpsManager.gpsStatus == .denied
     }
-    
-    private func startManualSprint() {
-        // Fallback for poor GPS - start manual timing
-        let distanceYards = Double(getMainSprintDistance())
-        gpsManager.setSprintDistance(yards: distanceYards)
-        gpsManager.startSprint()
-        startLiveTracking()
-        announceVoiceCoaching("Manual sprint started! Run your \(getMainSprintDistance()) yards!")
-        triggerHapticFeedback(.start)
-    }
 
     // MARK: - Automatic Workout Flow Functions
 
     private func startAutomaticSprintDetection() {
-// ... (rest of the code remains the same)
         // Set up GPS for automatic sprint detection
         guard gpsManager.isAuthorized else {
             gpsManager.requestLocationPermission()
@@ -1725,7 +1869,69 @@ struct MainProgramWorkoutView: View {
         }
     }
     
+    // MARK: - Stop Workout Functions
     
+    private func showStopWorkoutWarning() {
+        showStopWarning = true
+        triggerHapticFeedback(.medium)
+    }
+    
+    private func stopWorkoutEarly() {
+        // Stop all timers and GPS
+        phaseTimer?.invalidate()
+        workoutTimer?.invalidate()
+        liveTimer?.invalidate()
+        gpsManager.stopSprint()
+        stopLiveTracking()
+        
+        // Calculate completion percentage
+        let totalPhases = WorkoutPhase.allCases.count - 1 // Exclude completed phase
+        let currentPhaseIndex = WorkoutPhase.allCases.firstIndex(of: currentPhase) ?? 0
+        let completionRate = Double(currentPhaseIndex) / Double(totalPhases)
+        
+        // Create incomplete session data
+        let incompleteSession = CompletedWorkoutData(
+            originalSession: sessionData ?? SessionData(
+                week: 1, day: 1, sessionName: "Incomplete Session",
+                sessionFocus: "Recovery", sprintSets: [], drillSets: [], strideSets: [],
+                sessionType: "Recovery", level: 1, estimatedDuration: 0,
+                variety: 1.0, engagement: 1.0
+            ),
+            completedReps: completedReps.filter { $0.isCompleted },
+            totalDuration: Date().timeIntervalSince(workoutStartTime ?? Date())
+        )
+        
+        // Provide feedback
+        announceVoiceCoaching("Workout stopped. Your progress has been saved.")
+        showCoachingCue("Session saved as incomplete 📝")
+        
+        // Reset workout state
+        resetWorkoutState()
+        
+        // Call completion handler if provided
+        onWorkoutCompleted?(incompleteSession)
+    }
+    
+    private func resetWorkoutState() {
+        isRunning = false
+        isPaused = false
+        currentPhase = .warmup
+        currentRep = 1
+        phaseTimeRemaining = WorkoutPhase.warmup.duration
+        completedReps = []
+        
+        // Reset live tracking
+        isLiveTracking = false
+        currentDistance = 0.0
+        currentTime = 0.0
+        currentSpeed = 0.0
+        sprintStartTime = nil
+        
+        // Reset session metrics
+        sessionBestTime = nil
+        sessionAverageTime = 0.0
+        totalDistanceCovered = 0.0
+    }
 }
 
 // MARK: - Phase UI Components (Placeholder implementations)

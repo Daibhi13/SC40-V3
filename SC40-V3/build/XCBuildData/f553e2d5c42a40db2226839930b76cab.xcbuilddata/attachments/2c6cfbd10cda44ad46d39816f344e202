@@ -1,0 +1,57 @@
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models/TimeTrialWorkoutModel.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models\ Watch/RepLogWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models\ Watch/SessionFeedbackWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models\ Watch/SessionWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models\ Watch/TrainingSessionWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Models\ Watch/WatchModels.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Services\ Watch/CoreDataService.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Services\ Watch/HealthKitService.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Services\ Watch/NotificationService.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Services\ Watch/WorkoutNotificationManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/AudioCueManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/BrandColorsWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/GPS40ydTTStopwatchManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/GPSStopwatchManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/HapticsManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/WatchAdaptiveSizing.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Utils\ Watch/WorkoutWatchViewModel.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/ViewModels\ Watch/RepLogWatchViewModel.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/ViewModels\ Watch/SessionWatchViewModel.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Auth/SC40SplashView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Auth/UserProfileView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Auth/WatchAuthManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Auth/WatchLoginView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Auth/WatchOnboardingView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/CooldownWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/DrillWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/RestWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/SprintPhaseWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Phases\ Watch/WarmupWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/ControlWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/GPSSprintWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/MainWorkoutWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/MusicWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/RepLogSummaryFlowView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/RepLogWatchLiveView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/SprintWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Workout/TimeTrialWorkoutView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/DaySessionCardsWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/Enhanced7StageWorkoutView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/iPhoneSetupInstructionsView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/OnboardingRequiredView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/SprintTimerProWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/StarterProWatchView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/SummaryReportView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/WatchConnectivityStatusView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/Views\ Watch/WatchConnectivityStatusView_Fixed.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/ContentView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/ContentViewWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/EntryViewWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/ProgramPersistence.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/SC40_V3_W_Watch_AppApp.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/SC40_V3_WApp.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/SCStarterProSession.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/WatchSessionManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/WatchSessionPlaybackView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W\ Watch\ App\ Watch\ App/WelcomeViewWatch.swift
+/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-watchos/SC40-V3-W\ Watch\ App\ Watch\ App.build/DerivedSources/GeneratedAssetSymbols.swift

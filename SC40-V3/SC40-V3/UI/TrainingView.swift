@@ -97,7 +97,9 @@ struct TrainingView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: { 
-                            withAnimation { showMenu.toggle() }
+                            withAnimation(.easeInOut(duration: 0.3)) { 
+                                showMenu.toggle() 
+                            }
                             #if os(iOS)
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             #endif
@@ -164,124 +166,17 @@ struct TrainingView: View {
             
             // Hamburger Menu Overlay - ensure it appears on top
             if showMenu {
-                // Professional hamburger menu - exact match to screenshot
-                Color.black.opacity(0.4)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
+                HamburgerSideMenu(showMenu: $showMenu, onSelect: { (selection: MenuSelection) in
+                    // Direct assignment since both use the same MenuSelection type
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        selectedMenu = selection
                     }
-                    .zIndex(1000) // Ensure menu appears above all content
-                
-                HStack {
-                    VStack(alignment: .leading, spacing: 0) {
-                        // Header with close button
-                        HStack {
-                            HStack(spacing: 8) {
-                                Image(systemName: "bolt.fill")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.yellow)
-                                Text("Sprint Coach 40")
-                                    .font(.system(size: 18, weight: .bold))
-                                    .foregroundColor(.white)
-                            }
-                            Spacer()
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.3)) { showMenu = false }
-                            }) {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.7))
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 60)
-                        .padding(.bottom, 32)
-                        
-                        // Menu items
-                        VStack(alignment: .leading, spacing: 0) {
-                            MenuItemButton(icon: "bolt.fill", title: "Sprint 40 Yards", selection: .main, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "clock.arrow.circlepath", title: "History", selection: .history, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "chart.bar.xaxis", title: "Leaderboard", selection: .leaderboard, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "square.and.arrow.up", title: "Share Performance", selection: .sharePerformance, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "lightbulb", title: "40 Yard Smart", selection: .smartHub, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            
-                            // Advanced Analytics with PRO badge
-                            MenuItemButton(icon: "chart.line.uptrend.xyaxis", title: "Advanced Analytics", selection: .performanceTrends, currentSelection: $selectedMenu, showMenu: $showMenu, isPremium: !isProUser)
-                            
-                            MenuItemButton(icon: "gearshape", title: "Settings", selection: .settings, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "questionmark.circle", title: "Help & Info", selection: .helpInfo, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            MenuItemButton(icon: "newspaper", title: "News", selection: .news, currentSelection: $selectedMenu, showMenu: $showMenu)
-                        }
-                        
-                        Spacer()
-                        
-                        // Share with Teammates
-                        MenuItemButton(icon: "person.3.fill", title: "Share with Teammates", selection: .shareWithTeammates, currentSelection: $selectedMenu, showMenu: $showMenu)
-                            .padding(.bottom, 24)
-                        
-                        // Pro Features button
-                        Button(action: {
-                            withAnimation(.easeInOut(duration: 0.3)) { 
-                                showMenu = false
-                                selectedMenu = .proFeatures
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: "crown.fill")
-                                    .font(.system(size: 16, weight: .bold))
-                                Text("Pro Features")
-                                    .font(.system(size: 16, weight: .semibold))
-                            }
-                            .foregroundColor(.black)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 44)
-                            .background(Color.yellow)
-                            .cornerRadius(22)
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 24)
-                        
-                        // Accelerate
-                        HStack {
-                            Image(systemName: "hare.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(.white.opacity(0.7))
-                            Text("Accelerate")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.white.opacity(0.7))
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 16)
-                        
-                        // Social icons
-                        HStack(spacing: 20) {
-                            Image(systemName: "f.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(.white.opacity(0.7))
-                            Image(systemName: "camera.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(.white.opacity(0.7))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.bottom, 32)
-                    }
-                    .frame(width: 280)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 0.2, green: 0.4, blue: 0.8),
-                                Color(red: 0.4, green: 0.2, blue: 0.8),
-                                Color(red: 0.6, green: 0.2, blue: 0.6)
-                            ],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    
-                    Spacer()
-                }
-                .transition(.move(edge: .leading))
-                .zIndex(1001) // Ensure menu content appears above overlay
+                })
+                .zIndex(1000) // Ensure menu appears above all content
+                .transition(.asymmetric(
+                    insertion: .move(edge: .leading).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
             }
         }
         .sheet(item: $selectedSession) { session in

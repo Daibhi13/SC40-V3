@@ -45,11 +45,102 @@ import os.log
     @Published var sessions: [TrainingSession] = []
     @Published var syncStatus: SyncStatus = .idle
     
+    // GPS Integration for Watch
+    @Published var gpsDataForWatch: GPSDataForWatch?
+    private var gpsUpdateTimer: Timer?
+    
     enum SyncStatus {
         case idle
         case syncing
         case success
         case failed(Error)
+    }
+    
+    // MARK: - GPS Data Integration
+    
+    /// GPS data structure for Watch communication
+    struct GPSDataForWatch: Codable {
+        let status: String
+        let accuracy: Double
+        let distance: Double
+        let speed: Double
+        let elapsedTime: TimeInterval
+        let isTracking: Bool
+        let timestamp: Date
+    }
+    
+    /// Start sending GPS data to Watch
+    func startGPSDataSync(with gpsManager: GPSManager) {
+        gpsUpdateTimer?.invalidate()
+        
+        gpsUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            Task { @MainActor in
+                let gpsData = GPSDataForWatch(
+                    status: gpsManager.gpsStatus.displayText,
+                    accuracy: gpsManager.accuracy,
+                    distance: gpsManager.distanceYards,
+                    speed: gpsManager.currentSpeedMPH,
+                    elapsedTime: gpsManager.elapsedTime,
+                    isTracking: gpsManager.isTracking,
+                    timestamp: Date()
+                )
+                
+                self.sendGPSDataToWatch(gpsData)
+            }
+        }
+    }
+    
+    /// Stop GPS data sync
+    func stopGPSDataSync() {
+        gpsUpdateTimer?.invalidate()
+        gpsUpdateTimer = nil
+    }
+    
+    /// Send GPS data to Watch
+    private func sendGPSDataToWatch(_ gpsData: GPSDataForWatch) {
+        guard WCSession.default.isReachable else { return }
+        
+        do {
+            let data = try JSONEncoder().encode(gpsData)
+            let message = [
+                "type": "gpsData",
+                "data": data
+            ] as [String: Any]
+            
+            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+                self.logger.error("Failed to send GPS data to Watch: \(error.localizedDescription)")
+            }
+        } catch {
+            logger.error("Failed to encode GPS data: \(error.localizedDescription)")
+        }
+    }
+    
+    /// Handle workout commands from Watch
+    func handleWatchWorkoutCommand(_ command: String, sessionId: UUID) {
+        logger.info("Received workout command from Watch: \(command) for session \(sessionId)")
+        
+        switch command {
+        case "start":
+            // Notify MainProgramWorkoutView to start workout
+            NotificationCenter.default.post(
+                name: .watchWorkoutStartRequested,
+                object: sessionId
+            )
+        case "end":
+            // Notify MainProgramWorkoutView to end workout
+            NotificationCenter.default.post(
+                name: .watchWorkoutEndRequested,
+                object: sessionId
+            )
+        case "completeRep":
+            // Notify MainProgramWorkoutView to complete current rep
+            NotificationCenter.default.post(
+                name: .watchRepCompletionRequested,
+                object: sessionId
+            )
+        default:
+            logger.warning("Unknown workout command from Watch: \(command)")
+        }
     }
     
     private override init() {

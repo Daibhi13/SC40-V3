@@ -10,6 +10,9 @@ struct MainProgramWorkoutView: View {
     // GPS Integration
     @StateObject private var gpsManager = GPSManager()
     
+    // Watch Integration
+    @StateObject private var watchSessionManager = WatchSessionManager.shared
+    
     // Enhanced Sprint Coach Integration
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes for warmup
@@ -169,6 +172,22 @@ struct MainProgramWorkoutView: View {
         mainWorkoutView
         .onAppear {
             setupSprintCoachWorkout()
+            setupWatchIntegration()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .watchWorkoutStartRequested)) { notification in
+            if let sessionId = notification.object as? UUID {
+                handleWatchWorkoutStart(sessionId: sessionId)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .watchWorkoutEndRequested)) { notification in
+            if let sessionId = notification.object as? UUID {
+                handleWatchWorkoutEnd(sessionId: sessionId)
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .watchRepCompletionRequested)) { notification in
+            if let sessionId = notification.object as? UUID {
+                handleWatchRepCompletion(sessionId: sessionId)
+            }
         }
         .sheet(isPresented: $showCompletionSheet) {
             MainWorkoutCompletionView(
@@ -865,6 +884,36 @@ struct MainProgramWorkoutView: View {
         // Allow user to skip a rep if needed (injury, equipment issues, etc.)
         completeCurrentRep(time: nil)
         announceVoiceCoaching("Rep \(currentRep - 1) skipped. Moving to next! ⏭️")
+    }
+    
+    // MARK: - Watch Integration Functions
+    
+    private func setupWatchIntegration() {
+        // Start GPS data sync with Watch when workout begins
+        if isRunning {
+            watchSessionManager.startGPSDataSync(with: gpsManager)
+        }
+    }
+    
+    private func handleWatchWorkoutStart(sessionId: UUID) {
+        // Start workout from Watch command
+        if !isRunning {
+            startSprintCoachWorkout()
+        }
+    }
+    
+    private func handleWatchWorkoutEnd(sessionId: UUID) {
+        // End workout from Watch command
+        if isRunning {
+            completeWorkout()
+        }
+    }
+    
+    private func handleWatchRepCompletion(sessionId: UUID) {
+        // Complete current rep from Watch command
+        if currentPhase == .sprints {
+            completeCurrentRep()
+        }
     }
     
     // MARK: - GPS Sprint Control Functions
@@ -1618,4 +1667,11 @@ struct MainWorkoutCompletionView: View {
 
 #Preview {
     MainProgramWorkoutView(sessionData: nil, onWorkoutCompleted: nil)
+}
+
+// MARK: - Notification Extensions
+extension Notification.Name {
+    static let watchWorkoutStartRequested = Notification.Name("watchWorkoutStartRequested")
+    static let watchWorkoutEndRequested = Notification.Name("watchWorkoutEndRequested")
+    static let watchRepCompletionRequested = Notification.Name("watchRepCompletionRequested")
 }

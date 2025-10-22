@@ -1,0 +1,208 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/GPSSprintWatchView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Training",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 229
+        }
+      },
+      {
+        "comment": "",
+        "key": "W%lldD%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld of %lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 66
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "YD",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 83
+        }
+      },
+      {
+        "comment": "",
+        "key": "SEC",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 93
+        }
+      },
+      {
+        "comment": "",
+        "key": "MPH",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 115
+        }
+      },
+      {
+        "comment": "",
+        "key": "START",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 134
+        }
+      },
+      {
+        "comment": "",
+        "key": "END",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "DONE",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 159
+        }
+      },
+      {
+        "comment": "",
+        "key": "COMPLETED",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 177
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 185
+        }
+      },
+      {
+        "comment": "",
+        "key": "--",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 195
+        }
+      },
+      {
+        "comment": "",
+        "key": "No Session",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 217
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start a workout on your iPhone to see it here",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 220
+        }
+      },
+      {
+        "comment": "",
+        "key": "Summary",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 517
+        }
+      },
+      {
+        "comment": "",
+        "key": "Workout Complete!",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 439
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 511
+        }
+      },
+      {
+        "comment": "",
+        "key": "REPS COMPLETED",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 451
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 458
+        }
+      },
+      {
+        "comment": "",
+        "key": "Skipped",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 467
+        }
+      },
+      {
+        "comment": "",
+        "key": "PERFORMANCE",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 483
+        }
+      },
+      {
+        "comment": "",
+        "key": "Best",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 492
+        }
+      },
+      {
+        "comment": "",
+        "key": "Average",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 501
+        }
+      }
+    ]
+  },
+  "version": 1
+}

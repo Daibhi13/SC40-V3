@@ -7,6 +7,9 @@ struct MainProgramWorkoutView: View {
     let sessionData: SessionData?
     let onWorkoutCompleted: ((CompletedWorkoutData) -> Void)?
     
+    // GPS Integration
+    @StateObject private var gpsManager = GPSManager()
+    
     // Enhanced Sprint Coach Integration
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes for warmup
@@ -339,7 +342,7 @@ struct MainProgramWorkoutView: View {
                                 }
                                 .padding(.bottom, 20)
                             } else if currentPhase == .sprints {
-                                // Sprint Phase Controls - Rep Completion
+                                // Sprint Phase Controls - GPS Integration
                                 VStack(spacing: 16) {
                                     Text("Sprint \(currentRep) of \(totalReps)")
                                         .font(.system(size: 18, weight: .bold))
@@ -349,25 +352,100 @@ struct MainProgramWorkoutView: View {
                                         .font(.system(size: 14, weight: .medium))
                                         .foregroundColor(.white.opacity(0.8))
                                     
-                                    // Complete Rep Button
-                                    Button(action: { completeCurrentRep() }) {
-                                        ZStack {
-                                            Circle()
-                                                .fill(Color.green)
-                                                .frame(width: 100, height: 100)
-                                            
-                                            VStack(spacing: 4) {
-                                                Image(systemName: "checkmark.circle.fill")
-                                                    .font(.system(size: 24, weight: .bold))
-                                                    .foregroundColor(.white)
-                                                Text("DONE")
-                                                    .font(.system(size: 12, weight: .bold))
-                                                    .foregroundColor(.white)
+                                    // GPS Status Indicator
+                                    HStack(spacing: 8) {
+                                        Circle()
+                                            .fill(gpsManager.gpsStatus.color)
+                                            .frame(width: 8, height: 8)
+                                        Text(gpsManager.gpsStatus.displayText)
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.7))
+                                    }
+                                    
+                                    // GPS Data Display (when tracking)
+                                    if gpsManager.isTracking {
+                                        VStack(spacing: 4) {
+                                            HStack(spacing: 20) {
+                                                VStack {
+                                                    Text(gpsManager.distanceString)
+                                                        .font(.system(size: 16, weight: .bold))
+                                                        .foregroundColor(.cyan)
+                                                    Text("Distance")
+                                                        .font(.system(size: 10))
+                                                        .foregroundColor(.white.opacity(0.6))
+                                                }
+                                                
+                                                VStack {
+                                                    Text(gpsManager.timeString)
+                                                        .font(.system(size: 16, weight: .bold))
+                                                        .foregroundColor(.yellow)
+                                                    Text("Time")
+                                                        .font(.system(size: 10))
+                                                        .foregroundColor(.white.opacity(0.6))
+                                                }
+                                                
+                                                VStack {
+                                                    Text(gpsManager.speedString)
+                                                        .font(.system(size: 16, weight: .bold))
+                                                        .foregroundColor(.green)
+                                                    Text("Speed")
+                                                        .font(.system(size: 10))
+                                                        .foregroundColor(.white.opacity(0.6))
+                                                }
+                                            }
+                                        }
+                                        .padding(.vertical, 8)
+                                    }
+                                    
+                                    // Sprint Control Buttons
+                                    if !gpsManager.isTracking {
+                                        // Start Sprint Button
+                                        Button(action: startGPSSprint) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(gpsManager.isReadyForSprint ? Color.green : Color.gray)
+                                                    .frame(width: 100, height: 100)
+                                                
+                                                VStack(spacing: 4) {
+                                                    Image(systemName: "location.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                    Text("START")
+                                                        .font(.system(size: 12, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                        }
+                                        .disabled(!gpsManager.isReadyForSprint)
+                                    } else {
+                                        // Stop Sprint Button
+                                        Button(action: stopGPSSprint) {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.red)
+                                                    .frame(width: 100, height: 100)
+                                                
+                                                VStack(spacing: 4) {
+                                                    Image(systemName: "stop.fill")
+                                                        .font(.system(size: 24, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                    Text("STOP")
+                                                        .font(.system(size: 12, weight: .bold))
+                                                        .foregroundColor(.white)
+                                                }
                                             }
                                         }
                                     }
                                     
-                                    // Skip Rep Button (smaller)
+                                    // Manual Complete Button (fallback)
+                                    Button(action: { completeCurrentRep() }) {
+                                        Text("Complete Manually")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.white.opacity(0.6))
+                                            .underline()
+                                    }
+                                    
+                                    // Skip Rep Button
                                     Button(action: skipCurrentRep) {
                                         Text("Skip Rep")
                                             .font(.system(size: 12, weight: .medium))
@@ -787,6 +865,83 @@ struct MainProgramWorkoutView: View {
         // Allow user to skip a rep if needed (injury, equipment issues, etc.)
         completeCurrentRep(time: nil)
         announceVoiceCoaching("Rep \(currentRep - 1) skipped. Moving to next! ⏭️")
+    }
+    
+    // MARK: - GPS Sprint Control Functions
+    
+    private func startGPSSprint() {
+        guard gpsManager.isReadyForSprint else {
+            if !gpsManager.isAuthorized {
+                gpsManager.requestLocationPermission()
+            }
+            return
+        }
+        
+        // Set the target distance for this sprint
+        let distanceYards = Double(getMainSprintDistance())
+        gpsManager.setSprintDistance(yards: distanceYards)
+        
+        // Set up GPS callbacks
+        setupGPSCallbacks()
+        
+        // Start GPS sprint tracking
+        gpsManager.startSprint()
+        
+        // Provide feedback
+        announceVoiceCoaching("GPS sprint started! Run \(distanceYards) yards! 🏃‍♂️")
+        triggerHapticFeedback(.start)
+    }
+    
+    private func stopGPSSprint() {
+        gpsManager.stopSprint()
+        announceVoiceCoaching("Sprint stopped manually! ⏹️")
+        triggerHapticFeedback(.medium)
+    }
+    
+    private func setupGPSCallbacks() {
+        // Callback when sprint is completed automatically
+        gpsManager.onSprintCompleted = { (result: SprintResult) in
+            Task { @MainActor in
+                // Note: No weak self needed since MainProgramWorkoutView is a struct
+                self.handleGPSSprintCompletion(result)
+            }
+        }
+        
+        // Callback for distance updates during sprint
+        gpsManager.onDistanceUpdate = { (distance: Double, time: TimeInterval) in
+            Task { @MainActor in
+                // Provide audio feedback at milestones
+                let distanceYards = distance / 0.9144
+                let targetYards = Double(self.getMainSprintDistance())
+                
+                if distanceYards >= targetYards * 0.5 && distanceYards < targetYards * 0.6 {
+                    self.announceVoiceCoaching("Halfway! Keep pushing! 💪")
+                } else if distanceYards >= targetYards * 0.8 && distanceYards < targetYards * 0.9 {
+                    self.announceVoiceCoaching("Almost there! Final push! 🚀")
+                }
+            }
+        }
+    }
+    
+    private func handleGPSSprintCompletion(_ result: SprintResult) {
+        let time = result.time
+        let accuracy = result.accuracy
+        
+        // Provide completion feedback
+        if result.isAccurate {
+            announceVoiceCoaching("Sprint completed! Time: \(String(format: "%.2f", time)) seconds! 🎯")
+        } else {
+            announceVoiceCoaching("Sprint completed! GPS accuracy was limited. Time: \(String(format: "%.2f", time)) seconds ⚠️")
+        }
+        
+        // Complete the rep with GPS time
+        completeCurrentRep(time: time)
+        
+        // Provide additional feedback for good performance
+        if time < 5.0 { // Under 5 seconds for 40 yards is quite good
+            announceVoiceCoaching("Excellent speed! 🔥")
+            triggerHapticFeedback(.end)
+        }
     }
     
     // MARK: - Phase Timer Management

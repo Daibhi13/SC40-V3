@@ -246,12 +246,34 @@ struct TrainingView: View {
     }
     
     private func updateUserProgress(with completedWorkout: MainProgramWorkoutView.CompletedWorkoutData) {
-        // Update user profile with completed session
-        // This would integrate with UserProfileViewModel when available
-        print("📈 Updating user progress for Week \(completedWorkout.originalSession.week), Day \(completedWorkout.originalSession.day)")
+        // Find the corresponding session in the user's program
+        let sessionID = TrainingSession.stableSessionID(
+            week: completedWorkout.originalSession.week, 
+            day: completedWorkout.originalSession.day
+        )
         
-        // Store workout data for history/analytics
-        // This could be saved to Core Data, UserDefaults, or cloud storage
+        // Extract sprint times from completed reps
+        let sprintTimes = completedWorkout.completedReps.compactMap { $0.time }
+        
+        // Use the existing UserProfileViewModel API to complete the session
+        userProfileVM.completeSession(
+            sessionID, 
+            sprintTimes: sprintTimes,
+            rpe: completedWorkout.effortLevel,
+            notes: completedWorkout.notes
+        )
+        
+        print("📈 Updated user progress for Week \(completedWorkout.originalSession.week), Day \(completedWorkout.originalSession.day)")
+        print("🏆 Session completed with \(sprintTimes.count) sprint times recorded")
+        
+        // Update personal bests if applicable
+        if let bestTime = completedWorkout.bestTime {
+            let currentPB = userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime
+            if bestTime < currentPB {
+                userProfileVM.updatePersonalBest(bestTime)
+                print("🚀 New Personal Best! 40yd: \(String(format: "%.2f", bestTime))s")
+            }
+        }
     }
     
     private func markSessionAsCompleted(_ sessionData: MainProgramWorkoutView.SessionData) {

@@ -7,7 +7,7 @@
         "key": "Let's get your first win!",
         "location": {
           "startingColumn": 22,
-          "startingLine": 99
+          "startingLine": 108
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Welcome, %@!",
         "location": {
           "startingColumn": 26,
-          "startingLine": 91
+          "startingLine": 100
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "👋",
         "location": {
           "startingColumn": 26,
-          "startingLine": 94
+          "startingLine": 103
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Quick 10-Minute Warm-Up",
         "location": {
           "startingColumn": 26,
-          "startingLine": 112
+          "startingLine": 121
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "Complete a simple warm-up session to get started and unlock your first achievement",
         "location": {
           "startingColumn": 26,
-          "startingLine": 116
+          "startingLine": 125
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Start Quick Win Session",
         "location": {
           "startingColumn": 34,
-          "startingLine": 152
+          "startingLine": 161
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "Maybe Later",
         "location": {
           "startingColumn": 30,
-          "startingLine": 163
+          "startingLine": 172
         }
       }
     ]

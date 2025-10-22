@@ -1,37 +1,23 @@
 {
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/ContentView.swift" : {
-    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ContentView.swiftconstvalues",
-    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ContentView.d",
-    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ContentView.dia",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ContentView.o",
-    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/ContentView.swiftdeps"
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Phases Watch/DrillWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/DrillWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/DrillWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/DrillWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/DrillWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/DrillWatchView.swiftdeps"
   },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/StarterProWatchView.swift" : {
-    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/StarterProWatchView.swiftconstvalues",
-    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/StarterProWatchView.d",
-    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/StarterProWatchView.dia",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/StarterProWatchView.o",
-    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/StarterProWatchView.swiftdeps"
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Phases Watch/RestWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RestWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RestWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RestWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RestWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/RestWatchView.swiftdeps"
   },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/SummaryReportView.swift" : {
-    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SummaryReportView.swiftconstvalues",
-    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SummaryReportView.d",
-    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SummaryReportView.dia",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SummaryReportView.o",
-    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SummaryReportView.swiftdeps"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/WatchConnectivityStatusView.swift" : {
-    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView.swiftconstvalues",
-    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView.d",
-    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView.dia",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView.o",
-    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView.swiftdeps"
-  },
-  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/WatchConnectivityStatusView_Fixed.swift" : {
-    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView_Fixed.swiftconstvalues",
-    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView_Fixed.d",
-    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView_Fixed.dia",
-    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView_Fixed.o",
-    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/WatchConnectivityStatusView_Fixed.swiftdeps"
+  "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Phases Watch/SprintPhaseWatchView.swift" : {
+    "const-values" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SprintPhaseWatchView.swiftconstvalues",
+    "dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SprintPhaseWatchView.d",
+    "diagnostics" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SprintPhaseWatchView.dia",
+    "object" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SprintPhaseWatchView.o",
+    "swift-dependencies" : "/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Debug-watchos/SC40-V3-W Watch App Watch App.build/Objects-normal/arm64/SprintPhaseWatchView.swiftdeps"
   }
 }

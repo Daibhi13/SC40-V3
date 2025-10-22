@@ -7,7 +7,7 @@
         "key": "Sprint Timer Pro",
         "location": {
           "startingColumn": 26,
-          "startingLine": 76
+          "startingLine": 182
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "SPRINT TIMER PRO",
         "location": {
           "startingColumn": 22,
-          "startingLine": 427
+          "startingLine": 686
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "CUSTOM WORKOUT / %lld Min",
         "location": {
           "startingColumn": 22,
-          "startingLine": 432
+          "startingLine": 691
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "PRO TIMER",
         "location": {
           "startingColumn": 22,
-          "startingLine": 486
+          "startingLine": 745
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "LET'S\nGO",
         "location": {
           "startingColumn": 34,
-          "startingLine": 503
+          "startingLine": 762
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Strides Phase UI",
         "location": {
           "startingColumn": 14,
-          "startingLine": 664
+          "startingLine": 933
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "Sprints Phase UI",
         "location": {
           "startingColumn": 14,
-          "startingLine": 671
+          "startingLine": 940
         }
       },
       {
@@ -63,7 +63,7 @@
         "key": "Workout Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 686
+          "startingLine": 955
         }
       },
       {
@@ -71,7 +71,7 @@
         "key": "Great job on your %lldyd sprints!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 689
+          "startingLine": 958
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "Rep Log",
         "location": {
           "startingColumn": 22,
-          "startingLine": 707
+          "startingLine": 976
         }
       },
       {
@@ -87,7 +87,7 @@
         "key": "Live Workout Report",
         "location": {
           "startingColumn": 22,
-          "startingLine": 713
+          "startingLine": 982
         }
       },
       {
@@ -95,7 +95,7 @@
         "key": "18:12",
         "location": {
           "startingColumn": 22,
-          "startingLine": 717
+          "startingLine": 986
         }
       },
       {
@@ -103,7 +103,7 @@
         "key": "REP",
         "location": {
           "startingColumn": 26,
-          "startingLine": 727
+          "startingLine": 996
         }
       },
       {
@@ -111,7 +111,7 @@
         "key": "YDS",
         "location": {
           "startingColumn": 26,
-          "startingLine": 732
+          "startingLine": 1001
         }
       },
       {
@@ -119,7 +119,7 @@
         "key": "TIME",
         "location": {
           "startingColumn": 26,
-          "startingLine": 737
+          "startingLine": 1006
         }
       },
       {
@@ -127,7 +127,7 @@
         "key": "REST",
         "location": {
           "startingColumn": 26,
-          "startingLine": 742
+          "startingLine": 1011
         }
       },
       {
@@ -135,7 +135,7 @@
         "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 781
+          "startingLine": 1050
         }
       },
       {
@@ -143,7 +143,7 @@
         "key": "%lld",
         "location": {
           "startingColumn": 18,
-          "startingLine": 786
+          "startingLine": 1055
         }
       },
       {
@@ -151,7 +151,7 @@
         "key": "...",
         "location": {
           "startingColumn": 22,
-          "startingLine": 797
+          "startingLine": 1066
         }
       },
       {
@@ -159,7 +159,7 @@
         "key": "--",
         "location": {
           "startingColumn": 22,
-          "startingLine": 802
+          "startingLine": 1071
         }
       },
       {
@@ -167,7 +167,7 @@
         "key": "%lldm",
         "location": {
           "startingColumn": 18,
-          "startingLine": 808
+          "startingLine": 1077
         }
       },
       {
@@ -175,7 +175,7 @@
         "key": "Workout Complete!",
         "location": {
           "startingColumn": 18,
-          "startingLine": 830
+          "startingLine": 1099
         }
       },
       {
@@ -183,7 +183,7 @@
         "key": "You completed %lld × %lldyd sprints",
         "location": {
           "startingColumn": 18,
-          "startingLine": 834
+          "startingLine": 1103
         }
       },
       {
@@ -191,7 +191,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 20,
-          "startingLine": 837
+          "startingLine": 1106
         }
       }
     ]

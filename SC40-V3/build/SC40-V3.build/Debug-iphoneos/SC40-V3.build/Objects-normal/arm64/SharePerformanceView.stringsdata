@@ -7,7 +7,7 @@
         "key": "Share Performance",
         "location": {
           "startingColumn": 38,
-          "startingLine": 82
+          "startingLine": 83
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Professional Report for Coaches & Recruiters",
         "location": {
           "startingColumn": 38,
-          "startingLine": 86
+          "startingLine": 87
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Report Format",
         "location": {
           "startingColumn": 22,
-          "startingLine": 515
+          "startingLine": 516
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Include in Report",
         "location": {
           "startingColumn": 22,
-          "startingLine": 594
+          "startingLine": 595
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "",
         "location": {
           "startingColumn": 20,
-          "startingLine": 664
+          "startingLine": 665
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Send To (Optional)",
         "location": {
           "startingColumn": 22,
-          "startingLine": 705
+          "startingLine": 706
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "Enter coach or recruiter email address",
         "location": {
           "startingColumn": 22,
-          "startingLine": 727
+          "startingLine": 728
         }
       },
       {
@@ -63,7 +63,7 @@
         "key": "coach@institution.edu",
         "location": {
           "startingColumn": 27,
-          "startingLine": 711
+          "startingLine": 712
         }
       },
       {
@@ -71,7 +71,7 @@
         "key": "Generating Report...",
         "location": {
           "startingColumn": 37,
-          "startingLine": 760
+          "startingLine": 761
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "Generate Professional Report",
         "location": {
           "startingColumn": 62,
-          "startingLine": 760
+          "startingLine": 761
         }
       },
       {
@@ -87,7 +87,7 @@
         "key": "Professional Format",
         "location": {
           "startingColumn": 18,
-          "startingLine": 783
+          "startingLine": 784
         }
       }
     ]

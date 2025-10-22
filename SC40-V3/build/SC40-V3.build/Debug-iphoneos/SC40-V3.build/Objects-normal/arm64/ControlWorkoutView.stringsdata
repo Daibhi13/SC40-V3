@@ -1,0 +1,48 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/ControlWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "/",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 334
+        }
+      },
+      {
+        "comment": "",
+        "key": "OF %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 338
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld YARDS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 345
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld MIN REST",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 349
+        }
+      }
+    ]
+  },
+  "version": 1
+}

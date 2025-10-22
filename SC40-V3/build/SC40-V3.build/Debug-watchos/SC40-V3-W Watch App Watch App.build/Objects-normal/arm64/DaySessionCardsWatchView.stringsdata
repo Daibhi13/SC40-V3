@@ -7,7 +7,7 @@
         "key": "Select Workout",
         "location": {
           "startingColumn": 26,
-          "startingLine": 311
+          "startingLine": 314
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "SPRINT COACH 40",
         "location": {
           "startingColumn": 30,
-          "startingLine": 305
+          "startingLine": 308
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Week %lld of 12",
         "location": {
           "startingColumn": 30,
-          "startingLine": 320
+          "startingLine": 323
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Swipe Left",
         "location": {
           "startingColumn": 53,
-          "startingLine": 415
+          "startingLine": 426
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "Start Sprint",
         "location": {
           "startingColumn": 68,
-          "startingLine": 415
+          "startingLine": 426
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Sync iPhone Sessions",
         "location": {
           "startingColumn": 34,
-          "startingLine": 448
+          "startingLine": 459
         }
       }
     ]

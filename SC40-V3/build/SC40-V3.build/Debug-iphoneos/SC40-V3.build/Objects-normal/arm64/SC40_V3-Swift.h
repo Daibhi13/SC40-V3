@@ -397,7 +397,21 @@ SWIFT_CLASS("_TtC7SC40_V319VoiceHapticsManager")
 - (void)speechSynthesizer:(AVSpeechSynthesizer * _Nonnull)synthesizer didCancelSpeechUtterance:(AVSpeechUtterance * _Nonnull)utterance;
 @end
 
+SWIFT_CLASS("_TtC7SC40_V324WatchConnectivityManager")
+@interface WatchConnectivityManager : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
 @class WCSession;
+@interface WatchConnectivityManager (SWIFT_EXTENSION(SC40_V3)) <WCSessionDelegate>
+- (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
+- (void)sessionDidBecomeInactive:(WCSession * _Nonnull)session;
+- (void)sessionDidDeactivate:(WCSession * _Nonnull)session;
+- (void)sessionReachabilityDidChange:(WCSession * _Nonnull)session;
+- (void)session:(WCSession * _Nonnull)session didReceiveMessage:(NSDictionary<NSString *, id> * _Nonnull)message replyHandler:(void (^ _Nonnull)(NSDictionary<NSString *, id> * _Nonnull))replyHandler;
+@end
+
 SWIFT_CLASS("_TtC7SC40_V319WatchSessionManager") SWIFT_AVAILABILITY(ios,introduced=9.0)
 @interface WatchSessionManager : NSObject <WCSessionDelegate>
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;

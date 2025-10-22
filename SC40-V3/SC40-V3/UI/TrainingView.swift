@@ -197,7 +197,7 @@ struct TrainingView: View {
         }
         .sheet(isPresented: $showMainProgramWorkout) {
             NavigationView {
-                MainProgramWorkoutView(selectedSession: selectedSessionForWorkout)
+                MainProgramWorkoutView(sessionData: nil)
                     .navigationTitle("Sprint Training")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {

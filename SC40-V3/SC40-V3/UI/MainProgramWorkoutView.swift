@@ -830,9 +830,7 @@ struct MainProgramWorkoutView: View {
         var titleContext = context
         titleContext.translateBy(x: size.width / 2, y: 60)
         titleContext.draw(
-            Text("SPRINT COACH 40")
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.white.opacity(0.8)),
+            Text("SPRINT COACH 40"),
             at: .zero,
             anchor: .center
         )
@@ -841,9 +839,7 @@ struct MainProgramWorkoutView: View {
         var sessionContext = context
         sessionContext.translateBy(x: size.width / 2, y: 85)
         sessionContext.draw(
-            Text("WEEK \(sessionInfo.week) - DAY \(sessionInfo.day) / \(sessionInfo.duration) Min")
-                .font(.system(size: 20, weight: .bold))
-                .foregroundColor(.white),
+            Text("WEEK \(sessionInfo.week) - DAY \(sessionInfo.day) / \(sessionInfo.duration) Min"),
             at: .zero,
             anchor: .center
         )
@@ -892,9 +888,7 @@ struct MainProgramWorkoutView: View {
         var timeContext = context
         timeContext.translateBy(x: centerX, y: centerY - 10)
         timeContext.draw(
-            Text(timeText)
-                .font(.system(size: 32, weight: .bold))
-                .foregroundColor(.white),
+            Text(timeText),
             at: .zero,
             anchor: .center
         )
@@ -903,9 +897,7 @@ struct MainProgramWorkoutView: View {
         var phaseContext = context
         phaseContext.translateBy(x: centerX, y: centerY + 15)
         phaseContext.draw(
-            Text(currentPhase.rawValue.uppercased())
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(.orange),
+            Text(currentPhase.rawValue.uppercased()),
             at: .zero,
             anchor: .center
         )
@@ -940,9 +932,7 @@ struct MainProgramWorkoutView: View {
             var durationContext = context
             durationContext.translateBy(x: cardX + cardWidth/2, y: cardY + 20)
             durationContext.draw(
-                Text(durations[i])
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(isActiveArray[i] ? .orange : .white.opacity(0.8)),
+                Text(durations[i]),
                 at: .zero,
                 anchor: .center
             )
@@ -951,10 +941,7 @@ struct MainProgramWorkoutView: View {
             var phaseContext = context
             phaseContext.translateBy(x: cardX + cardWidth/2, y: cardY + 50)
             phaseContext.draw(
-                Text(phases[i])
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center),
+                Text(phases[i]),
                 at: .zero,
                 anchor: .center
             )
@@ -984,9 +971,7 @@ struct MainProgramWorkoutView: View {
         var headerContext = context
         headerContext.translateBy(x: size.width / 2, y: centerY)
         headerContext.draw(
-            Text("Rep Log")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white),
+            Text("Rep Log"),
             at: .zero,
             anchor: .center
         )
@@ -995,22 +980,13 @@ struct MainProgramWorkoutView: View {
         var repContext = context
         repContext.translateBy(x: size.width / 2, y: centerY + 25)
         repContext.draw(
-            Text("Rep \(currentRep) of \(totalReps)")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white.opacity(0.8)),
+            Text("Rep \(currentRep) of \(totalReps)"),
             at: .zero,
             anchor: .center
         )
     }
     
     // MARK: - Helper Functions for Canvas
-    private func getSessionInfo() -> (week: Int, day: Int, duration: Int) {
-        if let session = sessionData {
-            return (week: session.week, day: session.day, duration: 47)
-        }
-        return (week: 1, day: 1, duration: 47)
-    }
-    
     private func formatTime(_ seconds: Int) -> String {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60

@@ -22,40 +22,46 @@ struct ContentView: View {
     }
     
     private func setupDemoDataForTesting() {
-        // Create demo sessions for UI testing
-        let demoSessions = [
-            TrainingSession(
-                id: UUID(),
-                week: 1,
-                day: 1,
-                type: "Sprint Training",
-                focus: "Acceleration",
-                sprints: [SprintSet(distanceYards: 20, reps: 6, intensity: "85%")],
-                accessoryWork: ["Dynamic warm-up", "Cool-down stretching"]
-            ),
-            TrainingSession(
-                id: UUID(),
-                week: 1,
-                day: 2,
-                type: "Speed Development",
-                focus: "Max Velocity",
-                sprints: [SprintSet(distanceYards: 40, reps: 4, intensity: "95%")],
-                accessoryWork: ["Flying starts", "Speed drills"]
-            ),
-            TrainingSession(
-                id: UUID(),
-                week: 1,
-                day: 3,
-                type: "Time Trial",
-                focus: "Benchmark",
-                sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "100%")],
-                accessoryWork: ["Thorough warm-up", "Cool-down"]
-            )
-        ]
+        // Create demo sessions for UI testing - ensure they are not completed
+        var session1 = TrainingSession(
+            id: UUID(),
+            week: 1,
+            day: 1,
+            type: "Sprint Training",
+            focus: "Acceleration",
+            sprints: [SprintSet(distanceYards: 20, reps: 6, intensity: "85%")],
+            accessoryWork: ["Dynamic warm-up", "Cool-down stretching"]
+        )
+        session1.isCompleted = false
+        
+        var session2 = TrainingSession(
+            id: UUID(),
+            week: 1,
+            day: 2,
+            type: "Speed Development",
+            focus: "Max Velocity",
+            sprints: [SprintSet(distanceYards: 40, reps: 4, intensity: "95%")],
+            accessoryWork: ["Flying starts", "Speed drills"]
+        )
+        session2.isCompleted = false
+        
+        var session3 = TrainingSession(
+            id: UUID(),
+            week: 1,
+            day: 3,
+            type: "Time Trial",
+            focus: "Benchmark",
+            sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "100%")],
+            accessoryWork: ["Thorough warm-up", "Cool-down"]
+        )
+        session3.isCompleted = false
+        
+        let demoSessions = [session1, session2, session3]
         
         // Set demo data in session manager
         WatchSessionManager.shared.trainingSessions = demoSessions
         print("✅ Demo data loaded for UI testing: \(demoSessions.count) sessions")
+        print("✅ All sessions marked as NOT completed for testing")
     }
 }
 

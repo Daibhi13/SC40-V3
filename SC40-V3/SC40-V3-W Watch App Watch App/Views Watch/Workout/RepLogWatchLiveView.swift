@@ -231,10 +231,17 @@ struct RepLogWatchLiveView: View {
                                 print("🔽 RepLogView SWIPE DOWN - dismissing modal")
                                 onDone?()
                             }
-                        } else if value.translation.height < -8 {
-                            // Non-modal: only swipe up to go back to main tab
-                            print("🔼 RepLogView SWIPE UP - returning to main tab")
-                            horizontalTab = 1
+                        } else {
+                            // Enhanced7StageWorkoutView navigation - swipe down to return
+                            if value.translation.height > 30 {
+                                print("📊 RepLogView - Swipe Down to return to workout")
+                                // This will be handled by the fullScreenCover dismissal
+                                // We can't directly dismiss here, but the parent view will handle it
+                            } else if value.translation.height < -8 {
+                                // Non-modal: swipe up to go back to main tab (legacy behavior)
+                                print("🔼 RepLogView SWIPE UP - returning to main tab")
+                                horizontalTab = 1
+                            }
                         }
                     }
             )

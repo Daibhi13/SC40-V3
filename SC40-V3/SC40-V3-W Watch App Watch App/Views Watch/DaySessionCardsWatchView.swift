@@ -8,7 +8,7 @@ struct DaySessionCardsWatchView: View {
     var onStart: (() -> Void)? = nil
     @ObservedObject private var sessionManager = WatchSessionManager.shared
     @State private var showStarterPro = false
-    @State private var showWorkoutFlow = false
+    @State private var showEnhanced7StageWorkout = false
     @State private var selectedSession = 0
     @State private var currentWorkoutStep = 0 // 0: MainWorkout, 1: RepLog, 2: Sprint
     @State private var showRepLog = false
@@ -266,6 +266,49 @@ struct DaySessionCardsWatchView: View {
     }
 
     var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                backgroundView
+                mainContentView
+            }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+        .navigationDestination(isPresented: $showStarterPro) {
+            StarterProWatchView()
+        }
+        .fullScreenCover(isPresented: $showEnhanced7StageWorkout) {
+            if let currentSession = getCurrentSelectedSession() {
+                Enhanced7StageWorkoutView(session: currentSession)
+            } else {
+                // Fallback view if no session is selected
+                Text("No Session Selected")
+                    .foregroundColor(.white)
+                    .onAppear {
+                        showEnhanced7StageWorkout = false
+                    }
+            }
+        }
+        .fullScreenCover(isPresented: $showSprintTimerProView) {
+            SprintTimerProWatchView()
+        }
+        .focusable()
+        .digitalCrownRotation(.constant(0.0), from: 0.0, through: Double(max(0, sessionCards.count - 1)), by: 1.0, sensitivity: .medium)
+        .onTapGesture(count: 2) {
+            handleDoubleTap()
+        }
+        .onAppear {
+            handleViewAppear()
+        }
+        .onChange(of: sessionManager.trainingSessions.count) { oldCount, newCount in
+            handleSessionsCountChange(oldCount: oldCount, newCount: newCount)
+        }
+        .onAppear {
+            handleSecondAppear()
+        }
+    }
+    
+    // MARK: - Background View
+    private var backgroundView: some View {
         ZStack {
             // Premium gradient background matching phone app
             LinearGradient(
@@ -296,299 +339,352 @@ struct DaySessionCardsWatchView: View {
                         value: selectedSession
                     )
             }
-            VStack(spacing: 16) {
-                // Premium header with lightning bolt
-                VStack(spacing: 8) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(Color.brandPrimary)
-                            .shadow(color: Color.brandPrimary.opacity(0.5), radius: 2)
-                        
-                        Text("SPRINT COACH 40")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .tracking(1)
-                            .foregroundColor(Color.brandSecondary)
-                    }
-                    
-                    Text("Select Workout")
-                        .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(Color.brandPrimary)
-                        .shadow(color: Color.brandPrimary.opacity(0.3), radius: 4)
+        }
+    }
+    
+    // MARK: - Main Content View
+    private var mainContentView: some View {
+        ZStack(alignment: .top) {
+            // Fixed positioned elements - no flexible spacing
+            VStack(spacing: 0) {
+                // Header section - fixed at top
+                VStack(spacing: 12) {
+                    headerView
+                    progressIndicatorView
                 }
+                .padding(.top, 8)
+                .padding(.horizontal, 16)
                 
-                // Enhanced progress indicator
-                if !sessionManager.trainingSessions.isEmpty {
-                    VStack(spacing: 6) {
-                        Text("Week \(currentWeek) of 12")
-                            .font(.system(size: 12, weight: .semibold, design: .rounded))
-                            .foregroundColor(Color.brandSecondary.opacity(0.8))
-                        
-                        // Premium progress bar
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.brandAccent.opacity(0.3))
-                                    .frame(height: 6)
-                                
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [
-                                                Color.brandPrimary,
-                                                Color.brandPrimary.opacity(0.8)
-                                            ]),
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        )
-                                    )
-                                    .frame(width: geometry.size.width * CGFloat(currentWeek) / 12.0, height: 6)
-                                    .shadow(color: Color.brandPrimary.opacity(0.4), radius: 2)
-                            }
-                        }
-                        .frame(height: 6)
-                    }
-                    .padding(.horizontal, 12)
+                // Session cards - fixed position
+                sessionCardsView
+                    .padding(.top, 16)
+                
+                // Button section - fixed at bottom area
+                VStack(spacing: 8) {
+                    startButtonView
+                    syncButtonView
                 }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
+    }
+    
+    // MARK: - Header View
+    private var headerView: some View {
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.5), radius: 2)
+                
+                Text("SPRINT COACH 40")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                    .tracking(1)
+                    .foregroundColor(.white)
+            }
+            
+            Text("Select Workout")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), radius: 4)
+        }
+    }
+    
+    // MARK: - Progress Indicator View
+    @ViewBuilder
+    private var progressIndicatorView: some View {
+        if !sessionManager.trainingSessions.isEmpty {
+            VStack(spacing: 6) {
+                Text("Week \(currentWeek) of 12")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundColor(.white.opacity(0.8))
+                
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.white.opacity(0.3))
+                            .frame(height: 6)
+                        
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(progressGradient)
+                            .frame(width: geometry.size.width * CGFloat(currentWeek) / 12.0, height: 6)
+                            .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4), radius: 2)
+                    }
+                }
+                .frame(height: 6)
+            }
+            .padding(.horizontal, 12)
+        }
+    }
+    
+    // MARK: - Session Cards View
+    private var sessionCardsView: some View {
+        let _ = print("🔍 SessionCardsView - sessionCards count: \(sessionCards.count)")
+        let _ = print("🔍 SessionCardsView - sessionManager sessions: \(sessionManager.trainingSessions.count)")
+        
+        return Group {
+            if sessionCards.isEmpty {
+                // Show debug view when no cards available
+                VStack(spacing: 8) {
+                    Text("No Session Cards")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Text("Sessions: \(sessionManager.trainingSessions.count)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    Button("Reload") {
+                        // Force refresh
+                    }
+                    .font(.caption)
+                    .padding(8)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+                }
+                .frame(maxWidth: .infinity, idealHeight: 110)
+            } else {
                 TabView(selection: $selectedSession) {
                     ForEach(sessionCards.indices, id: \.self) { idx in
                         let session = sessionCards[idx]
-                        // Special styling for welcome card (index 0)
                         if idx == 0 {
                             WelcomeCardView(session: session, isSelected: selectedSession == idx)
                                 .tag(idx)
                                 .onTapGesture {
-                                    let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
-                                    if sessionSource == "Fallback" {
-                                        print("🔄 User tapped offline indicator - forcing iPhone sync")
-                                        sessionManager.forceIPhoneSessionSync()
-                                    }
+                                    handleWelcomeCardTap()
                                 }
                         } else {
-                            PremiumSessionCardView(
-                                session: session, 
-                                isSelected: selectedSession == idx
-                            )
-                            .tag(idx)
+                            PremiumSessionCardView(session: session, isSelected: selectedSession == idx)
+                                .tag(idx)
                         }
                     }
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .frame(height: 110)
-                // Premium start button
-                Button(action: { 
-                    #if os(watchOS)
-                    WKInterfaceDevice.current().play(.click)
-                    #endif
-                    
-                    // If welcome card is selected, advance to next card
-                    if selectedSession == 0 {
-                        print("➡️ Swipe Left button pressed - advancing to first session")
-                        withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                            selectedSession = 1
-                        }
-                        return
-                    }
-                    
-                    // Check for Sprint Timer Pro (index 5 = welcome + 4 demo cards + Sprint Timer Pro)
-                    if selectedSession == 5 {
-                        print("👑 Sprint Timer Pro selected - opening custom workout creator")
-                        showSprintTimerProView = true
-                        return
-                    }
-                    
-                    print("🚀 Start button pressed for session: \(selectedSession)")
-                    
-                    // Get the selected session data to pass to workout views
-                    // Adjust index to account for welcome card
-                    let sessionIndex = selectedSession - 1
-                    let selectedSessionData: TrainingSession?
-                    if !sessionManager.trainingSessions.isEmpty && sessionIndex >= 0 && sessionIndex < sessionManager.trainingSessions.count {
-                        selectedSessionData = sessionManager.trainingSessions[sessionIndex]
-                        print("✅ Starting workout with real session: W\(selectedSessionData!.week)/D\(selectedSessionData!.day) - \(selectedSessionData!.type)")
-                    } else {
-                        // Create demo session data that matches the card description
-                        selectedSessionData = createDemoSession(for: sessionIndex)
-                        print("ℹ️ Starting workout with demo session (index: \(selectedSession)): \(selectedSessionData?.type ?? "Unknown")")
-                    }
-                    
-                    // Store selected session for WorkoutWatchViewModel
-                    if let session = selectedSessionData {
-                        // Update the session manager with the current session
-                        WatchSessionManager.shared.setCurrentWorkoutSession(session)
-                    }
-                    
-                    showWorkoutFlow = true 
-                }) {
-                    HStack(spacing: 8) {
-                        Image(systemName: selectedSession == 0 ? "arrow.left" : "bolt.fill")
-                            .font(.system(size: 14, weight: .bold))
-                        Text(selectedSession == 0 ? "Swipe Left" : "Start Sprint")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                    }
-                    .foregroundColor(Color.brandBackground)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.brandPrimary,
-                                Color.brandPrimary.opacity(0.8)
-                            ]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .cornerRadius(12)
-                    .shadow(color: Color.brandPrimary.opacity(0.4), radius: 4, x: 0, y: 2)
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 12)
-                .padding(.top, 12)
-                
-                // Show sync button if using fallback sessions
-                let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
-                if sessionSource == "Fallback" {
-                    Button(action: {
-                        print("🔄 USER FORCING IPHONE SYNC - Fallback sessions detected")
-                        sessionManager.forceIPhoneSessionSync()
-                    }) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(.system(size: 12, weight: .bold))
-                            Text("Sync iPhone Sessions")
-                                .font(.system(size: 12, weight: .bold, design: .rounded))
-                        }
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(Color.orange)
-                        .cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, 12)
-                    .padding(.top, 8)
-                }
-                
-                Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, idealHeight: 110)
+                .clipped()
+                .animation(.easeInOut(duration: 0.3), value: selectedSession)
             }
-            .padding()
-            .contentShape(Rectangle()) // Make the whole area respond to gestures
-            .gesture(
-                DragGesture(minimumDistance: 8, coordinateSpace: .local)
-                    .onEnded { value in
-                        print("🔍 DaySessionCards gesture: x=\(value.translation.width), y=\(value.translation.height)")
-                        
-                        let horizontal = abs(value.translation.width) > abs(value.translation.height)
-                        
-                        if horizontal && abs(value.translation.width) > 20 {
-                            // Horizontal swipes for session navigation
-                            if value.translation.width > 20 {
-                                // Swipe right - previous session or StarterPro
-                                if selectedSession > 0 {
-                                    print("➡️ SWIPE RIGHT - previous session")
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedSession -= 1
-                                    }
-                                } else {
-                                    print("➡️ SWIPE RIGHT - showing StarterPro")
-                                    showStarterPro = true
-                                }
-                            } else if value.translation.width < -20 {
-                                // Swipe left - next session
-                                if selectedSession < sessionCards.count - 1 {
-                                    print("⬅️ SWIPE LEFT - next session")
-                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedSession += 1
-                                    }
-                                } else {
-                                    print("⬅️ SWIPE LEFT - at last session")
-                                }
-                            }
-                        }
-                    }
-            )
         }
-        .navigationDestination(isPresented: $showStarterPro) {
-            StarterProWatchView()
+    }
+    
+    // MARK: - Start Button View
+    private var startButtonView: some View {
+        Button(action: handleStartButtonTap) {
+            HStack(spacing: 8) {
+                Image(systemName: selectedSession == 0 ? "arrow.left" : "bolt.fill")
+                    .font(.system(size: 14, weight: .bold))
+                Text(selectedSession == 0 ? "Swipe Left" : "Start Sprint")
+                    .font(.system(size: 14, weight: .bold, design: .rounded))
+            }
+            .foregroundColor(.black)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+            .background(startButtonGradient)
+            .cornerRadius(12)
+            .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4), radius: 4, x: 0, y: 2)
         }
-        .id(forceRefresh) // Force view refresh when sessions change
-        .fullScreenCover(isPresented: $showWorkoutFlow) {
-            WorkoutFlowView(workoutVM: createWorkoutViewModel(), 
-                           currentStep: $currentWorkoutStep,
-                           onComplete: { showWorkoutFlow = false })
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Sync Button View
+    @ViewBuilder
+    private var syncButtonView: some View {
+        let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
+        if sessionSource == "Fallback" {
+            Button(action: {
+                print("🔄 USER FORCING IPHONE SYNC - Fallback sessions detected")
+                sessionManager.forceIPhoneSessionSync()
+            }) {
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 12, weight: .bold))
+                    Text("Sync iPhone Sessions")
+                        .font(.system(size: 12, weight: .bold, design: .rounded))
+                }
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
+                .background(Color.orange)
+                .cornerRadius(8)
+            }
+            .buttonStyle(.plain)
         }
-        .fullScreenCover(isPresented: $showSprintTimerProView) {
-            SprintTimerProWatchView()
+    }
+    
+    // MARK: - Computed Properties
+    private var progressGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(colors: [
+                Color(red: 1.0, green: 0.8, blue: 0.0),
+                Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8)
+            ]),
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+    
+    private var startButtonGradient: LinearGradient {
+        LinearGradient(
+            gradient: Gradient(colors: [
+                Color(red: 1.0, green: 0.8, blue: 0.0),
+                Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8)
+            ]),
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
+    
+    private var swipeGesture: some Gesture {
+        DragGesture(minimumDistance: 8, coordinateSpace: .local)
+            .onEnded { value in
+                handleSwipeGesture(value)
+            }
+    }
+    
+    // MARK: - Helper Functions
+    private func getCurrentSelectedSession() -> TrainingSession? {
+        let sessionIndex = selectedSession - 1
+        if !sessionManager.trainingSessions.isEmpty && sessionIndex >= 0 && sessionIndex < sessionManager.trainingSessions.count {
+            return sessionManager.trainingSessions[sessionIndex]
+        } else {
+            return createDemoSession(for: sessionIndex)
         }
-        .focusable()
-        .digitalCrownRotation(.constant(0.0), from: 0.0, through: Double(max(0, sessionCards.count - 1)), by: 1.0, sensitivity: .medium)
-        .onTapGesture(count: 2) {
-            // EMERGENCY: Double-tap to force iPhone sync
-            let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
-            print("🚨 EMERGENCY DOUBLE-TAP SYNC - Current source: \(sessionSource)")
+    }
+    
+    private func handleWelcomeCardTap() {
+        let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
+        if sessionSource == "Fallback" {
+            print("🔄 User tapped offline indicator - forcing iPhone sync")
             sessionManager.forceIPhoneSessionSync()
-            forceRefresh.toggle()
         }
-        .onAppear {
-            print("🔍 DaySessionCardsWatchView appeared")
-            print("📱 Current sessions count: \(sessionManager.trainingSessions.count)")
-            
-            // EMERGENCY: Auto-sync if using fallback sessions
-            let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
-            if sessionSource == "Fallback" {
-                print("🚨 AUTO-SYNC: Detected fallback sessions on appear - forcing iPhone sync")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    sessionManager.forceIPhoneSessionSync()
+    }
+    
+    private func handleStartButtonTap() {
+        #if os(watchOS)
+        WKInterfaceDevice.current().play(.click)
+        #endif
+        
+        if selectedSession == 0 {
+            print("➡️ Swipe Left button pressed - advancing to first session")
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                selectedSession = 1
+            }
+            return
+        }
+        
+        if selectedSession == 5 {
+            print("👑 Sprint Timer Pro selected - opening custom workout creator")
+            showSprintTimerProView = true
+            return
+        }
+        
+        print("🚀 Start button pressed for session: \(selectedSession)")
+        
+        let sessionIndex = selectedSession - 1
+        let selectedSessionData: TrainingSession?
+        if !sessionManager.trainingSessions.isEmpty && sessionIndex >= 0 && sessionIndex < sessionManager.trainingSessions.count {
+            selectedSessionData = sessionManager.trainingSessions[sessionIndex]
+            print("✅ Starting workout with real session: W\(selectedSessionData!.week)/D\(selectedSessionData!.day) - \(selectedSessionData!.type)")
+        } else {
+            selectedSessionData = createDemoSession(for: sessionIndex)
+            print("ℹ️ Starting workout with demo session (index: \(selectedSession)): \(selectedSessionData?.type ?? "Unknown")")
+        }
+        
+        if let session = selectedSessionData {
+            WatchSessionManager.shared.setCurrentWorkoutSession(session)
+        }
+        
+        showEnhanced7StageWorkout = true
+    }
+    
+    private func handleSwipeGesture(_ value: DragGesture.Value) {
+        print("🔍 DaySessionCards gesture: x=\(value.translation.width), y=\(value.translation.height)")
+        
+        let horizontal = abs(value.translation.width) > abs(value.translation.height)
+        
+        if horizontal && abs(value.translation.width) > 20 {
+            if value.translation.width > 20 {
+                if selectedSession > 0 {
+                    print("➡️ SWIPE RIGHT - previous session")
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        selectedSession -= 1
+                    }
+                } else {
+                    print("➡️ SWIPE RIGHT - showing StarterPro")
+                    showStarterPro = true
+                }
+            } else if value.translation.width < -20 {
+                if selectedSession < sessionCards.count - 1 {
+                    print("⬅️ SWIPE LEFT - next session")
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        selectedSession += 1
+                    }
+                } else {
+                    print("⬅️ SWIPE LEFT - at last session")
                 }
             }
+        }
+    }
+    
+    private func handleDoubleTap() {
+        let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
+        print("🚨 EMERGENCY DOUBLE-TAP SYNC - Current source: \(sessionSource)")
+        sessionManager.forceIPhoneSessionSync()
+    }
+    
+    private func handleViewAppear() {
+        print("🔍 DaySessionCardsWatchView appeared")
+        print("📱 Current sessions count: \(sessionManager.trainingSessions.count)")
+        
+        let sessionSource = UserDefaults.standard.string(forKey: "sessionSource") ?? "Unknown"
+        if sessionSource == "Fallback" {
+            print("🚨 AUTO-SYNC: Detected fallback sessions on appear - forcing iPhone sync")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                sessionManager.forceIPhoneSessionSync()
+            }
+        }
+        
+        if !hasShownWelcome && !sessionManager.trainingSessions.isEmpty {
+            playProgramLoadedNotification()
+            hasShownWelcome = true
+        }
+    }
+    
+    private func handleSessionsCountChange(oldCount: Int, newCount: Int) {
+        print("🔄 Sessions count changed: \(oldCount) → \(newCount)")
+        if newCount > 0 {
+            print("🎯 Sessions available, UI will update automatically")
             
-            // Play notification sound and haptic when program loads
-            if !hasShownWelcome && !sessionManager.trainingSessions.isEmpty {
+            if !hasShownWelcome {
                 playProgramLoadedNotification()
                 hasShownWelcome = true
             }
-            
-            // Force UI refresh to ensure session cards appear
-            forceRefresh.toggle()
         }
-        .onChange(of: sessionManager.trainingSessions.count) { oldCount, newCount in
-            print("🔄 Sessions count changed: \(oldCount) → \(newCount)")
-            if newCount > 0 {
-                print("🎯 FORCE REFRESH: Sessions available, updating UI")
-                forceRefresh.toggle()
-                
-                // Play notification if first time loading sessions
-                if !hasShownWelcome {
-                    playProgramLoadedNotification()
-                    hasShownWelcome = true
+    }
+    
+    private func handleSecondAppear() {
+        if sessionManager.trainingSessions.isEmpty {
+            print("🔄 No sessions available, requesting from iPhone...")
+            sessionManager.forceSyncFromPhone()
+        } else {
+            print("✅ Sessions available (\(sessionManager.trainingSessions.count)), ready for use")
+            if let lastSync = sessionManager.lastSyncTime,
+               Date().timeIntervalSince(lastSync) > 300 {
+                Task { @MainActor in
+                    await sessionManager.requestTrainingSessions()
                 }
             }
         }
-        .onAppear {
-            // POLISHED: Only sync if truly needed, avoid unnecessary requests
-            if sessionManager.trainingSessions.isEmpty {
-                print("🔄 No sessions available, requesting from iPhone...")
-                sessionManager.forceSyncFromPhone()
-            } else {
-                print("✅ Sessions available (\(sessionManager.trainingSessions.count)), ready for use")
-                // SEAMLESS: Only request fresh sessions if last sync was more than 5 minutes ago
-                if let lastSync = sessionManager.lastSyncTime,
-                   Date().timeIntervalSince(lastSync) > 300 { // 5 minutes
-                    Task { @MainActor in
-                        await sessionManager.requestTrainingSessions()
-                    }
-                }
-            }
-            
-            // If no sessions available, this indicates user needs to complete onboarding on iPhone
-            if sessionManager.trainingSessions.isEmpty {
-                print("⚠️ No training sessions available - user may need to complete onboarding on iPhone")
-            } else {
-                print("✅ Using personalized sessions from SessionLibrary based on user's onboarding inputs")
-                for (index, session) in sessionManager.trainingSessions.enumerated() {
-                    print("  Session \(index + 1): W\(session.week)/D\(session.day) - \(session.type) (\(session.focus))")
-                }
+        
+        if sessionManager.trainingSessions.isEmpty {
+            print("⚠️ No training sessions available - user may need to complete onboarding on iPhone")
+        } else {
+            print("✅ Using personalized sessions from SessionLibrary based on user's onboarding inputs")
+            for (index, session) in sessionManager.trainingSessions.enumerated() {
+                print("  Session \(index + 1): W\(session.week)/D\(session.day) - \(session.type) (\(session.focus))")
             }
         }
     }

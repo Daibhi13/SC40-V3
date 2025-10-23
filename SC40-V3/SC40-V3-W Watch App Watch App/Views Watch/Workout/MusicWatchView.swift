@@ -17,6 +17,7 @@ struct MusicWatchView: View {
     @State private var currentTrack: String = "Not Playing"
     @State private var currentArtist: String = ""
     @State private var showingAppLauncher: Bool = false
+    @Environment(\.presentationMode) var presentationMode
     
     private let musicApps = [
         MusicApp(name: "Apple Music", icon: "music.note", bundleId: "com.apple.Music"),
@@ -114,10 +115,23 @@ struct MusicWatchView: View {
         .sheet(isPresented: $showingAppLauncher) {
             MusicAppLauncherView(musicApps: musicApps)
         }
+        .gesture(swipeBackGesture)
         .onAppear {
             setupMediaPlayer()
             updateNowPlayingInfo()
         }
+    }
+    
+    // MARK: - Swipe Back Gesture
+    private var swipeBackGesture: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onEnded { value in
+                // Swipe Left to go back to Enhanced7StageWorkoutView
+                if value.translation.width < -30 {
+                    print("🎵 MusicView - Swipe Left to return to workout")
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
     }
     
     // MARK: - Media Control Functions

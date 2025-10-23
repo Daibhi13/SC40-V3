@@ -58,6 +58,18 @@ struct ControlWatchView: View {
     //     )]
     // }
 
+    // MARK: - Swipe Back Gesture
+    private var swipeBackGesture: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onEnded { value in
+                // Swipe Right to go back to Enhanced7StageWorkoutView
+                if value.translation.width > 30 {
+                    print(" ControlView - Swipe Right to return to workout")
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
+    }
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
@@ -137,6 +149,7 @@ struct ControlWatchView: View {
             }
             .padding(.vertical, 10)
         }
+        .gesture(swipeBackGesture)
         .alert(isPresented: $showEndWorkoutAlert) {
             Alert(
                 title: Text("End Workout?").foregroundColor(Color.brandPrimary),

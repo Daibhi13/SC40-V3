@@ -21,6 +21,12 @@ struct Enhanced7StageWorkoutView: View {
     @State private var currentRep = 1
     @State private var totalReps = 4
     
+    // Navigation state for swipe gestures
+    @State private var showControlView = false
+    @State private var showMusicView = false
+    @State private var showRepLogView = false
+    @State private var horizontalTab = 0
+    
     let session: TrainingSession
     
     enum WorkoutPhase: String, CaseIterable {
@@ -143,17 +149,6 @@ struct Enhanced7StageWorkoutView: View {
                         
                         // Phase Instructions
                         PhaseInstructionsView(phase: currentPhase)
-                        
-                        // STANDARDIZED: Enhanced Control Buttons matching all views
-                        EnhancedWorkoutControlsView(
-                            isRunning: isRunning,
-                            isPaused: isPaused,
-                            onStartPause: toggleWorkout,
-                            onNext: enhancedFastForward,
-                            onComplete: enhancedCompleteWorkout,
-                            onToggleVoice: toggleVoiceCoaching,
-                            isVoiceEnabled: isVoiceCoachingEnabled
-                        )
                     }
                     .padding()
                 }
@@ -206,6 +201,57 @@ struct Enhanced7StageWorkoutView: View {
                 adaptToPhoneCoachingPreferences(adaptedPrefs)
             }
         }
+        .gesture(swipeGesture)
+        .fullScreenCover(isPresented: $showControlView) {
+            ControlWatchView(workoutVM: workoutVM)
+        }
+        .fullScreenCover(isPresented: $showMusicView) {
+            MusicWatchView()
+        }
+        .fullScreenCover(isPresented: $showRepLogView) {
+            RepLogWatchLiveView(
+                workoutVM: workoutVM, 
+                horizontalTab: $horizontalTab,
+                onDone: {
+                    showRepLogView = false
+                }
+            )
+        }
+    }
+    
+    // MARK: - Swipe Gesture Handler
+    private var swipeGesture: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onEnded { value in
+                let horizontalAmount = value.translation.width
+                let verticalAmount = value.translation.height
+                
+                if abs(horizontalAmount) > abs(verticalAmount) {
+                    // Horizontal swipes
+                    if horizontalAmount < 0 {
+                        // Swipe Left → ControlView
+                        print("🔄 Swipe Left - Opening ControlView")
+                        showControlView = true
+                    } else {
+                        // Swipe Right → MusicView
+                        print("🎵 Swipe Right - Opening MusicView")
+                        showMusicView = true
+                    }
+                } else {
+                    // Vertical swipes
+                    if verticalAmount < 0 {
+                        // Swipe Up → RepLogView
+                        print("📊 Swipe Up - Opening RepLogView")
+                        showRepLogView = true
+                    }
+                    // Swipe Down - could be used for other functionality if needed
+                }
+                
+                // Add haptic feedback for swipe gestures
+                #if os(watchOS)
+                WKInterfaceDevice.current().play(.click)
+                #endif
+            }
     }
     
     // MARK: - Workout Control Methods
@@ -509,32 +555,6 @@ struct Enhanced7StageWorkoutView: View {
         triggerHapticFeedback(.light)
     }
     
-    private func enhancedFastForward() {
-        advanceToNextPhase()
-        
-        triggerHapticFeedback(.heavy)
-        
-        let nextPhaseName = currentPhase.title
-        announceVoiceCoaching("Skipping to \(nextPhaseName)! ⏭️")
-        showCoachingCue("Skipping to \(nextPhaseName)! ⏭️")
-    }
-    
-    // MARK: - Enhanced Completion
-    
-    private func enhancedCompleteWorkout() {
-        phaseTimer?.invalidate()
-        isRunning = false
-        currentPhase = .completed
-        showCompletionView = true
-        
-        // Enhanced completion feedback
-        announceVoiceCoaching("Workout complete! Great job on Apple Watch! 🎉")
-        showCoachingCue("Workout Complete! 🏆")
-        triggerHapticFeedback(.success)
-        
-        // Save workout results
-        print("🏆 Apple Watch workout completed successfully!")
-    }
     
     // MARK: - Auto-Adaptation Methods
     

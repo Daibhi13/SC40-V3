@@ -89,6 +89,8 @@ struct TrainingView: View {
                         AnyView(ProFeaturesView())
                     case .performanceTrends:
                         AnyView(AdvancedAnalyticsView(userProfileVM: userProfileVM))
+                    case .advancedAnalytics:
+                        AnyView(AdvancedAnalyticsView(userProfileVM: userProfileVM))
                     }
                 }
                 .navigationTitle("Sprint Coach 40")
@@ -97,9 +99,8 @@ struct TrainingView: View {
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: { 
-                            withAnimation(.easeInOut(duration: 0.3)) { 
-                                showMenu.toggle() 
-                            }
+                            // Stable menu toggle without animation conflicts
+                            showMenu.toggle()
                             #if os(iOS)
                             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                             #endif
@@ -112,6 +113,8 @@ struct TrainingView: View {
                                 Image(systemName: "line.horizontal.3")
                                     .font(.system(size: 18, weight: .semibold))
                                     .foregroundColor(.yellow)
+                                    .rotationEffect(.degrees(showMenu ? 90 : 0))
+                                    .animation(.easeInOut(duration: 0.2), value: showMenu)
                             }
                         }
                         .accessibilityLabel("Open menu")
@@ -164,19 +167,13 @@ struct TrainingView: View {
                 }
             }
             
-            // Hamburger Menu Overlay - ensure it appears on top
+            // Hamburger Menu Overlay - stable positioning with modern SwiftUI
             if showMenu {
                 HamburgerSideMenu(showMenu: $showMenu, onSelect: { (selection: MenuSelection) in
                     // Direct assignment since both use the same MenuSelection type
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        selectedMenu = selection
-                    }
+                    selectedMenu = selection
                 })
                 .zIndex(1000) // Ensure menu appears above all content
-                .transition(.asymmetric(
-                    insertion: .move(edge: .leading).combined(with: .opacity),
-                    removal: .move(edge: .leading).combined(with: .opacity)
-                ))
             }
         }
         .sheet(item: $selectedSession) { session in
@@ -865,54 +862,137 @@ extension TrainingView {
         
         return ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
-                // Welcome Header - Centered to match UI
-                VStack(alignment: .center, spacing: 16) {
-                    Text("Welcome, David!")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    
-                    VStack(alignment: .center, spacing: 8) {
-                        Text("YOUR PERSONAL BEST")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
-                            .tracking(1.2)
-                        
-                        Text("5.25s")
-                            .font(.system(size: 64, weight: .bold))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [
-                                        Color(red: 1.0, green: 0.9, blue: 0.7),  // Light cream
-                                        Color(red: 1.0, green: 0.8, blue: 0.4),  // Golden yellow
-                                        Color(red: 0.9, green: 0.7, blue: 0.3)   // Darker gold
-                                    ],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                        
-                        Text("40-Yard Dash")
-                            .font(.system(size: 16, weight: .medium))
+                // Nike-Inspired Hero Section
+                VStack(alignment: .center, spacing: 24) {
+                    // Motivational Welcome
+                    VStack(spacing: 12) {
+                        Text("YOUR JOURNEY")
+                            .font(.system(size: 13, weight: .black))
                             .foregroundColor(.white.opacity(0.8))
-                    }
-                    .frame(maxWidth: .infinity, alignment: .center)
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 32)
-
-                // 40 Yards Program Section - Exact match
-                VStack(alignment: .leading, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("40 YARDS PROGRAM")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                            .tracking(1.2)
+                            .tracking(2.0)
                         
-                        Text("12-Week Training Program")
-                            .font(.system(size: 24, weight: .bold))
+                        Text("STARTS NOW")
+                            .font(.system(size: 36, weight: .black))
                             .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .lineLimit(nil)
+                        
+                        Text("Every champion was once a beginner.\nEvery pro was once an amateur.")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.85))
+                            .multilineTextAlignment(.center)
+                            .lineSpacing(4)
+                            .padding(.horizontal, 20)
+                    }
+                    
+                    // Personal Best Achievement Card
+                    VStack(spacing: 12) {
+                        HStack(spacing: 12) {
+                            Image(systemName: "trophy.fill")
+                                .font(.system(size: 20, weight: .bold))
+                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("PERSONAL RECORD")
+                                    .font(.system(size: 11, weight: .black))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .tracking(1.5)
+                                
+                                HStack(alignment: .bottom, spacing: 8) {
+                                    Text("5.25")
+                                        .font(.system(size: 32, weight: .black))
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 1.0, green: 0.9, blue: 0.7),
+                                                    Color(red: 1.0, green: 0.8, blue: 0.4),
+                                                    Color(red: 0.9, green: 0.7, blue: 0.3)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                    
+                                    Text("SEC")
+                                        .font(.system(size: 14, weight: .bold))
+                                        .foregroundColor(.white.opacity(0.7))
+                                        .padding(.bottom, 4)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing, spacing: 2) {
+                                Text("40 YARDS")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                
+                                Text("DASH")
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [
+                                            Color.white.opacity(0.12),
+                                            Color.white.opacity(0.06)
+                                        ],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3),
+                                                    Color.white.opacity(0.1)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .padding(.top, 20)
+                .padding(.bottom, 40)
+
+                // Elite Training Program Section
+                VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "flame.fill")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            
+                            Text("ELITE TRAINING")
+                                .font(.system(size: 13, weight: .black))
+                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                .tracking(1.8)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Transform Your Speed")
+                                .font(.system(size: 28, weight: .black))
+                                .foregroundColor(.white)
+                                .lineLimit(nil)
+                            
+                            Text("Professional 12-week program designed to unlock your potential")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                                .lineLimit(nil)
+                                .lineSpacing(2)
+                        }
                     }
                     .padding(.horizontal, 20)
                     
@@ -939,53 +1019,82 @@ extension TrainingView {
                         }
                         .frame(height: 200) // Fixed height for carousel
                         
-                        // Page indicator dots - showing first 10 sessions
-                        HStack(spacing: 8) {
-                            ForEach(0..<min(10, sessionsToShow.count), id: \.self) { index in
-                                Circle()
-                                    .fill(index == 0 ? Color.white : Color.white.opacity(0.3))
-                                    .frame(width: 8, height: 8)
-                            }
-                        }
-                        .padding(.horizontal, 20)
                     }
                 }
                 .padding(.bottom, 24)
 
-                // Start Sprint Training Button - Navigate to MainProgramWorkoutView
-                Button(action: {
-                    #if os(iOS)
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                    #endif
-                    // Use the first session as default when using Start button
-                    selectedSessionForWorkout = sessionsToShow.first
-                    showMainProgramWorkout = true
-                }) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "bolt.fill")
-                            .font(.system(size: 18, weight: .bold))
-                        Text("Start Sprint Training")
-                            .font(.system(size: 18, weight: .semibold))
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 16, weight: .bold))
+                // Nike-Inspired Action Button
+                VStack(spacing: 16) {
+                    // Motivational Pre-Button Text
+                    VStack(spacing: 8) {
+                        Text("READY TO DOMINATE?")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundColor(.white.opacity(0.9))
+                            .tracking(1.5)
+                        
+                        Text("Your transformation begins with a single step")
+                            .font(.system(size: 15, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .lineLimit(nil)
                     }
-                    .foregroundColor(.black)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 1.0, green: 0.8, blue: 0.0),
-                                Color(red: 1.0, green: 0.6, blue: 0.0)
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                    .padding(.horizontal, 20)
+                    
+                    // Enhanced Action Button
+                    Button(action: {
+                        #if os(iOS)
+                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                        #endif
+                        selectedSessionForWorkout = sessionsToShow.first
+                        showMainProgramWorkout = true
+                    }) {
+                        VStack(spacing: 8) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "flame.fill")
+                                    .font(.system(size: 20, weight: .bold))
+                                
+                                VStack(spacing: 2) {
+                                    Text("BEGIN YOUR JOURNEY")
+                                        .font(.system(size: 18, weight: .black))
+                                        .tracking(0.5)
+                                    
+                                    Text("Start Elite Training")
+                                        .font(.system(size: 14, weight: .semibold))
+                                        .opacity(0.8)
+                                }
+                                
+                                Spacer()
+                                
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .font(.system(size: 24, weight: .bold))
+                            }
+                        }
+                        .foregroundColor(.black)
+                        .frame(maxWidth: .infinity)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 20)
+                        .background(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 1.0, green: 0.85, blue: 0.1),
+                                    Color(red: 1.0, green: 0.75, blue: 0.0),
+                                    Color(red: 0.95, green: 0.65, blue: 0.0)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .cornerRadius(28)
+                        .cornerRadius(16)
+                        .shadow(
+                            color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4),
+                            radius: 12,
+                            x: 0,
+                            y: 6
+                        )
+                    }
+                    .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
+                .padding(.bottom, 32)
 
                 // Sprint Timer Pro Access Point
                 SprintTimerProAccessCard(isProUser: isProUser) {
@@ -1017,84 +1126,84 @@ extension TrainingView {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 12)
                 #endif
-
-
+                
+                // Additional spacing to replace Up Next section
+                Spacer()
+                    .frame(height: 20)
                 // Up Next Section - Exact match
-                VStack(alignment: .leading, spacing: 12) {
-                    HStack(spacing: 8) {
-                        Image(systemName: "calendar")
-                            .font(.system(size: 16))
-                            .foregroundColor(.purple)
-                        Text("Up Next: Week 1, Day 1")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.white)
-                    }
-                    
-                    Text("Accel → Drive")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                    
-                    HStack(spacing: 16) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "figure.run")
-                                .font(.system(size: 14))
-                                .foregroundColor(.yellow)
-                            Text("3×25yd")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white)
-                        }
+                // VStack(alignment: .leading, spacing: 12) {
+                //     HStack(spacing: 8) {
+                //         Image(systemName: "calendar")
+                //             .font(.system(size: 16))
+                //             .foregroundColor(.purple)
+                //         Text("Up Next: Week 1, Day 1")
+                //             .font(.system(size: 18, weight: .semibold))
+                //             .foregroundColor(.white)
+                //     }
+                
+                //     Text("Accel → Drive")
+                //         .font(.system(size: 14, weight: .medium))
+                //         .foregroundColor(.white.opacity(0.7))
+                
+                //     HStack(spacing: 16) {
+                //         HStack(spacing: 6) {
+                //             Image(systemName: "figure.run")
+                //                 .font(.system(size: 14))
+                //                 .foregroundColor(.yellow)
+                //             Text("3×25yd")
+                //                 .font(.system(size: 14, weight: .medium))
+                //                 .foregroundColor(.white)
+                //         }
                         
-                        HStack(spacing: 6) {
-                            Image(systemName: "bolt.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(.yellow)
-                            Text("Max")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.white)
-                        }
-                    }
-                    
-                    HStack(spacing: 6) {
-                        Image(systemName: "clock")
-                            .font(.system(size: 12))
-                            .foregroundColor(.white.opacity(0.6))
-                        Text("Scheduled for tomorrow")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                    }
-                }
-                .padding(20)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.white.opacity(0.15),
-                                    Color.white.opacity(0.05)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(
-                                    LinearGradient(
-                                        colors: [
-                                            Color.white.opacity(0.3),
-                                            Color.white.opacity(0.1)
-                                        ],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    ),
-                                    lineWidth: 1
-                                )
-                        )
-                        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
-                )
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                //         HStack(spacing: 6) {
+                //             Image(systemName: "bolt.fill")
+                //                 .font(.system(size: 14))
+                //                 .foregroundColor(.yellow)
+                //             Text("Max")
+                //                 .font(.system(size: 14, weight: .medium))
+                //                 .foregroundColor(.white)
+                //         }
+                //     }
+                
+                //     HStack(spacing: 6) {
+                //         Image(systemName: "clock")
+                //             .font(.system(size: 12))
+                //             .foregroundColor(.white.opacity(0.6))
+                //         Text("Scheduled for tomorrow")
+                //             .font(.system(size: 12, weight: .medium))
+                //             .foregroundColor(.white.opacity(0.6))
+                //     }
+                // }
+                // .padding(20)
+                // .frame(maxWidth: .infinity, alignment: .leading)
+                // .background(
+                //     RoundedRectangle(cornerRadius: 16)
+                //         .fill(
+                //             LinearGradient(
+                //                 colors: [
+                //                     Color.white.opacity(0.15),
+                //                     Color.white.opacity(0.05)
+                //                 ],
+                //                 startPoint: .topLeading,
+                //                 endPoint: .bottomTrailing
+                //             )
+                //         )
+                //         .overlay(
+                //             RoundedRectangle(cornerRadius: 16)
+                //                 .stroke(
+                //                     LinearGradient(
+                //                         colors: [
+                //                             Color.white.opacity(0.3),
+                //                             Color.white.opacity(0.1)
+                //                         ],
+                //                         startPoint: .topLeading,
+                //                         endPoint: .bottomTrailing
+                //                     ),
+                //                     lineWidth: 1
+                //                 )
+                //         )
+                //         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+                // )
             }
         }
         .scrollContentBackground(.hidden)
@@ -1122,6 +1231,18 @@ struct TrainingSessionCard: View {
                 
                 Spacer()
                 
+                // Completion Mark
+                if isSessionCompleted(session) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.green)
+                        .background(
+                            Circle()
+                                .fill(Color.white)
+                                .frame(width: 18, height: 18)
+                        )
+                }
+                
                 // Session Type Badge - Matching screenshot
                 Text(session.type.uppercased())
                     .font(.system(size: 11, weight: .bold))
@@ -1132,43 +1253,73 @@ struct TrainingSessionCard: View {
                     .cornerRadius(12)
             }
             
-            // Day and Focus - Matching screenshot layout
-            VStack(alignment: .leading, spacing: 4) {
-                Text("DAY \(session.day)")
-                    .font(.system(size: 32, weight: .black))
-                    .foregroundColor(.white)
+            // Day and Focus - Nike-inspired layout
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .bottom, spacing: 8) {
+                    Text("DAY")
+                        .font(.system(size: 16, weight: .black))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(1.5)
+                    
+                    Text("\(session.day)")
+                        .font(.system(size: 36, weight: .black))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
                 
                 Text(session.focus.uppercased())
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.8))
-                    .tracking(1.0)
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundColor(.white.opacity(0.9))
+                    .tracking(1.2)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.9)
             }
             
             // Workout Details - Enhanced with rest periods and recovery session handling
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
+                HStack(alignment: .center) {
                     if let firstSprint = session.sprints.first, firstSprint.distanceYards > 0 {
-                        // Sprint session display
-                        Text("\(firstSprint.reps)")
-                            .font(.system(size: 24, weight: .black))
-                            .foregroundColor(.white)
-                        Text("×")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.6))
-                        Text("\(firstSprint.distanceYards) YD")
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundColor(.white)
+                        // Sprint session display - Enhanced formatting
+                        HStack(alignment: .bottom, spacing: 6) {
+                            Text("\(firstSprint.reps)")
+                                .font(.system(size: 28, weight: .black))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            
+                            Text("×")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundColor(.white.opacity(0.7))
+                                .padding(.bottom, 2)
+                            
+                            Text("\(firstSprint.distanceYards)")
+                                .font(.system(size: 20, weight: .black))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            
+                            Text("YD")
+                                .font(.system(size: 14, weight: .bold))
+                                .foregroundColor(.white.opacity(0.8))
+                                .padding(.bottom, 1)
+                        }
                         
                         Spacer()
                         
-                        // Intensity Badge
+                        // Enhanced Intensity Badge
                         Text(firstSprint.intensity.uppercased())
-                            .font(.system(size: 11, weight: .bold))
+                            .font(.system(size: 10, weight: .black))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 4)
-                            .background(Color.white)
-                            .cornerRadius(12)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.white)
+                                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+                            )
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                     } else if isRecoverySession(session) {
                         // Recovery or Active Recovery session display
                         Text(getRecoveryDisplayText(session))
@@ -1254,11 +1405,21 @@ struct TrainingSessionCard: View {
                 }
             }
             
-            // Motivational tagline
-            Text("PUSH YOUR LIMITS")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.white.opacity(0.7))
-                .tracking(0.8)
+            // Nike-Inspired Motivational tagline
+            HStack {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8))
+                
+                Text(getMotivationalMessage(session))
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(1.0)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                
+                Spacer()
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1277,9 +1438,19 @@ struct TrainingSessionCard: View {
                 )
         )
         .overlay(
-            // Double frame outline - outer frame
+            // Halo border for current day (Day 1) or regular border
             RoundedRectangle(cornerRadius: 16)
                 .stroke(
+                    isCurrentDay(session) ? 
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8),  // Golden halo
+                            Color(red: 1.0, green: 0.6, blue: 0.0).opacity(0.6),
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ) :
                     LinearGradient(
                         colors: [
                             Color.white.opacity(0.3),
@@ -1288,7 +1459,7 @@ struct TrainingSessionCard: View {
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     ),
-                    lineWidth: 1.5
+                    lineWidth: isCurrentDay(session) ? 2.5 : 1.5
                 )
         )
         .overlay(
@@ -1376,6 +1547,38 @@ struct TrainingSessionCard: View {
         } else {
             return Color.blue
         }
+    }
+    
+    // Helper function to check if session is completed
+    private func isSessionCompleted(_ session: TrainingSession) -> Bool {
+        // For demo purposes, mark Day 1 as completed
+        // In a real app, this would check against user's completion data
+        return session.day == 1 && session.week == 1
+    }
+    
+    // Helper function to check if this is the current day
+    private func isCurrentDay(_ session: TrainingSession) -> Bool {
+        // For demo purposes, Day 1 is the current day
+        // In a real app, this would check against user's current progress
+        return session.day == 1 && session.week == 1
+    }
+    
+    // Nike-inspired motivational messages
+    private func getMotivationalMessage(_ session: TrainingSession) -> String {
+        let messages = [
+            "GREATNESS AWAITS",
+            "UNLEASH YOUR POTENTIAL",
+            "CHAMPIONS ARE MADE HERE",
+            "PUSH BEYOND LIMITS",
+            "EXCELLENCE IS A HABIT",
+            "RISE TO THE CHALLENGE",
+            "DOMINATE YOUR GOALS",
+            "STRENGTH THROUGH STRUGGLE"
+        ]
+        
+        // Use session day to get consistent message for each session
+        let index = (session.day + session.week) % messages.count
+        return messages[index]
     }
 }
 
@@ -2221,113 +2424,102 @@ struct SprintTimerProAccessCard: View {
     var body: some View {
         Button(action: {
             #if os(iOS)
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
             #endif
             onTap()
         }) {
             VStack(spacing: 16) {
-                // Header with icon and title
                 HStack(spacing: 16) {
-                    ZStack {
-                        Circle()
-                            .fill(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.2))
-                            .frame(width: 60, height: 60)
-                        
-                        Image(systemName: "stopwatch.fill")
-                            .font(.system(size: 28, weight: .medium))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                    }
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.15))
+                        .frame(width: 50, height: 50)
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack(spacing: 8) {
-                            Text("Sprint Timer Pro")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(.white)
-                            
-                            if isProUser {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.green)
-                            } else {
-                                Image(systemName: "lock.fill")
-                                    .font(.system(size: 14, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.6))
-                            }
-                        }
-                        
-                        Text(isProUser ? "Create custom sprint workouts" : "Professional timing & training app")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
-                    }
-                    
-                    Spacer()
-                    
-                    if !isProUser {
-                        VStack(alignment: .trailing, spacing: 2) {
-                            Text("$4.99")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                            Text("one-time")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                    } else {
-                        // Pro user - show action button
-                        HStack(spacing: 8) {
-                            Image(systemName: "crown.fill")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.yellow)
-                            
-                            Text("OPEN PRO")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.white)
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.yellow.opacity(0.2))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 20)
-                                        .stroke(Color.yellow, lineWidth: 1)
-                                )
-                        )
-                    }
+                    Image(systemName: "stopwatch.fill")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                 }
                 
-                if !isProUser {
-                    // Features preview for non-pro users
-                    VStack(spacing: 8) {
-                        HStack(spacing: 12) {
-                            FeatureTag(text: "10-100 yards")
-                            FeatureTag(text: "GPS Timing")
-                            FeatureTag(text: "Custom Reps")
-                        }
+                // Content
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 8) {
+                        Text("Sprint Timer Pro")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
                         
-                        HStack(spacing: 12) {
-                            FeatureTag(text: "Rest Periods")
-                            FeatureTag(text: "Pro Starter")
-                            Spacer()
+                        if isProUser {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 16, weight: .bold))
+                                .foregroundColor(.green)
                         }
                     }
                     
-                    // Call to action
+                    Text(isProUser ? "Create custom sprint workouts" : "Unlock advanced training features")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.9)
+                }
+                
+                Spacer()
+                
+                // Action Button
+                if isProUser {
+                    // Polished Pro Button
                     HStack(spacing: 8) {
-                        Image(systemName: "arrow.right.circle.fill")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.black)
                         
-                        Text("Unlock Sprint Timer Pro")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                        
-                        Spacer()
+                        Text("OPEN PRO")
+                            .font(.system(size: 13, weight: .black))
+                            .foregroundColor(.black)
+                            .tracking(0.5)
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 1.0, green: 0.85, blue: 0.1),
+                                Color(red: 1.0, green: 0.75, blue: 0.0)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(12)
+                    .shadow(
+                        color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3),
+                        radius: 4,
+                        x: 0,
+                        y: 2
+                    )
                 } else {
-                    // Pro user - show access button
-                    HStack(spacing: 8) {
+                    // Upgrade Indicator
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("$4.99")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        
+                        Text("Upgrade")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+                }
+                
+                // Bottom Action Row (only for Pro users)
+                if isProUser {
+                    Divider()
+                        .background(Color.white.opacity(0.1))
+                        .padding(.horizontal, -20)
+                    
+                    HStack(spacing: 12) {
                         Image(systemName: "play.circle.fill")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: 18, weight: .bold))
                             .foregroundColor(.green)
                         
                         Text("Open Sprint Timer Pro")
@@ -2337,9 +2529,10 @@ struct SprintTimerProAccessCard: View {
                         Spacer()
                         
                         Image(systemName: "arrow.right")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 16, weight: .bold))
                             .foregroundColor(.white.opacity(0.6))
                     }
+                    .padding(.top, 16)
                 }
             }
             .padding(20)

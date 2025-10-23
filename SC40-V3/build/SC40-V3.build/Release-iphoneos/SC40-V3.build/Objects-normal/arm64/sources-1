@@ -49,6 +49,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserProfileExtensions.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/UserProfileViewModel.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/WorkoutPlan.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Models/WorkoutTypeAnalyzer.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/AuthenticationManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/ErrorHandling.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/FirebaseService.swift
@@ -60,6 +61,7 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/ReferralService.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/StoreKitService.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/WatchConnectivityManager.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/Services/WorkoutSyncManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Shared/GPSStopwatch.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Shared/HealthKitManager.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/Shared/MenuSelection.swift
@@ -80,7 +82,9 @@
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/RepLogLiveView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/ReusableRecordCard.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/SprintCoachGradientBackground.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/UnifiedSprintCoachView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WatchIntegrationView.swift
+/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WatchUnifiedSprintCoachView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WaveAIRepLogView.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/WorkoutPhaseIndicator.swift
 /Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Workout/CompletePhoneWorkout.swift

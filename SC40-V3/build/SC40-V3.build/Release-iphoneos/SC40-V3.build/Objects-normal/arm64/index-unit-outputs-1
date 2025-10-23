@@ -49,6 +49,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileExtensions.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileViewModel.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutPlan.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTypeAnalyzer.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.o
@@ -60,6 +61,7 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralService.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StoreKitService.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchConnectivityManager.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSyncManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/GPSStopwatch.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/HealthKitManager.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/MenuSelection.o
@@ -80,7 +82,9 @@
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/RepLogLiveView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UnifiedSprintCoachView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchIntegrationView.o
+/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchUnifiedSprintCoachView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutPhaseIndicator.o
 /SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.o

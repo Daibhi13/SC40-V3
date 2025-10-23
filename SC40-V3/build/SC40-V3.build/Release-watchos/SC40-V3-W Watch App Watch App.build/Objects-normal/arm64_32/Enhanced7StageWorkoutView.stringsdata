@@ -7,7 +7,7 @@
         "key": "%lld of 7",
         "location": {
           "startingColumn": 18,
-          "startingLine": 305
+          "startingLine": 641
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "INSTRUCTIONS",
         "location": {
           "startingColumn": 22,
-          "startingLine": 392
+          "startingLine": 728
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Pause",
         "location": {
           "startingColumn": 38,
-          "startingLine": 428
+          "startingLine": 766
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Resume",
         "location": {
           "startingColumn": 60,
-          "startingLine": 428
+          "startingLine": 766
         }
       },
       {
@@ -39,15 +39,15 @@
         "key": "Start",
         "location": {
           "startingColumn": 71,
-          "startingLine": 428
+          "startingLine": 766
         }
       },
       {
         "comment": "",
-        "key": "Next Phase",
+        "key": "Next",
         "location": {
           "startingColumn": 24,
-          "startingLine": 440
+          "startingLine": 789
         }
       },
       {
@@ -55,23 +55,23 @@
         "key": "Complete",
         "location": {
           "startingColumn": 24,
-          "startingLine": 448
+          "startingLine": 797
         }
       },
       {
         "comment": "",
-        "key": "Workout Complete!",
+        "key": "ENHANCED 7-STAGE",
         "location": {
           "startingColumn": 18,
-          "startingLine": 470
+          "startingLine": 851
         }
       },
       {
         "comment": "",
-        "key": "Great job on your %@ session!",
+        "key": "Training Session",
         "location": {
           "startingColumn": 18,
-          "startingLine": 475
+          "startingLine": 856
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 20,
-          "startingLine": 480
+          "startingLine": 862
         }
       }
     ]

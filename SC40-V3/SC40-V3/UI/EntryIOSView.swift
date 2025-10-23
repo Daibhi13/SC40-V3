@@ -266,10 +266,12 @@ struct SprinterAnimationView: View {
 
 #Preview("EntryIOSView - Default") {
     EntryIOSView()
+        .environmentObject(UserProfileViewModel())
 }
 
 #Preview("EntryIOSView - Dark Mode") {
     EntryIOSView()
+        .environmentObject(UserProfileViewModel())
         .preferredColorScheme(.dark)
 }
 #endif

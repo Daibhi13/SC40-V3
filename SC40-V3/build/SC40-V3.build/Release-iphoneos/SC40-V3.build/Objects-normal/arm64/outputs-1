@@ -49,6 +49,7 @@
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileExtensions.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UserProfileViewModel.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutPlan.o
+/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutTypeAnalyzer.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/AuthenticationManager.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ErrorHandling.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/FirebaseService.o
@@ -60,6 +61,7 @@
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReferralService.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/StoreKitService.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchConnectivityManager.o
+/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutSyncManager.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/GPSStopwatch.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/HealthKitManager.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/MenuSelection.o
@@ -80,7 +82,9 @@
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/RepLogLiveView.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/ReusableRecordCard.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/SprintCoachGradientBackground.o
+/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/UnifiedSprintCoachView.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchIntegrationView.o
+/Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WatchUnifiedSprintCoachView.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WaveAIRepLogView.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/WorkoutPhaseIndicator.o
 /Users/davidoconnell/Projects/SC40-V3/build/SC40-V3.build/Release-iphoneos/SC40-V3.build/Objects-normal/arm64/CompletePhoneWorkout.o

@@ -375,6 +375,20 @@ SWIFT_CLASS("_TtC7SC40_V315LocationService")
 - (void)locationManager:(CLLocationManager * _Nonnull)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
 @end
 
+SWIFT_CLASS("_TtC7SC40_V316PhoneSyncManager")
+@interface PhoneSyncManager : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@class WCSession;
+@class NSString;
+@interface PhoneSyncManager (SWIFT_EXTENSION(SC40_V3)) <WCSessionDelegate>
+- (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
+- (void)sessionDidBecomeInactive:(WCSession * _Nonnull)session;
+- (void)sessionDidDeactivate:(WCSession * _Nonnull)session;
+- (void)session:(WCSession * _Nonnull)session didReceiveMessage:(NSDictionary<NSString *, id> * _Nonnull)message;
+@end
+
 @class UIWindow;
 @class UIScene;
 @class UIOpenURLContext;
@@ -386,7 +400,6 @@ SWIFT_CLASS("_TtC7SC40_V313SceneDelegate")
 @end
 
 @class UIActivityViewController;
-@class NSString;
 SWIFT_CLASS("_TtC7SC40_V317ShareableTextItem")
 @interface ShareableTextItem : NSObject <UIActivityItemSource>
 - (id _Nonnull)activityViewControllerPlaceholderItem:(UIActivityViewController * _Nonnull)activityViewController SWIFT_WARN_UNUSED_RESULT;
@@ -421,7 +434,6 @@ SWIFT_CLASS("_TtC7SC40_V324WatchConnectivityManager")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
-@class WCSession;
 @interface WatchConnectivityManager (SWIFT_EXTENSION(SC40_V3)) <WCSessionDelegate>
 - (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
 - (void)sessionDidBecomeInactive:(WCSession * _Nonnull)session;
@@ -451,6 +463,20 @@ SWIFT_CLASS("_TtC7SC40_V317WorkoutGPSManager")
 - (void)locationManager:(CLLocationManager * _Nonnull)manager didUpdateLocations:(NSArray<CLLocation *> * _Nonnull)locations;
 - (void)locationManager:(CLLocationManager * _Nonnull)manager didFailWithError:(NSError * _Nonnull)error;
 - (void)locationManager:(CLLocationManager * _Nonnull)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status;
+@end
+
+/// Manages real-time synchronization between iPhone MainProgramWorkoutView and Apple Watch Enhanced7StageWorkoutView
+SWIFT_CLASS("_TtC7SC40_V318WorkoutSyncManager")
+@interface WorkoutSyncManager : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@interface WorkoutSyncManager (SWIFT_EXTENSION(SC40_V3)) <WCSessionDelegate>
+- (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
+- (void)sessionDidBecomeInactive:(WCSession * _Nonnull)session;
+- (void)sessionDidDeactivate:(WCSession * _Nonnull)session;
+- (void)sessionReachabilityDidChange:(WCSession * _Nonnull)session;
+- (void)session:(WCSession * _Nonnull)session didReceiveMessage:(NSDictionary<NSString *, id> * _Nonnull)message replyHandler:(void (^ _Nonnull)(NSDictionary<NSString *, id> * _Nonnull))replyHandler;
 @end
 
 #endif

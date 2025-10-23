@@ -107,7 +107,7 @@ struct QuickTrainingCard: View {
                         VStack {
                             HStack {
                                 Spacer()
-                                ProBadge()
+                                LocalProBadge()
                             }
                             Spacer()
                         }
@@ -140,7 +140,8 @@ struct QuickTrainingCard: View {
     }
 }
 
-struct ProBadge: View {
+// Local ProBadge for QuickTrainingSection
+struct LocalProBadge: View {
     var body: some View {
         HStack(spacing: 2) {
             Image(systemName: "crown.fill")
@@ -151,7 +152,7 @@ struct ProBadge: View {
         .foregroundColor(.white)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background(Color.brandPrimary)
+        .background(Color(red: 1.0, green: 0.8, blue: 0.0))
         .cornerRadius(8)
     }
 }
@@ -188,7 +189,7 @@ struct ProBadge: View {
 }
 
 #Preview("3. Pro Badge Component") {
-    ProBadge()
+    LocalProBadge()
         .padding()
         .background(Color.gray.opacity(0.1))
         .preferredColorScheme(.dark)

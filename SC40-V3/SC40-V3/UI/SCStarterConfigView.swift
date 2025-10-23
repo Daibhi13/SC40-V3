@@ -33,10 +33,30 @@ struct SCStarterConfigView: View {
             )
             .ignoresSafeArea(.all)
             
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 32) {
-                    // Header
-                    VStack(spacing: 16) {
+            VStack(spacing: 0) {
+                // Navigation Header with Back Button
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 16, weight: .semibold))
+                            Text("Back")
+                                .font(.system(size: 16, weight: .semibold))
+                        }
+                        .foregroundColor(.white)
+                    }
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 10)
+                
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 32) {
+                        // Header
+                        VStack(spacing: 16) {
                         ZStack {
                             RoundedRectangle(cornerRadius: 20)
                                 .fill(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.2))
@@ -280,6 +300,7 @@ struct SCStarterConfigView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 40)
+                }
             }
         }
         .onAppear {

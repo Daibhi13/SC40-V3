@@ -7,7 +7,7 @@
         "key": "SPRINT TIMER PRO",
         "location": {
           "startingColumn": 18,
-          "startingLine": 87
+          "startingLine": 107
         }
       },
       {
@@ -15,7 +15,79 @@
         "key": "Custom Sprint Workouts",
         "location": {
           "startingColumn": 18,
-          "startingLine": 93
+          "startingLine": 112
+        }
+      },
+      {
+        "comment": "",
+        "key": "DISTANCE",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 123
+        }
+      },
+      {
+        "comment": "",
+        "key": "Distance",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 127
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld YD",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 129
+        }
+      },
+      {
+        "comment": "",
+        "key": "REPETITIONS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 144
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reps",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 148
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld REP%@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 150
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST TIME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 165
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 169
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld MIN%@",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 171
         }
       },
       {
@@ -23,7 +95,7 @@
         "key": "%@%@",
         "location": {
           "startingColumn": 26,
-          "startingLine": 145
+          "startingLine": 200
         }
       },
       {
@@ -31,79 +103,39 @@
         "key": "WORKOUT PREVIEW",
         "location": {
           "startingColumn": 18,
-          "startingLine": 159
+          "startingLine": 215
         }
       },
       {
         "comment": "",
-        "key": "Distance:",
+        "key": "%lld × %lld Yard Sprints",
         "location": {
           "startingColumn": 26,
-          "startingLine": 166
+          "startingLine": 225
         }
       },
       {
         "comment": "",
-        "key": "%lld yards",
+        "key": "%lld minute%@ rest between reps",
         "location": {
           "startingColumn": 26,
-          "startingLine": 170
+          "startingLine": 237
         }
       },
       {
         "comment": "",
-        "key": "Repetitions:",
+        "key": "~%lld minute workout",
         "location": {
           "startingColumn": 26,
-          "startingLine": 177
+          "startingLine": 250
         }
       },
       {
         "comment": "",
-        "key": "%lld rep%@",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 181
-        }
-      },
-      {
-        "comment": "",
-        "key": "Rest Time:",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 188
-        }
-      },
-      {
-        "comment": "",
-        "key": "%lld min%@",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 192
-        }
-      },
-      {
-        "comment": "",
-        "key": "Total Time:",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 202
-        }
-      },
-      {
-        "comment": "",
-        "key": "~%lld min",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 206
-        }
-      },
-      {
-        "comment": "",
-        "key": "START WORKOUT",
+        "key": "START CUSTOM WORKOUT",
         "location": {
           "startingColumn": 22,
-          "startingLine": 226
+          "startingLine": 275
         }
       }
     ]

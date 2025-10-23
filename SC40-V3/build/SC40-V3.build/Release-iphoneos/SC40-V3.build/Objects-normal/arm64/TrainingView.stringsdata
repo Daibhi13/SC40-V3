@@ -7,7 +7,7 @@
         "key": "Sprint Coach 40",
         "location": {
           "startingColumn": 34,
-          "startingLine": 94
+          "startingLine": 96
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Open menu",
         "location": {
           "startingColumn": 45,
-          "startingLine": 117
+          "startingLine": 120
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Opens the navigation menu",
         "location": {
           "startingColumn": 44,
-          "startingLine": 118
+          "startingLine": 121
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "6-Part Workout for W%lld/D%lld",
         "location": {
           "startingColumn": 22,
-          "startingLine": 184
+          "startingLine": 181
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "Workout",
         "location": {
           "startingColumn": 38,
-          "startingLine": 186
+          "startingLine": 183
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Done",
         "location": {
           "startingColumn": 36,
-          "startingLine": 189
+          "startingLine": 186
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "Sprint Training",
         "location": {
           "startingColumn": 34,
-          "startingLine": 206
+          "startingLine": 203
         }
       },
       {
@@ -63,111 +63,127 @@
         "key": "Done",
         "location": {
           "startingColumn": 36,
-          "startingLine": 210
+          "startingLine": 207
         }
       },
       {
         "comment": "",
-        "key": "Welcome, David!",
-        "location": {
-          "startingColumn": 26,
-          "startingLine": 870
-        }
-      },
-      {
-        "comment": "",
-        "key": "YOUR PERSONAL BEST",
+        "key": "YOUR JOURNEY",
         "location": {
           "startingColumn": 30,
-          "startingLine": 876
+          "startingLine": 869
         }
       },
       {
         "comment": "",
-        "key": "5.25s",
+        "key": "STARTS NOW",
         "location": {
           "startingColumn": 30,
-          "startingLine": 881
+          "startingLine": 874
         }
       },
       {
         "comment": "",
-        "key": "40-Yard Dash",
+        "key": "Every champion was once a beginner.\nEvery pro was once an amateur.",
         "location": {
           "startingColumn": 30,
-          "startingLine": 895
+          "startingLine": 880
         }
       },
       {
         "comment": "",
-        "key": "40 YARDS PROGRAM",
+        "key": "PERSONAL RECORD",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 908
+          "startingColumn": 38,
+          "startingLine": 896
         }
       },
       {
         "comment": "",
-        "key": "12-Week Training Program",
+        "key": "5.25",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 913
+          "startingColumn": 42,
+          "startingLine": 902
         }
       },
       {
         "comment": "",
-        "key": "Start Sprint Training",
+        "key": "SEC",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 967
+          "startingColumn": 42,
+          "startingLine": 916
         }
       },
       {
         "comment": "",
-        "key": "Accel → Drive",
+        "key": "40 YARDS",
         "location": {
-          "startingColumn": 26,
-          "startingLine": 1033
+          "startingColumn": 38,
+          "startingLine": 926
         }
       },
       {
         "comment": "",
-        "key": "Up Next: Week 1, Day 1",
+        "key": "DASH",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 1028
+          "startingColumn": 38,
+          "startingLine": 930
         }
       },
       {
         "comment": "",
-        "key": "3×25yd",
+        "key": "ELITE TRAINING",
         "location": {
           "startingColumn": 34,
-          "startingLine": 1042
+          "startingLine": 978
         }
       },
       {
         "comment": "",
-        "key": "Max",
+        "key": "Transform Your Speed",
         "location": {
           "startingColumn": 34,
-          "startingLine": 1051
+          "startingLine": 985
         }
       },
       {
         "comment": "",
-        "key": "Scheduled for tomorrow",
+        "key": "Professional 12-week program designed to unlock your potential",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 990
+        }
+      },
+      {
+        "comment": "",
+        "key": "READY TO DOMINATE?",
         "location": {
           "startingColumn": 30,
+          "startingLine": 1030
+        }
+      },
+      {
+        "comment": "",
+        "key": "Your transformation begins with a single step",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1035
+        }
+      },
+      {
+        "comment": "",
+        "key": "BEGIN YOUR JOURNEY",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 1057
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Elite Training",
+        "location": {
+          "startingColumn": 42,
           "startingLine": 1061
-        }
-      },
-      {
-        "comment": "",
-        "key": "PUSH YOUR LIMITS",
-        "location": {
-          "startingColumn": 18,
-          "startingLine": 1258
         }
       },
       {
@@ -175,39 +191,23 @@
         "key": "WEEK %lld",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1115
+          "startingLine": 1224
         }
       },
       {
         "comment": "",
-        "key": "DAY %lld",
+        "key": "DAY",
         "location": {
-          "startingColumn": 22,
-          "startingLine": 1137
+          "startingColumn": 26,
+          "startingLine": 1259
         }
       },
       {
         "comment": "",
         "key": "%lld",
         "location": {
-          "startingColumn": 30,
-          "startingLine": 1152
-        }
-      },
-      {
-        "comment": "",
-        "key": "×",
-        "location": {
-          "startingColumn": 30,
-          "startingLine": 1155
-        }
-      },
-      {
-        "comment": "",
-        "key": "%lld YD",
-        "location": {
-          "startingColumn": 30,
-          "startingLine": 1158
+          "startingColumn": 26,
+          "startingLine": 1264
         }
       },
       {
@@ -215,7 +215,7 @@
         "key": "REST",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1189
+          "startingLine": 1340
         }
       },
       {
@@ -223,7 +223,39 @@
         "key": "RECOVERY",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1195
+          "startingLine": 1346
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1285
+        }
+      },
+      {
+        "comment": "",
+        "key": "×",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1291
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1296
+        }
+      },
+      {
+        "comment": "",
+        "key": "YD",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1302
         }
       },
       {
@@ -231,7 +263,7 @@
         "key": "REST: %@",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1209
+          "startingLine": 1360
         }
       },
       {
@@ -239,7 +271,7 @@
         "key": "FOCUS: %@",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1225
+          "startingLine": 1376
         }
       },
       {
@@ -247,7 +279,7 @@
         "key": "COMPLETE REST DAY",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1240
+          "startingLine": 1391
         }
       },
       {
@@ -255,7 +287,7 @@
         "key": "RECOVERY",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1246
+          "startingLine": 1397
         }
       },
       {
@@ -263,7 +295,7 @@
         "key": "PUSH YOUR LIMITS",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1439
+          "startingLine": 1642
         }
       },
       {
@@ -271,7 +303,7 @@
         "key": "WEEK 1",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1387
+          "startingLine": 1590
         }
       },
       {
@@ -279,7 +311,7 @@
         "key": "ACCELERATION",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1397
+          "startingLine": 1600
         }
       },
       {
@@ -287,7 +319,7 @@
         "key": "DAY 1",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1407
+          "startingLine": 1610
         }
       },
       {
@@ -295,7 +327,7 @@
         "key": "DRIVE PHASE",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1411
+          "startingLine": 1614
         }
       },
       {
@@ -303,7 +335,7 @@
         "key": "5",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1418
+          "startingLine": 1621
         }
       },
       {
@@ -311,7 +343,7 @@
         "key": "×",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1421
+          "startingLine": 1624
         }
       },
       {
@@ -319,7 +351,7 @@
         "key": "25 YD",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1424
+          "startingLine": 1627
         }
       },
       {
@@ -327,7 +359,7 @@
         "key": "HIGH",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1430
+          "startingLine": 1633
         }
       },
       {
@@ -335,7 +367,7 @@
         "key": "PRO",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1546
+          "startingLine": 1749
         }
       },
       {
@@ -343,7 +375,7 @@
         "key": "40 Yards Program",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1586
+          "startingLine": 1789
         }
       },
       {
@@ -351,7 +383,7 @@
         "key": "12-Week Training Program",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1590
+          "startingLine": 1793
         }
       },
       {
@@ -359,7 +391,7 @@
         "key": "No sessions available",
         "location": {
           "startingColumn": 34,
-          "startingLine": 1602
+          "startingLine": 1805
         }
       },
       {
@@ -367,7 +399,7 @@
         "key": "12-Week Program",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1620
+          "startingLine": 1823
         }
       },
       {
@@ -375,7 +407,7 @@
         "key": "%lld Sessions",
         "location": {
           "startingColumn": 30,
-          "startingLine": 1626
+          "startingLine": 1829
         }
       },
       {
@@ -383,7 +415,7 @@
         "key": "Training Session W%lld/D%lld",
         "location": {
           "startingColumn": 22,
-          "startingLine": 1660
+          "startingLine": 1863
         }
       },
       {
@@ -391,7 +423,7 @@
         "key": "Session",
         "location": {
           "startingColumn": 38,
-          "startingLine": 1662
+          "startingLine": 1865
         }
       },
       {
@@ -399,7 +431,7 @@
         "key": "Close",
         "location": {
           "startingColumn": 36,
-          "startingLine": 1665
+          "startingLine": 1868
         }
       },
       {
@@ -407,7 +439,7 @@
         "key": "Every split matters. Chase the 40.",
         "location": {
           "startingColumn": 14,
-          "startingLine": 1680
+          "startingLine": 1883
         }
       },
       {
@@ -415,7 +447,7 @@
         "key": "Start Sprint Training",
         "location": {
           "startingColumn": 29,
-          "startingLine": 1700
+          "startingLine": 1903
         }
       },
       {
@@ -423,7 +455,7 @@
         "key": "Opens the adaptive workout hub to choose between iPhone and Apple Watch workouts.",
         "location": {
           "startingColumn": 28,
-          "startingLine": 1701
+          "startingLine": 1904
         }
       },
       {
@@ -431,63 +463,55 @@
         "key": "Start Sprint Training",
         "location": {
           "startingColumn": 18,
-          "startingLine": 1690
+          "startingLine": 1893
         }
       },
       {
         "comment": "",
         "key": "Create custom sprint workouts",
         "location": {
-          "startingColumn": 42,
-          "startingLine": 2258
+          "startingColumn": 38,
+          "startingLine": 2459
         }
       },
       {
         "comment": "",
-        "key": "Professional timing & training app",
+        "key": "Unlock advanced training features",
         "location": {
-          "startingColumn": 76,
-          "startingLine": 2258
+          "startingColumn": 72,
+          "startingLine": 2459
         }
       },
       {
         "comment": "",
         "key": "Sprint Timer Pro",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 2243
-        }
-      },
-      {
-        "comment": "",
-        "key": "$4.99",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 2267
-        }
-      },
-      {
-        "comment": "",
-        "key": "one-time",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 2270
+          "startingColumn": 30,
+          "startingLine": 2447
         }
       },
       {
         "comment": "",
         "key": "OPEN PRO",
         "location": {
-          "startingColumn": 34,
-          "startingLine": 2281
+          "startingColumn": 30,
+          "startingLine": 2476
         }
       },
       {
         "comment": "",
-        "key": "Unlock Sprint Timer Pro",
+        "key": "$4.99",
         "location": {
           "startingColumn": 30,
-          "startingLine": 2320
+          "startingLine": 2503
+        }
+      },
+      {
+        "comment": "",
+        "key": "Upgrade",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 2507
         }
       },
       {
@@ -495,7 +519,7 @@
         "key": "Open Sprint Timer Pro",
         "location": {
           "startingColumn": 30,
-          "startingLine": 2333
+          "startingLine": 2525
         }
       },
       {
@@ -503,7 +527,7 @@
         "key": "PRO",
         "location": {
           "startingColumn": 26,
-          "startingLine": 2420
+          "startingLine": 2613
         }
       }
     ]

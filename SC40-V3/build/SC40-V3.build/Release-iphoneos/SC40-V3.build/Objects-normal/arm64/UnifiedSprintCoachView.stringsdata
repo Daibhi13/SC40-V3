@@ -1,0 +1,264 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3/UI/Components/UnifiedSprintCoachView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 476
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 539
+        }
+      },
+      {
+        "comment": "",
+        "key": "Info",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 560
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT COACH",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 547
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP %lld/%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 590
+        }
+      },
+      {
+        "comment": "",
+        "key": "WORKOUT DETAILS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 639
+        }
+      },
+      {
+        "comment": "",
+        "key": "WORKOUT PATTERN",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 680
+        }
+      },
+      {
+        "comment": "",
+        "key": "FOCUS: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 781
+        }
+      },
+      {
+        "comment": "",
+        "key": "YARDS",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 820
+        }
+      },
+      {
+        "comment": "",
+        "key": "TIME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 838
+        }
+      },
+      {
+        "comment": "",
+        "key": "MPH",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 856
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST TIMER",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 877
+        }
+      },
+      {
+        "comment": "",
+        "key": "2:00",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 882
+        }
+      },
+      {
+        "comment": "",
+        "key": "UNTIL NEXT SPRINT",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 886
+        }
+      },
+      {
+        "comment": "",
+        "key": "LET'S",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 913
+        }
+      },
+      {
+        "comment": "",
+        "key": "GO",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 916
+        }
+      },
+      {
+        "comment": "",
+        "key": "SKIP",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 972
+        }
+      },
+      {
+        "comment": "",
+        "key": "STOP",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 977
+        }
+      },
+      {
+        "comment": "",
+        "key": "RESUME",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 967
+        }
+      },
+      {
+        "comment": "",
+        "key": "PAUSE",
+        "location": {
+          "startingColumn": 48,
+          "startingLine": 967
+        }
+      },
+      {
+        "comment": "",
+        "key": "FOCUS: %@",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1345
+        }
+      },
+      {
+        "comment": "",
+        "key": "REST TIMER",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1367
+        }
+      },
+      {
+        "comment": "",
+        "key": "WORKOUT STRUCTURE",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1394
+        }
+      },
+      {
+        "comment": "",
+        "key": "CURRENT",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 1413
+        }
+      },
+      {
+        "comment": "",
+        "key": "TARGET TIMES",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 1425
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1444
+        }
+      },
+      {
+        "comment": "",
+        "key": "REP LOG",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1553
+        }
+      },
+      {
+        "comment": "",
+        "key": "Show All (%lld total)",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 1595
+        }
+      },
+      {
+        "comment": "",
+        "key": "Times will appear here automatically",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 1578
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 1856
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lldyd",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1851
+        }
+      },
+      {
+        "comment": "",
+        "key": "--",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 1878
+        }
+      }
+    ]
+  },
+  "version": 1
+}

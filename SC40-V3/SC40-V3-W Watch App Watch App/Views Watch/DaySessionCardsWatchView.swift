@@ -610,86 +610,213 @@ struct PremiumSessionCardView: View {
     let isSelected: Bool
     
     var body: some View {
-        VStack(spacing: 6) {
-            // Week/Day indicator
-            Text(session.weekDay)
-                .font(.system(size: 12, weight: .bold, design: .rounded))
-                .foregroundColor(Color.brandPrimary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(
-                    Capsule()
-                        .fill(Color.brandPrimary.opacity(0.2))
-                )
-            
-            // Session type badge
+        VStack(alignment: .leading, spacing: 8) {
+            // Header Section - Matching TrainingView phone style
             HStack {
-                Text(session.type)
-                    .font(.system(size: 9, weight: .semibold, design: .rounded))
-                    .foregroundColor(Color.brandAccent)
+                // Week Badge - Golden style from phone
+                Text("WEEK \(extractWeek(from: session.weekDay))")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(8)
+                
+                Spacer()
+                
+                // Session Type Badge - Golden style from phone
+                Text(session.type.uppercased())
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .cornerRadius(8)
+            }
+            
+            // Day and Focus - Nike-inspired layout from phone
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(alignment: .bottom, spacing: 4) {
+                    Text("DAY")
+                        .font(.system(size: 10, weight: .black))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(1.0)
+                    
+                    Text("\(extractDay(from: session.weekDay))")
+                        .font(.system(size: 20, weight: .black))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                
+                Text(session.title.uppercased())
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white.opacity(0.9))
+                    .tracking(0.8)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.9)
+            }
+            
+            // Workout Details - Enhanced formatting from phone
+            HStack(alignment: .center) {
+                // Sprint details with phone styling
+                HStack(alignment: .bottom, spacing: 3) {
+                    if let reps = extractReps(from: session.subtitle) {
+                        Text("\(reps)")
+                            .font(.system(size: 16, weight: .black))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                        
+                        Text("×")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.bottom, 1)
+                        
+                        if let distance = extractDistance(from: session.subtitle) {
+                            Text("\(distance)")
+                                .font(.system(size: 14, weight: .black))
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                            
+                            Text("YD")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                }
+                
+                Spacer()
+                
+                // Intensity Badge - White style from phone
+                Text("HIGH")
+                    .font(.system(size: 7, weight: .black))
+                    .foregroundColor(.black)
                     .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
+                    .padding(.vertical, 3)
                     .background(
-                        Capsule()
-                            .fill(Color.brandAccent.opacity(0.2))
+                        RoundedRectangle(cornerRadius: 6)
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.1), radius: 1, x: 0, y: 1)
                     )
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            
+            // Nike-Inspired Motivational tagline
+            HStack {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8))
+                
+                Text("GREATNESS AWAITS")
+                    .font(.system(size: 8, weight: .bold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(0.5)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                
                 Spacer()
             }
-            
-            // Main title
-            Text(session.title.replacingOccurrences(of: "Velocity", with: "Top Speed"))
-                .font(.system(size: 16, weight: .bold, design: .rounded))
-                .foregroundColor(Color.brandSecondary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-            
-            // Subtitle with distance conversion
-            Text(session.subtitle
-                .replacingOccurrences(of: "m", with: "yd")
-                .replacingOccurrences(of: "yds", with: "yd")
-                .replacingOccurrences(of: "meters", with: "yards")
-                .replacingOccurrences(of: "meter", with: "yard")
-                .replacingOccurrences(of: "m ", with: "yd "))
-                .font(.system(size: 11, weight: .medium, design: .rounded))
-                .foregroundColor(Color.brandSecondary.opacity(0.7))
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .padding(12)
+        .padding(10)
         .background(
-            ZStack {
-                // Glass morphism background
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.brandBackground.opacity(0.6),
-                                Color.brandTertiary.opacity(0.3),
-                                Color.brandAccent.opacity(0.2)
-                            ]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
+            // Dark purple gradient from phone TrainingView
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.15, green: 0.1, blue: 0.25).opacity(0.9),  // Dark purple
+                            Color(red: 0.1, green: 0.05, blue: 0.2).opacity(0.95),  // Darker purple
+                            Color(red: 0.05, green: 0.05, blue: 0.15).opacity(0.9)  // Very dark purple
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                
-                // Selection highlight
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.brandPrimary.opacity(0.1))
-                        .shadow(color: Color.brandPrimary.opacity(0.3), radius: 8)
-                }
-            }
+                )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            // Halo border for selected card (golden from phone)
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(
-                    isSelected ? Color.brandPrimary : Color.brandSecondary.opacity(0.2), 
+                    isSelected ? 
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8),  // Golden halo
+                            Color(red: 1.0, green: 0.6, blue: 0.0).opacity(0.6),
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ) :
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
                     lineWidth: isSelected ? 2 : 1
                 )
         )
-        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .overlay(
+            // Inner frame from phone design
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.2),
+                            Color.white.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+                .padding(1)
+        )
+        .scaleEffect(isSelected ? 1.02 : 1.0)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSelected)
+    }
+    
+    // Helper functions to extract data from session strings
+    private func extractWeek(from weekDay: String) -> String {
+        if weekDay.hasPrefix("W") {
+            let components = weekDay.components(separatedBy: "/")
+            return String(components[0].dropFirst())
+        }
+        return "1"
+    }
+    
+    private func extractDay(from weekDay: String) -> String {
+        if weekDay.contains("/D") {
+            let components = weekDay.components(separatedBy: "/D")
+            return components.count > 1 ? components[1] : "1"
+        }
+        return "1"
+    }
+    
+    private func extractReps(from subtitle: String) -> Int? {
+        let pattern = #"(\d+)x"#
+        if let regex = try? NSRegularExpression(pattern: pattern),
+           let match = regex.firstMatch(in: subtitle, range: NSRange(subtitle.startIndex..., in: subtitle)) {
+            let repsString = String(subtitle[Range(match.range(at: 1), in: subtitle)!])
+            return Int(repsString)
+        }
+        return nil
+    }
+    
+    private func extractDistance(from subtitle: String) -> Int? {
+        let pattern = #"x(\d+)yd"#
+        if let regex = try? NSRegularExpression(pattern: pattern),
+           let match = regex.firstMatch(in: subtitle, range: NSRange(subtitle.startIndex..., in: subtitle)) {
+            let distanceString = String(subtitle[Range(match.range(at: 1), in: subtitle)!])
+            return Int(distanceString)
+        }
+        return nil
     }
 }
 
@@ -700,63 +827,141 @@ struct WelcomeCardView: View {
     let isSelected: Bool
     
     var body: some View {
-        VStack(spacing: 8) {
-            // Lightning bolt icon
-            Image(systemName: "bolt.fill")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundColor(Color.brandPrimary)
-                .shadow(color: Color.brandPrimary.opacity(0.5), radius: 4)
+        VStack(alignment: .center, spacing: 8) {
+            // Nike-inspired motivational header
+            VStack(spacing: 4) {
+                Text("YOUR JOURNEY")
+                    .font(.system(size: 8, weight: .black))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(1.5)
+                
+                Text("STARTS NOW")
+                    .font(.system(size: 16, weight: .black))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(nil)
+            }
             
-            // Swipe instruction
-            Text(session.weekDay)
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
-                .foregroundColor(Color.brandSecondary.opacity(0.8))
-            
-            // Training level
-            Text(session.title)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
-                .foregroundColor(Color.brandPrimary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-            
-            // Program subtitle
-            Text(session.subtitle)
-                .font(.system(size: 10, weight: .medium, design: .rounded))
-                .foregroundColor(Color.brandSecondary.opacity(0.7))
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(12)
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+            // Personal Best Achievement Card Style
+            VStack(spacing: 6) {
+                HStack(spacing: 6) {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text("PROGRAM STATUS")
+                            .font(.system(size: 7, weight: .black))
+                            .foregroundColor(.white.opacity(0.8))
+                            .tracking(1.0)
+                        
+                        Text(session.title)
+                            .font(.system(size: 12, weight: .black))
+                            .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                    
+                    Spacer()
+                }
+                
+                // Progress info
+                Text(session.subtitle)
+                    .font(.system(size: 8, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
                     .fill(
                         LinearGradient(
-                            gradient: Gradient(colors: [
-                                Color.brandTertiary.opacity(0.3),
-                                Color.brandAccent.opacity(0.2),
-                                Color.brandBackground.opacity(0.8)
-                            ]),
+                            colors: [
+                                Color.white.opacity(0.12),
+                                Color.white.opacity(0.06)
+                            ],
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         )
                     )
-                
-                if isSelected {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.brandPrimary.opacity(0.1))
-                        .shadow(color: Color.brandPrimary.opacity(0.4), radius: 8)
-                }
-            }
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3),
+                                        Color.white.opacity(0.1)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 0.5
+                            )
+                    )
+            )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(10)
+        .background(
+            // Dark purple gradient matching phone TrainingView
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.15, green: 0.1, blue: 0.25).opacity(0.9),  // Dark purple
+                            Color(red: 0.1, green: 0.05, blue: 0.2).opacity(0.95),  // Darker purple
+                            Color(red: 0.05, green: 0.05, blue: 0.15).opacity(0.9)  // Very dark purple
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            // Golden halo border when selected
+            RoundedRectangle(cornerRadius: 12)
                 .stroke(
-                    isSelected ? Color.brandPrimary : Color.brandSecondary.opacity(0.3), 
+                    isSelected ? 
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.8),  // Golden halo
+                            Color(red: 1.0, green: 0.6, blue: 0.0).opacity(0.6),
+                            Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.4)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ) :
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.3),
+                            Color.white.opacity(0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
                     lineWidth: isSelected ? 2 : 1
                 )
         )
-        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .overlay(
+            // Inner frame from phone design
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(
+                    LinearGradient(
+                        colors: [
+                            Color.white.opacity(0.2),
+                            Color.white.opacity(0.05)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 0.5
+                )
+                .padding(1)
+        )
+        .scaleEffect(isSelected ? 1.02 : 1.0)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSelected)
     }
 }

@@ -364,6 +364,20 @@ SWIFT_CLASS("_TtC29SC40_V3_W_Watch_App_Watch_App26WatchSessionTriggerManager")
 - (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
 @end
 
+/// Handles synchronization with iPhone MainProgramWorkoutView and auto-adapts Enhanced7StageWorkoutView
+SWIFT_CLASS("_TtC29SC40_V3_W_Watch_App_Watch_App23WatchWorkoutSyncManager")
+@interface WatchWorkoutSyncManager : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+@interface WatchWorkoutSyncManager (SWIFT_EXTENSION(SC40_V3_W_Watch_App_Watch_App)) <WCSessionDelegate>
+- (void)session:(WCSession * _Nonnull)session activationDidCompleteWithState:(WCSessionActivationState)activationState error:(NSError * _Nullable)error;
+- (void)sessionReachabilityDidChange:(WCSession * _Nonnull)session;
+- (void)session:(WCSession * _Nonnull)session didReceiveMessage:(NSDictionary<NSString *, id> * _Nonnull)message;
+- (void)session:(WCSession * _Nonnull)session didReceiveMessage:(NSDictionary<NSString *, id> * _Nonnull)message replyHandler:(void (^ _Nonnull)(NSDictionary<NSString *, id> * _Nonnull))replyHandler;
+- (void)session:(WCSession * _Nonnull)session didReceiveApplicationContext:(NSDictionary<NSString *, id> * _Nonnull)applicationContext;
+@end
+
 /// Manages workout phases, timers, and GPS.
 SWIFT_CLASS("_TtC29SC40_V3_W_Watch_App_Watch_App21WorkoutWatchViewModel")
 @interface WorkoutWatchViewModel : NSObject

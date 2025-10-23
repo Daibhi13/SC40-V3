@@ -18,21 +18,55 @@ struct EntryViewWatch: View {
                         if watchManager.trainingSessions.isEmpty {
                             print("🆘 CREATING EMERGENCY SESSION - ZERO BUFFERING ENFORCED")
                             
-                            let emergencySession = TrainingSession(
+                            // Safety check: Prevent duplicate session creation
+                            guard watchManager.trainingSessions.isEmpty else {
+                                print("⚠️ Sessions already exist, skipping EntryView demo data creation")
+                                return
+                            }
+                            
+                            print("🔄 Creating demo sessions for EntryViewWatch...")
+                            
+                            // Create demo sessions matching ContentView - ensure they are not completed
+                            var session1 = TrainingSession(
+                                id: UUID(),
                                 week: 1,
                                 day: 1,
                                 type: "Sprint Training",
-                                focus: "Ready to Train",
-                                sprints: [
-                                    SprintSet(distanceYards: 20, reps: 3, intensity: "80%"),
-                                    SprintSet(distanceYards: 30, reps: 2, intensity: "85%")
-                                ],
-                                accessoryWork: [],
-                                notes: "Emergency session - ready to train immediately"
+                                focus: "Acceleration",
+                                sprints: [SprintSet(distanceYards: 20, reps: 6, intensity: "85%")],
+                                accessoryWork: ["Dynamic warm-up", "Cool-down stretching"]
                             )
+                            session1.isCompleted = false
                             
-                            watchManager.trainingSessions = [emergencySession]
-                            print("✅ EMERGENCY SESSION CREATED - ZERO BUFFERING ACHIEVED")
+                            var session2 = TrainingSession(
+                                id: UUID(),
+                                week: 1,
+                                day: 2,
+                                type: "Speed Development",
+                                focus: "Max Velocity",
+                                sprints: [SprintSet(distanceYards: 40, reps: 4, intensity: "95%")],
+                                accessoryWork: ["Flying starts", "Speed drills"]
+                            )
+                            session2.isCompleted = false
+                            
+                            var session3 = TrainingSession(
+                                id: UUID(),
+                                week: 1,
+                                day: 3,
+                                type: "Time Trial",
+                                focus: "Benchmark",
+                                sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "100%")],
+                                accessoryWork: ["Thorough warm-up", "Cool-down"]
+                            )
+                            session3.isCompleted = false
+                            
+                            let demoSessions = [session1, session2, session3]
+                            
+                            watchManager.trainingSessions = demoSessions
+                            UserDefaults.standard.set("EntryViewWatch", forKey: "sessionSource")
+                            
+                            print("✅ EntryViewWatch demo sessions created: \(demoSessions.count) sessions")
+                            print("✅ All sessions marked as NOT completed for testing")
                         }
                     }
                 
@@ -209,9 +243,9 @@ struct EntryViewWatch: View {
         
         print("🔍 SYNC CHECK: Source=\(sessionSource), HasSessions=\(hasSession), Connected=\(watchManager.isPhoneConnected)")
         
-        if hasSession && sessionSource == "iPhone" {
-            // Perfect! iPhone sync worked
-            print("✅ SYNC SUCCESS: iPhone sessions received, skipping instructions")
+        if hasSession && (sessionSource == "iPhone" || sessionSource == "ContentView" || sessionSource == "EntryViewWatch") {
+            // Perfect! iPhone sync worked or demo data loaded
+            print("✅ SYNC SUCCESS: \(sessionSource) sessions received, skipping instructions")
             syncCheckCompleted = true
         } else if hasSession && sessionSource == "Fallback" {
             // Using fallback sessions - show instructions to get iPhone sync

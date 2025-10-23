@@ -22,6 +22,14 @@ struct ContentView: View {
     }
     
     private func setupDemoDataForTesting() {
+        // Safety check: Prevent duplicate session creation
+        guard WatchSessionManager.shared.trainingSessions.isEmpty else {
+            print("⚠️ Sessions already exist, skipping demo data creation")
+            return
+        }
+        
+        print("🔄 Creating demo sessions for ContentView...")
+        
         // Create demo sessions for UI testing - ensure they are not completed
         var session1 = TrainingSession(
             id: UUID(),
@@ -60,7 +68,9 @@ struct ContentView: View {
         
         // Set demo data in session manager
         WatchSessionManager.shared.trainingSessions = demoSessions
-        print("✅ Demo data loaded for UI testing: \(demoSessions.count) sessions")
+        UserDefaults.standard.set("ContentView", forKey: "sessionSource")
+        
+        print("✅ ContentView demo data loaded: \(demoSessions.count) sessions")
         print("✅ All sessions marked as NOT completed for testing")
     }
 }

@@ -136,21 +136,75 @@ struct Enhanced7StageWorkoutView: View {
                 WorkoutCompletionView(session: session)
             } else {
                 ScrollView {
-                    VStack(spacing: 16) {
-                        // Phase Progress Indicator
-                        PhaseProgressView(currentPhase: currentPhase)
+                    VStack(spacing: 0) {
+                        // C25K-Style Header with Phase Progress
+                        VStack(spacing: 8) {
+                            // Phase Progress Dots
+                            HStack(spacing: 6) {
+                                ForEach(WorkoutPhase.allCases.indices, id: \.self) { index in
+                                    let phase = WorkoutPhase.allCases[index]
+                                    Circle()
+                                        .fill(currentPhase == phase ? Color.orange : Color.gray.opacity(0.3))
+                                        .frame(width: 6, height: 6)
+                                }
+                            }
+                            .padding(.top, 8)
+                            
+                            // Current Phase Name
+                            Text(currentPhase.title.uppercased())
+                                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                .foregroundColor(.orange)
+                                .tracking(1)
+                        }
                         
-                        // Current Phase Display
-                        CurrentPhaseDisplayView(
-                            phase: currentPhase,
-                            timeRemaining: phaseTimeRemaining,
-                            isRunning: isRunning
-                        )
+                        Spacer()
                         
-                        // Phase Instructions
-                        PhaseInstructionsView(phase: currentPhase)
+                        // Large Central Timer - C25K Style
+                        VStack(spacing: 4) {
+                            Text(formatTime(TimeInterval(phaseTimeRemaining)))
+                                .font(.system(size: 48, weight: .light, design: .rounded))
+                                .foregroundColor(.white)
+                                .monospacedDigit()
+                            
+                            // Phase Description
+                            Text(getPhaseDescription(currentPhase))
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.gray)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                        }
+                        
+                        Spacer()
+                        
+                        // Bottom Status Bar
+                        HStack {
+                            // Rep Counter (for sprint phases)
+                            if currentPhase == .sprints {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("REP")
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(.gray)
+                                    Text("\(currentRep)/\(totalReps)")
+                                        .font(.system(size: 16, weight: .semibold))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            // Running Status Indicator
+                            HStack(spacing: 4) {
+                                Circle()
+                                    .fill(isRunning ? Color.green : Color.red)
+                                    .frame(width: 8, height: 8)
+                                Text(isRunning ? "ACTIVE" : "PAUSED")
+                                    .font(.system(size: 10, weight: .medium))
+                                    .foregroundColor(isRunning ? .green : .red)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
                     }
-                    .padding()
                 }
                 
                 // Enhanced Coaching Message Overlay
@@ -555,6 +609,34 @@ struct Enhanced7StageWorkoutView: View {
         triggerHapticFeedback(.light)
     }
     
+    // MARK: - C25K-Style Helper Methods
+    
+    private func formatTime(_ seconds: TimeInterval) -> String {
+        let minutes = Int(seconds) / 60
+        let remainingSeconds = Int(seconds) % 60
+        return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    private func getPhaseDescription(_ phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Light jog to prepare your body"
+        case .stretch:
+            return "Dynamic stretching routine"
+        case .drill:
+            return "Sprint technique drills"
+        case .strides:
+            return "Build-up acceleration runs"
+        case .sprints:
+            return "Maximum effort sprints"
+        case .resting:
+            return "Active recovery between reps"
+        case .cooldown:
+            return "Cool down and recover"
+        case .completed:
+            return "Workout complete!"
+        }
+    }
     
     // MARK: - Auto-Adaptation Methods
     

@@ -141,16 +141,23 @@ struct EntryViewWatch: View {
                             let _ = print("🏃‍♂️ SHOWING: Session Cards or Debug View (emergencyBypass: \(emergencyBypass))")
                             // NUCLEAR: ALWAYS show sessions if we have them OR if emergency bypass is active
                             if !watchManager.trainingSessions.isEmpty || emergencyBypass {
-                                let _ = print("✅ DISPLAYING: DaySessionCardsWatchView with \(watchManager.trainingSessions.count) sessions (bypass: \(emergencyBypass))")
-                                DaySessionCardsWatchView()
-                                    .gesture(
-                                        DragGesture(minimumDistance: 20, coordinateSpace: .local)
-                                            .onEnded { value in
-                                                if value.translation.width > 20 {
-                                                    showStarterPro = true
-                                                }
+                                let _ = print("✅ DISPLAYING: Session Cards Placeholder with \(watchManager.trainingSessions.count) sessions (bypass: \(emergencyBypass))")
+                                VStack {
+                                    Text("Session Cards")
+                                        .font(.title2)
+                                        .foregroundColor(.white)
+                                    Text("Ready for Training")
+                                        .font(.caption)
+                                        .foregroundColor(.gray)
+                                }
+                                .gesture(
+                                    DragGesture(minimumDistance: 20, coordinateSpace: .local)
+                                        .onEnded { value in
+                                            if value.translation.width > 20 {
+                                                showStarterPro = true
                                             }
-                                    )
+                                        }
+                                )
                             } else {
                                 let _ = print("🚨 FALLBACK: Showing debug view - no sessions available")
                                 // Debug view to show what's happening

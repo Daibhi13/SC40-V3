@@ -962,13 +962,9 @@ struct WorkoutCompletionView: View {
                 .multilineTextAlignment(.center)
             
             Button("Done") {
-                // Dismiss workout view
-                WKInterfaceController.reloadRootPageControllers(
-                    withNames: ["DaySessionCardsWatchView"],
-                    contexts: [[:]], 
-                    orientation: .horizontal,
-                    pageIndex: 0
-                )
+                // Dismiss workout view - simplified for now
+                print("Workout completed - returning to main view")
+            }
             }
             .font(.body)
             .foregroundColor(.black)

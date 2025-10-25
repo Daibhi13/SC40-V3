@@ -65,46 +65,47 @@ struct HorizontalCardWatchView: View {
                 // Background
                 Color.black.ignoresSafeArea()
                 
-                // Top section: Horizontally scrollable cards (independent of button)
+                // Top section: Vertically scrollable cards
                 VStack {
-                    TabView(selection: $selectedCardIndex) {
-                        // Card 0: Sprint Timer Pro Content
-                        SprintTimerProCardContent()
-                            .frame(width: geometry.size.width * 0.85, height: geometry.size.height * 0.65)
-                            .tag(0)
-                            .onTapGesture {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showSprintTimerPro = true
-                                }
-                            }
-                        
-                        // Card 1: User Profile Content
-                        UserProfileCardContent()
-                            .frame(width: geometry.size.width * 0.85, height: geometry.size.height * 0.65)
-                            .tag(1)
-                        
-                        // Cards 2+: Training Sessions Content
-                        ForEach(mockSessions.indices, id: \.self) { index in
-                            let session = mockSessions[index]
-                            TrainingSessionCardContent(session: session)
-                                .frame(width: geometry.size.width * 0.85, height: geometry.size.height * 0.65)
-                                .tag(index + 2)
+                    ScrollView(.vertical, showsIndicators: false) {
+                        VStack(spacing: watchSize.spacing) {
+                            // Card 0: Sprint Timer Pro Content
+                            SprintTimerProCardContent()
+                                .frame(width: geometry.size.width * 0.85, height: watchSize.cardSize.height)
                                 .onTapGesture {
                                     withAnimation(.easeInOut(duration: 0.3)) {
-                                        selectedSession = session
-                                        showMainWorkout = true
+                                        selectedCardIndex = 0
+                                        showSprintTimerPro = true
                                     }
                                 }
+                            
+                            // Card 1: User Profile Content
+                            UserProfileCardContent()
+                                .frame(width: geometry.size.width * 0.85, height: watchSize.cardSize.height)
+                                .onTapGesture {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        selectedCardIndex = 1
+                                    }
+                                }
+                            
+                            // Cards 2+: Training Sessions Content
+                            ForEach(mockSessions.indices, id: \.self) { index in
+                                let session = mockSessions[index]
+                                TrainingSessionCardContent(session: session)
+                                    .frame(width: geometry.size.width * 0.85, height: watchSize.cardSize.height)
+                                    .onTapGesture {
+                                        withAnimation(.easeInOut(duration: 0.3)) {
+                                            selectedCardIndex = index + 2
+                                            selectedSession = session
+                                            showMainWorkout = true
+                                        }
+                                    }
+                            }
                         }
+                        .padding(.top, watchSize.spacing)
+                        .padding(.bottom, 60) // Leave room for button
                     }
-                    #if os(watchOS)
-                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    #endif
-                    .animation(.easeInOut(duration: 0.25), value: selectedCardIndex)
                     .frame(maxHeight: .infinity)
-                    
-                    // Spacer to push cards up and leave room for button
-                    Spacer()
                 }
                 
                 // Bottom section: Static "Start Sprint" button (completely independent)
@@ -366,8 +367,8 @@ struct UserProfileCardContent: View {
                 
                 Spacer(minLength: 8)
                 
-                // Swipe indicator
-                Text("← SWIPE FOR SESSIONS →")
+                // Scroll indicator
+                Text("SCROLL FOR SESSIONS")
                     .font(.system(size: 8, weight: .bold))
                     .foregroundColor(.white.opacity(0.6))
                     .tracking(0.3)

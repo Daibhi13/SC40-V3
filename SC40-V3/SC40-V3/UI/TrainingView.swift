@@ -157,7 +157,8 @@ struct TrainingView: View {
                     appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
                     
                     // Apply only to this navigation controller instance
-                    if let navigationController = UIApplication.shared.windows.first?.rootViewController as? UINavigationController {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let navigationController = windowScene.windows.first?.rootViewController as? UINavigationController {
                         navigationController.navigationBar.standardAppearance = appearance
                         navigationController.navigationBar.compactAppearance = appearance
                         navigationController.navigationBar.scrollEdgeAppearance = appearance
@@ -275,7 +276,7 @@ struct TrainingView: View {
     
     private func markSessionAsCompleted(_ sessionData: MainProgramWorkoutView.SessionData) {
         // Find and mark the corresponding training session as completed
-        if let sessionIndex = dynamicSessions.firstIndex(where: { 
+        if dynamicSessions.contains(where: { 
             $0.week == sessionData.week && $0.day == sessionData.day 
         }) {
             // Update the session status (would need to add isCompleted property to TrainingSession)
@@ -427,7 +428,7 @@ extension TrainingView {
     // Dynamic sessions generated based on user profile and ComprehensiveSessionLibrary
     private func generateDynamicSessions() -> [TrainingSession] {
         let userLevel = userProfileVM.profile.level
-        let currentWeek = userProfileVM.profile.currentWeek
+        let _ = userProfileVM.profile.currentWeek
         let frequency = userProfileVM.profile.frequency
         
         print("🏃‍♂️ TrainingView: Generating sessions for \(userLevel) level, \(frequency) days/week across 12 weeks")

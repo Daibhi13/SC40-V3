@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/davidoconnell/Projects/SC40-V3/build/Release-iphoneos/SC40-V3.app/SC40-V3'
-relocations:     []
-...

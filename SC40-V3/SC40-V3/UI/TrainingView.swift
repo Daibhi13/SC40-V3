@@ -876,13 +876,6 @@ extension TrainingView {
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .lineLimit(nil)
-                        
-                        Text("Every champion was once a beginner.\nEvery pro was once an amateur.")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.85))
-                            .multilineTextAlignment(.center)
-                            .lineSpacing(4)
-                            .padding(.horizontal, 20)
                     }
                     
                     // Personal Best Achievement Card
@@ -965,7 +958,7 @@ extension TrainingView {
                     .padding(.horizontal, 20)
                 }
                 .padding(.top, 20)
-                .padding(.bottom, 40)
+                .padding(.bottom, 24)
 
                 // Elite Training Program Section
                 VStack(alignment: .leading, spacing: 20) {
@@ -975,24 +968,16 @@ extension TrainingView {
                                 .font(.system(size: 16, weight: .bold))
                                 .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                             
-                            Text("ELITE TRAINING")
+                            Text("12-WEEK PROGRAM")
                                 .font(.system(size: 13, weight: .black))
                                 .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                                 .tracking(1.8)
                         }
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Transform Your Speed")
-                                .font(.system(size: 28, weight: .black))
-                                .foregroundColor(.white)
-                                .lineLimit(nil)
-                            
-                            Text("Professional 12-week program designed to unlock your potential")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
-                                .lineLimit(nil)
-                                .lineSpacing(2)
-                        }
+                        Text("Transform Your Speed")
+                            .font(.system(size: 28, weight: .black))
+                            .foregroundColor(.white)
+                            .lineLimit(nil)
                     }
                     .padding(.horizontal, 20)
                     
@@ -1000,11 +985,11 @@ extension TrainingView {
                     VStack(spacing: 16) {
                         GeometryReader { geometry in
                             ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 20) {
+                                LazyHStack(spacing: 40) {
                                     ForEach(sessionsToShow.indices, id: \.self) { index in
                                         let session = sessionsToShow[index]
                                         TrainingSessionCard(session: session)
-                                            .frame(width: geometry.size.width - 60) // Full width minus padding for one card
+                                            .frame(width: geometry.size.width - 40) // Full width minus padding for one card
                                             .onTapGesture {
                                                 selectedSessionForWorkout = session
                                                 showMainProgramWorkout = true
@@ -1014,31 +999,18 @@ extension TrainingView {
                                             }
                                     }
                                 }
-                                .padding(.horizontal, 30)
+                                .padding(.horizontal, 20)
                             }
                         }
-                        .frame(height: 200) // Fixed height for carousel
+                        .frame(height: 220) // Fixed height for carousel
+                        .clipped()
                         
                     }
                 }
-                .padding(.bottom, 24)
+                .padding(.bottom, 16)
 
                 // Nike-Inspired Action Button
-                VStack(spacing: 16) {
-                    // Motivational Pre-Button Text
-                    VStack(spacing: 8) {
-                        Text("READY TO DOMINATE?")
-                            .font(.system(size: 13, weight: .black))
-                            .foregroundColor(.white.opacity(0.9))
-                            .tracking(1.5)
-                        
-                        Text("Your transformation begins with a single step")
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
-                            .multilineTextAlignment(.center)
-                            .lineLimit(nil)
-                    }
-                    .padding(.horizontal, 20)
+                VStack(spacing: 8) {
                     
                     // Enhanced Action Button
                     Button(action: {
@@ -1053,15 +1025,9 @@ extension TrainingView {
                                 Image(systemName: "flame.fill")
                                     .font(.system(size: 20, weight: .bold))
                                 
-                                VStack(spacing: 2) {
-                                    Text("BEGIN YOUR JOURNEY")
-                                        .font(.system(size: 18, weight: .black))
-                                        .tracking(0.5)
-                                    
-                                    Text("Start Elite Training")
-                                        .font(.system(size: 14, weight: .semibold))
-                                        .opacity(0.8)
-                                }
+                                Text("START SPRINT")
+                                    .font(.system(size: 18, weight: .black))
+                                    .tracking(0.5)
                                 
                                 Spacer()
                                 
@@ -1094,7 +1060,7 @@ extension TrainingView {
                     }
                     .padding(.horizontal, 20)
                 }
-                .padding(.bottom, 32)
+                .padding(.bottom, 16)
 
                 // Sprint Timer Pro Access Point
                 SprintTimerProAccessCard(isProUser: isProUser) {

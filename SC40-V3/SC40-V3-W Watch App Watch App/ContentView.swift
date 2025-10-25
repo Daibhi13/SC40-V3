@@ -34,9 +34,9 @@ struct ContentView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Top padding to respect system time area (reduced by 2%)
+                    // Top padding to respect system time area
                     Spacer()
-                        .frame(height: 8)
+                        .frame(height: 16)
                     
                     // HORIZONTAL CARD NAVIGATION SYSTEM
                     // Card Layout: [Card 0] ← → [Card 1] ← → [Card 2] ← → [Card 3] ← → [Card N...]
@@ -46,11 +46,11 @@ struct ContentView: View {
                     
                     TabView(selection: $selectedWeek) {
                         // Card 0: Sprint Timer Pro
-                        SprintTimerProCardPolished(geometry: geometry)
+                        SprintTimerProCardAdaptive(geometry: geometry)
                             .tag(0)
                         
                         // Card 1: Personal Record (iPhone match)
-                        PersonalRecordCardPolished(geometry: geometry)
+                        PersonalRecordCardAdaptive(geometry: geometry)
                             .tag(1)
                         
                         // Card 2+: Training Sessions (iPhone match with completion tracking)
@@ -58,7 +58,7 @@ struct ContentView: View {
                             let week = (sessionIndex - 1) / 4 + 1
                             let day = (sessionIndex - 1) % 4 + 1
                             
-                            TrainingSessionCardPolished(
+                            TrainingSessionCardAdaptive(
                                 week: week,
                                 day: day,
                                 isCompleted: sessionIndex <= 2, // Mock completion status
@@ -69,19 +69,19 @@ struct ContentView: View {
                         }
                     }
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .frame(height: geometry.size.height * 0.82) // Increased height to show all content
+                    .frame(height: geometry.size.height * 0.75)
                     .onAppear {
                         // Navigate to next workout on login
                         selectedWeek = 3 // Next workout (Day 3)
                     }
                     
                     Spacer()
-                        .frame(height: 8)
+                        .frame(height: 16)
                     
-                    // Start Sprint Button - pushed up 2%
+                    // Start Sprint Button
                     StartSprintButtonWatch(geometry: geometry)
                         .padding(.horizontal, geometry.size.width * 0.075)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, 16)
                 }
             }
         }
@@ -90,62 +90,75 @@ struct ContentView: View {
 
 // MARK: - Polished Card Components (Perfect Proportions & Complete Details)
 
-// Card 0: Sprint Timer Pro (Polished with proper sizing)
-struct SprintTimerProCardPolished: View {
+// Card 0: Sprint Timer Pro (Adaptive sizing for all watch sizes)
+struct SprintTimerProCardAdaptive: View {
     let geometry: GeometryProxy
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "stopwatch.fill")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.yellow)
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("$4.99")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.white)
+        ScrollView {
+            VStack(alignment: .leading, spacing: geometry.size.width * 0.03) {
+                HStack {
+                    Image(systemName: "stopwatch.fill")
+                        .font(.system(size: geometry.size.width * 0.09, weight: .bold))
+                        .foregroundColor(.yellow)
+                        .frame(maxHeight: geometry.size.height * 0.08)
                     
-                    Text("Upgrade")
-                        .font(.system(size: 10, weight: .medium))
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("$4.99")
+                            .font(.system(size: geometry.size.width * 0.08, weight: .bold))
+                            .foregroundColor(.white)
+                            .minimumScaleFactor(0.6)
+                        
+                        Text("Upgrade")
+                            .font(.system(size: geometry.size.width * 0.05, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .minimumScaleFactor(0.6)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: geometry.size.width * 0.02) {
+                    Text("Sprint Timer Pro")
+                        .font(.system(size: geometry.size.width * 0.1, weight: .bold))
+                        .foregroundColor(.white)
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
+                    
+                    Text("Unlock advanced training features")
+                        .font(.system(size: geometry.size.width * 0.065, weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .lineLimit(nil)
+                        .minimumScaleFactor(0.6)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                Spacer(minLength: geometry.size.width * 0.02)
+                
+                HStack {
+                    Text("• Custom workouts")
+                        .font(.system(size: geometry.size.width * 0.055, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                    
+                    Spacer()
+                    
+                    Text("PRO")
+                        .font(.system(size: geometry.size.width * 0.05, weight: .black))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, geometry.size.width * 0.04)
+                        .padding(.vertical, geometry.size.width * 0.015)
+                        .background(Color.yellow)
+                        .cornerRadius(6)
+                        .minimumScaleFactor(0.6)
                 }
             }
-            
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Sprint Timer Pro")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(.white)
-                    .minimumScaleFactor(0.8)
-                
-                Text("Unlock advanced training features")
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.8)
-            }
-            
-            Spacer()
-            
-            HStack {
-                Text("• Custom workouts")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                
-                Spacer()
-                
-                Text("PRO")
-                    .font(.system(size: 10, weight: .black))
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.yellow)
-                    .cornerRadius(6)
-            }
+            .padding(geometry.size.width * 0.1)
         }
-        .padding(18)
+        .frame(maxWidth: .infinity)
+        .frame(height: geometry.size.height * 0.65)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(
@@ -173,79 +186,92 @@ struct SprintTimerProCardPolished: View {
                         )
                 )
         )
-        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
 
-// Card 1: Personal Record (Fixed content visibility)
-struct PersonalRecordCardPolished: View {
+// Card 1: Personal Record (Adaptive sizing for all watch sizes)
+struct PersonalRecordCardAdaptive: View {
     let geometry: GeometryProxy
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Image(systemName: "trophy.fill")
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+        ScrollView {
+            VStack(alignment: .leading, spacing: geometry.size.width * 0.025) {
+                HStack {
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: geometry.size.width * 0.08, weight: .bold))
+                        .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .frame(maxHeight: geometry.size.height * 0.06)
+                    
+                    Spacer()
+                    
+                    Text("40 YARDS DASH")
+                        .font(.system(size: geometry.size.width * 0.05, weight: .bold))
+                        .foregroundColor(.white.opacity(0.7))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.trailing)
+                }
                 
-                Spacer()
-                
-                Text("40 YARDS DASH")
-                    .font(.system(size: 10, weight: .bold))
+                Text("PERSONAL RECORD")
+                    .font(.system(size: geometry.size.width * 0.06, weight: .medium))
                     .foregroundColor(.white.opacity(0.7))
-                    .minimumScaleFactor(0.8)
-            }
-            
-            Text("PERSONAL RECORD")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.white.opacity(0.7))
-                .tracking(1.2)
-                .minimumScaleFactor(0.8)
-            
-            HStack(alignment: .bottom, spacing: 4) {
-                Text("5.25")
-                    .font(.system(size: 32, weight: .black))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                Color(red: 1.0, green: 0.9, blue: 0.7),
-                                Color(red: 1.0, green: 0.8, blue: 0.4)
-                            ],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
+                    .tracking(geometry.size.width * 0.006)
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(nil)
+                    .multilineTextAlignment(.leading)
+                
+                HStack(alignment: .bottom, spacing: geometry.size.width * 0.02) {
+                    Text("5.25")
+                        .font(.system(size: geometry.size.width * 0.16, weight: .black))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 1.0, green: 0.9, blue: 0.7),
+                                    Color(red: 1.0, green: 0.8, blue: 0.4)
+                                ],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
                         )
-                    )
-                    .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(1)
+                    
+                    Text("SEC")
+                        .font(.system(size: geometry.size.width * 0.06, weight: .bold))
+                        .foregroundColor(.white.opacity(0.7))
+                        .minimumScaleFactor(0.6)
+                        .padding(.bottom, geometry.size.width * 0.01)
+                }
                 
-                Text("SEC")
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundColor(.white.opacity(0.7))
-                    .minimumScaleFactor(0.8)
-                    .padding(.bottom, 2)
+                Spacer(minLength: geometry.size.width * 0.02)
+                
+                HStack {
+                    Text("Your best time")
+                        .font(.system(size: geometry.size.width * 0.05, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                    
+                    Spacer()
+                    
+                    Text("ELITE")
+                        .font(.system(size: geometry.size.width * 0.045, weight: .black))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, geometry.size.width * 0.03)
+                        .padding(.vertical, geometry.size.width * 0.01)
+                        .background(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .cornerRadius(4)
+                        .minimumScaleFactor(0.6)
+                }
             }
-            
-            Spacer()
-                .frame(minHeight: 8)
-            
-            HStack {
-                Text("Your best time")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.white.opacity(0.6))
-                
-                Spacer()
-                
-                Text("ELITE")
-                    .font(.system(size: 9, weight: .black))
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color(red: 1.0, green: 0.8, blue: 0.0))
-                    .cornerRadius(4)
-            }
+            .padding(geometry.size.width * 0.1)
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .fixedSize(horizontal: false, vertical: true)
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(
@@ -273,13 +299,15 @@ struct PersonalRecordCardPolished: View {
                         )
                 )
         )
-        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
 
-// Card 2+: Training Sessions (Polished with completion tracking)
-struct TrainingSessionCardPolished: View {
+// Card 2+: Training Sessions (Adaptive sizing for all watch sizes)
+struct TrainingSessionCardAdaptive: View {
     let week: Int
     let day: Int
     let isCompleted: Bool
@@ -301,107 +329,117 @@ struct TrainingSessionCardPolished: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            // Header badges with completion status
-            HStack {
-                Text("WEEK \(week)")
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.black)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 3)
-                    .background(Color(red: 1.0, green: 0.85, blue: 0.1))
-                    .cornerRadius(4)
-                    .minimumScaleFactor(0.8)
-                
-                Spacer()
-                
-                if isCompleted {
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.green)
-                } else if isNext {
-                    Text("NEXT")
-                        .font(.system(size: 9, weight: .bold))
+        ScrollView {
+            VStack(alignment: .leading, spacing: geometry.size.width * 0.02) {
+                // Header badges with completion status
+                HStack {
+                    Text("WEEK \(week)")
+                        .font(.system(size: geometry.size.width * 0.045, weight: .bold))
                         .foregroundColor(.black)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background(Color.orange)
-                        .cornerRadius(4)
-                } else {
-                    Text(sessionData.type)
-                        .font(.system(size: 8, weight: .bold))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
+                        .padding(.horizontal, geometry.size.width * 0.03)
+                        .padding(.vertical, geometry.size.width * 0.015)
                         .background(Color(red: 1.0, green: 0.85, blue: 0.1))
                         .cornerRadius(4)
-                        .minimumScaleFactor(0.8)
-                }
-            }
-            
-            // Day and focus
-            HStack(alignment: .bottom, spacing: 4) {
-                Text("DAY")
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundColor(.white.opacity(0.7))
-                    .tracking(0.8)
-                    .minimumScaleFactor(0.8)
-                
-                Text("\(day)")
-                    .font(.system(size: 24, weight: .black))
-                    .foregroundColor(.white)
-                    .minimumScaleFactor(0.8)
-            }
-            
-            Text(sessionData.focus.uppercased())
-                .font(.system(size: 12, weight: .bold))
-                .foregroundColor(.white.opacity(0.9))
-                .tracking(0.3)
-                .lineLimit(2)
-                .minimumScaleFactor(0.8)
-            
-            // Sprint details - compact
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(alignment: .bottom, spacing: 4) {
-                    Text(sessionData.sprints)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                        .minimumScaleFactor(0.8)
-                    
-                    Text("YD")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundColor(.white.opacity(0.8))
-                        .minimumScaleFactor(0.8)
+                        .minimumScaleFactor(0.6)
                     
                     Spacer()
                     
-                    Text(sessionData.intensity)
-                        .font(.system(size: 9, weight: .black))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.white)
-                        .cornerRadius(4)
-                        .minimumScaleFactor(0.8)
+                    if isCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: geometry.size.width * 0.07, weight: .bold))
+                            .foregroundColor(.green)
+                            .frame(maxHeight: geometry.size.height * 0.05)
+                    } else if isNext {
+                        Text("NEXT")
+                            .font(.system(size: geometry.size.width * 0.045, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, geometry.size.width * 0.03)
+                            .padding(.vertical, geometry.size.width * 0.015)
+                            .background(Color.orange)
+                            .cornerRadius(4)
+                            .minimumScaleFactor(0.6)
+                    } else {
+                        Text(sessionData.type)
+                            .font(.system(size: geometry.size.width * 0.04, weight: .bold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, geometry.size.width * 0.03)
+                            .padding(.vertical, geometry.size.width * 0.015)
+                            .background(Color(red: 1.0, green: 0.85, blue: 0.1))
+                            .cornerRadius(4)
+                            .minimumScaleFactor(0.6)
+                            .lineLimit(nil)
+                            .multilineTextAlignment(.center)
+                    }
                 }
                 
-                Text(sessionData.restTime)
-                    .font(.system(size: 10, weight: .bold))
-                    .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0))
-                    .minimumScaleFactor(0.8)
+                // Day and focus
+                HStack(alignment: .bottom, spacing: geometry.size.width * 0.02) {
+                    Text("DAY")
+                        .font(.system(size: geometry.size.width * 0.055, weight: .bold))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(geometry.size.width * 0.004)
+                        .minimumScaleFactor(0.6)
+                    
+                    Text("\(day)")
+                        .font(.system(size: geometry.size.width * 0.12, weight: .black))
+                        .foregroundColor(.white)
+                        .minimumScaleFactor(0.6)
+                }
                 
-                Text(sessionData.description)
-                    .font(.system(size: 9, weight: .bold))
-                    .foregroundColor(.white.opacity(0.6))
-                    .tracking(0.2)
-                    .minimumScaleFactor(0.8)
+                Text(sessionData.focus.uppercased())
+                    .font(.system(size: geometry.size.width * 0.06, weight: .bold))
+                    .foregroundColor(.white.opacity(0.9))
+                    .tracking(geometry.size.width * 0.0015)
+                    .lineLimit(nil)
+                    .minimumScaleFactor(0.6)
+                    .multilineTextAlignment(.leading)
+                
+                // Sprint details - compact
+                VStack(alignment: .leading, spacing: geometry.size.width * 0.02) {
+                    HStack(alignment: .bottom, spacing: geometry.size.width * 0.02) {
+                        Text(sessionData.sprints)
+                            .font(.system(size: geometry.size.width * 0.07, weight: .bold))
+                            .foregroundColor(.white)
+                            .minimumScaleFactor(0.6)
+                        
+                        Text("YD")
+                            .font(.system(size: geometry.size.width * 0.05, weight: .bold))
+                            .foregroundColor(.white.opacity(0.8))
+                            .minimumScaleFactor(0.6)
+                        
+                        Spacer()
+                        
+                        Text(sessionData.intensity)
+                            .font(.system(size: geometry.size.width * 0.045, weight: .black))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, geometry.size.width * 0.03)
+                            .padding(.vertical, geometry.size.width * 0.01)
+                            .background(Color.white)
+                            .cornerRadius(4)
+                            .minimumScaleFactor(0.6)
+                    }
+                    
+                    Text(sessionData.restTime)
+                        .font(.system(size: geometry.size.width * 0.05, weight: .bold))
+                        .foregroundColor(Color(red: 0.4, green: 0.8, blue: 1.0))
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                    
+                    Text(sessionData.description)
+                        .font(.system(size: geometry.size.width * 0.045, weight: .bold))
+                        .foregroundColor(.white.opacity(0.6))
+                        .tracking(geometry.size.width * 0.001)
+                        .minimumScaleFactor(0.6)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                Spacer(minLength: geometry.size.width * 0.02)
             }
-            
-            Spacer()
-                .frame(minHeight: 4)
+            .padding(geometry.size.width * 0.1)
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+        .fixedSize(horizontal: false, vertical: true)
         .background(
             // iPhone TrainingView session card background
             RoundedRectangle(cornerRadius: 16)
@@ -436,8 +474,10 @@ struct TrainingSessionCardPolished: View {
                     lineWidth: isNext ? 3 : 2
                 )
         )
-        .shadow(color: .black.opacity(0.3), radius: 6, x: 0, y: 3)
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
         .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
 

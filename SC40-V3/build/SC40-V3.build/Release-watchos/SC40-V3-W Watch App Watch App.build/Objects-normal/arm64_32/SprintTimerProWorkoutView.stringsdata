@@ -1,0 +1,192 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/SprintTimerProWorkoutView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "REST",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 211
+        }
+      },
+      {
+        "comment": "",
+        "key": "SPRINT",
+        "location": {
+          "startingColumn": 44,
+          "startingLine": 226
+        }
+      },
+      {
+        "comment": "",
+        "key": "READY",
+        "location": {
+          "startingColumn": 55,
+          "startingLine": 226
+        }
+      },
+      {
+        "comment": "",
+        "key": "↕ Rep Log",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 278
+        }
+      },
+      {
+        "comment": "",
+        "key": "← Control",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 269
+        }
+      },
+      {
+        "comment": "",
+        "key": "Music →",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 273
+        }
+      },
+      {
+        "comment": "",
+        "key": "Main →",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 736
+        }
+      },
+      {
+        "comment": "",
+        "key": "ELAPSED TIME",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 651
+        }
+      },
+      {
+        "comment": "",
+        "key": "SET",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 704
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld/%lld",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 707
+        }
+      },
+      {
+        "comment": "",
+        "key": "End Workout?",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 744
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save your progress and end the workout?",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 745
+        }
+      },
+      {
+        "comment": "",
+        "key": "CONTINUE WORKOUT",
+        "location": {
+          "startingColumn": 46,
+          "startingLine": 746
+        }
+      },
+      {
+        "comment": "",
+        "key": "END & SAVE",
+        "location": {
+          "startingColumn": 48,
+          "startingLine": 747
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Times",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 763
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg: %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 766
+        }
+      },
+      {
+        "comment": "",
+        "key": "Last: %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 769
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rep Log",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 787
+        }
+      },
+      {
+        "comment": "",
+        "key": "Set %lld/%lld",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 790
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 792
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Detail",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 805
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld yards",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 808
+        }
+      },
+      {
+        "comment": "",
+        "key": "Close",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 810
+        }
+      }
+    ]
+  },
+  "version": 1
+}

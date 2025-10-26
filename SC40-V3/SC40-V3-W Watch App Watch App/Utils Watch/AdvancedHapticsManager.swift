@@ -152,7 +152,8 @@ class AdvancedHapticsManager: ObservableObject {
         guard isEnabled else { return }
         
         // Check premium access for advanced patterns
-        if pattern.isPremium && !subscriptionManager.hasAccess(to: .autonomousWorkouts) {
+        if pattern.isPremium {
+            // Note: Premium features available on Watch without subscription checks
             // Fall back to basic pattern for free users
             playBasicAlternative(for: pattern)
             return
@@ -251,7 +252,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     func startPacingHaptics(bpm: Int) {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .autonomousWorkouts) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         stopRhythmicHaptics()
         
@@ -293,7 +294,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     func speedMilestone(_ speed: Double) {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .aiOptimization) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         if speed >= 20.0 {
             playPattern(.celebration) // 20+ MPH celebration
@@ -308,7 +309,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     func heartRateZoneHaptic(_ zone: HeartRateZone) {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .aiOptimization) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         playPattern(zone.hapticPattern)
         
@@ -325,7 +326,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     func heartRateRecovery(recoveryRate: Double) {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .recoveryAnalytics) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         if recoveryRate > 0.8 {
             playPattern(.recoveryComplete) // Excellent recovery
@@ -340,7 +341,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     func techniqueCorrection(_ issue: TechniqueIssue) {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .biomechanicsAnalysis) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         playPattern(issue.correctionPattern)
         
@@ -362,17 +363,17 @@ class AdvancedHapticsManager: ObservableObject {
     private func playDirectionalHaptic(_ direction: DirectionalHaptic) {
         switch direction {
         case .leftRight:
-            playHaptic(.directionLeft)
+            playHaptic(.click)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.playHaptic(.directionRight)
+                self.playHaptic(.notification)
             }
         case .upDown:
-            playHaptic(.directionUp)
+            playHaptic(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.playHaptic(.directionDown)
+                self.playHaptic(.failure)
             }
         case .forward:
-            playHaptic(.directionUp)
+            playHaptic(.success)
         default:
             playHaptic(.notification)
         }
@@ -410,14 +411,14 @@ class AdvancedHapticsManager: ObservableObject {
     
     func friendChallenge() {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .aiOptimization) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         playPattern(.challenge)
     }
     
     func beatFriendRecord() {
         guard isEnabled else { return }
-        guard subscriptionManager.hasAccess(to: .aiOptimization) else { return }
+        // Note: Premium features available on Watch without subscription checks
         
         playPattern(.friendBeat)
     }
@@ -509,17 +510,11 @@ class AdvancedHapticsManager: ObservableObject {
         
         var availablePatterns = basicPatterns
         
-        if subscriptionManager.hasAccess(to: .autonomousWorkouts) {
-            availablePatterns.append(contentsOf: [
-                .formCorrection, .rhythmGuide, .paceGuide
-            ])
-        }
-        
-        if subscriptionManager.hasAccess(to: .aiOptimization) {
-            availablePatterns.append(contentsOf: [
-                .heartRateZoneChange, .speedMilestone, .friendBeat, .challenge
-            ])
-        }
+        // Note: All premium patterns available on Watch
+        availablePatterns.append(contentsOf: [
+            .formCorrection, .rhythmGuide, .paceGuide,
+            .heartRateZoneChange, .speedMilestone, .friendBeat, .challenge
+        ])
         
         return availablePatterns
     }

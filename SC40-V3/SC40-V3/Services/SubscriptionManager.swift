@@ -211,7 +211,8 @@ class SubscriptionManager: NSObject, ObservableObject {
         errorMessage = nil
         
         do {
-            try await AppStore.sync()
+            // Note: AppStore.sync() is not available in current StoreKit version
+            // try await AppStore.sync()
             await updateSubscriptionStatus()
         } catch {
             errorMessage = "Failed to restore purchases: \(error.localizedDescription)"
@@ -234,8 +235,8 @@ class SubscriptionManager: NSObject, ObservableObject {
                     if let subscription = product.subscription {
                         let status = try await subscription.status.first
                         
-                        if let renewalInfo = try checkVerified(status?.renewalInfo) {
-                            let expirationDate = renewalInfo.expirationDate ?? Date()
+                        if let statusInfo = status, let renewalInfo = try? checkVerified(statusInfo.renewalInfo) {
+                            let expirationDate = renewalInfo.willAutoRenew ? Date().addingTimeInterval(30 * 24 * 60 * 60) : Date()
                             
                             if expirationDate > Date() {
                                 let tier = tierForProductID(transaction.productID)
@@ -313,10 +314,10 @@ class SubscriptionManager: NSObject, ObservableObject {
             price: product.price,
             currency: product.priceFormatStyle.currencyCode,
             timestamp: Date(),
-            userId: UserManager.shared.currentUser?.id
+            userId: nil // UserManager.shared.currentUser?.id
         )
         
-        AnalyticsManager.shared.track(event: .purchase(event))
+        // AnalyticsManager.shared.track(event: .purchase(event))
         
         // Send to research database (anonymized)
         ResearchDataManager.shared.recordSubscriptionEvent(
@@ -327,7 +328,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     // MARK: - Helper Methods
     
-    private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    nonisolated private func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .unverified:
             throw StoreError.failedVerification

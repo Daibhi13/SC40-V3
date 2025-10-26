@@ -392,8 +392,8 @@ class WatchDataStore: ObservableObject {
     }
     
     private func mapEntityToWorkoutData(_ entity: NSManagedObject) -> WatchWorkoutData? {
-        guard let id = entity.value(forKey: "id") as? UUID,
-              let startTime = entity.value(forKey: "startTime") as? Date,
+        guard let _ = entity.value(forKey: "id") as? UUID,
+              let _ = entity.value(forKey: "startTime") as? Date,
               let workoutTypeString = entity.value(forKey: "workoutType") as? String,
               let workoutType = WatchWorkoutType(rawValue: workoutTypeString),
               let sessionName = entity.value(forKey: "sessionName") as? String,
@@ -447,28 +447,6 @@ class WatchDataStore: ObservableObject {
         }
     }
     
-    private func calculateStats(from workouts: [WatchWorkoutData]) -> WorkoutStats {
-        guard !workouts.isEmpty else { return WorkoutStats() }
-        
-        let totalWorkouts = workouts.count
-        let totalTime = workouts.map { $0.totalDuration }.reduce(0, +)
-        let totalDistance = workouts.map { $0.actualDistance }.reduce(0, +)
-        let totalCalories = workouts.map { $0.caloriesBurned }.reduce(0, +)
-        
-        let bestTimes = workouts.compactMap { $0.bestSprintTime }.filter { $0 > 0 }
-        let maxSpeeds = workouts.compactMap { $0.maxSpeed }
-        
-        return WorkoutStats(
-            totalWorkouts: totalWorkouts,
-            totalTime: totalTime,
-            totalDistance: totalDistance,
-            totalCalories: totalCalories,
-            bestTime: bestTimes.min() ?? 0,
-            maxSpeed: maxSpeeds.max() ?? 0,
-            averageWorkoutTime: totalTime / Double(totalWorkouts)
-        )
-    }
-    
     private func getTotalDiskSpace() -> Int64 {
         do {
             let systemAttributes = try FileManager.default.attributesOfFileSystem(forPath: NSHomeDirectory())
@@ -485,6 +463,33 @@ class WatchDataStore: ObservableObject {
         } catch {
             return 0
         }
+    }
+    
+    // MARK: - Statistics Calculation
+    
+    private func calculateStats(from workouts: [WatchWorkoutData]) -> WorkoutStats {
+        guard !workouts.isEmpty else {
+            return WorkoutStats()
+        }
+        
+        let totalWorkouts = workouts.count
+        let totalTime = workouts.reduce(into: 0) { $0 += $1.totalDuration }
+        let totalDistance = workouts.reduce(into: 0) { $0 += $1.actualDistance }
+        let totalCalories = workouts.reduce(into: 0) { $0 += $1.caloriesBurned }
+        
+        // Calculate best times and max speeds
+        let bestTimes = workouts.compactMap { $0.bestSprintTime }.filter { $0 > 0 }
+        let maxSpeeds = workouts.compactMap { $0.maxSpeed }.filter { $0 > 0 }
+        
+        return WorkoutStats(
+            totalWorkouts: totalWorkouts,
+            totalTime: totalTime,
+            totalDistance: totalDistance,
+            totalCalories: totalCalories,
+            bestTime: bestTimes.min() ?? 0,
+            maxSpeed: maxSpeeds.max() ?? 0,
+            averageWorkoutTime: totalTime / Double(totalWorkouts)
+        )
     }
 }
 

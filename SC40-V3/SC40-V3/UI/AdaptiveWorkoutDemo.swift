@@ -24,9 +24,9 @@ struct AdaptiveWorkoutDemo: View {
                 
                 // Key Feature Highlights
                 VStack(alignment: .leading, spacing: 12) {
-                    FeatureRow(icon: "iphone", title: "iPhone GPS Tracking", description: "Full session access with GPS precision")
-                    FeatureRow(icon: "applewatch", title: "Apple Watch Integration", description: "Wrist-based convenience and heart rate")
-                    FeatureRow(icon: "brain.head.profile", title: "Smart Selection", description: "Automatically choose optimal platform")
+                    AdaptiveFeatureRow(icon: "iphone", title: "iPhone GPS Tracking", description: "Full session access with GPS precision")
+                    AdaptiveFeatureRow(icon: "applewatch", title: "Apple Watch Integration", description: "Wrist-based convenience and heart rate")
+                    AdaptiveFeatureRow(icon: "brain.head.profile", title: "Smart Selection", description: "Automatically choose optimal platform")
                 }
                 .padding()
                 .background(Color.gray.opacity(0.1))
@@ -68,7 +68,7 @@ struct AdaptiveWorkoutDemo: View {
     }
 }
 
-struct FeatureRow: View {
+struct AdaptiveFeatureRow: View {
     let icon: String
     let title: String
     let description: String

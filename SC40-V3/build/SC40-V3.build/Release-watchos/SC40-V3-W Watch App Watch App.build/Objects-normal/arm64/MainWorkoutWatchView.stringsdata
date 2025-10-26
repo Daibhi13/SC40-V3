@@ -1,0 +1,88 @@
+{
+  "source": "/Users/davidoconnell/Projects/SC40-V3/SC40-V3-W Watch App Watch App/Views Watch/Workout/MainWorkoutWatchView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Sprint Timer",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timer for your sprint. Spoken cues and starter pistol will play at the start.",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rest",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 466
+        }
+      },
+      {
+        "comment": "",
+        "key": "--:--",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 480
+        }
+      },
+      {
+        "comment": "",
+        "key": "Avg Split",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 497
+        }
+      },
+      {
+        "comment": "",
+        "key": "Last: %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 503
+        }
+      },
+      {
+        "comment": "",
+        "key": "Sprint Graph\n(Coming Soon)",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 521
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pace",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 535
+        }
+      },
+      {
+        "comment": "",
+        "key": "Fatigue",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 553
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rank",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 571
+        }
+      }
+    ]
+  },
+  "version": 1
+}

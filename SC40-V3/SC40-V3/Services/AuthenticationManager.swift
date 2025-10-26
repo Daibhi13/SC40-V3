@@ -410,8 +410,14 @@ class AppleSignInPresentationContextProvider: NSObject, ASAuthorizationControlle
                 return UIWindow(windowScene: windowScene)
             }
             // Final fallback - create minimal window
-            let window = UIWindow()
-            window.frame = CGRect(x: 0, y: 0, width: 320, height: 568) // Safe default size
+            // Use windowScene-based initializer for iOS 26.0+
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let window = UIWindow(windowScene: windowScene)
+                window.frame = CGRect(x: 0, y: 0, width: 320, height: 568) // Safe default size
+                return window
+            }
+            // Final fallback - create minimal window with first available scene
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 568))
             return window
         }
         return window

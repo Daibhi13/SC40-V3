@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/davidoconnell/Projects/SC40-V3/build/Release-watchos/SC40-V3-W Watch App Watch App.app/SC40-V3-W Watch App Watch App'
+relocations:     []
+...

@@ -118,7 +118,7 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
         case preparation, warmup, technique, sprint, recovery, cooldown, analysis
     }
     
-    struct VoiceProfile {
+    struct VoiceProfile: Hashable {
         let name: String
         let identifier: String
         let language: String
@@ -172,7 +172,12 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
         let consistencyScore: Double
         let technicalScore: Double
         
-        enum ExperienceLevel { case beginner, intermediate, advanced, elite }
+        enum ExperienceLevel: String { 
+            case beginner = "beginner"
+            case intermediate = "intermediate" 
+            case advanced = "advanced"
+            case elite = "elite"
+        }
         enum MotivationType { case encouragement, challenge, technical, achievement }
     }
     
@@ -440,7 +445,7 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
     
     // MARK: - Natural Speech Enhancement
     
-    private func speak(_ message: String, priority: CoachingMessage.Priority, context: CoachingMessage.CoachingContext, delay: TimeInterval = 0) {
+    func speak(_ message: String, priority: CoachingMessage.Priority, context: CoachingMessage.CoachingContext, delay: TimeInterval = 0) {
         let enhancedMessage = enhanceMessageNaturalness(message)
         let coachingMessage = CoachingMessage(
             content: enhancedMessage,
@@ -790,7 +795,7 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
 
 // MARK: - AVSpeechSynthesizerDelegate
 
-extension PremiumVoiceCoach: AVSpeechSynthesizerDelegate {
+extension PremiumVoiceCoach: @preconcurrency AVSpeechSynthesizerDelegate {
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
         isSpeaking = false
         

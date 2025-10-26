@@ -405,7 +405,9 @@ struct SprintTimerProWorkoutView: View {
             
             // Update WorkoutWatchViewModel rest progress
             let totalRestTime = Double(restMinutes * 60)
-            sprintWorkoutVM.repProgress = max(0.0, restTimeRemaining / totalRestTime)
+            DispatchQueue.main.async {
+                sprintWorkoutVM.repProgress = max(0.0, restTimeRemaining / totalRestTime)
+            }
             
             if restTimeRemaining <= 0 {
                 endRestPeriod()

@@ -119,9 +119,9 @@ class WatchGPSManager: NSObject, ObservableObject {
     }
     
     func endSprint() -> SprintResult? {
-        guard let startLocation = sprintStartLocation,
+        guard let _ = sprintStartLocation,
               let startTime = sprintStartTime,
-              let endLocation = lastLocation else {
+              let _ = lastLocation else {
             print("⚠️ Cannot end sprint - missing start data")
             return nil
         }
@@ -228,7 +228,7 @@ class WatchGPSManager: NSObject, ObservableObject {
     }
     
     private func updateSprintTracking(_ location: CLLocation, distance: Double, speed: Double) {
-        guard let sprintStart = sprintStartLocation,
+        guard let _ = sprintStartLocation,
               let startTime = sprintStartTime else { return }
         
         // Update sprint distance

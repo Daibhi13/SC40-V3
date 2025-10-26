@@ -129,7 +129,7 @@ struct MainProgramWorkoutWatchView: View {
             sessionId: UUID(),
             duration: workoutTimer?.timeInterval ?? 0,
             totalSprints: totalSets,
-            maxSpeed: gpsManager.maxSpeed,
+            maxSpeed: gpsManager.currentSpeed,
             averageHeartRate: workoutManager.averageHeartRate,
             caloriesBurned: workoutManager.caloriesBurned,
             personalRecords: []

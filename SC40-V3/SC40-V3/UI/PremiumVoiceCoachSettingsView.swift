@@ -146,7 +146,7 @@ struct PremiumVoiceCoachSettingsView: View {
     // MARK: - Coaching Style Section
     
     private var coachingStyleSection: some View {
-        Section("Coaching Style") {
+        Section {
             ForEach(voiceCoach.getAvailableCoachingStyles(), id: \.self) { style in
                 CoachingStyleRow(
                     style: style,
@@ -170,7 +170,7 @@ struct PremiumVoiceCoachSettingsView: View {
     // MARK: - Personality Section
     
     private var personalitySection: some View {
-        Section("Voice Personality") {
+        Section {
             ForEach(PremiumVoiceCoach.VoicePersonality.allCases, id: \.self) { personality in
                 PersonalityRow(
                     personality: personality,
@@ -194,7 +194,7 @@ struct PremiumVoiceCoachSettingsView: View {
     // MARK: - Adaptive Coaching Section
     
     private var adaptiveCoachingSection: some View {
-        Section("AI-Powered Coaching") {
+        Section {
             // Adaptive Level
             VStack(alignment: .leading, spacing: 8) {
                 Text("Intelligence Level")

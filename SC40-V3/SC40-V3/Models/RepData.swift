@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - Rep Data Model for Workout Tracking
 struct RepData: Identifiable, Codable, Equatable {
-    let id = UUID()
+    let id: UUID
     let rep: Int
     let time: Double?
     let isCompleted: Bool
@@ -49,6 +49,7 @@ struct RepData: Identifiable, Codable, Equatable {
     
     // Initializer for compatibility
     init(rep: Int, time: Double?, isCompleted: Bool, repType: RepType, distance: Int, timestamp: Date) {
+        self.id = UUID()
         self.rep = rep
         self.time = time
         self.isCompleted = isCompleted
@@ -59,6 +60,7 @@ struct RepData: Identifiable, Codable, Equatable {
     
     // Legacy initializer for MainProgramWorkoutView compatibility
     init(type: RepType, rep: Int, distance: Int, time: Double, speed: Double, timestamp: Date) {
+        self.id = UUID()
         self.rep = rep
         self.time = time
         self.isCompleted = true

@@ -6,5 +6,9 @@
 	<string>SC40 needs location access to accurately time your sprints and measure distances during training sessions.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>SC40 uses location services to provide precise sprint timing and distance measurement for optimal training results.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.</string>
 </dict>
 </plist>

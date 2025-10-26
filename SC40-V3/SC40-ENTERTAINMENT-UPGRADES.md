@@ -15,6 +15,8 @@
 - ❌ **Gamification Elements** - No achievements, streaks, or rewards
 - ❌ **Social Features** - No community challenges or sharing
 - ❌ **Premium Content** - No exclusive workouts or coaching content
+- ❌ **Rest & Recovery System** - No active rest management or mandatory rest enforcement
+- ❌ **Progressive Training Programs** - No structured 8-week beginner programs
 
 ---
 
@@ -187,7 +189,82 @@ class SocialChallengeManager {
 }
 ```
 
-### **Tier 4: Premium Content & Coaching** 🏆
+### **Tier 4: Rest & Recovery Management** 🛌
+
+#### **1. Intelligent Rest Scheduling (Pro Tier)**
+```swift
+class RestRecoveryManager: ObservableObject {
+    @Published var trainingFrequency: TrainingFrequency = .regular
+    @Published var recoveryScore: Double = 1.0
+    
+    enum TrainingFrequency {
+        case casual(daysPerWeek: Int)      // 2-3 days - mandatory rest between sprints
+        case regular(daysPerWeek: Int)     // 4-5 days - 1 day rest between high intensity
+        case serious(daysPerWeek: Int)     // 5-7 days - 1 complete rest day minimum
+    }
+    
+    // Prevent overtraining and enforce rest
+    func canTrainToday() -> TrainingPermission {
+        // Logic to determine if user should rest or can train
+        // Considers: days since last sprint, recovery score, training frequency
+    }
+    
+    func generateActiveRestPlan() -> [ActiveRestActivity] {
+        // Recovery walks, stretching, foam rolling, yoga
+        // Tailored to user's training frequency and recovery needs
+    }
+}
+```
+
+#### **2. Active Recovery Activities (Elite Tier)**
+```swift
+struct ActiveRestActivity {
+    let name: String                    // "Recovery Walk", "Dynamic Stretching"
+    let duration: TimeInterval          // 15-30 minutes
+    let intensity: RestIntensity        // Very light to moderate
+    let benefits: [RecoveryBenefit]     // Muscle recovery, flexibility, blood flow
+    let videoGuide: String              // In-app instruction videos
+    
+    enum RestIntensity {
+        case veryLight    // Heart rate < 50% max
+        case light        // Heart rate 50-60% max  
+        case moderate     // Heart rate 60-70% max
+    }
+}
+
+let activeRestLibrary = [
+    "Recovery Walk (20 min)",
+    "Dynamic Stretching (15 min)", 
+    "Foam Rolling Session (10 min)",
+    "Easy Bike Ride (30 min)",
+    "Gentle Yoga Flow (25 min)",
+    "Swimming Recovery (20 min)"
+]
+```
+
+#### **3. Recovery Monitoring & Feedback (Elite Tier)**
+```swift
+class RecoveryMonitor {
+    @Published var sleepQuality: SleepQuality
+    @Published var muscleStiffness: StiffnessLevel  
+    @Published var energyLevel: EnergyLevel
+    @Published var heartRateVariability: Double
+    
+    // Calculate overall recovery readiness
+    func calculateRecoveryScore() -> Double {
+        // Weighted algorithm considering sleep, HRV, subjective feelings
+        // 0.0 = needs complete rest, 1.0 = fully recovered
+    }
+    
+    // Smart notifications for rest enforcement
+    func shouldEnforceRest() -> Bool {
+        // Prevent overtraining by mandating rest days
+        // Based on training frequency and recovery metrics
+    }
+}
+```
+
+### **Tier 5: Premium Content & Coaching** 🏆
 
 #### **1. Expert Coaching Content (Elite Tier)**
 ```swift
@@ -288,10 +365,12 @@ class SC40Complications {
 
 ## 🚀 **Implementation Priority & Timeline**
 
-### **Phase 1: Core Entertainment (Months 1-2)**
+### **Phase 1: Core Entertainment & Recovery (Months 1-2)**
 #### **High Priority - Pro Tier Features:**
 - [ ] **Enhanced Music Integration** - Direct Apple Music control
 - [ ] **Advanced Haptic Patterns** - Workout-synchronized feedback
+- [ ] **Rest & Recovery System** - Mandatory rest enforcement and active recovery
+- [ ] **Session Rotation System** - Prevent same session types within a week
 - [ ] **Basic Achievement System** - Speed and consistency milestones
 - [ ] **Curated Playlists** - BPM-matched workout music
 
@@ -323,6 +402,58 @@ extension WatchIntervalManager {
         
         // Start sprint with victory haptic
         AdvancedHapticsManager.shared.startSprint()
+    }
+}
+
+// 3. Rest & Recovery System Integration
+extension MainProgramWorkoutWatchView {
+    func checkTrainingPermission() -> Bool {
+        let restManager = RestRecoveryManager.shared
+        
+        switch restManager.canTrainToday() {
+        case .approved:
+            return true
+        case .cautioned(let reason, let activity):
+            showRestRecommendation(reason: reason, activity: activity)
+            return true
+        case .denied(let reason, let activity):
+            showMandatoryRest(reason: reason, activity: activity)
+            return false
+        }
+    }
+    
+    private func showMandatoryRest(reason: String, activity: RestActivity) {
+        // Show rest day view with active recovery options
+        // Prevent access to sprint training
+        // Guide user through active rest activities
+    }
+}
+
+// 4. Session Rotation System Integration
+extension TrainingView {
+    func selectTodaysSession() -> SprintSessionTemplate? {
+        let sessionManager = SessionRotationManager.shared
+        let restManager = RestRecoveryManager.shared
+        
+        // Check if user can train and what type
+        let trainingDecision = IntegratedTrainingManager().canTrainToday()
+        
+        switch trainingDecision {
+        case .trainingApproved(_, let recommendedSession, let alternatives):
+            return recommendedSession ?? alternatives.first
+        case .lightTrainingOnly(_, let allowedTypes, _):
+            return sessionManager.getSessionByType(allowedTypes.first, userLevel: getCurrentUserLevel())
+        case .mandatoryRest, .activeRestRecommended:
+            return nil // No training session - rest day
+        }
+    }
+    
+    func recordCompletedSession(_ session: SprintSessionTemplate) {
+        let sessionType = SessionRotationManager.shared.getSessionTypeFromFocus(session.focus)
+        RestRecoveryManager.shared.recordTrainingSession(sessionType: sessionType)
+        
+        // Update weekly session history for variety tracking
+        SessionRotationManager.shared.recordSessionCompletion(session)
     }
 }
 ```
@@ -438,10 +569,11 @@ import WatchKit           // Watch-specific haptics
 ## 🎵 **Immediate Next Steps**
 
 ### **This Week:**
-1. **Enhance MusicWatchView** - Add direct Apple Music integration
-2. **Implement Advanced Haptics** - Create workout-synchronized patterns
-3. **Design Achievement System** - Create milestone badges and celebrations
-4. **Create Curated Playlists** - BPM-matched sprint and recovery music
+1. **Implement Rest & Recovery System** - Mandatory rest enforcement for 2+ day trainers
+2. **Enhance MusicWatchView** - Add direct Apple Music integration
+3. **Implement Advanced Haptics** - Create workout-synchronized patterns
+4. **Design Achievement System** - Create milestone badges and celebrations
+5. **Create Active Rest Activities** - Recovery walks, stretching, foam rolling guides
 
 ### **This Month:**
 1. **Launch Pro Tier Entertainment** - Music + haptics + achievements

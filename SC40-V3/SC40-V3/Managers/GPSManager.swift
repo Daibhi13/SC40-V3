@@ -164,9 +164,9 @@ class GPSManager: NSObject, ObservableObject {
     // MARK: - Private Methods
     
     private func calculateFinalResults() {
-        guard let startLoc = startLocation,
-              let endLoc = locations.last,
-              let startTime = startTime else { return }
+        guard let _ = startLocation,
+              let _ = locations.last,
+              let _ = startTime else { return }
         
         let totalDistance = distance
         let totalTime = elapsedTime

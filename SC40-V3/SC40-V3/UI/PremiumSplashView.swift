@@ -56,17 +56,17 @@ struct PremiumSplashView: View {
                 
                 // Enhanced content container
                 VStack(spacing: 50) {
-                    // Lightning bolt icon with glow effect
+                    // Runner icon with glow effect
                     ZStack {
                         // Outer glow
-                        Image(systemName: "bolt.fill")
+                        Image(systemName: "figure.run")
                             .font(.system(size: 60, weight: .bold))
                             .foregroundColor(.yellow.opacity(glowIntensity))
                             .blur(radius: 20)
                             .scaleEffect(lightningBoltScale * 1.2)
                         
-                        // Main lightning bolt
-                        Image(systemName: "bolt.fill")
+                        // Main runner icon
+                        Image(systemName: "figure.run")
                             .font(.system(size: 60, weight: .bold))
                             .foregroundColor(.yellow)
                             .scaleEffect(lightningBoltScale)

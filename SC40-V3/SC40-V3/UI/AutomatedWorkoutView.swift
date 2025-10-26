@@ -109,7 +109,7 @@ struct AutomatedWorkoutView: View {
                         .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
                         .frame(width: 100, height: 100)
                     
-                    Image(systemName: "bolt.fill")
+                    Image(systemName: "figure.run")
                         .font(.system(size: 50, weight: .bold))
                         .foregroundColor(.black)
                 }

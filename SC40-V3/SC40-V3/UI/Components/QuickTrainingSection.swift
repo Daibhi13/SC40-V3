@@ -42,7 +42,7 @@ struct QuickTrainingSection: View {
                 QuickTrainingCard(
                     title: "Quick Sprint",
                     subtitle: "5 min session",
-                    icon: "bolt.fill",
+                    icon: "figure.run",
                     color: .orange,
                     isPro: false
                 ) {
@@ -178,7 +178,7 @@ struct LocalProBadge: View {
         QuickTrainingCard(
             title: "Quick Sprint",
             subtitle: "5 min session",
-            icon: "bolt.fill",
+            icon: "figure.run",
             color: .orange,
             isPro: false
         ) { }

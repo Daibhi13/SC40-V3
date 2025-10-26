@@ -29,8 +29,8 @@ struct EmailSignupView: View {
                 VStack(spacing: 32) {
                     // Header with branding
                     VStack(spacing: 16) {
-                        // Lightning bolt icon
-                        Image(systemName: "bolt.fill")
+                        // Runner icon
+                        Image(systemName: "figure.run")
                             .font(.system(size: 60, weight: .bold))
                             .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                             .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.6), radius: 20)

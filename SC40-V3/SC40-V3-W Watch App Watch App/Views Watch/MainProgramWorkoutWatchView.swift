@@ -11,6 +11,9 @@ struct MainProgramWorkoutWatchView: View {
     @State private var workoutTimer: Timer?
     @State private var elapsedTime: TimeInterval = 0
     @State private var currentPhase: WorkoutPhase = .warmup
+    @StateObject private var workoutVM: WorkoutWatchViewModel
+    @StateObject private var syncManager = WatchWorkoutSyncManager.shared
+    @StateObject private var dataManager = WorkoutDataManager.shared
     
     enum WorkoutViewType {
         case main, control, music, repLog
@@ -25,6 +28,12 @@ struct MainProgramWorkoutWatchView: View {
     
     var totalSets: Int {
         session.sprints.first?.reps ?? 1
+    }
+    
+    // MARK: - Initializer
+    init(session: TrainingSession) {
+        self.session = session
+        self._workoutVM = StateObject(wrappedValue: WorkoutWatchViewModel.fromSession(session))
     }
     
     var body: some View {
@@ -44,34 +53,37 @@ struct MainProgramWorkoutWatchView: View {
                 
                 // Main content with swipe navigation
                 TabView(selection: $currentView) {
-                    // Main Workout View
-                    mainWorkoutView
-                        .tag(WorkoutViewType.main)
-                    
-                    // Control View (Swipe Right)
-                    SimpleControlWatchView(
-                        isWorkoutActive: $isWorkoutActive,
-                        onBack: { currentView = .main }
+                    // Control View (Left swipe from Main)
+                    ControlWatchView(
+                        selectedIndex: 0, // Control is index 0 in the page indicators
+                        workoutVM: workoutVM,
+                        session: session
                     )
                     .tag(WorkoutViewType.control)
                     
-                    // Music View (Swipe Left)
-                    SimpleMusicWatchView(
-                        onBack: { currentView = .main }
+                    // Main Workout View (Center)
+                    mainWorkoutView
+                        .tag(WorkoutViewType.main)
+                    
+                    // Music View (Right swipe from Main)
+                    MusicWatchView(
+                        selectedIndex: 2,
+                        session: session
                     )
                     .tag(WorkoutViewType.music)
+                    
+                    // Rep Log View (Swipe Up/Down from Main)
+                    RepLogWatchLiveView(
+                        workoutVM: workoutVM,
+                        horizontalTab: .constant(0),
+                        isModal: false,
+                        showNext: false,
+                        onDone: { currentView = .main },
+                        session: session
+                    )
+                    .tag(WorkoutViewType.repLog)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                
-                // Rep Log View (Swipe Up/Down) - Overlay
-                if currentView == .repLog {
-                    SimpleRepLogWatchView(
-                        currentSet: currentSet,
-                        totalSets: totalSets,
-                        onBack: { currentView = .main }
-                    )
-                    .transition(.move(edge: .bottom))
-                }
             }
         }
         .gesture(
@@ -83,6 +95,8 @@ struct MainProgramWorkoutWatchView: View {
         .navigationBarHidden(true)
         .onAppear {
             startWorkout()
+            setupSyncListeners()
+            syncWorkoutStateToPhone()
         }
         .onDisappear {
             stopWorkout()
@@ -275,11 +289,11 @@ struct MainProgramWorkoutWatchView: View {
     private var swipeInstructions: some View {
         VStack(spacing: 4) {
             HStack(spacing: 16) {
-                Text("← Music")
+                Text("← Control")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundColor(.white.opacity(0.5))
                 
-                Text("Control →")
+                Text("Music →")
                     .font(.system(size: 9, weight: .medium))
                     .foregroundColor(.white.opacity(0.5))
             }
@@ -298,20 +312,36 @@ struct MainProgramWorkoutWatchView: View {
             // Vertical swipe - Rep Log
             if abs(value.translation.height) > threshold {
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    currentView = currentView == .repLog ? .main : .repLog
+                    if currentView == .main {
+                        currentView = .repLog
+                    } else if currentView == .repLog {
+                        currentView = .main
+                    }
                 }
             }
         } else {
-            // Horizontal swipe - Control/Music
+            // Horizontal swipe - Navigation between views
             if value.translation.width > threshold {
-                // Swipe right - Control
+                // Swipe right - Music or back to Main
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    currentView = .control
+                    if currentView == .main {
+                        currentView = .music
+                    } else if currentView == .control {
+                        currentView = .main
+                    } else if currentView == .repLog {
+                        currentView = .main
+                    }
                 }
             } else if value.translation.width < -threshold {
-                // Swipe left - Music
+                // Swipe left - Control or back to Main
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    currentView = .music
+                    if currentView == .main {
+                        currentView = .control
+                    } else if currentView == .music {
+                        currentView = .main
+                    } else if currentView == .repLog {
+                        currentView = .main
+                    }
                 }
             }
         }
@@ -338,12 +368,106 @@ struct MainProgramWorkoutWatchView: View {
         isWorkoutActive = false
         workoutTimer?.invalidate()
         workoutTimer = nil
+        
+        // Save workout data when stopping
+        let completedReps = (1...currentSet).map { repNumber in
+            CompletedRep(
+                repNumber: repNumber,
+                distance: session.sprints.first?.distanceYards ?? 40,
+                time: Double.random(in: 4.5...6.0), // Mock time - would be real data
+                heartRate: Int.random(in: 140...180),
+                timestamp: Date()
+            )
+        }
+        
+        dataManager.saveMainProgramWorkout(
+            session: session,
+            completedReps: completedReps,
+            duration: elapsedTime
+        )
     }
     
     private func formatTime(_ time: TimeInterval) -> String {
         let minutes = Int(time) / 60
         let seconds = Int(time) % 60
         return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    // MARK: - Sync Methods
+    private func setupSyncListeners() {
+        // Listen for phone sync updates
+        NotificationCenter.default.addObserver(
+            forName: .workoutStateAdapted,
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let workoutState = notification.object as? WorkoutSyncState {
+                self.handlePhoneWorkoutStateUpdate(workoutState)
+            }
+        }
+        
+        // Listen for session data updates
+        NotificationCenter.default.addObserver(
+            forName: .sessionDataAdapted,
+            object: nil,
+            queue: .main
+        ) { notification in
+            if let sessionData = notification.object as? SessionDataSync {
+                self.handleSessionDataUpdate(sessionData)
+            }
+        }
+        
+        print("📱 MainProgram sync listeners setup complete")
+    }
+    
+    private func syncWorkoutStateToPhone() {
+        let watchState = syncManager.createWatchStateSync(
+            currentPhase: currentPhase.rawValue,
+            isRunning: isWorkoutActive,
+            isPaused: false,
+            currentRep: currentSet
+        )
+        
+        syncManager.sendWatchStateToPhone(watchState)
+        
+        // Update WorkoutWatchViewModel with current state
+        // Map local WorkoutPhase to WorkoutWatchViewModel WorkoutPhase
+        switch currentPhase {
+        case .warmup:
+            workoutVM.currentPhase = .warmup
+        case .drills:
+            workoutVM.currentPhase = .drills
+        case .sprints:
+            workoutVM.currentPhase = .sprint
+        case .cooldown:
+            workoutVM.currentPhase = .cooldown
+        }
+        workoutVM.isRunning = isWorkoutActive
+        workoutVM.currentRep = currentSet
+        workoutVM.currentRepTime = elapsedTime
+        
+        print("📱 MainProgram workout state synced to phone")
+    }
+    
+    private func handlePhoneWorkoutStateUpdate(_ workoutState: WorkoutSyncState) {
+        // Update local state based on phone updates
+        if let phase = WorkoutPhase(rawValue: workoutState.currentPhase) {
+            currentPhase = phase
+        }
+        
+        isWorkoutActive = workoutState.isRunning
+        currentSet = workoutState.currentRep
+        
+        // Update WorkoutWatchViewModel
+        workoutVM.isRunning = workoutState.isRunning
+        workoutVM.currentRep = workoutState.currentRep
+        
+        print("📱 MainProgram updated from phone: \(workoutState.currentPhase)")
+    }
+    
+    private func handleSessionDataUpdate(_ sessionData: SessionDataSync) {
+        // Update session-specific data
+        print("📊 MainProgram session data updated: Week \(sessionData.week), Day \(sessionData.day)")
     }
 }
 

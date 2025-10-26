@@ -134,12 +134,33 @@ struct MainWorkoutWatchView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             TabView(selection: $tabSelection) {
-                ControlWatchView(selectedIndex: 0, workoutVM: workoutVM)
-                    .tag(0)
+                ControlWatchView(
+                    selectedIndex: 0, 
+                    workoutVM: workoutVM,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(0)
                 mainTabContent
                     .tag(1)
-                MusicWatchView(selectedIndex: 2)
-                    .tag(2)
+                MusicWatchView(
+                    selectedIndex: 2,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(2)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
@@ -151,10 +172,20 @@ struct MainWorkoutWatchView: View {
             SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
         }
         .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(workoutVM: workoutVM,
-                                horizontalTab: .constant(1),
-                                isModal: true,
-                                onDone: { showRepLog = false })
+            RepLogWatchLiveView(
+                workoutVM: workoutVM,
+                horizontalTab: .constant(1),
+                isModal: true,
+                onDone: { showRepLog = false },
+                session: TrainingSession(
+                    week: 1,
+                    day: 1,
+                    type: "Main Workout",
+                    focus: "Sprint Training",
+                    sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                    accessoryWork: []
+                )
+            )
         }
     }
     
@@ -331,7 +362,7 @@ struct CircularPhaseProgressView: View {
     let phases: [WorkoutPhase]
     let currentPhase: Int
     let theme: ColorTheme
-    let phaseIcons: [String] = ["flame.fill", "figure.walk", "bolt.fill", "pause.fill", "figure.cooldown"]
+    let phaseIcons: [String] = ["flame.fill", "figure.walk", "figure.run", "pause.fill", "figure.cooldown"]
     let phaseLabels: [String] = ["Warmup", "Drills", "Sprint", "Rest", "Cooldown"]
     var body: some View {
         GeometryReader { geo in

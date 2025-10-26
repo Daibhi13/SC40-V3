@@ -12,6 +12,7 @@ import SwiftUI
 struct MusicWatchView: View {
     /// 0 = Control, 1 = MainWorkout, 2 = Music (default)
     var selectedIndex: Int = 2
+    let session: TrainingSession
     
     @State private var isPlaying: Bool = false
     @State private var currentTrack: String = "Not Playing"
@@ -283,5 +284,15 @@ struct MusicAppLauncherView: View {
 
 // MARK: - Preview
 #Preview {
-    MusicWatchView()
+    MusicWatchView(
+        selectedIndex: 2,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }

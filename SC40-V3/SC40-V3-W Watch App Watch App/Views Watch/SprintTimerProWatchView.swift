@@ -7,41 +7,36 @@ struct SprintTimerProWatchView: View {
     @State private var selectedRest = 2 // in minutes
     @State private var showWorkout = false
     
-    // Distance options (yards)
-    private let distanceOptions = [20, 30, 40, 50, 60, 75, 100]
+    // Distance options (yards) - Match phone app
+    private let distanceOptions = [10, 20, 25, 30, 40, 50, 60, 75, 100]
     
-    // Sets options
-    private let setsOptions = [1, 2, 3, 4, 5, 6, 8]
+    // Sets options - Match phone app (called reps on phone)
+    private let setsOptions = Array(1...10)
     
-    // Rest options (minutes)
-    private let restOptions = [1, 2, 3, 4, 5]
+    // Rest options (minutes) - Match phone app
+    private let restOptions = Array(1...10)
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Header
-                headerSection
-                
-                // 3-Choice Picker (SIT app style)
-                pickerSection
-                
-                // Workout Preview
-                workoutPreview
-                
-                // Start Button
-                startButton
-            }
-            .background(Color.black)
-            .navigationTitle("Sprint Timer Pro")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Compact header
+                    compactHeader
+                    
+                    // Ultra-compact SIT-style layout
+                    VStack(spacing: 0) {
+                        sitStylePickers
+                            .padding(.top, 8)
+                        
+                        // Start button (remove summary to save space)
+                        startButtonOnly
+                            .padding(.top, 16)
                     }
-                    .foregroundColor(.yellow)
                 }
             }
+            .background(Color.black)
+            .navigationTitle("")
+            .navigationBarHidden(true)
         }
         .fullScreenCover(isPresented: $showWorkout) {
             SprintTimerProWorkoutView(
@@ -52,180 +47,138 @@ struct SprintTimerProWatchView: View {
         }
     }
     
-    // MARK: - Header Section
-    private var headerSection: some View {
-        VStack(spacing: 8) {
-            Image(systemName: "stopwatch.fill")
-                .font(.system(size: 24, weight: .bold))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.yellow, .orange],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-            
-            Text("Custom Sprint Workout")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.white.opacity(0.8))
-                .multilineTextAlignment(.center)
-        }
-        .padding(.top, 8)
-        .padding(.bottom, 16)
-    }
-    
-    // MARK: - 3-Choice Picker Section (SIT App Style)
-    private var pickerSection: some View {
-        VStack(spacing: 12) {
-            // Distance Picker
-            VStack(spacing: 4) {
-                Text("Distance")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                
-                HStack(spacing: 0) {
-                    Picker("Distance", selection: $selectedDistance) {
-                        ForEach(distanceOptions, id: \.self) { distance in
-                            Text("\(distance)")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.green)
-                        }
-                    }
-                    #if os(watchOS)
-                    .pickerStyle(.wheel)
-                    #else
-                    .pickerStyle(.menu)
-                    #endif
-                    .frame(width: 60, height: 60)
-                    .clipped()
-                    
-                    Text("YD")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.green)
-                        .padding(.leading, 4)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                )
+    // MARK: - Minimal Header (SIT Style)
+    private var compactHeader: some View {
+        HStack {
+            Button("Cancel") {
+                dismiss()
             }
+            .font(.system(size: 14, weight: .medium))
+            .foregroundColor(.yellow)
             
-            // Sets Picker
-            VStack(spacing: 4) {
-                Text("Sets")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                
-                HStack(spacing: 0) {
-                    Picker("Sets", selection: $selectedSets) {
-                        ForEach(setsOptions, id: \.self) { sets in
-                            Text("\(sets)")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.green)
-                        }
-                    }
-                    #if os(watchOS)
-                    .pickerStyle(.wheel)
-                    #else
-                    .pickerStyle(.menu)
-                    #endif
-                    .frame(width: 60, height: 60)
-                    .clipped()
-                    
-                    Text("SETS")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.green)
-                        .padding(.leading, 4)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                )
-            }
+            Spacer()
             
-            // Rest Picker
-            VStack(spacing: 4) {
-                Text("Rest")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
-                
-                HStack(spacing: 0) {
-                    Picker("Rest", selection: $selectedRest) {
-                        ForEach(restOptions, id: \.self) { rest in
-                            Text("\(rest)")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(.green)
-                        }
-                    }
-                    #if os(watchOS)
-                    .pickerStyle(.wheel)
-                    #else
-                    .pickerStyle(.menu)
-                    #endif
-                    .frame(width: 60, height: 60)
-                    .clipped()
-                    
-                    Text("MIN")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.green)
-                        .padding(.leading, 4)
-                }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.gray.opacity(0.2))
-                )
-            }
+            // Remove title to save space - context is clear from usage
+            
+            Spacer()
         }
         .padding(.horizontal, 16)
+        .padding(.top, 4)
     }
     
-    // MARK: - Workout Preview
-    private var workoutPreview: some View {
+    // MARK: - Phone App Style Pickers (Adapted for Watch)
+    private var sitStylePickers: some View {
         VStack(spacing: 8) {
-            Text("Workout Preview")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(.white.opacity(0.7))
-            
-            VStack(spacing: 4) {
-                Text("\(selectedSets) × \(selectedDistance) Yard Sprints")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
-                
-                Text("\(selectedRest) min rest between sets")
-                    .font(.system(size: 12, weight: .medium))
+            // Distance Picker Row - Match phone app terminology
+            HStack {
+                Text("DISTANCE")
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white.opacity(0.8))
+                    .tracking(0.5)
+                    .frame(width: 60, alignment: .leading)
                 
-                Text("Est. Duration: \(estimatedDuration) min")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.yellow)
+                Spacer()
+                
+                Picker("Distance", selection: $selectedDistance) {
+                    ForEach(distanceOptions, id: \.self) { distance in
+                        Text("\(distance) YD")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(width: 70, height: 40)
+                .clipped()
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.1))
+                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                )
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white.opacity(0.1))
-            )
+            
+            // Reps Picker Row - Match phone app terminology
+            HStack {
+                Text("REPS")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(0.5)
+                    .frame(width: 60, alignment: .leading)
+                
+                Spacer()
+                
+                Picker("Reps", selection: $selectedSets) {
+                    ForEach(setsOptions, id: \.self) { reps in
+                        Text("\(reps) REP\(reps == 1 ? "" : "S")")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(width: 70, height: 40)
+                .clipped()
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.1))
+                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                )
+            }
+            
+            // Rest Time Picker Row - Match phone app terminology
+            HStack {
+                Text("REST TIME")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.8))
+                    .tracking(0.5)
+                    .frame(width: 60, alignment: .leading)
+                
+                Spacer()
+                
+                Picker("Rest", selection: $selectedRest) {
+                    ForEach(restOptions, id: \.self) { rest in
+                        Text("\(rest) MIN\(rest == 1 ? "" : "S")")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(width: 70, height: 40)
+                .clipped()
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.white.opacity(0.1))
+                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
+                )
+            }
         }
         .padding(.horizontal, 16)
-        .padding(.top, 16)
     }
     
-    // MARK: - Start Button
-    private var startButton: some View {
+    // MARK: - Compact Workout Summary
+    private var workoutSummary: some View {
+        VStack(spacing: 6) {
+            Text("\(selectedSets) × \(selectedDistance)yd • \(selectedRest)min rest")
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundColor(.green)
+                .multilineTextAlignment(.center)
+            
+            Text("Est. Duration: \(estimatedDuration) min")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+        }
+        .padding(.horizontal, 18)
+    }
+    
+    // MARK: - Phone App Style Start Button
+    private var startButtonOnly: some View {
         Button(action: {
+            print("🎯 SprintTimer Pro starting workout with: Distance=\(selectedDistance)yd, Sets=\(selectedSets), Rest=\(selectedRest)min")
             showWorkout = true
         }) {
             HStack(spacing: 8) {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 14, weight: .bold))
+                Image(systemName: "figure.run")
+                    .font(.system(size: 16, weight: .bold))
                 
-                Text("START SPRINT")
+                Text("START WORKOUT")
                     .font(.system(size: 14, weight: .bold))
                     .tracking(0.5)
             }
@@ -239,11 +192,10 @@ struct SprintTimerProWatchView: View {
                     endPoint: .trailing
                 )
             )
-            .cornerRadius(8)
+            .cornerRadius(20)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 20)
-        .padding(.bottom, 8)
+        .padding(.bottom, 12)
     }
     
     // MARK: - Computed Properties

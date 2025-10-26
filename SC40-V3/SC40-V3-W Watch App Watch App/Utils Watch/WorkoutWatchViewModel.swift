@@ -116,7 +116,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         print("✅ HealthKit workout started (Watch stub)")
     }
     
-    private func endHealthKitWorkout() async {
+    func endHealthKitWorkout() async {
         print("✅ HealthKit workout ended (Watch stub)")
     }
 

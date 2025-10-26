@@ -62,11 +62,21 @@ import BrandColors
 // MARK: - Preview
 struct RepLogWatchLiveView_Previews: PreviewProvider {
     static var previews: some View {
-        RepLogWatchLiveView(workoutVM: WorkoutWatchViewModel.mock,
-                            horizontalTab: .constant(0), 
-                            isModal: false, 
-                            showNext: false, 
-                            onNext: {})
+        RepLogWatchLiveView(
+            workoutVM: WorkoutWatchViewModel.mock,
+            horizontalTab: .constant(0), 
+            isModal: false, 
+            showNext: false, 
+            onNext: {},
+            session: TrainingSession(
+                week: 1,
+                day: 1,
+                type: "Preview",
+                focus: "Test Session",
+                sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+                accessoryWork: []
+            )
+        )
     }
 }
 
@@ -93,6 +103,13 @@ struct RepLogWatchLiveView: View {
     var showNext: Bool = false
     var onNext: (() -> Void)? = nil
     var onDone: (() -> Void)? = nil
+    let session: TrainingSession
+    
+    // Data manager for workout history
+    @StateObject private var dataManager = WorkoutDataManager.shared
+    
+    // State for live updates
+    @State private var refreshTimer: Timer?
     // Dynamic rep data based on WorkoutWatchViewModel
     private var reps: [(rep: Int, dist: String, time: String?, isLive: Bool, isResting: Bool)] {
         let totalReps = workoutVM.totalReps
@@ -110,8 +127,15 @@ struct RepLogWatchLiveView: View {
             let isResting: Bool
             
             if repNumber < currentRep {
-                // Completed rep - could use actual recorded times from workoutVM if available
-                time = String(format: "%.2f", Double.random(in: 4.5...6.0)) // Placeholder
+                // Completed rep - use actual recorded times from workout history
+                if let recentWorkout = dataManager.workoutHistory.last,
+                   repNumber <= recentWorkout.completedReps.count {
+                    let completedRep = recentWorkout.completedReps[repNumber - 1]
+                    time = String(format: "%.2f", completedRep.time)
+                } else {
+                    // Fallback to workoutVM or placeholder
+                    time = workoutVM.lastRepTime > 0 ? String(format: "%.2f", workoutVM.lastRepTime) : String(format: "%.2f", Double.random(in: 4.5...6.0))
+                }
                 isLive = false
                 isResting = false
             } else if repNumber == currentRep {
@@ -246,6 +270,33 @@ struct RepLogWatchLiveView: View {
                     }
             )
         }
+        .onAppear {
+            startLiveUpdates()
+        }
+        .onDisappear {
+            stopLiveUpdates()
+        }
+    }
+    
+    // MARK: - Live Update Methods
+    
+    private func startLiveUpdates() {
+        // Start refresh timer for live data updates
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            // Force UI refresh for live data by updating workoutVM
+            DispatchQueue.main.async {
+                self.workoutVM.objectWillChange.send()
+            }
+        }
+        
+        print("📊 RepLog live updates started")
+    }
+    
+    private func stopLiveUpdates() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+        
+        print("📊 RepLog live updates stopped")
     }
 }
 
@@ -318,9 +369,19 @@ struct RepLogWatchLiveView: View {
  */
 
 #Preview {
-    RepLogWatchLiveView(workoutVM: WorkoutWatchViewModel.mock,
-                        horizontalTab: .constant(0), 
-                        isModal: true, 
-                        showNext: true)
+    RepLogWatchLiveView(
+        workoutVM: WorkoutWatchViewModel.mock,
+        horizontalTab: .constant(0), 
+        isModal: true, 
+        showNext: true,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }
 

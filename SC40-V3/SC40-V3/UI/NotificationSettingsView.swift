@@ -64,7 +64,7 @@ struct NotificationSettingsView: View {
                         
                         // Training Notifications Section
                         SettingsSection(
-                            icon: "bolt.fill",
+                            icon: "figure.run",
                             title: "Training Notifications",
                             iconColor: Color(red: 1.0, green: 0.8, blue: 0.0)
                         ) {

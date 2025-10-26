@@ -131,12 +131,33 @@ struct TimeTrialWorkoutView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             TabView(selection: $tabSelection) {
-                ControlWatchView(selectedIndex: 0, workoutVM: workoutVM)
-                    .tag(0)
+                ControlWatchView(
+                    selectedIndex: 0, 
+                    workoutVM: workoutVM,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Time Trial",
+                        focus: "40 Yard Sprint",
+                        sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(0)
                 mainTabContent
                     .tag(1)
-                MusicWatchView(selectedIndex: 2)
-                    .tag(2)
+                MusicWatchView(
+                    selectedIndex: 2,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Time Trial",
+                        focus: "40 Yard Sprint",
+                        sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(2)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .allowsHitTesting(tabSelection != 1) // Disable TabView gestures on main tab
@@ -244,10 +265,20 @@ struct TimeTrialWorkoutView: View {
             SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
         }
         .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(workoutVM: workoutVM,
-                                horizontalTab: .constant(1),
-                                isModal: true,
-                                onDone: { showRepLog = false })
+            RepLogWatchLiveView(
+                workoutVM: workoutVM,
+                horizontalTab: .constant(1),
+                isModal: true,
+                onDone: { showRepLog = false },
+                session: TrainingSession(
+                    week: 1,
+                    day: 1,
+                    type: "Time Trial",
+                    focus: "40 Yard Sprint",
+                    sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                    accessoryWork: []
+                )
+            )
         }
     }
     

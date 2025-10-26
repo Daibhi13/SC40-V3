@@ -211,7 +211,7 @@ struct SprintTimerProView: View {
                             showWorkout = true
                         }) {
                             HStack(spacing: 12) {
-                                Image(systemName: "bolt.fill")
+                                Image(systemName: "figure.run")
                                     .font(.system(size: 20, weight: .bold))
                                 Text("START CUSTOM WORKOUT")
                                     .font(.system(size: 18, weight: .bold))

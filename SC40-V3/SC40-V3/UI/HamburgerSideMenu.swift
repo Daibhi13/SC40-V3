@@ -102,7 +102,7 @@ struct HamburgerSideMenu<MenuType>: View {
 
                 // Menu items with proper spacing
                 VStack(spacing: 4) {
-                    HamburgerMenuRow(icon: "bolt.fill", label: "Sprint 40 yards", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                    HamburgerMenuRow(icon: "figure.run", label: "Sprint 40 yards", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
                         selectMenuItem(MenuSelection.main as! MenuType)
                     })
 

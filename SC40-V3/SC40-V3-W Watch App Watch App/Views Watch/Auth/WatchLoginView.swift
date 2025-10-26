@@ -53,7 +53,7 @@ struct WatchLoginView: View {
                             .frame(width: 60, height: 60)
                             .shadow(color: Color.brandPrimary.opacity(0.4), radius: 8)
                         
-                        Image(systemName: "bolt.fill")
+                        Image(systemName: "figure.run")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(Color.brandBackground)
                     }

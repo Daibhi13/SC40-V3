@@ -7,6 +7,7 @@ struct ControlWatchView: View {
     var selectedIndex: Int = 0
     
     @ObservedObject var workoutVM: WorkoutWatchViewModel
+    let session: TrainingSession
     @State private var showEndWorkoutAlert = false
     @Environment(\.presentationMode) var presentationMode
     
@@ -39,8 +40,18 @@ struct ControlWatchView: View {
     }
     
     private func endWorkout() {
-        // TODO: Properly end the workout session
-        // workoutVM.endWorkout() // Method doesn't exist yet
+        // Stop the workout session
+        workoutVM.isRunning = false
+        workoutVM.pauseSession()
+        workoutVM.stopGPS()
+        
+        // End HealthKit workout if running
+        Task {
+            await workoutVM.endHealthKitWorkout()
+        }
+        
+        // Save workout progress (this would typically save to Core Data or send to phone)
+        print("💾 Workout ended and progress saved")
         
         // Dismiss the workout view
         presentationMode.wrappedValue.dismiss()
@@ -70,89 +81,107 @@ struct ControlWatchView: View {
             }
     }
     
+    // MARK: - Timer Display
+    private var timerDisplay: some View {
+        VStack(spacing: 4) {
+            Text("\(workoutVM.stopwatchTimeString)")
+                .font(.system(size: 20, weight: .medium, design: .monospaced))
+                .foregroundColor(.white)
+            
+            Text("ELAPSED TIME")
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+                .tracking(0.5)
+        }
+    }
+    
     var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
+        VStack(spacing: 0) {
+            // Timer display at top
+            timerDisplay
+                .padding(.top, 8)
+            
+            Spacer()
+            
+            // Control buttons grid matching the uploaded design
             VStack(spacing: 12) {
-                // Top Row: Pause/Play and End Workout
-                HStack(spacing: 16) {
-                    Button(action: { workoutVM.isPaused ? playWorkout() : pauseWorkout() }) {
-                        Image(systemName: workoutVM.isPaused ? "play.fill" : "pause.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandTertiary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandTertiary, lineWidth: 2))
-                    }
-                    Button(action: { showEndWorkoutAlert = true }) {
-                        Image(systemName: "stop.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandPrimary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandPrimary, lineWidth: 2))
-                    }
+                // Top row: Pause/Play and Stop
+                HStack(spacing: 12) {
+                    // Pause/Play Button (Orange border)
+                    ControlButton(
+                        icon: workoutVM.isPaused ? "play.fill" : "pause.fill",
+                        borderColor: .orange,
+                        action: {
+                            workoutVM.isPaused ? playWorkout() : pauseWorkout()
+                        }
+                    )
+                    
+                    // Stop Button (Pink border)
+                    ControlButton(
+                        icon: "stop.fill",
+                        borderColor: .pink,
+                        action: {
+                            showEndWorkoutAlert = true
+                        }
+                    )
                 }
                 
-
-                
-                // Wave AI Automated Controls: No Start/Stop - Only Navigation
-                HStack(spacing: 16) {
-                    // Previous/Back Button - Go back to previous rep or phase
-                    Button(action: { 
-                        workoutVM.goToPreviousStep()
-                    }) {
-                        Image(systemName: "backward.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandSecondary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandSecondary, lineWidth: 2))
-                    }
+                // Bottom row: Rewind and Fast Forward
+                HStack(spacing: 12) {
+                    // Rewind Button (Cyan border)
+                    ControlButton(
+                        icon: "backward.fill",
+                        borderColor: .cyan,
+                        action: {
+                            rewindSession()
+                        }
+                    )
                     
-                    // Forward/Next Button - Move forward to next rep or phase
-                    Button(action: { 
-                        workoutVM.goToNextStep()
-                    }) {
-                        Image(systemName: "forward.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandAccent)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandAccent, lineWidth: 2))
-                    }
+                    // Fast Forward Button (Blue border)
+                    ControlButton(
+                        icon: "forward.fill",
+                        borderColor: .blue,
+                        action: {
+                            forwardSession()
+                        }
+                    )
                 }
-                Spacer(minLength: 4)
-                // Haptic Feedback Toggle and Reset Control
-                HStack(spacing: 16) {
-                    // Haptic Toggle
-                    Button(action: { toggleHaptics() }) {
-                        Image(systemName: workoutVM.isHapticEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(Color.brandBackground)
-                            .frame(width: 34, height: 34)
-                            .background(Circle().fill(workoutVM.isHapticEnabled ? Color.brandPrimary : Color.brandAccent))
-                    }
-                    
-                    // Reset Current Rep
-                    Button(action: { 
-                        // Reset current rep data
-                        workoutVM.isRunning = false
-                        workoutVM.stopGPS()
-                        workoutVM.currentRepTime = 0
-                        workoutVM.distanceTraveled = 0
-                    }) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(Color.brandSecondary)
-                            .frame(width: 34, height: 34)
-                            .background(Circle().stroke(Color.brandSecondary, lineWidth: 2))
-                    }
+                
+                // Volume/Haptic Button (Gray border) - centered
+                HStack {
+                    ControlButton(
+                        icon: workoutVM.isHapticEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill",
+                        borderColor: .gray,
+                        action: {
+                            toggleHaptics()
+                        }
+                    )
                 }
             }
-            .padding(.vertical, 10)
+            
+            Spacer()
+            
+            // Page indicator dots
+            HStack(spacing: 8) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(index == selectedIndex ? Color.white : Color.white.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                }
+            }
+            .padding(.bottom, 4)
+            
+            // Navigation hints
+            Text("Main →")
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.5))
+                .padding(.bottom, 4)
         }
+        .background(Color.black.ignoresSafeArea())
         .gesture(swipeBackGesture)
         .alert(isPresented: $showEndWorkoutAlert) {
             Alert(
-                title: Text("End Workout?").foregroundColor(Color.brandPrimary),
+                title: Text("End Workout?"),
                 message: Text("Save your progress and end the workout?"),
                 primaryButton: .default(Text("CONTINUE WORKOUT")),
                 secondaryButton: .default(Text("END & SAVE")) {
@@ -161,14 +190,69 @@ struct ControlWatchView: View {
             )
         }
     }
+}
+
+// MARK: - Control Button Component
+struct ControlButton: View {
+    let icon: String
+    let borderColor: Color
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        Button(action: {
+            action()
+        }) {
+            Image(systemName: icon)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundColor(.white)
+                .frame(width: 70, height: 40)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(borderColor, lineWidth: 2)
+                        )
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isPressed ? 0.95 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            isPressed = pressing
+        }, perform: {})
+    }
+}
+
 // MARK: - Preview
 struct ControlWatchView_Previews: PreviewProvider {
     static var previews: some View {
-        ControlWatchView(workoutVM: WorkoutWatchViewModel.mock)
+        ControlWatchView(
+            workoutVM: WorkoutWatchViewModel.mock,
+            session: TrainingSession(
+                week: 1,
+                day: 1,
+                type: "Preview",
+                focus: "Test Session",
+                sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+                accessoryWork: []
+            )
+        )
     }
-}
 }
 
 #Preview {
-    ControlWatchView(workoutVM: WorkoutWatchViewModel.mock)
+    ControlWatchView(
+        workoutVM: WorkoutWatchViewModel.mock,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }

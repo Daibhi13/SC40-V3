@@ -73,8 +73,8 @@ struct WelcomeView: View {
             VStack(spacing: 0) {
                 Spacer()
                 
-                // Lightning bolt icon
-                Image(systemName: "bolt.fill")
+                // Runner icon
+                Image(systemName: "figure.run")
                     .font(.system(size: 80, weight: .bold))
                     .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0)) // Bright yellow
                     .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.6), radius: 30)
@@ -156,9 +156,9 @@ struct WelcomeView: View {
         .preferredColorScheme(.dark)
 }
 
-#Preview("2. Lightning Bolt & Branding") {
+#Preview("2. Runner Icon & Branding") {
     VStack(spacing: 30) {
-        Image(systemName: "bolt.fill")
+        Image(systemName: "figure.run")
             .font(.system(size: 80, weight: .bold))
             .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
             .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.6), radius: 30)

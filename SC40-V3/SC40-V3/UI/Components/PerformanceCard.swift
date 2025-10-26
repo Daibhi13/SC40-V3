@@ -58,7 +58,7 @@ struct PerformanceCard: View {
         PerformanceCard(
             title: "Total Sprints",
             value: "12",
-            icon: "bolt.fill",
+            icon: "figure.run",
             color: Color.green
         )
     }

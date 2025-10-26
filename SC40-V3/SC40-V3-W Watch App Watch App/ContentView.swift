@@ -68,6 +68,7 @@ struct SessionCardsView: View {
     @State private var showWorkout = false
     @State private var selectedSession: TrainingSession?
     @State private var showSyncTesting = false
+    @State private var showTestingDashboard = false
     
     var body: some View {
         NavigationView {
@@ -157,6 +158,16 @@ struct SessionCardsView: View {
             .navigationTitle("") // Remove title to fix overlap
             .navigationBarHidden(false) // Show navigation bar for sync testing button
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        showTestingDashboard = true
+                    }) {
+                        Image(systemName: "testtube.2")
+                            .foregroundColor(.green)
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
+                
                 ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
                         showSyncTesting = true
@@ -181,6 +192,9 @@ struct SessionCardsView: View {
         }
         .sheet(isPresented: $showSyncTesting) {
             SyncTestingView()
+        }
+        .sheet(isPresented: $showTestingDashboard) {
+            TestingDashboardView()
         }
     }
 }

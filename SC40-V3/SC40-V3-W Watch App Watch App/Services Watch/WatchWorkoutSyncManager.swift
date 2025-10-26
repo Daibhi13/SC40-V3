@@ -28,6 +28,12 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
     #endif
     private var cancellables = Set<AnyCancellable>()
     
+    // MARK: - Enhanced Background Sync Properties
+    private var backgroundSyncQueue: [SyncOperation] = []
+    private var syncRetryTimer: Timer?
+    private let maxRetryAttempts = 3
+    private let retryIntervals: [TimeInterval] = [5, 15, 60] // 5s, 15s, 1min
+    
     enum SyncStatus {
         case idle
         case syncing
@@ -306,6 +312,56 @@ extension WatchWorkoutSyncManager: WCSessionDelegate {
     }
 }
 
+// MARK: - Enhanced Sync Data Models
+
+struct SyncOperation {
+    let id: UUID
+    let type: SyncOperationType
+    let data: Data
+    let workoutId: UUID?
+    let priority: SyncPriority
+    var attempts: Int
+    let createdAt: Date
+    var lastError: String?
+    let completion: (Bool) -> Void
+}
+
+enum SyncOperationType: String, CaseIterable {
+    case workoutData = "workoutData"
+    case workoutState = "workoutState"
+    case heartRateData = "heartRateData"
+    case gpsData = "gpsData"
+}
+
+enum SyncPriority: Int, CaseIterable {
+    case low = 1
+    case normal = 2
+    case high = 3
+}
+
+struct SyncQueueStatus {
+    let totalItems: Int
+    let highPriorityItems: Int
+    let normalPriorityItems: Int
+    let lowPriorityItems: Int
+    let isProcessing: Bool
+    let lastSyncTime: Date?
+    
+    var isEmpty: Bool {
+        return totalItems == 0
+    }
+    
+    var statusDescription: String {
+        if isEmpty {
+            return "Sync queue empty"
+        } else if isProcessing {
+            return "Syncing \(totalItems) items"
+        } else {
+            return "\(totalItems) items queued"
+        }
+    }
+}
+
 // MARK: - Auto-Adaptation Notification Names
 
 extension Notification.Name {
@@ -351,5 +407,300 @@ extension WatchWorkoutSyncManager {
     func timeSinceLastSync() -> TimeInterval? {
         guard let lastSync = lastSyncTime else { return nil }
         return Date().timeIntervalSince(lastSync)
+    }
+    
+    // MARK: - Enhanced Background Sync System
+    
+    /// Enhanced sync with retry logic and background queue
+    func enhancedSendWorkoutData(_ data: Data, workoutId: UUID, priority: SyncPriority = .normal, completion: @escaping (Bool) -> Void) {
+        let operation = SyncOperation(
+            id: UUID(),
+            type: .workoutData,
+            data: data,
+            workoutId: workoutId,
+            priority: priority,
+            attempts: 0,
+            createdAt: Date(),
+            completion: completion
+        )
+        
+        performSyncOperation(operation)
+    }
+    
+    /// Enhanced state sync with retry logic
+    func enhancedSendWatchState(_ state: WatchWorkoutStateSync, priority: SyncPriority = .high, completion: @escaping (Bool) -> Void) {
+        guard let data = try? JSONEncoder().encode(state) else {
+            completion(false)
+            return
+        }
+        
+        let operation = SyncOperation(
+            id: UUID(),
+            type: .workoutState,
+            data: data,
+            workoutId: nil,
+            priority: priority,
+            attempts: 0,
+            createdAt: Date(),
+            completion: completion
+        )
+        
+        performSyncOperation(operation)
+    }
+    
+    private func performSyncOperation(_ operation: SyncOperation) {
+        #if canImport(WatchConnectivity)
+        guard WCSession.default.isReachable else {
+            print("📱 Phone not reachable - adding to background sync queue")
+            addToBackgroundQueue(operation)
+            operation.completion(false)
+            return
+        }
+        
+        print("🔄 Performing sync operation: \(operation.type.rawValue) (attempt \(operation.attempts + 1))")
+        
+        let message: [String: Any]
+        
+        switch operation.type {
+        case .workoutData:
+            message = [
+                "type": "workoutData",
+                "data": operation.data,
+                "workoutId": operation.workoutId?.uuidString ?? "",
+                "priority": operation.priority.rawValue,
+                "timestamp": Date().timeIntervalSince1970
+            ]
+        case .workoutState:
+            message = [
+                "type": "workoutState",
+                "data": operation.data,
+                "priority": operation.priority.rawValue,
+                "timestamp": Date().timeIntervalSince1970
+            ]
+        case .heartRateData:
+            message = [
+                "type": "heartRateData",
+                "data": operation.data,
+                "priority": operation.priority.rawValue,
+                "timestamp": Date().timeIntervalSince1970
+            ]
+        case .gpsData:
+            message = [
+                "type": "gpsData",
+                "data": operation.data,
+                "priority": operation.priority.rawValue,
+                "timestamp": Date().timeIntervalSince1970
+            ]
+        }
+        
+        WCSession.default.sendMessage(message, replyHandler: { [weak self] response in
+            print("✅ Sync operation successful: \(operation.type.rawValue)")
+            self?.lastSyncTime = Date()
+            operation.completion(true)
+            
+            // Remove from background queue if it was there
+            self?.removeFromBackgroundQueue(operation.id)
+            
+        }, errorHandler: { [weak self] error in
+            print("❌ Sync operation failed: \(operation.type.rawValue) - \(error.localizedDescription)")
+            self?.handleSyncFailure(operation, error: error)
+        })
+        #else
+        operation.completion(false)
+        #endif
+    }
+    
+    private func handleSyncFailure(_ operation: SyncOperation, error: Error) {
+        var updatedOperation = operation
+        updatedOperation.attempts += 1
+        updatedOperation.lastError = error.localizedDescription
+        
+        if updatedOperation.attempts < maxRetryAttempts {
+            // Schedule retry
+            let retryDelay = retryIntervals[min(updatedOperation.attempts - 1, retryIntervals.count - 1)]
+            
+            print("⏰ Scheduling retry for \(operation.type.rawValue) in \(retryDelay)s (attempt \(updatedOperation.attempts + 1)/\(maxRetryAttempts))")
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + retryDelay) { [weak self] in
+                self?.performSyncOperation(updatedOperation)
+            }
+        } else {
+            // Max retries reached - add to background queue
+            print("❌ Max retries reached for \(operation.type.rawValue) - adding to background queue")
+            addToBackgroundQueue(updatedOperation)
+            operation.completion(false)
+        }
+    }
+    
+    private func addToBackgroundQueue(_ operation: SyncOperation) {
+        backgroundSyncQueue.append(operation)
+        
+        // Sort by priority and creation time
+        backgroundSyncQueue.sort { lhs, rhs in
+            if lhs.priority != rhs.priority {
+                return lhs.priority.rawValue > rhs.priority.rawValue
+            }
+            return lhs.createdAt < rhs.createdAt
+        }
+        
+        // Limit queue size
+        if backgroundSyncQueue.count > 100 {
+            backgroundSyncQueue = Array(backgroundSyncQueue.prefix(100))
+        }
+        
+        // Start background sync timer if not already running
+        startBackgroundSyncTimer()
+        
+        print("📦 Added to background sync queue (size: \(backgroundSyncQueue.count))")
+    }
+    
+    private func removeFromBackgroundQueue(_ operationId: UUID) {
+        backgroundSyncQueue.removeAll { $0.id == operationId }
+    }
+    
+    private func startBackgroundSyncTimer() {
+        guard syncRetryTimer == nil else { return }
+        
+        print("⏰ Starting background sync timer")
+        
+        syncRetryTimer = Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+            self?.processBackgroundSyncQueue()
+        }
+    }
+    
+    private func stopBackgroundSyncTimer() {
+        syncRetryTimer?.invalidate()
+        syncRetryTimer = nil
+        print("⏰ Stopped background sync timer")
+    }
+    
+    private func processBackgroundSyncQueue() {
+        guard !backgroundSyncQueue.isEmpty else {
+            stopBackgroundSyncTimer()
+            return
+        }
+        
+        #if canImport(WatchConnectivity)
+        guard WCSession.default.isReachable else {
+            print("📱 Phone still not reachable - background sync waiting")
+            return
+        }
+        #endif
+        
+        print("🔄 Processing background sync queue (\(backgroundSyncQueue.count) items)")
+        
+        // Process high priority items first
+        let highPriorityOps = backgroundSyncQueue.filter { $0.priority == .high }
+        let normalPriorityOps = backgroundSyncQueue.filter { $0.priority == .normal }
+        let lowPriorityOps = backgroundSyncQueue.filter { $0.priority == .low }
+        
+        let opsToProcess = highPriorityOps + normalPriorityOps + lowPriorityOps
+        
+        // Process up to 5 operations at a time
+        let batchSize = min(5, opsToProcess.count)
+        let batch = Array(opsToProcess.prefix(batchSize))
+        
+        for operation in batch {
+            // Reset attempts for background retry
+            var retryOperation = operation
+            retryOperation.attempts = 0
+            
+            // Remove from queue before retry
+            removeFromBackgroundQueue(operation.id)
+            
+            // Retry the operation
+            performSyncOperation(retryOperation)
+        }
+    }
+    
+    /// Get current sync queue status
+    func getSyncQueueStatus() -> SyncQueueStatus {
+        let highPriority = backgroundSyncQueue.filter { $0.priority == .high }.count
+        let normalPriority = backgroundSyncQueue.filter { $0.priority == .normal }.count
+        let lowPriority = backgroundSyncQueue.filter { $0.priority == .low }.count
+        
+        return SyncQueueStatus(
+            totalItems: backgroundSyncQueue.count,
+            highPriorityItems: highPriority,
+            normalPriorityItems: normalPriority,
+            lowPriorityItems: lowPriority,
+            isProcessing: syncRetryTimer != nil,
+            lastSyncTime: lastSyncTime
+        )
+    }
+    
+    /// Force process sync queue (manual trigger)
+    func forceSyncQueue() {
+        print("🔄 Force processing sync queue")
+        processBackgroundSyncQueue()
+    }
+    
+    /// Clear sync queue (emergency reset)
+    func clearSyncQueue() {
+        print("🗑️ Clearing sync queue (\(backgroundSyncQueue.count) items)")
+        backgroundSyncQueue.removeAll()
+        stopBackgroundSyncTimer()
+    }
+    
+    /// Enhanced heart rate sync with batching
+    func syncHeartRateData(_ readings: [HeartRateReading], completion: @escaping (Bool) -> Void) {
+        guard let data = try? JSONEncoder().encode(readings) else {
+            completion(false)
+            return
+        }
+        
+        let operation = SyncOperation(
+            id: UUID(),
+            type: .heartRateData,
+            data: data,
+            workoutId: nil,
+            priority: .normal,
+            attempts: 0,
+            createdAt: Date(),
+            completion: completion
+        )
+        
+        performSyncOperation(operation)
+    }
+    
+    /// Enhanced GPS data sync with compression
+    func syncGPSData(_ locations: [LocationReading], completion: @escaping (Bool) -> Void) {
+        // Compress GPS data by removing redundant points
+        let compressedLocations = compressGPSData(locations)
+        
+        guard let data = try? JSONEncoder().encode(compressedLocations) else {
+            completion(false)
+            return
+        }
+        
+        let operation = SyncOperation(
+            id: UUID(),
+            type: .gpsData,
+            data: data,
+            workoutId: nil,
+            priority: .low, // GPS data is less critical
+            attempts: 0,
+            createdAt: Date(),
+            completion: completion
+        )
+        
+        performSyncOperation(operation)
+    }
+    
+    private func compressGPSData(_ locations: [LocationReading]) -> [LocationReading] {
+        guard locations.count > 10 else { return locations }
+        
+        // Keep every nth point, but always keep first and last
+        let compressionRatio = max(1, locations.count / 50) // Target ~50 points max
+        var compressed: [LocationReading] = []
+        
+        for (index, location) in locations.enumerated() {
+            if index == 0 || index == locations.count - 1 || index % compressionRatio == 0 {
+                compressed.append(location)
+            }
+        }
+        
+        print("📍 Compressed GPS data: \(locations.count) → \(compressed.count) points")
+        return compressed
     }
 }

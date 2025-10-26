@@ -39,6 +39,13 @@ struct SprintTimerProWorkoutView: View {
     // Data manager for workout persistence
     @StateObject private var dataManager = WorkoutDataManager.shared
     
+    // MARK: - Autonomous Workout Systems
+    @StateObject private var workoutManager = WatchWorkoutManager.shared
+    @StateObject private var gpsManager = WatchGPSManager.shared
+    @StateObject private var intervalManager = WatchIntervalManager.shared
+    @StateObject private var dataStore = WatchDataStore.shared
+    @State private var workoutData: WatchWorkoutData?
+    
     var body: some View {
         ZStack {
             // Match phone app gradient background
@@ -127,9 +134,15 @@ struct SprintTimerProWorkoutView: View {
             setupWorkout()
             setupSyncListeners()
             syncWorkoutStateToPhone()
+            
+            // Start autonomous systems
+            startAutonomousWorkout()
         }
         .onDisappear {
             stopWorkout()
+            
+            // End autonomous systems
+            endAutonomousWorkout()
         }
     }
     
@@ -148,27 +161,34 @@ struct SprintTimerProWorkoutView: View {
         .padding(.horizontal, 6)
     }
     
-    // MARK: - Top Stats Row
+    // MARK: - Top Stats Row (Enhanced with Autonomous Systems)
     private var topStatsRow: some View {
         HStack(spacing: 6) {
             StatModuleView(
                 icon: "heart.fill",
                 label: "BPM",
-                value: "\(heartRate)",
-                color: .red,
+                value: "\(workoutManager.currentHeartRate > 0 ? workoutManager.currentHeartRate : heartRate)",
+                color: workoutManager.isWorkoutActive ? .red : .gray,
                 theme: colorTheme
             )
             StatModuleView(
-                icon: "ruler",
-                label: "Distance",
-                value: "\(distance)yd",
-                color: .white,
+                icon: "location.fill",
+                label: "Speed",
+                value: String(format: "%.1f", gpsManager.currentSpeed),
+                color: gpsManager.isTracking ? .green : .gray,
+                theme: colorTheme
+            )
+            StatModuleView(
+                icon: "timer",
+                label: "Phase",
+                value: intervalManager.currentPhase.rawValue.prefix(4).uppercased(),
+                color: intervalManager.isActive ? .blue : .gray,
                 theme: colorTheme
             )
             StatModuleView(
                 icon: "repeat",
                 label: "Set",
-                value: "\(currentSet)/\(sets)",
+                value: "\(intervalManager.currentInterval > 0 ? intervalManager.currentInterval : currentSet)/\(sets)",
                 color: .accentColor,
                 theme: colorTheme
             )
@@ -433,12 +453,65 @@ struct SprintTimerProWorkoutView: View {
         restTimer = nil
         heartRate = Int.random(in: 60...80) // Mock resting heart rate
     }
-    
     private func speak(_ text: String) {
         let utterance = AVSpeechUtterance(string: text)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
         speechSynth.speak(utterance)
+    }
+    
+    // MARK: - Autonomous Workout Lifecycle
+    private func startAutonomousWorkout() {
+        print("🚀 Starting autonomous Sprint Timer Pro workout...")
+        
+        // Initialize workout data
+        workoutData = WatchWorkoutData(
+            workoutType: .power,
+            sessionName: "Sprint Timer Pro - \(distance)yd x \(sets)",
+            totalIntervals: sets
+        )
+        
+        // Start HealthKit workout session
+        workoutManager.startWorkout()
+        
+        // Start GPS tracking
+        gpsManager.startTracking()
+        
+        // Configure interval manager for sprint timer
+        let intervals = (0..<sets).map { index in
+            IntervalConfig(
+                distance: distance,
+                restTime: TimeInterval(restMinutes * 60),
+                intensity: "Max"
+            )
+        }
+        
+        let workoutPlan = WorkoutPlan(
+            intervals: intervals,
+            warmupTime: 180, // 3 minutes
+            cooldownTime: 180 // 3 minutes
+        )
+        
+        intervalManager.startWorkout(plan: workoutPlan)
+    }
+    
+    private func endAutonomousWorkout() {
+        print("🏁 Ending autonomous Sprint Timer Pro workout...")
+        
+        // Stop all systems
+        workoutManager.endWorkout()
+        intervalManager.stopWorkout()
+        gpsManager.stopTracking()
+        
+        // Finalize workout data
+        if let data = workoutData {
+            data.completeWorkout()
+            
+            // Save to local storage
+            dataStore.saveWorkout(data)
+            
+            print("✅ Autonomous Sprint Timer Pro workout completed and saved")
+        }
     }
     
     private func formatTime(_ time: TimeInterval) -> String {

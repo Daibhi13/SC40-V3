@@ -15,6 +15,13 @@ struct MainProgramWorkoutWatchView: View {
     @StateObject private var syncManager = WatchWorkoutSyncManager.shared
     @StateObject private var dataManager = WorkoutDataManager.shared
     
+    // MARK: - Autonomous Workout Systems
+    @StateObject private var workoutManager = WatchWorkoutManager.shared
+    @StateObject private var gpsManager = WatchGPSManager.shared
+    @StateObject private var intervalManager = WatchIntervalManager.shared
+    @StateObject private var dataStore = WatchDataStore.shared
+    @State private var workoutData: WatchWorkoutData?
+    
     enum WorkoutViewType {
         case main, control, music, repLog
     }
@@ -34,6 +41,82 @@ struct MainProgramWorkoutWatchView: View {
     init(session: TrainingSession) {
         self.session = session
         self._workoutVM = StateObject(wrappedValue: WorkoutWatchViewModel.fromSession(session))
+    }
+    
+    // MARK: - Autonomous Workout Lifecycle
+    private func startAutonomousWorkout() {
+        print("🚀 Starting autonomous workout session...")
+        
+        // Initialize workout data
+        workoutData = WatchWorkoutData(
+            workoutType: .speed,
+            sessionName: "\(session.type) - \(session.focus)",
+            totalIntervals: totalSets
+        )
+        
+        // Start HealthKit workout session
+        workoutManager.startWorkout()
+        
+        // Start GPS tracking
+        gpsManager.startTracking()
+        
+        // Configure interval manager with session data
+        if let firstSprint = session.sprints.first {
+            let intervals = (0..<totalSets).map { index in
+                IntervalConfig(
+                    distance: firstSprint.distanceYards,
+                    restTime: TimeInterval(120), // Default 2 minutes rest
+                    intensity: firstSprint.intensity
+                )
+            }
+            
+            let workoutPlan = WorkoutPlan(
+                intervals: intervals,
+                warmupTime: 300, // 5 minutes
+                cooldownTime: 300 // 5 minutes
+            )
+            
+            intervalManager.startWorkout(plan: workoutPlan)
+        }
+        
+        isWorkoutActive = true
+    }
+    
+    private func pauseAutonomousWorkout() {
+        print("⏸️ Pausing autonomous workout...")
+        workoutManager.pauseWorkout()
+        intervalManager.pauseWorkout()
+        gpsManager.stopTracking()
+        workoutTimer?.invalidate()
+    }
+    
+    private func resumeAutonomousWorkout() {
+        print("▶️ Resuming autonomous workout...")
+        workoutManager.resumeWorkout()
+        intervalManager.resumeWorkout()
+        gpsManager.startTracking()
+    }
+    
+    private func endAutonomousWorkout() {
+        print("🏁 Ending autonomous workout...")
+        
+        // Stop all systems
+        workoutManager.endWorkout()
+        intervalManager.stopWorkout()
+        gpsManager.stopTracking()
+        workoutTimer?.invalidate()
+        
+        // Finalize workout data
+        if let data = workoutData {
+            data.completeWorkout()
+            
+            // Save to local storage
+            dataStore.saveWorkout(data)
+            
+            print("✅ Autonomous workout completed and saved")
+        }
+        
+        isWorkoutActive = false
     }
     
     var body: some View {
@@ -97,9 +180,15 @@ struct MainProgramWorkoutWatchView: View {
             startWorkout()
             setupSyncListeners()
             syncWorkoutStateToPhone()
+            
+            // Start autonomous systems
+            startAutonomousWorkout()
         }
         .onDisappear {
             stopWorkout()
+            
+            // End autonomous systems
+            endAutonomousWorkout()
         }
     }
     
@@ -109,8 +198,14 @@ struct MainProgramWorkoutWatchView: View {
             // Header
             workoutHeader
             
+            // Autonomous Systems Status
+            autonomousSystemsStatus
+            
             // Phase Indicator
             phaseIndicator
+            
+            // Real-time Metrics
+            realTimeMetrics
             
             // Current Set/Rep Display
             currentSetDisplay
@@ -128,6 +223,72 @@ struct MainProgramWorkoutWatchView: View {
             swipeInstructions
         }
         .padding(16)
+    }
+    
+    // MARK: - Autonomous Systems Display
+    private var autonomousSystemsStatus: some View {
+        HStack(spacing: 8) {
+            // HealthKit Status
+            StatusIndicator(
+                icon: "heart.fill",
+                value: "\(workoutManager.currentHeartRate)",
+                label: "BPM",
+                color: workoutManager.isWorkoutActive ? .red : .gray
+            )
+            
+            // GPS Status
+            StatusIndicator(
+                icon: "location.fill",
+                value: String(format: "%.1f", gpsManager.currentSpeed),
+                label: "MPH",
+                color: gpsManager.isTracking ? .green : .gray
+            )
+            
+            // Interval Status
+            StatusIndicator(
+                icon: "timer",
+                value: "\(intervalManager.currentInterval)",
+                label: "SET",
+                color: intervalManager.isActive ? .blue : .gray
+            )
+        }
+        .padding(.horizontal, 8)
+    }
+    
+    private var realTimeMetrics: some View {
+        VStack(spacing: 8) {
+            // Current Phase from Interval Manager
+            Text(intervalManager.currentPhase.rawValue.uppercased())
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.yellow)
+                .tracking(1)
+            
+            // Distance and Pace
+            HStack(spacing: 16) {
+                VStack {
+                    Text(String(format: "%.0f", gpsManager.currentDistance))
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                    Text("YDS")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                
+                VStack {
+                    Text(String(format: "%.1f", gpsManager.currentPace))
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                    Text("MIN/MI")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+            }
+        }
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.1))
+        )
     }
     
     private var workoutHeader: some View {
@@ -468,6 +629,37 @@ struct MainProgramWorkoutWatchView: View {
     private func handleSessionDataUpdate(_ sessionData: SessionDataSync) {
         // Update session-specific data
         print("📊 MainProgram session data updated: Week \(sessionData.week), Day \(sessionData.day)")
+    }
+}
+
+// MARK: - Supporting Components
+
+struct StatusIndicator: View {
+    let icon: String
+    let value: String
+    let label: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 2) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+            
+            Text(label)
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+        }
+        .frame(minWidth: 50)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.white.opacity(0.1))
+        )
     }
 }
 

@@ -46,6 +46,13 @@ struct SprintTimerProWorkoutView: View {
     @StateObject private var dataStore = WatchDataStore.shared
     @State private var workoutData: WatchWorkoutData?
     
+    // MARK: - Premium Entertainment Systems (Watch Compatible)
+    @StateObject private var hapticsManager = AdvancedHapticsManager.shared
+    @StateObject private var eventBus = WorkoutEventBus.shared
+    
+    // Note: PremiumVoiceCoach, WorkoutMusicManager, and SubscriptionManager 
+    // are iOS-only and not available in Watch target
+    
     var body: some View {
         ZStack {
             // Match phone app gradient background
@@ -79,14 +86,14 @@ struct SprintTimerProWorkoutView: View {
                 mainTabContent
                     .tag(WorkoutViewType.main)
                 
-                // Music View (Right swipe from Main)
+                // Music View (Right swipe from Main) - Watch Compatible
                 MusicWatchView(
                     selectedIndex: 2,
                     session: TrainingSession(
                         week: 1,
                         day: 1,
                         type: "Sprint Timer Pro",
-                        focus: "Custom Sprint Training",
+                        focus: "Speed",
                         sprints: [SprintSet(distanceYards: distance, reps: sets, intensity: "max")],
                         accessoryWork: []
                     )
@@ -460,9 +467,9 @@ struct SprintTimerProWorkoutView: View {
         speechSynth.speak(utterance)
     }
     
-    // MARK: - Autonomous Workout Lifecycle
+    // MARK: - Integrated Autonomous Workout Lifecycle
     private func startAutonomousWorkout() {
-        print("🚀 Starting autonomous Sprint Timer Pro workout...")
+        print("🚀 Starting integrated Sprint Timer Pro workout...")
         
         // Initialize workout data
         workoutData = WatchWorkoutData(
@@ -471,10 +478,24 @@ struct SprintTimerProWorkoutView: View {
             totalIntervals: sets
         )
         
-        // Start HealthKit workout session
-        workoutManager.startWorkout()
+        // Register all systems with event bus
+        eventBus.registerAllSystems()
         
-        // Start GPS tracking
+        // Create session for event broadcasting
+        let session = TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Sprint Timer Pro",
+            focus: "Speed",
+            sprints: [SprintSet(distanceYards: distance, reps: sets, intensity: "max")],
+            accessoryWork: []
+        )
+        
+        // Broadcast workout start event
+        eventBus.broadcast(.workoutStarted(session))
+        
+        // Start autonomous systems
+        workoutManager.startWorkout()
         gpsManager.startTracking()
         
         // Configure interval manager for sprint timer
@@ -493,6 +514,19 @@ struct SprintTimerProWorkoutView: View {
         )
         
         intervalManager.startWorkout(plan: workoutPlan)
+        
+        // Start premium entertainment systems
+        startPremiumSystems(session: session)
+    }
+    
+    private func startPremiumSystems(session: TrainingSession) {
+        // Initialize advanced haptics (Watch compatible)
+        hapticsManager.handleWorkoutPhaseChange("warmup")
+        
+        // Start with warmup phase
+        eventBus.broadcastPhaseChange(to: .warmup)
+        
+        print("🎵 Premium systems initialized for Sprint Timer Pro (Watch)")
     }
     
     private func endAutonomousWorkout() {

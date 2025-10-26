@@ -22,6 +22,13 @@ struct MainProgramWorkoutWatchView: View {
     @StateObject private var dataStore = WatchDataStore.shared
     @State private var workoutData: WatchWorkoutData?
     
+    // MARK: - Premium Entertainment Systems (Watch Compatible)
+    @StateObject private var hapticsManager = AdvancedHapticsManager.shared
+    @StateObject private var eventBus = WorkoutEventBus.shared
+    
+    // Note: PremiumVoiceCoach, WorkoutMusicManager, and SubscriptionManager 
+    // are iOS-only and not available in Watch target
+    
     enum WorkoutViewType {
         case main, control, music, repLog
     }
@@ -43,9 +50,9 @@ struct MainProgramWorkoutWatchView: View {
         self._workoutVM = StateObject(wrappedValue: WorkoutWatchViewModel.fromSession(session))
     }
     
-    // MARK: - Autonomous Workout Lifecycle
+    // MARK: - Integrated Workout Lifecycle
     private func startAutonomousWorkout() {
-        print("🚀 Starting autonomous workout session...")
+        print("🚀 Starting integrated autonomous workout session...")
         
         // Initialize workout data
         workoutData = WatchWorkoutData(
@@ -54,10 +61,14 @@ struct MainProgramWorkoutWatchView: View {
             totalIntervals: totalSets
         )
         
-        // Start HealthKit workout session
-        workoutManager.startWorkout()
+        // Register all systems with event bus
+        eventBus.registerAllSystems()
         
-        // Start GPS tracking
+        // Broadcast workout start event
+        eventBus.broadcast(.workoutStarted(session))
+        
+        // Start autonomous systems
+        workoutManager.startWorkout()
         gpsManager.startTracking()
         
         // Configure interval manager with session data
@@ -79,7 +90,20 @@ struct MainProgramWorkoutWatchView: View {
             intervalManager.startWorkout(plan: workoutPlan)
         }
         
+        // Start premium entertainment systems
+        startPremiumSystems()
+        
         isWorkoutActive = true
+    }
+    
+    private func startPremiumSystems() {
+        // Initialize advanced haptics (Watch compatible)
+        hapticsManager.handleWorkoutPhaseChange("warmup")
+        
+        // Start with warmup phase
+        eventBus.broadcastPhaseChange(to: .warmup)
+        
+        print("🎵 Premium systems initialized for Watch target")
     }
     
     private func pauseAutonomousWorkout() {
@@ -98,13 +122,30 @@ struct MainProgramWorkoutWatchView: View {
     }
     
     private func endAutonomousWorkout() {
-        print("🏁 Ending autonomous workout...")
+        print("🏁 Ending integrated autonomous workout...")
         
-        // Stop all systems
+        // Create workout summary
+        let summary = WorkoutEventBus.WorkoutSummary(
+            sessionId: UUID(),
+            duration: workoutTimer?.timeInterval ?? 0,
+            totalSprints: totalSets,
+            maxSpeed: gpsManager.maxSpeed,
+            averageHeartRate: workoutManager.averageHeartRate,
+            caloriesBurned: workoutManager.caloriesBurned,
+            personalRecords: []
+        )
+        
+        // Broadcast workout completion
+        eventBus.broadcast(.workoutCompleted(summary))
+        
+        // Stop autonomous systems
         workoutManager.endWorkout()
         intervalManager.stopWorkout()
         gpsManager.stopTracking()
         workoutTimer?.invalidate()
+        
+        // Stop premium systems
+        stopPremiumSystems()
         
         // Finalize workout data
         if let data = workoutData {
@@ -113,10 +154,20 @@ struct MainProgramWorkoutWatchView: View {
             // Save to local storage
             dataStore.saveWorkout(data)
             
-            print("✅ Autonomous workout completed and saved")
+            print("✅ Integrated autonomous workout completed and saved")
         }
         
         isWorkoutActive = false
+    }
+    
+    private func stopPremiumSystems() {
+        // Celebration haptics (Watch compatible)
+        hapticsManager.playPattern(.achievement)
+        
+        // Clear event bus subscriptions
+        eventBus.unsubscribe("MainWorkoutView")
+        
+        print("🏆 Premium systems stopped - great workout!")
     }
     
     var body: some View {
@@ -148,7 +199,7 @@ struct MainProgramWorkoutWatchView: View {
                     mainWorkoutView
                         .tag(WorkoutViewType.main)
                     
-                    // Music View (Right swipe from Main)
+                    // Music View (Right swipe from Main) - Watch Compatible
                     MusicWatchView(
                         selectedIndex: 2,
                         session: session

@@ -144,7 +144,7 @@ class WatchIntervalManager: ObservableObject {
         }
         
         // Haptic feedback
-        hapticDevice.play(.click)
+        hapticDevice.play(WKHapticType.click)
     }
     
     // MARK: - Phase Management
@@ -191,33 +191,37 @@ class WatchIntervalManager: ObservableObject {
         currentPhase = .countdown
         
         countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
+            self?.handleCountdownTick(timer)
+        }
+    }
+    
+    private func handleCountdownTick(_ timer: Timer) {
+        // Note: self is not optional in instance methods
+        // guard let self else { ... } is not needed here
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             
-            DispatchQueue.main.async {
-                if self.countdownTime > 0 {
-                    print("⏰ Countdown: \(self.countdownTime)")
-                    
-                    // Haptic feedback for each count
-                    self.hapticDevice.play(.click)
-                    
-                    // Voice countdown
-                    self.speakCountdown(self.countdownTime)
-                    
-                    self.countdownTime -= 1
-                } else {
-                    // GO!
-                    timer.invalidate()
-                    self.countdownTimer = nil
-                    
-                    print("🏃‍♂️ GO!")
-                    self.hapticDevice.play(.start)
-                    self.speak("Go!")
-                    
-                    self.startPhase(.sprint)
-                }
+            if self.countdownTime > 0 {
+                print("⏰ Countdown: \(self.countdownTime)")
+                
+                // Haptic feedback for each count
+                self.hapticDevice.play(WKHapticType.click)
+                
+                // Voice countdown
+                self.speakCountdown(self.countdownTime)
+                
+                self.countdownTime -= 1
+            } else {
+                // GO!
+                timer.invalidate()
+                self.countdownTimer = nil
+                
+                print("🏃‍♂️ GO!")
+                self.hapticDevice.play(.start)
+                self.speak("Go!")
+                
+                self.startPhase(.sprint)
             }
         }
     }
@@ -266,7 +270,7 @@ class WatchIntervalManager: ObservableObject {
         sprintTimer = nil
         
         // Haptic feedback
-        hapticDevice.play(.success)
+        hapticDevice.play(WKHapticType.success)
         
         // Voice feedback
         speak("Sprint complete")
@@ -296,27 +300,36 @@ class WatchIntervalManager: ObservableObject {
         
         // Start rest timer
         restTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] timer in
-            guard let self = self, let startTime = self.restStartTime else {
-                timer.invalidate()
-                return
-            }
+            self?.handleRestTick(timer, restDuration: restDuration)
+        }
+    }
+    
+    private func handleRestTick(_ timer: Timer, restDuration: TimeInterval) {
+        guard let startTime = self.restStartTime else {
+            timer.invalidate()
+            return
+        }
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             
-            DispatchQueue.main.async {
-                self.restTime = Date().timeIntervalSince(startTime)
-                self.restTimeRemaining = max(0, restDuration - self.restTime)
+            self.restTime = Date().timeIntervalSince(startTime)
+            self.restTimeRemaining = max(0, restDuration - self.restTime)
+            
+            // Check if rest is complete
+            if self.restTimeRemaining <= 0 {
+                timer.invalidate()
+                self.restTimer = nil
+                self.endRest()
+            } else if self.restTimeRemaining <= 10 {
+                // Final 10 seconds countdown
+                let currentSecond = Int(self.restTimeRemaining)
+                let previousSecond = Int(self.restTimeRemaining + 1)
                 
-                // Check if rest is complete
-                if self.restTimeRemaining <= 0 {
-                    timer.invalidate()
-                    self.restTimer = nil
-                    self.endRest()
-                } else if self.restTimeRemaining <= 10 {
-                    // Final 10 seconds countdown
-                    if Int(self.restTimeRemaining) != Int(self.restTimeRemaining + 1) {
-                        self.hapticDevice.play(.click)
-                        if Int(self.restTimeRemaining) <= 3 {
-                            self.speakCountdown(Int(self.restTimeRemaining))
-                        }
+                if currentSecond != previousSecond {
+                    self.hapticDevice.play(WKHapticType.click)
+                    if currentSecond <= 3 {
+                        self.speakCountdown(currentSecond)
                     }
                 }
             }
@@ -370,7 +383,7 @@ class WatchIntervalManager: ObservableObject {
         stopAllTimers()
         
         // Haptic celebration
-        hapticDevice.play(.success)
+        hapticDevice.play(WKHapticType.success)
         
         // Voice feedback
         speak("Workout complete! Great job!")

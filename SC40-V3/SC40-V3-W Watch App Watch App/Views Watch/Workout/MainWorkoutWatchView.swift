@@ -88,15 +88,23 @@ struct MainWorkoutWatchView: View {
                     .frame(height: 80)
             } else if workoutVM.isGPSPhase {
                 // Trigger spoken feedback and starter pistol at the start of each GPS sprint/stride
-                GPSStopwatchView(viewModel: workoutVM, distance: Int(workoutVM.distanceRemainingString) ?? 40)
-                    .padding(.bottom, 4)
-                    .onAppear {
-                        if !isSprintStarting && workoutVM.isRunning {
-                            startSprintSequence()
-                        }
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.2))
+                    Text("GPS Stopwatch\n(Coming Soon)")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(height: 80)
+                .padding(Edge.Set.bottom, 4)
+                .onAppear {
+                    if !isSprintStarting && workoutVM.isRunning {
+                        startSprintSequence()
                     }
-                    .accessibilityLabel("Sprint Timer")
-                    .accessibilityHint("Timer for your sprint. Spoken cues and starter pistol will play at the start.")
+                }
+                .accessibilityLabel("Sprint Timer")
+                .accessibilityHint("Timer for your sprint. Spoken cues and starter pistol will play at the start.")
             } else {
                 Text(workoutVM.stopwatchTimeString)
                     .font(.system(size: 42, weight: .black, design: .monospaced))
@@ -187,15 +195,16 @@ struct MainWorkoutWatchView: View {
                     horizontalTab: .constant(1),
                     isModal: true,
                     onDone: { activeModal = nil },
-                session: TrainingSession(
-                    week: 1,
-                    day: 1,
-                    type: "Main Workout",
-                    focus: "Sprint Training",
-                    sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
-                    accessoryWork: []
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
                 )
-            )
+            }
         }
     }
     
@@ -226,7 +235,7 @@ struct MainWorkoutWatchView: View {
                             withAnimation(.spring()) {
                                 animateScale = true
                                 WKInterfaceDevice.current().play(.click)
-                                showRepLog = true
+                                activeModal = .repLog
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                                 animateScale = false
@@ -237,7 +246,7 @@ struct MainWorkoutWatchView: View {
                             withAnimation(.spring()) {
                                 animateScale = true
                                 WKInterfaceDevice.current().play(.directionUp)
-                                showSprintView = true
+                                activeModal = .sprint
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                                 animateScale = false
@@ -272,7 +281,6 @@ struct MainWorkoutWatchView: View {
                 }
         )
     }
-    
     // Example: Call this function at the start of each sprint
     private func startSprintSequence() {
         isSprintStarting = true

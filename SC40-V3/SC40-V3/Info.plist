@@ -10,5 +10,57 @@
 	<string>SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.</string>
+	
+	<!-- URL Schemes for Authentication -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<!-- Google Sign-In URL Scheme -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>GoogleSignIn</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.171169471845-your-client-id</string>
+			</array>
+		</dict>
+		<!-- Facebook URL Scheme -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>FacebookLogin</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fbYOUR_FACEBOOK_APP_ID</string>
+			</array>
+		</dict>
+		<!-- Custom URL Scheme for Instagram OAuth -->
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>InstagramOAuth</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sc40-instagram-auth</string>
+			</array>
+		</dict>
+	</array>
+	
+	<!-- Facebook Configuration -->
+	<key>FacebookAppID</key>
+	<string>YOUR_FACEBOOK_APP_ID</string>
+	<key>FacebookClientToken</key>
+	<string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
+	<key>FacebookDisplayName</key>
+	<string>Sprint Coach 40</string>
+	
+	<!-- LSApplicationQueriesSchemes for Social Login -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<string>googlegmail</string>
+		<string>googlemail</string>
+		<string>instagram</string>
+	</array>
 </dict>
 </plist>

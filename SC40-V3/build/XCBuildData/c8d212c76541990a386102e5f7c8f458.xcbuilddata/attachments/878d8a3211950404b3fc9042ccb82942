@@ -1,0 +1,4 @@
+module FacebookGamingServices {
+header "FacebookGamingServices-Swift.h"
+export *
+}

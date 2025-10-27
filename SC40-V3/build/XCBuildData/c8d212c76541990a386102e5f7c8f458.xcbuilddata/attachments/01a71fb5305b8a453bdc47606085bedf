@@ -1,0 +1,4 @@
+module grpcWrapper {
+umbrella "/Users/davidoconnell/Library/Developer/Xcode/DerivedData/SC40-V3-fylzmaqeopwrhlafyjclnrhzrzta/SourcePackages/checkouts/grpc-binary/grpc-Wrapper/include"
+export *
+}

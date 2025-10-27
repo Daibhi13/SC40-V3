@@ -16,6 +16,8 @@ struct TimeTrialWorkoutView: View {
     @State private var showDistancePicker: Bool = false
     @State private var distance: Int = 40
     @State private var isSprintStarting = false
+    @State private var showRepLog: Bool = false
+    @State private var showSprintView: Bool = false
     private let speechSynth = AVSpeechSynthesizer()
 
     public init(workoutVM: WorkoutWatchViewModel) {
@@ -32,7 +34,7 @@ struct TimeTrialWorkoutView: View {
     private func playOlympicBeep() {
         // Play Olympic-style beep sequence using system sounds and haptics
         print("🔊 Playing Olympic beep sequence")
-        
+        #if os(watchOS)
         // Three short preparatory beeps
         WKInterfaceDevice.current().play(.click)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -47,6 +49,9 @@ struct TimeTrialWorkoutView: View {
             WKInterfaceDevice.current().play(.start)
             WKInterfaceDevice.current().play(.notification)
         }
+        #else
+        // Non-watchOS platforms: no haptics available here
+        #endif
     }
     
     // MARK: - Top Row
@@ -276,9 +281,10 @@ struct TimeTrialWorkoutView: View {
             )
         }
     }
-    
+}
+
     // Main tab content with vertical drag gesture and animation
-    private var mainTabContent: some View {
+    var mainTabContent: some View {
         VStack(spacing: 6) {
             topStatsRow
             Divider().background(Color.gray.opacity(0.4))
@@ -389,3 +395,4 @@ struct GPSStopwatchView: View {
         return distance // fallback to the passed distance parameter
     }
 }
+

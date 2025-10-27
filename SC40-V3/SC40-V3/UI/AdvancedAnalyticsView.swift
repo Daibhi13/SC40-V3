@@ -1525,7 +1525,7 @@ struct PerformanceTabContent: View {
                 }
             }
             
-            // Professional Reports Card
+            // Professional Reports Card - Enhanced
             AnalyticsCard(
                 icon: "doc.text.fill",
                 title: "Professional Reports",
@@ -1533,149 +1533,8 @@ struct PerformanceTabContent: View {
                 showContent: showContent,
                 delay: 1.1
             ) {
-                VStack(spacing: 16) {
-                    Text("Export comprehensive training data for coaches\nand institutions")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .multilineTextAlignment(.center)
-                        .padding(.bottom, 8)
-                    
-                    // Report Buttons
-                    VStack(spacing: 12) {
-                        // Recruiting Card
-                        Button(action: {}) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "doc.fill")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.white)
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Recruiting Card")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.white)
-                                    Text("Professional 1-page summary")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
-                                
-                                Spacer()
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(red: 1.0, green: 0.4, blue: 0.4), Color(red: 1.0, green: 0.5, blue: 0.5)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(12)
-                        }
-                        
-                        // Coaching Analysis
-                        Button(action: {}) {
-                            HStack(spacing: 12) {
-                                Image(systemName: "chart.bar.doc.horizontal.fill")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.white)
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text("Coaching Analysis")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundColor(.white)
-                                    Text("Detailed performance breakdown")
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
-                                
-                                Spacer()
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 12)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color.blue, Color.blue.opacity(0.8)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .cornerRadius(12)
-                        }
-                        
-                        // Raw Data Export
-                        HStack(spacing: 12) {
-                            Text("Raw Data Export")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.white)
-                            
-                            Spacer()
-                            
-                            HStack(spacing: 8) {
-                                Button("JSON") {}
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.white.opacity(0.2))
-                                    .cornerRadius(8)
-                                
-                                Button("CSV") {}
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.white.opacity(0.2))
-                                    .cornerRadius(8)
-                                
-                                Button("PDF") {}
-                                    .font(.system(size: 12, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(Color.white.opacity(0.2))
-                                    .cornerRadius(8)
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        
-                        // Share Options
-                        HStack(spacing: 24) {
-                            Button(action: {}) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "person.2.fill")
-                                        .font(.system(size: 14, weight: .medium))
-                                    Text("Share with Coach")
-                                        .font(.system(size: 14, weight: .semibold))
-                                }
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                            }
-                            
-                            Button(action: {}) {
-                                HStack(spacing: 8) {
-                                    Image(systemName: "building.2.fill")
-                                        .font(.system(size: 14, weight: .medium))
-                                    Text("Send to School")
-                                        .font(.system(size: 14, weight: .semibold))
-                                }
-                                .foregroundColor(Color(red: 1.0, green: 0.4, blue: 0.4))
-                            }
-                        }
-                        .padding(.top, 8)
-                        
-                        // Verification Badge
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.shield.fill")
-                                .font(.system(size: 14, weight: .medium))
-                                .foregroundColor(.green)
-                            
-                            Text("GPS-Verified • Cross-Device Validated")
-                                .font(.system(size: 12, weight: .medium))
-                                .foregroundColor(.green)
-                        }
-                        .padding(.top, 8)
-                    }
-                }
+                ProfessionalReportsCard()
+                    .padding(.top, -10) // Adjust spacing within card
             }
         }
     }

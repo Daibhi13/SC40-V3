@@ -8,6 +8,7 @@ struct EmailSignupView: View {
     @State private var emailAddress = ""
     @State private var showingAlert = false
     @State private var alertMessage = ""
+    @State private var authTimeout: Task<Void, Never>?
     
     var onSuccess: (String, String) -> Void
     
@@ -146,6 +147,20 @@ struct EmailSignupView: View {
                         }
                         .disabled(!isFormValid || authManager.isLoading)
                         
+                        // Skip button (if loading is stuck)
+                        if authManager.isLoading {
+                            Button(action: {
+                                HapticManager.shared.light()
+                                // Skip authentication and proceed with basic info
+                                onSuccess(fullName.isEmpty ? "User" : fullName, emailAddress.isEmpty ? "" : emailAddress)
+                                dismiss()
+                            }) {
+                                Text("Skip for now")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.yellow)
+                            }
+                        }
+                        
                         // Cancel button
                         Button(action: {
                             HapticManager.shared.light()
@@ -191,15 +206,43 @@ struct EmailSignupView: View {
         
         HapticManager.shared.success()
         
-        Task {
-            await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
-            
-            if authManager.isAuthenticated {
-                // Success - call completion handler
-                onSuccess(trimmedName, trimmedEmail)
-                dismiss()
+        // Cancel any existing timeout
+        authTimeout?.cancel()
+        
+        // Set up timeout task
+        authTimeout = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
+            if authManager.isLoading {
+                alertMessage = "Authentication is taking too long. You can skip for now or try again."
+                showingAlert = true
             }
-            // Error handling is done through the alert system
+        }
+        
+        Task { @MainActor in
+            do {
+                await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
+                
+                // Cancel timeout since auth completed
+                authTimeout?.cancel()
+                
+                if authManager.isAuthenticated {
+                    // Success - call completion handler
+                    onSuccess(trimmedName, trimmedEmail)
+                    dismiss()
+                } else {
+                    // Authentication failed but no error was set
+                    if authManager.errorMessage == nil {
+                        alertMessage = "Authentication failed. Please try again."
+                        showingAlert = true
+                    }
+                }
+            } catch {
+                // Cancel timeout on error
+                authTimeout?.cancel()
+                // Handle any thrown errors
+                alertMessage = "An error occurred: \(error.localizedDescription)"
+                showingAlert = true
+            }
         }
     }
 }

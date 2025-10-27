@@ -230,7 +230,7 @@ struct ControlButton: View {
 struct ProControlWorkoutView: View {
     @Binding var isRunning: Bool
     @Binding var isPaused: Bool
-    @Binding var currentPhase: SprintTimerProWorkoutView.WorkoutPhase
+    @Binding var currentPhase: WorkoutPhase
     @Binding var currentRep: Int
     @Binding var totalReps: Int
     @Binding var distance: Int
@@ -583,7 +583,7 @@ struct TwoViewSwipeableContainer<MainContent: View, ControlContent: View>: View 
     ProControlWorkoutView(
         isRunning: .constant(false),
         isPaused: .constant(true),
-        currentPhase: .constant(.sprints),
+        currentPhase: .constant(WorkoutPhase.sprints),
         currentRep: .constant(1),
         totalReps: .constant(6),
         distance: .constant(40),

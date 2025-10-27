@@ -5,6 +5,24 @@ import os.log
 #if canImport(WatchConnectivity) && os(iOS)
 import WatchConnectivity
 
+// MARK: - Watch Connectivity Errors
+enum WatchConnectivityError: LocalizedError {
+    case watchNotReachable
+    case timeout
+    case sessionNotActivated
+    
+    var errorDescription: String? {
+        switch self {
+        case .watchNotReachable:
+            return "Apple Watch is not reachable. Make sure your Watch is nearby and connected."
+        case .timeout:
+            return "Watch communication timed out. Please try again."
+        case .sessionNotActivated:
+            return "Watch session is not activated. Please restart the app."
+        }
+    }
+}
+
 // MARK: - Enhanced Watch Connectivity Manager for Onboarding Flow Integration
 @MainActor
 class WatchConnectivityManager: NSObject, ObservableObject {
@@ -46,11 +64,6 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     // MARK: - Onboarding Data Sync
     
     func syncOnboardingData(userProfile: UserProfile) async {
-        guard isWatchReachable else {
-            logger.warning("Watch not reachable - cannot sync onboarding data")
-            return
-        }
-        
         isSyncing = true
         syncProgress = 0.1
         
@@ -72,7 +85,13 @@ class WatchConnectivityManager: NSObject, ObservableObject {
             
             syncProgress = 0.5
             
-            try await sendMessageToWatch(onboardingData)
+            // Try immediate message first, fallback to background transfer
+            if isWatchReachable {
+                try await sendMessageToWatch(onboardingData)
+            } else {
+                // Use background transfer for better reliability
+                transferDataToWatch(onboardingData)
+            }
             
             syncProgress = 1.0
             onboardingDataSynced = true
@@ -81,7 +100,20 @@ class WatchConnectivityManager: NSObject, ObservableObject {
             
         } catch {
             logger.error("Failed to sync onboarding data: \(error.localizedDescription)")
-            connectionError = "Failed to sync profile to Watch"
+            // Fallback to background transfer
+            do {
+                let onboardingData: [String: Any] = [
+                    "type": "onboarding_complete",
+                    "name": userProfile.name,
+                    "email": userProfile.email ?? "",
+                    "timestamp": Date().timeIntervalSince1970
+                ]
+                transferDataToWatch(onboardingData)
+                onboardingDataSynced = true
+                logger.info("Onboarding data sent via background transfer")
+            } catch {
+                connectionError = "Failed to sync profile to Watch"
+            }
         }
         
         isSyncing = false
@@ -213,14 +245,56 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     // MARK: - Helper Methods
     
     private func sendMessageToWatch(_ message: [String: Any]) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
-            WCSession.default.sendMessage(message) { reply in
-                self.logger.info("Watch message sent successfully with reply: \(reply)")
-                continuation.resume()
-            } errorHandler: { error in
-                self.logger.error("Watch message failed: \(error.localizedDescription)")
-                continuation.resume(throwing: error)
+        // Check if Watch is reachable before sending
+        guard WCSession.default.isReachable else {
+            throw WatchConnectivityError.watchNotReachable
+        }
+        
+        return try await withTimeout(seconds: 10) {
+            try await withCheckedThrowingContinuation { continuation in
+                WCSession.default.sendMessage(message) { reply in
+                    self.logger.info("Watch message sent successfully with reply: \(reply)")
+                    continuation.resume()
+                } errorHandler: { error in
+                    self.logger.error("Watch message failed: \(error.localizedDescription)")
+                    continuation.resume(throwing: error)
+                }
             }
+        }
+    }
+    
+    // MARK: - Background Transfer Helper
+    
+    private func transferDataToWatch(_ data: [String: Any]) {
+        guard WCSession.default.activationState == .activated else {
+            logger.error("Cannot transfer data - WCSession not activated")
+            return
+        }
+        
+        // Use transferUserInfo for reliable background data transfer
+        WCSession.default.transferUserInfo(data)
+        logger.info("Data queued for background transfer to Watch")
+    }
+    
+    // MARK: - Timeout Helper
+    
+    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw WatchConnectivityError.timeout
+            }
+            
+            guard let result = try await group.next() else {
+                throw WatchConnectivityError.timeout
+            }
+            
+            group.cancelAll()
+            return result
         }
     }
     
@@ -326,6 +400,24 @@ extension WatchConnectivityManager: WCSessionDelegate {
             
             // Send acknowledgment
             replyHandler(["status": "received", "timestamp": Date().timeIntervalSince1970])
+        }
+    }
+    
+    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        Task { @MainActor in
+            logger.info("Received background user info from Watch: \(userInfo)")
+            
+            // Handle background data from Watch
+            if let type = userInfo["type"] as? String {
+                switch type {
+                case "workout_completed":
+                    handleWorkoutCompletion(userInfo)
+                case "status_update":
+                    handleStatusUpdate(userInfo)
+                default:
+                    logger.info("Received background data type: \(type)")
+                }
+            }
         }
     }
     

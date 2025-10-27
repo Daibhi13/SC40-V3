@@ -91,13 +91,21 @@ class AuthenticationManager: NSObject, ObservableObject {
         return try await withCheckedThrowingContinuation { continuation in
             let loginManager = LoginManager()
             
-            loginManager.logIn(permissions: ["public_profile", "email"], from: nil) { result in
-                switch result {
-                case .success(let loginResult):
-                    if loginResult.isCancelled {
-                        continuation.resume(throwing: AuthError.cancelled)
-                        return
-                    }
+            loginManager.logIn(permissions: ["public_profile", "email"], from: nil) { result, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                guard let result = result else {
+                    continuation.resume(throwing: AuthError.unknown)
+                    return
+                }
+                
+                if result.isCancelled {
+                    continuation.resume(throwing: AuthError.cancelled)
+                    return
+                }
                     
                     // Get user profile data
                     let request = GraphRequest(graphPath: "me", parameters: ["fields": "id,name,email,picture.type(large)"])
@@ -128,13 +136,6 @@ class AuthenticationManager: NSObject, ObservableObject {
                         
                         continuation.resume(returning: user)
                     }
-                    
-                case .failed(let error):
-                    continuation.resume(throwing: error)
-                    
-                case .cancelled:
-                    continuation.resume(throwing: AuthError.cancelled)
-                }
             }
         }
         #else
@@ -158,7 +159,8 @@ class AuthenticationManager: NSObject, ObservableObject {
     func signInWithGoogle() async throws -> AuthUser {
         #if canImport(GoogleSignIn)
         return try await withCheckedThrowingContinuation { continuation in
-            guard let presentingViewController = UIApplication.shared.windows.first?.rootViewController else {
+            guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                  let presentingViewController = windowScene.windows.first?.rootViewController else {
                 continuation.resume(throwing: AuthError.authenticationFailed)
                 return
             }
@@ -305,7 +307,24 @@ class AuthenticationManager: NSObject, ObservableObject {
             // Save to Firebase backend (if available)
             #if canImport(FirebaseAuth)
             do {
-                try await FirebaseService.shared.createUser(with: user)
+                let firebaseProvider: FirebaseService.AuthProvider = {
+                    switch user.provider {
+                    case .apple: return .apple
+                    case .facebook: return .facebook
+                    case .google: return .google
+                    case .instagram: return .instagram
+                    case .email: return .email
+                    }
+                }()
+                
+                let firebaseUser = FirebaseService.AuthUser(
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    profileImageURL: user.profileImageURL,
+                    provider: firebaseProvider
+                )
+                try await FirebaseService.shared.createUser(with: firebaseUser)
                 print("✅ User saved to Firebase backend")
             } catch {
                 print("⚠️ Failed to save user to Firebase: \(error)")
@@ -337,6 +356,7 @@ enum AuthError: LocalizedError {
     case missingCredentials
     case authenticationFailed
     case cancelled
+    case unknown
     
     var errorDescription: String? {
         switch self {
@@ -350,6 +370,8 @@ enum AuthError: LocalizedError {
             return "Authentication failed. Please try again."
         case .cancelled:
             return "Authentication was cancelled"
+        case .unknown:
+            return "An unknown error occurred"
         }
     }
 }

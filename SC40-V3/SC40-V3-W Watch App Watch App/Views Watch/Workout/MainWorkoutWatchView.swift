@@ -61,43 +61,43 @@ struct MainWorkoutWatchView: View {
     
     // MARK: - Top Row
     private var topStatsRow: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             StatModuleView(icon: "heart.fill",
                            label: "BPM",
                            value: workoutVM.heartRateString,
                            color: .green,
                            theme: colorTheme)
             StatModuleView(icon: "ruler",
-                           label: "Yards",
+                           label: "YDS",
                            value: workoutVM.distanceRemainingString,
                            color: .white,
                            theme: colorTheme)
             StatModuleView(icon: "repeat",
-                           label: "Rep",
+                           label: "REP",
                            value: "\(workoutVM.currentRep)/\(workoutVM.totalReps)",
                            color: .accentColor,
                            theme: colorTheme)
         }
+        .padding(.horizontal, 2)
     }
     
     // MARK: - Main Module
     private var mainModule: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 6) {
             if showSprintGraph {
                 SprintGraphView(viewModel: workoutVM, theme: colorTheme)
-                    .frame(height: 80)
+                    .frame(height: 70)
             } else if workoutVM.isGPSPhase {
                 // Trigger spoken feedback and starter pistol at the start of each GPS sprint/stride
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.gray.opacity(0.2))
                     Text("GPS Stopwatch\n(Coming Soon)")
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                 }
-                .frame(height: 80)
-                .padding(Edge.Set.bottom, 4)
+                .frame(height: 70)
                 .onAppear {
                     if !isSprintStarting && workoutVM.isRunning {
                         startSprintSequence()
@@ -106,16 +106,29 @@ struct MainWorkoutWatchView: View {
                 .accessibilityLabel("Sprint Timer")
                 .accessibilityHint("Timer for your sprint. Spoken cues and starter pistol will play at the start.")
             } else {
-                Text(workoutVM.stopwatchTimeString)
-                    .font(.system(size: 42, weight: .black, design: .monospaced))
-                    .foregroundColor(.white)
-                Text(workoutVM.currentPhaseLabel)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundColor(.secondary)
+                // Phase indicator
+                Text(workoutVM.currentPhaseLabel.uppercased())
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundColor(.yellow)
+                    .tracking(1.0)
+                
+                // Main timer display
+                VStack(spacing: 2) {
+                    Text(workoutVM.stopwatchTimeString)
+                        .font(.system(size: 36, weight: .black, design: .monospaced))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    
+                    Text("ELAPSED TIME")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .tracking(0.5)
+                }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
+        .padding(.vertical, 8)
         .contentShape(Rectangle())
         .onTapGesture { showSprintGraph.toggle() }
     }
@@ -210,14 +223,32 @@ struct MainWorkoutWatchView: View {
     
     // Main tab content with vertical drag gesture and animation
     private var mainTabContent: some View {
-        VStack(spacing: 6) {
-            topStatsRow
-            Divider().background(Color.gray.opacity(0.4))
-            mainModule
-            Divider().background(Color.gray.opacity(0.4))
-            bottomStatsRow
+        GeometryReader { geometry in
+            VStack(spacing: 4) {
+                // Top stats row with proper spacing from status bar
+                topStatsRow
+                    .padding(.top, 8)
+                
+                Divider()
+                    .background(Color.gray.opacity(0.4))
+                    .padding(.horizontal, 8)
+                
+                // Main module with flexible spacing
+                Spacer(minLength: 4)
+                mainModule
+                Spacer(minLength: 4)
+                
+                Divider()
+                    .background(Color.gray.opacity(0.4))
+                    .padding(.horizontal, 8)
+                
+                // Bottom stats row with proper spacing from bottom
+                bottomStatsRow
+                    .padding(.bottom, 8)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 4)
         }
-        .padding(.horizontal, 6)
         .scaleEffect(animateScale ? 0.96 : 1.0)
         .animation(.easeOut(duration: 0.18), value: animateScale)
         .gesture(
@@ -453,24 +484,28 @@ struct StatModuleView: View {
     var body: some View {
         VStack(spacing: 1) {
             Image(systemName: icon)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 11, weight: .bold))
                 .foregroundColor(theme == .nike ? .green : color)
-                .scaleEffect(icon == "heart.fill" && pulse ? 1.18 : 1.0)
+                .scaleEffect(icon == "heart.fill" && pulse ? 1.15 : 1.0)
                 .animation(icon == "heart.fill" ? .easeInOut(duration: 0.7).repeatForever(autoreverses: true) : .default, value: pulse)
                 .onAppear { if icon == "heart.fill" { pulse = true } }
             Text(label)
-                .font(.system(size: 10, weight: .regular))
+                .font(.system(size: 8, weight: .medium))
                 .foregroundColor(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Text(value)
-                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                .font(.system(size: 14, weight: .semibold, design: .monospaced))
                 .foregroundColor(theme == .nike ? .green : color)
-                .scaleEffect(label == "Rep" && bounce ? 1.18 : 1.0)
-                .animation(label == "Rep" && bounce ? .interpolatingSpring(stiffness: 200, damping: 6) : .default, value: bounce)
-                .onChange(of: value) { _, _ in if label == "Rep" { bounce = true; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { bounce = false } } }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .scaleEffect(label == "REP" && bounce ? 1.15 : 1.0)
+                .animation(label == "REP" && bounce ? .interpolatingSpring(stiffness: 200, damping: 6) : .default, value: bounce)
+                .onChange(of: value) { _, _ in if label == "REP" { bounce = true; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { bounce = false } } }
         }
-        .frame(width: 54, height: 44)
+        .frame(width: 50, height: 40)
         .background(theme == .nike ? Color.black : Color.black.opacity(0.18))
-        .cornerRadius(10)
+        .cornerRadius(8)
     }
 }
 

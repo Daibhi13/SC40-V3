@@ -472,29 +472,65 @@ struct UnifiedSprintCoachView: View {
     }
     
     private var nikeStyleHeader: some View {
-        HStack {
-            Button("Close") {
-                onClose?()
+        VStack(spacing: 0) {
+            // Top status bar with proper spacing
+            HStack {
+                Button("Close") {
+                    onClose?()
+                }
+                .foregroundColor(.white)
+                .font(.system(size: 16, weight: .semibold))
+                
+                Spacer()
+                
+                Button(action: { voiceCoach.isEnabled.toggle() }) {
+                    Image(systemName: voiceCoach.isEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(voiceCoach.isEnabled ? .orange : .gray)
+                }
             }
-            .foregroundColor(.white)
-            .font(.system(size: 16, weight: .semibold))
+            .padding(.horizontal, 24)
+            .padding(.vertical, 16)
             
-            Spacer()
-            
-            // Header area left blank as requested
-            Spacer()
-                .frame(height: 40)
-            
-            Spacer()
-            
-            Button(action: { voiceCoach.isEnabled.toggle() }) {
-                Image(systemName: voiceCoach.isEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(voiceCoach.isEnabled ? .orange : .gray)
+            // Status indicators row with proper spacing
+            if isRunning {
+                HStack(spacing: 16) {
+                    // BPM indicator
+                    StatusIndicator(
+                        icon: "heart.fill",
+                        label: "BPM",
+                        value: "105",
+                        color: .red
+                    )
+                    
+                    // Speed indicator
+                    StatusIndicator(
+                        icon: "speedometer",
+                        label: "Speed",
+                        value: String(format: "%.1f", currentSpeed),
+                        color: .green
+                    )
+                    
+                    // Phase indicator
+                    StatusIndicator(
+                        icon: "timer",
+                        label: "Phase",
+                        value: getCurrentPhaseName(),
+                        color: .blue
+                    )
+                    
+                    // Rep indicator
+                    StatusIndicator(
+                        icon: "repeat",
+                        label: "Set",
+                        value: "\(currentRep)/\(totalReps)",
+                        color: .orange
+                    )
+                }
+                .padding(.horizontal, 20)
+                .padding(.bottom, 16)
             }
         }
-        .padding(.horizontal, 24)
-        .padding(.vertical, 16)
     }
     
     private var voiceCoachOverlay: some View {
@@ -572,24 +608,20 @@ struct UnifiedSprintCoachView: View {
             // Session Information Card - Adapts to session type
             adaptiveSessionInfoCard
             
-            // Session Status - Shows current workout info
-            HStack {
-                Circle()
-                    .fill(isRunning ? Color.green : Color.orange)
-                    .frame(width: 8, height: 8)
-                    .scaleEffect(isRunning ? 1.2 : 1.0)
-                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: isRunning)
-                
-                Text(getAdaptiveSessionTitle())
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundColor(.white)
-                    .tracking(1.0)
-                
-                Spacer()
-                
-                Text("REP \(currentRep)/\(totalReps)")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.orange)
+            // Session Status - Shows current workout info (simplified)
+            if !isRunning {
+                HStack {
+                    Circle()
+                        .fill(Color.orange)
+                        .frame(width: 8, height: 8)
+                    
+                    Text(getAdaptiveSessionTitle())
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.white)
+                        .tracking(1.0)
+                    
+                    Spacer()
+                }
             }
             
             // GPS Stopwatch - The Heart of Sprint Coach
@@ -1940,7 +1972,44 @@ enum WorkoutPhase: CaseIterable {
     case warmup, stretch, drill, strides, sprints, resting, cooldown, completed
 }
 
-// MARK: - Preview
+// MARK: - Status Indicator Component
+struct StatusIndicator: View {
+    let icon: String
+    let label: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 2) {
+            Image(systemName: icon)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(color)
+            
+            Text(label)
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+                .tracking(0.5)
+            
+            Text(value)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.black.opacity(0.3))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(color.opacity(0.5), lineWidth: 1)
+                )
+        )
+    }
+}
+
 #Preview {
     UnifiedSprintCoachView(sessionConfig: SessionConfiguration.sessions[0])
 }

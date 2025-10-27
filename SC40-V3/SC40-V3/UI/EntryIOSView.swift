@@ -68,14 +68,14 @@ struct EntryIOSView: View {
 
                     // Sprint Coach 40 Logo Section
                     VStack(spacing: 16) {
-                        // Premium lightning bolt icon
+                        // Premium runner icon
                         ZStack {
                             Circle()
                                 .fill(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.2))
                                 .frame(width: 100, height: 100)
                                 .blur(radius: 20)
 
-                            Image(systemName: "bolt.fill")
+                            Image(systemName: "figure.run")
                                 .font(.system(size: 48, weight: .bold))
                                 .foregroundColor(Color(red: 1.0, green: 0.9, blue: 0.0))
                                 .shadow(color: Color(red: 1.0, green: 0.9, blue: 0.0).opacity(0.6), radius: 25)

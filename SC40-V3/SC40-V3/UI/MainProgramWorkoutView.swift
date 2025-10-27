@@ -957,7 +957,7 @@ struct MainProgramWorkoutView: View {
     
     private func calculateTotalDuration() -> Int {
         // Calculate total workout duration based on session data
-        guard let session = sessionData else { return 47 }
+        guard let _ = sessionData else { return 47 }
         
         let warmupDuration = 5 // minutes
         let cooldownDuration = 5 // minutes

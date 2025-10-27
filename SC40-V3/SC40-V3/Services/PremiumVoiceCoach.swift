@@ -582,7 +582,7 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
     // MARK: - Session Analysis
     
     private func analyzeWorkoutSession(_ session: TrainingSession) -> SessionAnalysis {
-        let sessionData = sessionLibrary.getSessionData(for: session)
+        let _ = sessionLibrary.getSessionData(for: session)
         
         let difficulty: SessionAnalysis.DifficultyLevel
         if session.sprints.first?.intensity == "max" {

@@ -43,6 +43,18 @@
 		066584732EAFA93400A52299 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 066584722EAFA93400A52299 /* FirebaseRemoteConfig */; };
 		066584752EAFA93400A52299 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 066584742EAFA93400A52299 /* FirebaseStorage */; };
 		066584772EAFA93400A52299 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 066584762EAFA93400A52299 /* FirebaseStorageCombine-Community */; };
+		066584792EAFC19500A52299 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584782EAFC19500A52299 /* GameKit.framework */; };
+		0665847B2EAFC1A400A52299 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847A2EAFC1A400A52299 /* MusicKit.framework */; };
+		0665847D2EAFC1AE00A52299 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847C2EAFC1AE00A52299 /* Messages.framework */; };
+		0665847F2EAFC1D500A52299 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847E2EAFC1D500A52299 /* UserNotifications.framework */; };
+		066584812EAFC1E500A52299 /* WorkoutKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584802EAFC1E500A52299 /* WorkoutKit.framework */; };
+		066584832EAFC1F000A52299 /* ClockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584822EAFC1F000A52299 /* ClockKit.framework */; };
+		066584852EAFC22800A52299 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584842EAFC22800A52299 /* DeviceActivity.framework */; };
+		066584862EAFC23900A52299 /* ClockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584822EAFC1F000A52299 /* ClockKit.framework */; };
+		066584882EAFC25300A52299 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584872EAFC25300A52299 /* Intents.framework */; };
+		0665848A2EAFC2A200A52299 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584892EAFC2A200A52299 /* ActivityKit.framework */; };
+		0665848C2EAFC2AE00A52299 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665848B2EAFC2AE00A52299 /* Intents.framework */; };
+		0665848E2EAFC2C200A52299 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665848D2EAFC2C200A52299 /* ARKit.framework */; };
 		06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */; };
 		06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312D12EA6374A001A07D7 /* WatchKit.framework */; };
 		06F6B2D32EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -78,6 +90,17 @@
 		06656B2D2EAF9EA400A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
 		06656B2F2EAF9EA500A52299 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		06656B312EAF9EA600A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		066584782EAFC19500A52299 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		0665847A2EAFC1A400A52299 /* MusicKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MusicKit.framework; path = System/Library/Frameworks/MusicKit.framework; sourceTree = SDKROOT; };
+		0665847C2EAFC1AE00A52299 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
+		0665847E2EAFC1D500A52299 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		066584802EAFC1E500A52299 /* WorkoutKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WorkoutKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WorkoutKit.framework; sourceTree = DEVELOPER_DIR; };
+		066584822EAFC1F000A52299 /* ClockKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ClockKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/ClockKit.framework; sourceTree = DEVELOPER_DIR; };
+		066584842EAFC22800A52299 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/DeviceActivity.framework; sourceTree = DEVELOPER_DIR; };
+		066584872EAFC25300A52299 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/Intents.framework; sourceTree = DEVELOPER_DIR; };
+		066584892EAFC2A200A52299 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
+		0665848B2EAFC2AE00A52299 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		0665848D2EAFC2C200A52299 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
 		06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		06D312D12EA6374A001A07D7 /* WatchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchKit.framework; sourceTree = DEVELOPER_DIR; };
 		06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -115,6 +138,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0665848E2EAFC2C200A52299 /* ARKit.framework in Frameworks */,
 				066584732EAFA93400A52299 /* FirebaseRemoteConfig in Frameworks */,
 				0665846F2EAFA93400A52299 /* FirebaseMessaging in Frameworks */,
 				066584512EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
@@ -124,6 +148,8 @@
 				0665845B2EAFA93400A52299 /* FirebaseCore in Frameworks */,
 				066584712EAFA93400A52299 /* FirebasePerformance in Frameworks */,
 				066584612EAFA93400A52299 /* FirebaseFirestore in Frameworks */,
+				066584792EAFC19500A52299 /* GameKit.framework in Frameworks */,
+				0665847D2EAFC1AE00A52299 /* Messages.framework in Frameworks */,
 				0665845D2EAFA93400A52299 /* FirebaseCrashlytics in Frameworks */,
 				066584452EAFA8E900A52299 /* FacebookLogin in Frameworks */,
 				066584632EAFA93400A52299 /* FirebaseFirestoreCombine-Community in Frameworks */,
@@ -137,15 +163,19 @@
 				0665843B2EAFA8D200A52299 /* GoogleSignInSwift in Frameworks */,
 				0665845F2EAFA93400A52299 /* FirebaseDatabase in Frameworks */,
 				066584772EAFA93400A52299 /* FirebaseStorageCombine-Community in Frameworks */,
+				0665847B2EAFC1A400A52299 /* MusicKit.framework in Frameworks */,
 				066584322EAFA73400A52299 /* Algorithms in Frameworks */,
+				0665848C2EAFC2AE00A52299 /* Intents.framework in Frameworks */,
 				066584392EAFA8D200A52299 /* GoogleSignIn in Frameworks */,
 				066584572EAFA93400A52299 /* FirebaseAuth in Frameworks */,
 				066584672EAFA93400A52299 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				066584472EAFA8E900A52299 /* FacebookShare in Frameworks */,
+				0665848A2EAFC2A200A52299 /* ActivityKit.framework in Frameworks */,
 				06656B2E2EAF9EA500A52299 /* HealthKit.framework in Frameworks */,
 				06656B302EAF9EA600A52299 /* CoreLocation.framework in Frameworks */,
 				066584752EAFA93400A52299 /* FirebaseStorage in Frameworks */,
 				066584412EAFA8E900A52299 /* FacebookCore in Frameworks */,
+				0665847F2EAFC1D500A52299 /* UserNotifications.framework in Frameworks */,
 				0665846D2EAFA93400A52299 /* FirebaseMLModelDownloader in Frameworks */,
 				066584552EAFA93400A52299 /* FirebaseAppDistribution-Beta in Frameworks */,
 				066584592EAFA93400A52299 /* FirebaseAuthCombine-Community in Frameworks */,
@@ -158,8 +188,13 @@
 			files = (
 				06656B2B2EAF9EA300A52299 /* HealthKit.framework in Frameworks */,
 				06656B2C2EAF9EA400A52299 /* CoreLocation.framework in Frameworks */,
+				066584862EAFC23900A52299 /* ClockKit.framework in Frameworks */,
 				06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */,
+				066584852EAFC22800A52299 /* DeviceActivity.framework in Frameworks */,
 				06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */,
+				066584882EAFC25300A52299 /* Intents.framework in Frameworks */,
+				066584832EAFC1F000A52299 /* ClockKit.framework in Frameworks */,
+				066584812EAFC1E500A52299 /* WorkoutKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +204,17 @@
 		06D312CE2EA63741001A07D7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0665848D2EAFC2C200A52299 /* ARKit.framework */,
+				0665848B2EAFC2AE00A52299 /* Intents.framework */,
+				066584892EAFC2A200A52299 /* ActivityKit.framework */,
+				066584872EAFC25300A52299 /* Intents.framework */,
+				066584842EAFC22800A52299 /* DeviceActivity.framework */,
+				066584822EAFC1F000A52299 /* ClockKit.framework */,
+				066584802EAFC1E500A52299 /* WorkoutKit.framework */,
+				0665847E2EAFC1D500A52299 /* UserNotifications.framework */,
+				0665847C2EAFC1AE00A52299 /* Messages.framework */,
+				0665847A2EAFC1A400A52299 /* MusicKit.framework */,
+				066584782EAFC19500A52299 /* GameKit.framework */,
 				0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */,
 				0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */,
 				06656B2D2EAF9EA400A52299 /* CoreLocation.framework */,
@@ -493,6 +539,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;
@@ -531,6 +578,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;
@@ -569,6 +617,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;
@@ -604,6 +653,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;

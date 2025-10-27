@@ -173,8 +173,8 @@ class RestRecoveryManager: ObservableObject {
     nonisolated private func setupRecoveryMonitoring() {
         // Monitor recovery score and update recommendations
         Timer.scheduledTimer(withTimeInterval: 3600, repeats: true) { [weak self] _ in
-            Task { @MainActor in
-                await self?.updateRecoveryScore()
+            Task { @MainActor [weak self] in
+                self?.updateRecoveryScore()
             }
         }
     }

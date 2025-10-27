@@ -171,7 +171,7 @@ class TrainingPreferencesWorkflow: ObservableObject {
     /// Step 6: Notify user of completion
     private func notifyUser(message: String) async {
         // Send local notification
-        await NotificationManager.shared.sendLocalNotification(
+        await WorkflowNotificationManager.shared.sendLocalNotification(
             title: "Sprint Coach 40",
             body: message,
             identifier: "training_plan_ready"
@@ -434,10 +434,10 @@ class TrainingPlanGenerator {
     }
 }
 
-// MARK: - Notification Manager
+// MARK: - Workflow Notification Manager
 
-class NotificationManager {
-    static let shared = NotificationManager()
+class WorkflowNotificationManager {
+    static let shared = WorkflowNotificationManager()
     
     func sendLocalNotification(title: String, body: String, identifier: String) async {
         // Implementation would use UNUserNotificationCenter

@@ -309,7 +309,7 @@ class SubscriptionManager: NSObject, ObservableObject {
     
     private func trackPurchase(_ product: Product) {
         // Track purchase event for analytics
-        let event = PurchaseEvent(
+        let _ = PurchaseEvent(
             productId: product.id,
             price: product.price,
             currency: product.priceFormatStyle.currencyCode,

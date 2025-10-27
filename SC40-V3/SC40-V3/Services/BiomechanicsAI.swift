@@ -33,27 +33,36 @@ class BiomechanicsAI: ObservableObject {
     private func loadMLModels() {
         Task {
             do {
-                // Load pose estimation model
+                // Try to load custom models first, fallback to built-in Vision
                 if let poseModelURL = Bundle.main.url(forResource: "SprintPoseEstimation", withExtension: "mlmodelc") {
                     let poseModel = try MLModel(contentsOf: poseModelURL)
                     poseEstimationModel = try VNCoreMLModel(for: poseModel)
+                    print("✅ Custom pose estimation model loaded")
+                } else {
+                    print("⚠️ Custom pose model not found - using Apple's built-in Vision")
+                    // Apple's Vision framework has built-in pose detection
                 }
                 
-                // Load technique analysis model
                 if let techniqueModelURL = Bundle.main.url(forResource: "SprintTechniqueAnalysis", withExtension: "mlmodelc") {
                     let techniqueModel = try MLModel(contentsOf: techniqueModelURL)
                     techniqueAnalysisModel = try VNCoreMLModel(for: techniqueModel)
+                    print("✅ Custom technique analysis model loaded")
+                } else {
+                    print("⚠️ Custom technique model not found - using rule-based analysis")
                 }
                 
-                // Load performance prediction model
                 if let performanceModelURL = Bundle.main.url(forResource: "PerformancePrediction", withExtension: "mlmodelc") {
                     let performanceModel = try MLModel(contentsOf: performanceModelURL)
                     performancePredictionModel = try VNCoreMLModel(for: performanceModel)
+                    print("✅ Custom performance prediction model loaded")
+                } else {
+                    print("⚠️ Custom performance model not found - using algorithmic prediction")
                 }
                 
-                print("✅ AI models loaded successfully")
+                print("✅ AI system initialized (with available models)")
             } catch {
                 print("❌ Failed to load AI models: \(error)")
+                print("ℹ️ Falling back to built-in Vision and rule-based analysis")
             }
         }
     }
@@ -101,7 +110,7 @@ class BiomechanicsAI: ObservableObject {
         let request = VNCoreMLRequest(model: poseModel) { [weak self] request, error in
             guard let results = request.results as? [VNHumanBodyPoseObservation] else { return }
             
-            if let keyFrame = self?.processPoseResults(results, for: CMTime.zero) {
+            if let _ = self?.processPoseResults(results, for: CMTime.zero) {
                 let feedback = TechniqueFeedback(
                     message: "Good form detected",
                     type: .positive,
@@ -134,17 +143,30 @@ class BiomechanicsAI: ObservableObject {
     // MARK: - Frame Analysis
     
     private func analyzeFrame(_ image: CGImage, frameIndex: Int, timestamp: CMTime) -> KeyFrame? {
-        guard let poseModel = poseEstimationModel else { return nil }
-        
         var keyPoints: [KeyPoint] = []
         
-        let request = VNCoreMLRequest(model: poseModel) { request, error in
-            guard let results = request.results as? [VNHumanBodyPoseObservation] else { return }
-            
-            let extractedPoints = self.extractKeyPoints(from: results.first!)
-            keyPoints = extractedPoints.map { 
-                let keyPointType: KeyPointType = self.mapStringToKeyPointType($0.key)
-                return KeyPoint(type: keyPointType, position: $0.value, confidence: 1.0) 
+        // Use custom model if available, otherwise use Apple's built-in pose detection
+        let request: VNRequest
+        
+        if let poseModel = poseEstimationModel {
+            // Use custom trained model
+            request = VNCoreMLRequest(model: poseModel) { request, error in
+                guard let results = request.results as? [VNHumanBodyPoseObservation] else { return }
+                
+                let extractedPoints = self.extractKeyPoints(from: results.first!)
+                keyPoints = extractedPoints.map { 
+                    let keyPointType: KeyPointType = self.mapStringToKeyPointType($0.key)
+                    return KeyPoint(type: keyPointType, position: $0.value, confidence: 1.0) 
+                }
+            }
+        } else {
+            // Use Apple's built-in human body pose detection
+            request = VNDetectHumanBodyPoseRequest { request, error in
+                guard let results = request.results as? [VNHumanBodyPoseObservation] else { return }
+                
+                if let observation = results.first {
+                    keyPoints = self.extractKeyPointsFromVision(observation)
+                }
             }
         }
         
@@ -480,7 +502,7 @@ class BiomechanicsAI: ObservableObject {
     
     private func processPoseResults(_ results: [VNHumanBodyPoseObservation], for timestamp: CMTime) -> KeyFrame? {
         // Process pose detection results
-        guard let observation = results.first else { return nil }
+        guard let _ = results.first else { return nil }
         
         let biomechanics = FrameBiomechanics(
             postureAngle: 85.0,
@@ -495,7 +517,7 @@ class BiomechanicsAI: ObservableObject {
     }
     
     private func extractKeyPoints(from observation: VNHumanBodyPoseObservation) -> [String: CGPoint] {
-        // Extract key body points from pose observation
+        // Extract key body points from pose observation (for custom models)
         return [
             "head": CGPoint(x: 0.5, y: 0.9),
             "leftShoulder": CGPoint(x: 0.4, y: 0.8),
@@ -507,6 +529,48 @@ class BiomechanicsAI: ObservableObject {
             "leftAnkle": CGPoint(x: 0.35, y: 0.1),
             "rightAnkle": CGPoint(x: 0.65, y: 0.1)
         ]
+    }
+    
+    private func extractKeyPointsFromVision(_ observation: VNHumanBodyPoseObservation) -> [KeyPoint] {
+        var keyPoints: [KeyPoint] = []
+        
+        // Extract key body landmarks using Apple's Vision framework
+        let jointNames: [VNHumanBodyPoseObservation.JointName] = [
+            .nose, .leftShoulder, .rightShoulder, .leftHip, .rightHip,
+            .leftKnee, .rightKnee, .leftAnkle, .rightAnkle
+        ]
+        
+        for jointName in jointNames {
+            do {
+                let joint = try observation.recognizedPoint(jointName)
+                if joint.confidence > 0.5 { // Only use confident detections
+                    let keyPointType = mapVisionJointToKeyPointType(jointName)
+                    let keyPoint = KeyPoint(
+                        type: keyPointType,
+                        position: CGPoint(x: joint.location.x, y: 1.0 - joint.location.y), // Flip Y coordinate
+                        confidence: joint.confidence
+                    )
+                    keyPoints.append(keyPoint)
+                }
+            } catch {
+                print("Failed to get joint \(jointName): \(error)")
+            }
+        }
+        
+        return keyPoints
+    }
+    
+    private func mapVisionJointToKeyPointType(_ jointName: VNHumanBodyPoseObservation.JointName) -> KeyPointType {
+        switch jointName {
+        case .nose: return .head
+        case .leftShoulder, .rightShoulder: return .shoulder
+        case .leftElbow, .rightElbow: return .elbow
+        case .leftWrist, .rightWrist: return .wrist
+        case .leftHip, .rightHip: return .hip
+        case .leftKnee, .rightKnee: return .knee
+        case .leftAnkle, .rightAnkle: return .ankle
+        default: return .head
+        }
     }
     
     private func calculateArmSwingAngle(shoulders: [KeyPoint], keyPoints: [KeyPoint]) -> Double {

@@ -304,7 +304,7 @@ class AdvancedHapticsManager: ObservableObject {
         rhythmicHapticsActive = true
         
         rhythmicTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 guard let self, self.rhythmicHapticsActive else { return }
                 self.playHaptic(.light)
             }

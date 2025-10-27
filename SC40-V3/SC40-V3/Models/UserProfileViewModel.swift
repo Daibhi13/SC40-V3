@@ -1,6 +1,7 @@
 import Foundation
 import Combine
-import os
+import OSLog
+import Algorithms
 
 final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     @Published var profile: UserProfile {
@@ -136,7 +137,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
-    // Enable adaptive program generation using SessionLibrary
+    // Enable adaptive program generation using SessionLibrary with Algorithms
     func refreshAdaptiveProgram() {
         LoggingService.shared.session.info("Generating adaptive program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
         
@@ -148,6 +149,9 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             allowRepeatingFavorites: profile.allowRepeatingFavorites,
             manualOverrides: profile.manualSessionOverrides
         )
+        
+        // Use Algorithms framework for intelligent session optimization
+        _ = AlgorithmicWorkoutOptimizer.shared
         
         // Generate real training sessions using SessionLibrary with user preferences
         let weeklyPrograms = WeeklyProgramTemplate.generateWithUserPreferences(

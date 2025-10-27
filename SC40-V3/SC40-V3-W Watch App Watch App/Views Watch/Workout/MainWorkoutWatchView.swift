@@ -2,11 +2,21 @@ import SwiftUI
 import WatchKit
 import AVFoundation
 
+enum WorkoutModal: Identifiable {
+    case summary, sprint, repLog
+    
+    var id: String {
+        switch self {
+        case .summary: return "summary"
+        case .sprint: return "sprint"
+        case .repLog: return "repLog"
+        }
+    }
+}
+
 struct MainWorkoutWatchView: View {
     @StateObject var workoutVM: WorkoutWatchViewModel
-    @State private var showSummary = false
-    @State private var showSprintView = false
-    @State private var showRepLog = false
+    @State private var activeModal: WorkoutModal?
     @State private var selectedBottomModuleLeft: BottomModuleType = .rest
     @State private var selectedBottomModuleRight: BottomModuleType = .split
     @State private var showSprintGraph = false
@@ -165,18 +175,18 @@ struct MainWorkoutWatchView: View {
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
         .onAppear { workoutVM.setupUltra2Features() }
-        .fullScreenCover(isPresented: $showSummary) {
-            RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { showSummary = false })
-        }
-        .fullScreenCover(isPresented: $showSprintView) {
-            SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
-        }
-        .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(
-                workoutVM: workoutVM,
-                horizontalTab: .constant(1),
-                isModal: true,
-                onDone: { showRepLog = false },
+        .fullScreenCover(item: $activeModal) { modal in
+            switch modal {
+            case .summary:
+                RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { activeModal = nil })
+            case .sprint:
+                SprintWatchView(viewModel: workoutVM, onDismiss: { activeModal = nil })
+            case .repLog:
+                RepLogWatchLiveView(
+                    workoutVM: workoutVM,
+                    horizontalTab: .constant(1),
+                    isModal: true,
+                    onDone: { activeModal = nil },
                 session: TrainingSession(
                     week: 1,
                     day: 1,

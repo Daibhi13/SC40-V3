@@ -6,9 +6,7 @@ import SwiftUI
 
 struct TimeTrialWorkoutView: View {
     @StateObject var workoutVM: WorkoutWatchViewModel
-    @State private var showSummary = false
-    @State private var showSprintView = false
-    @State private var showRepLog = false
+    @State private var activeModal: WorkoutModal?
     @State private var selectedBottomModuleLeft: BottomModuleType = .rest
     @State private var selectedBottomModuleRight: BottomModuleType = .split
     @State private var showSprintGraph = false
@@ -255,21 +253,18 @@ struct TimeTrialWorkoutView: View {
             workoutVM.setupUltra2Features() 
             print("📺 TimeTrialWorkoutView appeared - currentPhase: \(workoutVM.currentPhase)")
         }
-        .onChange(of: showRepLog) { oldValue, newValue in
-            print("🔄 TimeTrialView showRepLog changed: \(oldValue) → \(newValue)")
-        }
-        .fullScreenCover(isPresented: $showSummary) {
-            RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { showSummary = false })
-        }
-        .fullScreenCover(isPresented: $showSprintView) {
-            SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
-        }
-        .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(
-                workoutVM: workoutVM,
-                horizontalTab: .constant(1),
-                isModal: true,
-                onDone: { showRepLog = false },
+        .fullScreenCover(item: $activeModal) { modal in
+            switch modal {
+            case .summary:
+                RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { activeModal = nil })
+            case .sprint:
+                SprintWatchView(viewModel: workoutVM, onDismiss: { activeModal = nil })
+            case .repLog:
+                RepLogWatchLiveView(
+                    workoutVM: workoutVM,
+                    horizontalTab: .constant(1),
+                    isModal: true,
+                    onDone: { activeModal = nil },
                 session: TrainingSession(
                     week: 1,
                     day: 1,

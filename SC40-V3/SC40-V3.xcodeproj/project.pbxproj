@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0607AF1D2EAEA79E00FCD5D8 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */; };
-		0607AF1F2EAEA7A600FCD5D8 /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */; };
+		06656B2B2EAF9EA300A52299 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */; };
+		06656B2C2EAF9EA400A52299 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B2D2EAF9EA400A52299 /* CoreLocation.framework */; };
+		06656B2E2EAF9EA500A52299 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B2F2EAF9EA500A52299 /* HealthKit.framework */; };
+		06656B302EAF9EA600A52299 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B312EAF9EA600A52299 /* CoreLocation.framework */; };
 		06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */; };
 		06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312D12EA6374A001A07D7 /* WatchKit.framework */; };
 		06F6B2D32EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -41,6 +43,9 @@
 /* Begin PBXFileReference section */
 		0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/HealthKitUI.framework; sourceTree = DEVELOPER_DIR; };
+		06656B2D2EAF9EA400A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
+		06656B2F2EAF9EA500A52299 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		06656B312EAF9EA600A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
 		06D312D12EA6374A001A07D7 /* WatchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchKit.framework; sourceTree = DEVELOPER_DIR; };
 		06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +83,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06656B2E2EAF9EA500A52299 /* HealthKit.framework in Frameworks */,
+				06656B302EAF9EA600A52299 /* CoreLocation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,8 +92,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0607AF1D2EAEA79E00FCD5D8 /* HealthKit.framework in Frameworks */,
-				0607AF1F2EAEA7A600FCD5D8 /* HealthKitUI.framework in Frameworks */,
+				06656B2B2EAF9EA300A52299 /* HealthKit.framework in Frameworks */,
+				06656B2C2EAF9EA400A52299 /* CoreLocation.framework in Frameworks */,
 				06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */,
 				06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */,
 			);
@@ -100,6 +107,9 @@
 			children = (
 				0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */,
 				0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */,
+				06656B2D2EAF9EA400A52299 /* CoreLocation.framework */,
+				06656B2F2EAF9EA500A52299 /* HealthKit.framework */,
+				06656B312EAF9EA600A52299 /* CoreLocation.framework */,
 				06D312D12EA6374A001A07D7 /* WatchKit.framework */,
 				06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */,
 			);
@@ -463,6 +473,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "SC40-V3-W Watch App";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -496,6 +508,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "SC40-V3-W Watch App";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
 				LD_RUNPATH_SEARCH_PATHS = (

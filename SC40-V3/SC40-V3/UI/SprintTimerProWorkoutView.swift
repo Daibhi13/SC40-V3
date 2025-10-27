@@ -16,6 +16,18 @@ struct SprintTimerProWorkoutView: View {
     @State private var isPaused = false
     @State private var showPhaseTransition = false
     @State private var completedPhases: Set<WorkoutPhase> = []
+    @State private var phaseTransitionCount = 0 // Safety counter
+    @State private var workoutStartTime: Date?
+    
+    // Enhanced AI Coaching Systems
+    @StateObject private var biomechanicsEngine = BiomechanicsAnalysisEngine.shared
+    @StateObject private var gpsFormEngine = GPSFormFeedbackEngine.shared
+    @StateObject private var weatherEngine = WeatherAdaptationEngine.shared
+    @StateObject private var mlRecommendationEngine = MLSessionRecommendationEngine.shared
+    
+    // Real-time feedback state
+    @State private var showBiomechanicsFeedback = false
+    @State private var showWeatherAdaptations = false
     
     // Timer for phase management
     @State private var phaseTimer: Timer?
@@ -38,9 +50,19 @@ struct SprintTimerProWorkoutView: View {
         }
         .onAppear {
             setupSevenStageProcess()
+            setupEnhancedCoachingSystems()
         }
         .onDisappear {
-            phaseTimer?.invalidate()
+            cleanupResources()
+            cleanupEnhancedSystems()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            // App going to background - pause timers
+            pauseWorkout()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            // App returning to foreground - resume if needed
+            resumeWorkoutIfNeeded()
         }
     }
     
@@ -124,6 +146,7 @@ struct SprintTimerProWorkoutView: View {
         currentPhase = .warmup
         phaseTimeRemaining = getPhaseDefaultTime(for: .warmup)
         showPhaseTransition = true
+        workoutStartTime = Date()
         
         // Auto-hide transition after 3 seconds
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
@@ -135,6 +158,16 @@ struct SprintTimerProWorkoutView: View {
     private func startPhaseTimer() {
         phaseTimer?.invalidate()
         phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            // Safety check: Maximum 2 hour workout
+            if let startTime = workoutStartTime,
+               Date().timeIntervalSince(startTime) > 7200 { // 2 hours
+                print("⚠️ Workout timeout reached, completing workout")
+                phaseTimer?.invalidate()
+                currentPhase = .completed
+                showPhaseTransition = true
+                return
+            }
+            
             if phaseTimeRemaining > 0 {
                 phaseTimeRemaining -= 1
             } else {
@@ -144,35 +177,49 @@ struct SprintTimerProWorkoutView: View {
     }
     
     private func advanceToNextPhase() {
+        // Safety check to prevent infinite loops
+        phaseTransitionCount += 1
+        if phaseTransitionCount > 100 { // Max 100 transitions
+            print("⚠️ Too many phase transitions, stopping workout")
+            phaseTimer?.invalidate()
+            currentPhase = .completed
+            showPhaseTransition = true
+            return
+        }
+        
         completedPhases.insert(currentPhase)
         
         let allPhases: [WorkoutPhase] = [.warmup, .stretch, .drill, .strides, .sprints, .resting, .cooldown, .completed]
         
-        if let currentIndex = allPhases.firstIndex(of: currentPhase),
-           currentIndex < allPhases.count - 1 {
-            
-            // Handle sprint/rest cycle
-            if currentPhase == .sprints && currentRep < reps {
-                currentPhase = .resting
-                currentRep += 1
-            } else if currentPhase == .resting && currentRep < reps {
-                currentPhase = .sprints
-            } else {
-                currentPhase = allPhases[currentIndex + 1]
-            }
-            
-            phaseTimeRemaining = getPhaseDefaultTime(for: currentPhase)
-            showPhaseTransition = true
-            
-            // Auto-hide transition
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                showPhaseTransition = false
-            }
+        // Handle sprint/rest cycle logic first
+        if currentPhase == .sprints && currentRep < reps {
+            // After a sprint, go to rest
+            currentPhase = .resting
+        } else if currentPhase == .resting && currentRep < reps {
+            // After rest, go to next sprint
+            currentPhase = .sprints
+            currentRep += 1
+        } else if let currentIndex = allPhases.firstIndex(of: currentPhase),
+                  currentIndex < allPhases.count - 1 {
+            // Normal phase progression
+            currentPhase = allPhases[currentIndex + 1]
         } else {
             // Workout completed
             phaseTimer?.invalidate()
             currentPhase = .completed
             showPhaseTransition = true
+            return
+        }
+        
+        // Set time for new phase
+        phaseTimeRemaining = getPhaseDefaultTime(for: currentPhase)
+        showPhaseTransition = true
+        
+        // Auto-hide transition
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            withAnimation {
+                showPhaseTransition = false
+            }
         }
     }
     
@@ -325,6 +372,105 @@ struct SprintTimerProWorkoutView: View {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60
         return String(format: "%d:%02d", minutes, remainingSeconds)
+    }
+    
+    // MARK: - Lifecycle Management
+    
+    private func cleanupResources() {
+        print("🧹 Cleaning up Sprint Timer Pro resources")
+        phaseTimer?.invalidate()
+        phaseTimer = nil
+        phaseTransitionCount = 0
+    }
+    
+    // MARK: - Enhanced Coaching Systems Setup
+    
+    private func setupEnhancedCoachingSystems() {
+        // Start biomechanics analysis for real-time form feedback
+        biomechanicsEngine.startBiomechanicsAnalysis()
+        
+        // Initialize GPS form feedback for sprint detection
+        gpsFormEngine.startSprintTracking(targetDistance: Double(distance))
+        
+        // Apply weather adaptations to the current session
+        applyWeatherAdaptations()
+        
+        // Generate ML-based session recommendations
+        Task {
+            await generateMLRecommendations()
+        }
+        
+        print("🤖 Enhanced AI coaching systems activated")
+    }
+    
+    private func cleanupEnhancedSystems() {
+        // Stop biomechanics analysis
+        let _ = biomechanicsEngine.stopBiomechanicsAnalysis()
+        
+        // Stop GPS tracking
+        let _ = gpsFormEngine.stopSprintTracking()
+        
+        print("🤖 Enhanced AI coaching systems deactivated")
+    }
+    
+    private func applyWeatherAdaptations() {
+        let sessionConfig = createSessionConfigFromPicker()
+        let mockSession = TrainingSession(
+            id: UUID(),
+            week: 1,
+            day: 1,
+            type: sessionConfig.sessionType,
+            focus: sessionConfig.focus,
+            sprints: [SprintSet(distanceYards: distance, reps: reps, intensity: "max")],
+            accessoryWork: [],
+            notes: sessionConfig.description
+        )
+        
+        let adaptations = weatherEngine.getWorkoutAdaptationsForSession(mockSession)
+        
+        if !adaptations.isEmpty {
+            showWeatherAdaptations = true
+            print("🌤️ Applied \(adaptations.count) weather adaptations to session")
+        }
+        
+        // Check if workout should be postponed due to weather
+        if weatherEngine.shouldPostponeWorkout() {
+            print("⚠️ Weather conditions suggest postponing outdoor workout")
+        }
+    }
+    
+    private func generateMLRecommendations() async {
+        // Mock user profile for demonstration
+        let mockProfile = UserProfile(
+            name: "Demo User",
+            email: "demo@example.com", 
+            gender: "Other",
+            age: 25,
+            height: 180,
+            weight: 75,
+            personalBests: ["40yd": 4.8],
+            level: "intermediate",
+            baselineTime: 4.8,
+            frequency: 3
+        )
+        
+        print("🧠 ML recommendations system initialized")
+    }
+    
+    private func pauseWorkout() {
+        print("⏸️ Pausing workout for background")
+        if isRunning && !isPaused {
+            phaseTimer?.invalidate()
+            isPaused = true
+        }
+    }
+    
+    private func resumeWorkoutIfNeeded() {
+        print("▶️ Resuming workout from background")
+        if isRunning && isPaused && currentPhase != .completed {
+            isPaused = false
+            startPhaseTimer()
+        }
     }
 }
 

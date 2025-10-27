@@ -244,7 +244,7 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     
     // MARK: - Helper Methods
     
-    private func sendMessageToWatch(_ message: [String: Any]) async throws {
+    func sendMessageToWatch(_ message: [String: Any]) async throws {
         // Check if Watch is reachable before sending
         guard WCSession.default.isReachable else {
             throw WatchConnectivityError.watchNotReachable

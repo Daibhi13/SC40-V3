@@ -189,6 +189,13 @@ struct EmailSignupView: View {
                 showingAlert = true
             }
         }
+        .onDisappear {
+            cleanupAuthResources()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            // App going to background - cancel any pending auth operations
+            cleanupAuthResources()
+        }
     }
     
     private var isFormValid: Bool {
@@ -244,6 +251,14 @@ struct EmailSignupView: View {
                 showingAlert = true
             }
         }
+    }
+    
+    // MARK: - Resource Management
+    
+    private func cleanupAuthResources() {
+        print("🧹 Cleaning up authentication resources")
+        authTimeout?.cancel()
+        authTimeout = nil
     }
 }
 

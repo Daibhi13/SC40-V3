@@ -28,6 +28,7 @@ struct TrainingView: View {
     @State private var showSprintTimerPro = false
     @State private var selectedSessionForWorkout: TrainingSession?
     @State private var dynamicSessions: [TrainingSession] = []
+    @State private var showWatchConnectivityTest = false
 
     var body: some View {
         let profile = userProfileVM.profile
@@ -122,23 +123,32 @@ struct TrainingView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(Color.red)
-                                .frame(width: 8, height: 8)
-                            Image(systemName: "applewatch")
-                                .font(.system(size: 16))
-                                .foregroundColor(.yellow)
-                            Image(systemName: "bell.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(.yellow)
+                        Button(action: {
+                            showWatchConnectivityTest = true
+                            #if os(iOS)
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            #endif
+                        }) {
+                            HStack(spacing: 12) {
+                                Circle()
+                                    .fill(watchConnectivity.isWatchReachable ? Color.green : Color.red)
+                                    .frame(width: 8, height: 8)
+                                Image(systemName: "applewatch")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.yellow)
+                                Image(systemName: "bell.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.yellow)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color.black.opacity(0.3))
+                            )
                         }
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color.black.opacity(0.3))
-                        )
+                        .accessibilityLabel("Watch Connectivity Test")
+                        .accessibilityHint("Opens watch connectivity testing and diagnostics")
                     }
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
@@ -216,6 +226,16 @@ struct TrainingView: View {
         }
         .sheet(isPresented: $showSprintTimerPro) {
             SprintTimerProView()
+        }
+        .sheet(isPresented: $showWatchConnectivityTest) {
+            #if canImport(WatchConnectivity) && os(iOS)
+            WatchConnectivityTestView()
+            #else
+            Text("Watch Connectivity not available on this platform")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.black.opacity(0.8))
+            #endif
         }
     }
     

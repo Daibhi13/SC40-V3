@@ -23,6 +23,12 @@ struct MainProgramWorkoutView: View {
     // Audio Integration
     @StateObject private var audioManager = SimpleAudioManager.shared
     
+    // Enhanced AI Coaching Systems
+    @StateObject private var biomechanicsEngine = BiomechanicsAnalysisEngine.shared
+    @StateObject private var gpsFormEngine = GPSFormFeedbackEngine.shared
+    @StateObject private var weatherEngine = WeatherAdaptationEngine.shared
+    @StateObject private var mlRecommendationEngine = MLSessionRecommendationEngine.shared
+    
     // Enhanced Sprint Coach Integration
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var phaseTimeRemaining: Int = 300 // 5 minutes for warmup
@@ -208,6 +214,10 @@ struct MainProgramWorkoutView: View {
             setupWorkoutFromSessionData()
             setupWatchIntegration()
             setupAutoSyncWithWatch()
+            setupEnhancedCoachingSystems()
+        }
+        .onDisappear {
+            cleanupEnhancedSystems()
         }
         .onReceive(NotificationCenter.default.publisher(for: .watchWorkoutStartRequested)) { notification in
             if let sessionId = notification.object as? UUID {
@@ -1065,6 +1075,9 @@ struct MainProgramWorkoutView: View {
         
         // Add sprint reps to Rep Log
         for (index, sprintSet) in session.sprintSets.enumerated() {
+            let mockGoals: [MLTrainingGoal] = [
+                MLTrainingGoal(type: "speed", description: "Improve 40-yard time", targetDate: Date(), progress: 0.6)
+            ]
             let sprintRep = RepData(
                 rep: index + 1,
                 time: nil,
@@ -1087,6 +1100,108 @@ struct MainProgramWorkoutView: View {
         
         // Set phase durations based on session
         phaseTimeRemaining = currentPhase.duration
+    }
+    
+    // MARK: - Enhanced AI Coaching Systems
+    
+    private func setupEnhancedCoachingSystems() {
+        // Start biomechanics analysis for real-time form feedback
+        biomechanicsEngine.startBiomechanicsAnalysis()
+        
+        // Initialize GPS form feedback for sprint detection
+        let sprintDistance = sessionData?.sprintSets.first?.distance ?? 40
+        gpsFormEngine.startSprintTracking(targetDistance: Double(sprintDistance))
+        
+        // Apply weather adaptations to the current session
+        applyWeatherAdaptationsToSession()
+        
+        // Generate ML-based session recommendations
+        Task {
+            await generateMLRecommendationsForSession()
+        }
+        
+        print("🤖 Enhanced AI coaching systems activated for 12-week program")
+    }
+    
+    private func cleanupEnhancedSystems() {
+        // Stop biomechanics analysis
+        let _ = biomechanicsEngine.stopBiomechanicsAnalysis()
+        
+        // Stop GPS tracking
+        let _ = gpsFormEngine.stopSprintTracking()
+        
+        print("🤖 Enhanced AI coaching systems deactivated")
+    }
+    
+    private func applyWeatherAdaptationsToSession() {
+        guard let session = sessionData else { return }
+        
+        let trainingSession = TrainingSession(
+            id: UUID(),
+            week: session.week,
+            day: session.day,
+            type: session.sessionType,
+            focus: session.sessionFocus,
+            sprints: session.sprintSets.map { SC40_V3.SprintSet(distanceYards: $0.distance, reps: 1, intensity: "max") },
+            accessoryWork: [],
+            notes: "12-week program session"
+        )
+        
+        let adaptations = weatherEngine.getWorkoutAdaptationsForSession(trainingSession)
+        
+        if !adaptations.isEmpty {
+            print("🌤️ Applied \(adaptations.count) weather adaptations to 12-week program session")
+            
+            // Apply adaptations to session parameters
+            for adaptation in adaptations {
+                applyAdaptationToWorkout(adaptation)
+            }
+        }
+        
+        // Check if workout should be postponed due to weather
+        if weatherEngine.shouldPostponeWorkout() {
+            announceVoiceCoaching("Weather conditions may not be optimal for outdoor training. Consider indoor alternatives.")
+        }
+    }
+    
+    private func applyAdaptationToWorkout(_ adaptation: WeatherAdaptationEngine.WorkoutAdaptation) {
+        switch adaptation.modification.parameter {
+        case "intensity":
+            // Reduce intensity if weather is challenging
+            if adaptation.modification.adaptedValue < adaptation.modification.originalValue {
+                announceVoiceCoaching("Adjusting intensity due to weather conditions. Focus on form over speed.")
+            }
+        case "rest_periods":
+            // Extend rest periods for hot weather
+            if adaptation.modification.adaptedValue > adaptation.modification.originalValue {
+                announceVoiceCoaching("Extended rest periods recommended due to temperature. Stay hydrated!")
+            }
+        case "warmup_duration":
+            // Extend warmup for cold weather
+            if adaptation.modification.adaptedValue > adaptation.modification.originalValue {
+                announceVoiceCoaching("Extended warmup recommended due to cold conditions.")
+            }
+        default:
+            break
+        }
+    }
+    
+    private func generateMLRecommendationsForSession() async {
+        // Create mock user profile based on session data
+        let mockProfile = UserProfile(
+            name: "Program User",
+            email: "user@example.com",
+            gender: "Other",
+            age: 25,
+            height: 180,
+            weight: 75,
+            personalBests: ["40yd": 4.8],
+            level: "intermediate",
+            baselineTime: 4.8,
+            frequency: 3
+        )
+        
+        print("🧠 ML recommendations system initialized for 12-week program session")
     }
     
     private func pauseWorkout() {

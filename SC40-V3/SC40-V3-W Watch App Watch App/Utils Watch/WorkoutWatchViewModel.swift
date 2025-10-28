@@ -9,6 +9,7 @@ import WatchConnectivity
 /// Simplified workout phase enum for Watch
 enum WorkoutPhase: String, CaseIterable {
     case warmup = "Warm Up"
+    case stretch = "Stretch"
     case drills = "Drills"
     case strides20 = "20s Strides"
     case sprint = "Sprint"
@@ -123,10 +124,14 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
     // MARK: - Phase Logic
     func phaseDuration(for phase: WorkoutPhase) -> TimeInterval {
         switch phase {
-        case .warmup, .drills, .cooldown: return 60
-        case .sprint, .rest: return 0
-        case .strides20: return 30 // Set a default duration for strides20, adjust as needed
-        case .timeTrial: return 40 // Set a default duration for timeTrial, adjust as needed
+        case .warmup: return 300 // 5 minutes
+        case .stretch: return 180 // 3 minutes
+        case .drills: return 360 // 6 minutes
+        case .strides20: return 240 // 4 minutes (20yd x 3 + rest)
+        case .sprint: return 0 // Variable based on session
+        case .rest: return 0 // Variable based on session
+        case .cooldown: return 300 // 5 minutes
+        case .timeTrial: return 40 // 40 seconds for time trial
         }
     }
 
@@ -139,7 +144,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         }
         
         switch currentPhase {
-        case .warmup, .drills, .cooldown:
+        case .warmup, .stretch, .drills, .cooldown:
             startTimer(duration: phaseDuration(for: currentPhase)) { [weak self] in
                 self?.completeRep()
             }
@@ -236,7 +241,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
     }
 
     func nextPhase() {
-        let allPhases: [WorkoutPhase] = [.warmup, .drills, .strides20, .sprint, .rest, .cooldown]
+        let allPhases: [WorkoutPhase] = [.warmup, .stretch, .drills, .strides20, .sprint, .rest, .cooldown]
         if let index = allPhases.firstIndex(of: currentPhase), index + 1 < allPhases.count {
             currentPhase = allPhases[index + 1]
             startPhase()

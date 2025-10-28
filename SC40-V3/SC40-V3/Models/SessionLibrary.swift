@@ -989,7 +989,7 @@ extension WeeklyProgramTemplate {
         print("👆 User manually selected session template \(templateID) for session \(sessionID)")
     }
     
-    /// Enhanced program generation with user preference support
+    /// Enhanced program generation with user preference support and algorithmic optimization
     static func generateWithUserPreferences(
         level: String,
         totalDaysPerWeek: Int,
@@ -1001,7 +1001,8 @@ extension WeeklyProgramTemplate {
         var program: [WeeklyProgramTemplate] = []
         
         for week in 1...12 {
-            let weeklyProgram = generateWeeklyProgramWithPreferences(
+            // Use algorithmic generation for optimal session distribution
+            let weeklyProgram = generateAlgorithmicWeeklyProgram(
                 level: level,
                 totalDays: totalDaysPerWeek,
                 weekNumber: week,
@@ -1013,6 +1014,36 @@ extension WeeklyProgramTemplate {
         }
         
         return program
+    }
+    
+    /// NEW: Algorithmic weekly program generation using all session types
+    static func generateAlgorithmicWeeklyProgram(
+        level: String,
+        totalDays: Int,
+        weekNumber: Int,
+        userPreferences: UserSessionPreferences,
+        includeActiveRecovery: Bool = true,
+        includeRestDay: Bool = true
+    ) -> WeeklyProgramTemplate {
+        
+        // Collect performance data for algorithmic optimization
+        let performanceData = AlgorithmicSessionGenerator.shared.collectPerformanceData(from: [])
+        
+        // Generate sessions using algorithmic approach with all session types
+        let algorithmicSessions = AlgorithmicSessionGenerator.shared.generateAlgorithmicWeeklyProgram(
+            level: level,
+            frequency: totalDays,
+            weekNumber: weekNumber,
+            userPreferences: userPreferences,
+            performanceData: performanceData
+        )
+        
+        return WeeklyProgramTemplate(
+            level: level,
+            weekNumber: weekNumber,
+            totalDays: totalDays,
+            sessions: algorithmicSessions
+        )
     }
     
     /// Enhanced weekly program generation with user preferences

@@ -1,4 +1,0 @@
-module FirebaseInAppMessaging_iOS {
-umbrella header "/Users/davidoconnell/Library/Developer/Xcode/DerivedData/SC40-V3-fylzmaqeopwrhlafyjclnrhzrzta/SourcePackages/checkouts/firebase-ios-sdk/FirebaseInAppMessaging/iOS/include/FirebaseInAppMessaging_iOS.h"
-export *
-}

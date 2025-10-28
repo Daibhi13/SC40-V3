@@ -1,4 +1,0 @@
-module FacebookCore {
-header "FacebookCore-Swift.h"
-export *
-}

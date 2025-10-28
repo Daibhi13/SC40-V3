@@ -493,7 +493,11 @@ struct AdvancedFeaturesTab: View {
             }
         }
         .sheet(isPresented: $showingAlgorithmicInsights) {
-            AlgorithmicInsightsView(userProfileVM: UserProfileViewModel())
+            Text("Algorithmic Insights Coming Soon")
+                .font(.title)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color.black)
         }
     }
 }

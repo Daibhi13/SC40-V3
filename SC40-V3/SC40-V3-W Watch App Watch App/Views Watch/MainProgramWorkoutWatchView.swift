@@ -32,6 +32,9 @@ struct MainProgramWorkoutWatchView: View {
     @State private var gpsFormActive = false
     @State private var weatherAdaptationsApplied = false
     
+    // MARK: - Live RepLog System
+    @StateObject private var repLogVM = RepLogWatchViewModel()
+    
     // Note: PremiumVoiceCoach, WorkoutMusicManager, and SubscriptionManager 
     // are iOS-only and not available in Watch target
     
@@ -41,13 +44,29 @@ struct MainProgramWorkoutWatchView: View {
     
     enum WorkoutPhase: String, CaseIterable {
         case warmup = "Warm-up"
+        case stretch = "Stretch"
         case drills = "Drills"
+        case strides = "Strides"
         case sprints = "Sprints"
         case cooldown = "Cool-down"
     }
     
     var totalSets: Int {
-        session.sprints.first?.reps ?? 1
+        session.sprints.reduce(0) { $0 + $1.reps }
+    }
+    
+    /// Get the current sprint set and rep information
+    var currentSprintInfo: (sprintSet: SprintSet, setIndex: Int, repInSet: Int)? {
+        var totalReps = 0
+        
+        for (setIndex, sprintSet) in session.sprints.enumerated() {
+            if currentSet <= totalReps + sprintSet.reps {
+                let repInSet = currentSet - totalReps
+                return (sprintSet, setIndex, repInSet)
+            }
+            totalReps += sprintSet.reps
+        }
+        return nil
     }
     
     // MARK: - Initializer
@@ -76,6 +95,14 @@ struct MainProgramWorkoutWatchView: View {
         // Start autonomous systems
         workoutManager.startWorkout()
         gpsManager.startTracking()
+        
+        // Initialize RepLog system
+        repLogVM.startSession(
+            type: session.type,
+            focus: session.focus,
+            week: session.week,
+            day: session.day
+        )
         
         // Configure interval manager with session data
         if let firstSprint = session.sprints.first {
@@ -312,8 +339,9 @@ struct MainProgramWorkoutWatchView: View {
     // MARK: - Main Workout View
     private var mainWorkoutView: some View {
         VStack(spacing: 12) {
-            // Header
+            // Header with top padding to avoid status bar time
             workoutHeader
+                .padding(.top, 8)
             
             // Autonomous Systems Status
             autonomousSystemsStatus
@@ -374,11 +402,19 @@ struct MainProgramWorkoutWatchView: View {
     
     private var realTimeMetrics: some View {
         VStack(spacing: 8) {
-            // Current Phase from Interval Manager
-            Text(intervalManager.currentPhase.rawValue.uppercased())
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(.yellow)
-                .tracking(1)
+            // Current Phase Display (matches phase indicator)
+            VStack(spacing: 4) {
+                Text(currentPhase.rawValue.uppercased())
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(phaseColor(for: currentPhase))
+                    .tracking(1)
+                
+                // Show what's expected in this phase
+                Text(phaseInstructions(for: currentPhase))
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+            }
             
             // Distance and Pace
             HStack(spacing: 16) {
@@ -451,35 +487,95 @@ struct MainProgramWorkoutWatchView: View {
     
     private var currentSetDisplay: some View {
         VStack(spacing: 8) {
-            if currentPhase == .sprints {
+            // Show different information based on current phase
+            switch currentPhase {
+            case .sprints:
+                // Sprint phase - show current distance and set information
                 VStack(spacing: 4) {
-                    Text("SET")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .tracking(1)
+                    // Show current distance prominently
+                    if let sprintInfo = currentSprintInfo {
+                        Text("\(sprintInfo.sprintSet.distanceYards)YD")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.yellow)
+                            .tracking(1)
+                    } else if let firstSprint = session.sprints.first {
+                        Text("\(firstSprint.distanceYards)YD")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(.yellow)
+                            .tracking(1)
+                    }
                     
+                    // Show set progress
                     HStack(alignment: .bottom, spacing: 4) {
                         Text("\(currentSet)")
                             .font(.system(size: 32, weight: .black))
-                            .foregroundColor(.white)
+                            .foregroundColor(.green)
                         
                         Text("/ \(totalSets)")
                             .font(.system(size: 16, weight: .medium))
                             .foregroundColor(.white.opacity(0.7))
                             .padding(.bottom, 2)
                     }
+                    
+                    // Show set details - which set within the current distance
+                    if let sprintInfo = currentSprintInfo, session.sprints.count > 1 {
+                        Text("SET \(sprintInfo.repInSet)/\(sprintInfo.sprintSet.reps)")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundColor(.white.opacity(0.5))
+                            .tracking(1)
+                    } else {
+                        Text("SET")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundColor(.white.opacity(0.6))
+                            .tracking(1)
+                    }
                 }
-            } else {
+                
+            case .strides:
+                // Strides phase - show distance and rep information
                 VStack(spacing: 4) {
-                    Text("PHASE")
+                    // Show stride distance
+                    Text("20YD")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.yellow)
+                        .tracking(1)
+                    
+                    // Show stride progress
+                    HStack(alignment: .bottom, spacing: 4) {
+                        Text("1") // Could be dynamic based on stride progress
+                            .font(.system(size: 32, weight: .black))
+                            .foregroundColor(.purple)
+                        
+                        Text("/ 3")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.bottom, 2)
+                    }
+                    
+                    // Show "STRIDE" label below
+                    Text("STRIDE")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                        .tracking(1)
+                }
+                
+            default:
+                // Other phases - show phase status and progress
+                VStack(spacing: 4) {
+                    Text("STATUS")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.white.opacity(0.7))
                         .tracking(1)
                     
-                    Text(currentPhase.rawValue.uppercased())
+                    Text("ACTIVE")
                         .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.green)
+                        .foregroundColor(phaseColor(for: currentPhase))
                         .tracking(0.5)
+                    
+                    // Show phase progress or remaining time
+                    Text(phaseProgressText(for: currentPhase))
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
                 }
             }
         }
@@ -631,12 +727,34 @@ struct MainProgramWorkoutWatchView: View {
         workoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             elapsedTime += 1
             
-            // Auto-advance phases based on time (demo logic)
+            // Auto-advance phases based on time (complete 6-phase flow)
             if elapsedTime > 300 && currentPhase == .warmup { // 5 min warmup
+                currentPhase = .stretch
+            } else if elapsedTime > 480 && currentPhase == .stretch { // 3 min stretch
                 currentPhase = .drills
-            } else if elapsedTime > 600 && currentPhase == .drills { // 5 min drills
+            } else if elapsedTime > 840 && currentPhase == .drills { // 6 min drills
+                currentPhase = .strides
+            } else if elapsedTime > 1080 && currentPhase == .strides { // 4 min strides (20yd x 3 + rest)
                 currentPhase = .sprints
-            } else if elapsedTime > 1200 && currentPhase == .sprints { // 10 min sprints
+                // Start RepLog tracking for sprints
+                if let firstSprint = session.sprints.first {
+                    Task { @MainActor in
+                        repLogVM.startRep(
+                            distance: Double(firstSprint.distanceYards),
+                            location: nil
+                        )
+                    }
+                }
+            } else if elapsedTime > 1680 && currentPhase == .sprints { // 10 min sprints
+                // Complete current rep if recording
+                Task { @MainActor in
+                    if repLogVM.isRecording, let firstSprint = session.sprints.first {
+                        repLogVM.completeRep(
+                            finalDistance: Double(firstSprint.distanceYards),
+                            finalLocation: nil
+                        )
+                    }
+                }
                 currentPhase = .cooldown
             }
         }
@@ -646,6 +764,11 @@ struct MainProgramWorkoutWatchView: View {
         isWorkoutActive = false
         workoutTimer?.invalidate()
         workoutTimer = nil
+        
+        // End RepLog session and sync to phone
+        if let sessionData = repLogVM.endSession() {
+            syncManager.sendSessionDataToPhone(sessionData)
+        }
         
         // Save workout data when stopping
         let completedReps = (1...currentSet).map { repNumber in
@@ -713,8 +836,12 @@ struct MainProgramWorkoutWatchView: View {
         switch currentPhase {
         case .warmup:
             workoutVM.currentPhase = .warmup
+        case .stretch:
+            workoutVM.currentPhase = .stretch
         case .drills:
             workoutVM.currentPhase = .drills
+        case .strides:
+            workoutVM.currentPhase = .strides20 // Map to strides20 in WorkoutWatchViewModel
         case .sprints:
             workoutVM.currentPhase = .sprint
         case .cooldown:
@@ -746,6 +873,66 @@ struct MainProgramWorkoutWatchView: View {
     private func handleSessionDataUpdate(_ sessionData: SessionDataSync) {
         // Update session-specific data
         print("📊 MainProgram session data updated: Week \(sessionData.week), Day \(sessionData.day)")
+    }
+    
+    // MARK: - Phase Helper Functions
+    
+    /// Returns appropriate color for each workout phase
+    private func phaseColor(for phase: WorkoutPhase) -> Color {
+        switch phase {
+        case .warmup:
+            return .orange
+        case .stretch:
+            return .pink
+        case .drills:
+            return .indigo
+        case .strides:
+            return .purple
+        case .sprints:
+            return .green
+        case .cooldown:
+            return .blue
+        }
+    }
+    
+    /// Returns specific instructions for what to do in each phase
+    private func phaseInstructions(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Light jogging, leg swings, arm circles\nPrepare muscles for activity"
+        case .stretch:
+            return "Dynamic stretching routine\nHip circles, leg swings, lunges"
+        case .drills:
+            return "A-skips, B-skips, high knees\nButt kicks, straight leg bounds"
+        case .strides:
+            return "Build to 80% effort over 20 yards\n3 repetitions with 2 min rest"
+        case .sprints:
+            // Show specific distance from session data
+            if let firstSprint = session.sprints.first {
+                return "Maximum effort \(firstSprint.distanceYards)-yard sprints\n\(firstSprint.intensity) intensity"
+            }
+            return "Maximum effort sprints\nFollow your session plan"
+        case .cooldown:
+            return "Easy walking, static stretching\nGradual heart rate recovery"
+        }
+    }
+    
+    /// Returns progress text for each phase
+    private func phaseProgressText(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Get your body ready"
+        case .stretch:
+            return "Improve mobility"
+        case .drills:
+            return "Focus on technique"
+        case .strides:
+            return "Build up speed"
+        case .sprints:
+            return "Maximum effort"
+        case .cooldown:
+            return "Recovery time"
+        }
     }
 }
 

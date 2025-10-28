@@ -76,6 +76,8 @@ struct TrainingView: View {
                         AnyView(EnhancedLeaderboardView(currentUser: profile))
                     case .smartHub:
                         AnyView(Enhanced40YardSmartView())
+                    case .watchConnectivity:
+                        AnyView(LiveWatchConnectivityTestView())
                     case .settings:
                         AnyView(SettingsView())
                     case .helpInfo:
@@ -157,6 +159,9 @@ struct TrainingView: View {
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .preferredColorScheme(.dark)
                 .onAppear {
+                    // Refresh profile data to ensure it's up-to-date with onboarding selections
+                    refreshProfileFromUserDefaults()
+                    
                     // Configure NavigationView to use transparent background - TrainingView specific
                     #if os(iOS)
                     let appearance = UINavigationBarAppearance()
@@ -445,17 +450,42 @@ extension TrainingView {
         return cachedSessions
     }
 
-    // Dynamic sessions generated based on user profile and ComprehensiveSessionLibrary
+    // Dynamic sessions generated using algorithmic backend engine
     private func generateDynamicSessions() -> [TrainingSession] {
         let userLevel = userProfileVM.profile.level
-        let _ = userProfileVM.profile.currentWeek
+        let currentWeek = userProfileVM.profile.currentWeek
         let frequency = userProfileVM.profile.frequency
         
-        print("🏃‍♂️ TrainingView: Generating sessions for \(userLevel) level, \(frequency) days/week across 12 weeks")
+        // Debug: Log the actual level being used
+        print("🔍 TrainingView: Current user level = '\(userLevel)'")
+        print("🔍 TrainingView: Current frequency = \(frequency)")
+        print("🔍 TrainingView: Current week = \(currentWeek)")
         
-        var sessions: [TrainingSession] = []
+        // Also check UserDefaults to see if there's a mismatch
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Not Set"
+        print("🔍 TrainingView: UserDefaults level = '\(savedLevel)'")
         
-        // Get appropriate sessions based on user level with proper progression
+        if userLevel != savedLevel {
+            print("⚠️ TrainingView: MISMATCH! Profile level (\(userLevel)) != UserDefaults level (\(savedLevel))")
+        }
+        
+        // Use AlgorithmicSessionService as the backend engine (no UI)
+        let algorithmicService = AlgorithmicSessionService.shared
+        
+        print("🤖 TrainingView: Using algorithmic backend engine for session generation")
+        
+        // Generate sessions using algorithmic intelligence
+        let algorithmicSessions = algorithmicService.generateOptimizedSessions(
+            for: userLevel,
+            frequency: frequency,
+            currentWeek: currentWeek,
+            performanceHistory: []
+        )
+        
+        // Combine algorithmic sessions with library sessions for variety
+        var sessions: [TrainingSession] = algorithmicSessions
+        
+        // Add additional sessions from library if needed
         let levelSessions = getSessionsForUserLevel(userLevel)
         
         print("🏃‍♂️ TrainingView: Found \(levelSessions.count) sessions for \(userLevel) level")
@@ -913,7 +943,7 @@ extension TrainingView {
                                     .tracking(1.5)
                                 
                                 HStack(alignment: .bottom, spacing: 8) {
-                                    Text("5.25")
+                                    Text(String(format: "%.2f", profile.personalBests["40yd"] ?? profile.baselineTime))
                                         .font(.system(size: 32, weight: .black))
                                         .foregroundStyle(
                                             LinearGradient(
@@ -1009,7 +1039,7 @@ extension TrainingView {
                                 LazyHStack(spacing: 40) {
                                     ForEach(sessionsToShow.indices, id: \.self) { index in
                                         let session = sessionsToShow[index]
-                                        TrainingSessionCard(session: session)
+                                        TrainingSessionCard(session: session, userLevel: profile.level)
                                             .frame(width: geometry.size.width - 40) // Full width minus padding for one card
                                             .onTapGesture {
                                                 selectedSessionForWorkout = session
@@ -1202,6 +1232,7 @@ extension TrainingView {
 // MARK: - TrainingSessionCard Component - Screenshot Style
 struct TrainingSessionCard: View {
     let session: TrainingSession
+    let userLevel: String
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -1493,13 +1524,7 @@ struct TrainingSessionCard: View {
     }
     
     private func getLevelDisplay() -> String {
-        let maxDistance = session.sprints.map { $0.distanceYards }.max() ?? 20
-        switch maxDistance {
-        case 0...30: return "BEGINNER"
-        case 31...60: return "INTERMEDIATE"
-        case 61...80: return "ADVANCED"
-        default: return "ELITE"
-        }
+        return userLevel.uppercased()
     }
     
     // Helper functions for recovery sessions
@@ -2562,6 +2587,34 @@ struct FeatureTag: View {
 extension TrainingView {
     private func getCurrentTrainingSession() -> TrainingSession? {
         return generateDynamicSessions().first
+    }
+    
+    /// Refresh profile data from UserDefaults to ensure onboarding selections are reflected
+    private func refreshProfileFromUserDefaults() {
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel")
+        let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+        
+        print("🔄 TrainingView: Refreshing profile from UserDefaults")
+        print("   Saved level: \(savedLevel ?? "None")")
+        print("   Current profile level: \(userProfileVM.profile.level)")
+        
+        // Update profile if UserDefaults has newer data
+        if let level = savedLevel, level != userProfileVM.profile.level {
+            print("🔄 TrainingView: Updating profile level from '\(userProfileVM.profile.level)' to '\(level)'")
+            userProfileVM.profile.level = level
+        }
+        
+        if savedFrequency > 0 && savedFrequency != userProfileVM.profile.frequency {
+            print("🔄 TrainingView: Updating profile frequency from \(userProfileVM.profile.frequency) to \(savedFrequency)")
+            userProfileVM.profile.frequency = savedFrequency
+        }
+        
+        if savedPB > 0 && savedPB != userProfileVM.profile.baselineTime {
+            print("🔄 TrainingView: Updating profile baseline time from \(userProfileVM.profile.baselineTime) to \(savedPB)")
+            userProfileVM.profile.baselineTime = savedPB
+            userProfileVM.profile.personalBests["40yd"] = savedPB
+        }
     }
 }
 

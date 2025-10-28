@@ -1,4 +1,0 @@
-module FacebookShare {
-header "FacebookShare-Swift.h"
-export *
-}

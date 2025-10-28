@@ -33,7 +33,7 @@ struct MusicWatchView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Time at top
+                // Time at top with padding to avoid status bar overlap
                 Text(currentTimeString())
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.brandSecondary)

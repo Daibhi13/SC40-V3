@@ -497,34 +497,30 @@ struct UnifiedSprintCoachView: View {
                 HStack(spacing: 16) {
                     // BPM indicator
                     StatusIndicator(
-                        icon: "heart.fill",
-                        label: "BPM",
-                        value: "105",
-                        color: .red
+                        title: "BPM",
+                        isActive: true,
+                        icon: "heart.fill"
                     )
                     
                     // Speed indicator
                     StatusIndicator(
-                        icon: "speedometer",
-                        label: "Speed",
-                        value: String(format: "%.1f", currentSpeed),
-                        color: .green
+                        title: "Speed",
+                        isActive: true,
+                        icon: "speedometer"
                     )
                     
                     // Phase indicator
                     StatusIndicator(
-                        icon: "timer",
-                        label: "Phase",
-                        value: getCurrentPhaseName(),
-                        color: .blue
+                        title: "Phase",
+                        isActive: true,
+                        icon: "timer"
                     )
                     
                     // Rep indicator
                     StatusIndicator(
-                        icon: "repeat",
-                        label: "Set",
-                        value: "\(currentRep)/\(totalReps)",
-                        color: .orange
+                        title: "Set",
+                        isActive: true,
+                        icon: "repeat"
                     )
                 }
                 .padding(.horizontal, 20)
@@ -1972,43 +1968,6 @@ enum WorkoutPhase: CaseIterable {
     case warmup, stretch, drill, strides, sprints, resting, cooldown, completed
 }
 
-// MARK: - Status Indicator Component
-struct StatusIndicator: View {
-    let icon: String
-    let label: String
-    let value: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 2) {
-            Image(systemName: icon)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(color)
-            
-            Text(label)
-                .font(.system(size: 8, weight: .medium))
-                .foregroundColor(.white.opacity(0.7))
-                .tracking(0.5)
-            
-            Text(value)
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 8)
-        .padding(.horizontal, 4)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.black.opacity(0.3))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(color.opacity(0.5), lineWidth: 1)
-                )
-        )
-    }
-}
 
 #Preview {
     UnifiedSprintCoachView(sessionConfig: SessionConfiguration.sessions[0])

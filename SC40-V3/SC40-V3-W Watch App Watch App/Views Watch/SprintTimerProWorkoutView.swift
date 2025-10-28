@@ -156,7 +156,9 @@ struct SprintTimerProWorkoutView: View {
     // MARK: - Main Tab Content (Following MainWorkoutWatchView Pattern)
     private var mainTabContent: some View {
         VStack(spacing: 6) {
+            // Add top padding to avoid status bar time overlap
             topStatsRow
+                .padding(.top, 8)
             Divider().background(Color.gray.opacity(0.4))
             mainModule
             Divider().background(Color.gray.opacity(0.4))

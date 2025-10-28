@@ -14,11 +14,11 @@ struct OnboardingView: View {
     @State private var heightInches = 10
     @State private var weight = 170
     @State private var fitnessLevel = "Intermediate"
+    @State private var hasUserManuallySelectedLevel = false
     @State private var daysAvailable = 3
     @State private var pbSeconds: Int = 5
     @State private var pbTenthsHundredths: Int = 25
     @State private var leaderboardOptIn: Bool = true
-    @State private var showManualOverride = false
     
     // Computed property to convert wheel selections to Double
     private var pb: Double {
@@ -337,38 +337,22 @@ struct OnboardingView: View {
                     if pb > 0 {
                         let autoLevel = classify_40yd_time(time: Float(pb), gender: gender)
                         HStack {
-                            Text("Auto-detected: \(autoLevel)")
+                            Text("Suggested: \(autoLevel)")
                                 .foregroundColor(.green)
                                 .font(.subheadline)
                             Spacer()
-                            Button("Override") {
-                                showManualOverride.toggle()
-                            }
-                            .font(.caption)
-                            .foregroundColor(.blue)
+                            Text("(You can override)")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.6))
                         }
                         .onAppear {
-                            if !showManualOverride {
+                            // Only auto-set level if user hasn't manually selected one
+                            if !hasUserManuallySelectedLevel && fitnessLevel == "Intermediate" {
                                 fitnessLevel = autoLevel
                             }
                         }
-                        .onChange(of: pbSeconds) { _, _ in
-                            if pb > 0 && !showManualOverride {
-                                fitnessLevel = classify_40yd_time(time: Float(pb), gender: gender)
-                            }
-                        }
-                        .onChange(of: pbTenthsHundredths) { _, _ in
-                            if pb > 0 && !showManualOverride {
-                                fitnessLevel = classify_40yd_time(time: Float(pb), gender: gender)
-                            }
-                        }
-                        .onChange(of: gender) { _, _ in
-                            if pb > 0 && !showManualOverride {
-                                fitnessLevel = classify_40yd_time(time: Float(pb), gender: gender)
-                            }
-                        }
                     } else {
-                        Text("Select your 40-yard time above for automatic level detection")
+                        Text("Select your 40-yard time above for automatic level suggestion")
                             .foregroundColor(.gray)
                             .font(.caption)
                     }
@@ -379,7 +363,11 @@ struct OnboardingView: View {
                         }
                     }
                     .pickerStyle(SegmentedPickerStyle())
-                    .disabled(pb > 0 && !showManualOverride) // Disable manual selection when auto-detected
+                    .onChange(of: fitnessLevel) { _ in
+                        // Mark that user has manually selected a level
+                        hasUserManuallySelectedLevel = true
+                    }
+                    // Always allow manual selection - user choice is paramount
                 }
             }
         }
@@ -490,6 +478,12 @@ struct OnboardingView: View {
                         .foregroundColor(.yellow)
                         .font(.caption)
                         .bold()
+                    
+                    Text("All 1-7 day options are available regardless of your level")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.6))
+                        .padding(.bottom, 4)
+                    
                     Stepper("Days per week: \(daysAvailable)", value: $daysAvailable, in: 1...7)
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
@@ -589,6 +583,13 @@ struct OnboardingView: View {
             userProfileVM.profile.personalBests["40yd"] = pb
             userProfileVM.profile.frequency = daysAvailable
             userProfileVM.profile.leaderboardOptIn = leaderboardOptIn
+            
+            // Debug: Verify the data is saved correctly
+            print("🏃‍♂️ Onboarding: Saved profile data:")
+            print("   Level: \(fitnessLevel)")
+            print("   Personal Best: \(pb)s")
+            print("   Baseline Time: \(pb)s")
+            print("   Frequency: \(daysAvailable) days/week")
             
             // Save data for intelligent session selection system
             UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")

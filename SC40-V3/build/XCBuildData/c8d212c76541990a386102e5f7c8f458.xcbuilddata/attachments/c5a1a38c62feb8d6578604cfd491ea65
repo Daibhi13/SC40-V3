@@ -1,4 +1,0 @@
-module leveldb {
-umbrella "/Users/davidoconnell/Library/Developer/Xcode/DerivedData/SC40-V3-fylzmaqeopwrhlafyjclnrhzrzta/SourcePackages/checkouts/leveldb/include"
-export *
-}

@@ -1,4 +1,0 @@
-module FirebaseMLModelDownloader {
-header "FirebaseMLModelDownloader-Swift.h"
-export *
-}

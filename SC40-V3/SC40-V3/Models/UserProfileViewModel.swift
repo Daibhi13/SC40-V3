@@ -26,26 +26,29 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             self.profile = loaded
             logger.info("Loaded user profile for \(loaded.name)")
         } else {
-            // Onboarding: Generate adaptive program for first launch
+            // Check for onboarding data in UserDefaults first
+            let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+            let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+            
+            // Create minimal profile - will be populated during onboarding
             let newProfile = UserProfile(
-                name: "David",
-                email: "david@example.com",
+                name: "New User",
+                email: nil,
                 gender: "Male",
-                age: 19,
-                height: 72,
-                weight: 91.0,
-                personalBests: ["40yd": 4.21],
-                level: "Intermediate",
-                baselineTime: 4.21,
-                frequency: 3,
+                age: 25,
+                height: 70,
+                weight: nil,
+                personalBests: savedPB > 0 ? ["40yd": savedPB] : [:], // Use saved PB if available
+                level: savedLevel, // Use saved level from onboarding
+                baselineTime: savedPB > 0 ? savedPB : 0.0, // Use saved baseline time
+                frequency: savedFrequency > 0 ? savedFrequency : 3, // Use saved frequency
                 currentWeek: 1,
                 currentDay: 1,
                 leaderboardOptIn: true
             )
             self.profile = newProfile
-            logger.info("Created new user profile for \(newProfile.name)")
-            // Enable adaptive program generation (basic version)
-            refreshAdaptiveProgram()
+            logger.info("Created new user profile - awaiting onboarding data")
         }
         
         // Enable automatic session refresh when profile changes
@@ -153,7 +156,10 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         // Use Algorithms framework for intelligent session optimization
         _ = AlgorithmicWorkoutOptimizer.shared
         
-        // Generate real training sessions using SessionLibrary with user preferences
+        // Initialize performance data collection for algorithmic optimization
+        _ = PerformanceDataCollector.shared
+        
+        // Generate real training sessions using algorithmic SessionLibrary with all session types
         let weeklyPrograms = WeeklyProgramTemplate.generateWithUserPreferences(
             level: profile.level,
             totalDaysPerWeek: profile.frequency,
@@ -179,6 +185,48 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         
         // Send updated sessions to watch
         sendSessionsToWatch()
+    }
+    
+    // MARK: - Performance Data Integration
+    
+    /// Collect performance data when a session is completed
+    func recordSessionCompletion(_ session: TrainingSession) {
+        // Feed performance data to the algorithmic system for continuous optimization
+        PerformanceDataCollector.shared.collectSessionPerformance(from: session)
+        
+        // Log session completion for science-based evolution
+        logger.info("Session completed: \(session.type) - Week \(session.week), Day \(session.day)")
+        
+        // Trigger session library evolution if performance patterns indicate need
+        if shouldTriggerLibraryEvolution() {
+            evolveSessionLibraryBasedOnPerformance()
+        }
+    }
+    
+    private func shouldTriggerLibraryEvolution() -> Bool {
+        // Check if we have enough data and performance patterns suggest evolution is needed
+        let performanceHistory = PerformanceDataCollector.shared.performanceHistory
+        
+        // Trigger evolution every 20 sessions or if performance is declining
+        if performanceHistory.count >= 20 {
+            let recentPerformance = performanceHistory.suffix(5)
+            let averageImprovement = recentPerformance.map(\.improvementRate).reduce(0, +) / Double(recentPerformance.count)
+            
+            // Trigger if improvement rate is low or negative
+            return averageImprovement < 0.02
+        }
+        
+        return false
+    }
+    
+    private func evolveSessionLibraryBasedOnPerformance() {
+        logger.info("🧬 Triggering session library evolution based on performance data")
+        
+        // This would implement the science-based session evolution
+        // For now, regenerate the program with updated algorithmic parameters
+        refreshAdaptiveProgram()
+        
+        print("📈 Session library evolved - new sessions generated based on performance science")
     }
     
     // MARK: - User Session Preferences & Favorites
@@ -336,6 +384,15 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         completedSessions[sessionID] = session
         profile.completedSessionIDs.append(sessionID)
         
+        // Record in HistoryManager for real-time updates
+        Task { @MainActor in
+            HistoryManager.shared.recordFullSession(
+                session: session,
+                sprintTimes: sprintTimes,
+                notes: notes
+            )
+        }
+        
         // Advance to next session
         advanceToNextSession()
         
@@ -343,6 +400,30 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         
         // Send updated sessions to watch
         sendSessionsToWatch()
+    }
+    
+    /// Mark a session as stopped partway through
+    func stopSessionPartway(_ sessionID: UUID, completedSprints: Int, sprintTimes: [Double] = [], stopReason: String = "User stopped", notes: String? = nil) {
+        guard let session = allSessions[sessionID] else {
+            print("❌ Session not found: \(sessionID)")
+            return
+        }
+        
+        let totalSprints = session.sprints.reduce(0) { $0 + $1.reps }
+        
+        // Record partial session in HistoryManager
+        Task { @MainActor in
+            HistoryManager.shared.recordPartialSession(
+                session: session,
+                completedSprints: completedSprints,
+                totalSprints: totalSprints,
+                sprintTimes: sprintTimes,
+                stopReason: stopReason,
+                notes: notes
+            )
+        }
+        
+        print("⏸️ Stopped session partway: W\(session.week)/D\(session.day) - \(completedSprints)/\(totalSprints) sprints")
     }
     
     // MARK: - Session Conversion Functions

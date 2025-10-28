@@ -179,10 +179,9 @@ import os.log
     }
     
     private func activateSession() {
-        // Skip activation in test mode
-        guard !isTestMode else {
-            logger.info("Test mode active - WatchConnectivity disabled")
-            return
+        // Enable WatchConnectivity even in test mode for live testing
+        if isTestMode {
+            logger.info("Test mode active - WatchConnectivity enabled for testing")
         }
         
         guard WCSession.isSupported() else {

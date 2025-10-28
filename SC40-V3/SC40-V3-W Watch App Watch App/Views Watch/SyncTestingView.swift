@@ -3,6 +3,7 @@ import SwiftUI
 struct SyncTestingView: View {
     @StateObject private var syncTester = WorkoutSyncTester.shared
     @StateObject private var syncManager = WatchWorkoutSyncManager.shared
+    @StateObject private var liveConnectivity = LiveWatchConnectivityHandler.shared
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -119,6 +120,40 @@ struct SyncTestingView: View {
                 .foregroundColor(.white)
             
             VStack(spacing: 8) {
+                // Live Connectivity Test
+                Button(action: {
+                    liveConnectivity.sendTestMessageToPhone()
+                }) {
+                    HStack {
+                        Image(systemName: "iphone.and.arrow.forward")
+                            .foregroundColor(.blue)
+                        
+                        Text("Test iPhone Connection")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        Spacer()
+                        
+                        if liveConnectivity.messagesReceived > 0 {
+                            Text("\(liveConnectivity.messagesReceived)")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundColor(.green)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.green.opacity(0.2))
+                                .cornerRadius(4)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.blue.opacity(0.2))
+                            .stroke(Color.blue, lineWidth: 1)
+                    )
+                }
+                .disabled(!liveConnectivity.isConnected)
+                
                 // Test Current Session
                 Button(action: {
                     syncTester.testCurrentSession()

@@ -1,4 +1,0 @@
-module FacebookAEM {
-header "FacebookAEM-Swift.h"
-export *
-}

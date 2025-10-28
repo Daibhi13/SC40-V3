@@ -70,6 +70,9 @@ struct SessionCardsView: View {
     @State private var showSyncTesting = false
     @State private var showTestingDashboard = false
     
+    // Initialize connectivity handler for live testing
+    @StateObject private var connectivityHandler = LiveWatchConnectivityHandler.shared
+    
     var body: some View {
         NavigationView {
             // Remove START button - use tap-to-start

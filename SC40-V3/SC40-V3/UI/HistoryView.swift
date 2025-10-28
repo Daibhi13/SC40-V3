@@ -1,52 +1,12 @@
 import SwiftUI
 
 struct HistoryView: View {
+    @StateObject private var historyManager = HistoryManager.shared
     @State private var selectedFilter: HistoryFilter = .all
     @State private var showingExportSheet = false
     
-    enum HistoryFilter: String, CaseIterable {
-        case all = "All Sessions"
-        case sprints = "Sprint Training"
-        case timeTrials = "Time Trials"
-        case thisWeek = "This Week"
-        case thisMonth = "This Month"
-    }
-    
-    private var filteredSessions: [[String: Any]] {
-        let allSessions = getMockWorkoutHistory()
-        let calendar = Calendar.current
-        let now = Date()
-        
-        return allSessions.filter { session in
-            switch selectedFilter {
-            case .all:
-                return true
-            case .sprints:
-                let sessionType = session["sessionType"] as? String ?? ""
-                return sessionType != "Time Trial"
-            case .timeTrials:
-                let sessionType = session["sessionType"] as? String ?? ""
-                return sessionType == "Time Trial"
-            case .thisWeek:
-                if let dateString = session["date"] as? String,
-                   let date = ISO8601DateFormatter().date(from: dateString) {
-                    return calendar.isDate(date, equalTo: now, toGranularity: .weekOfYear)
-                }
-                return false
-            case .thisMonth:
-                if let dateString = session["date"] as? String,
-                   let date = ISO8601DateFormatter().date(from: dateString) {
-                    return calendar.isDate(date, equalTo: now, toGranularity: .month)
-                }
-                return false
-            }
-        }.sorted { session1, session2 in
-            let date1String = session1["date"] as? String ?? ""
-            let date2String = session2["date"] as? String ?? ""
-            let date1 = ISO8601DateFormatter().date(from: date1String) ?? Date.distantPast
-            let date2 = ISO8601DateFormatter().date(from: date2String) ?? Date.distantPast
-            return date1 > date2 // Most recent first
-        }
+    private var filteredSessions: [CompletedSession] {
+        historyManager.getSessionsForFilter(selectedFilter)
     }
     
     var body: some View {
@@ -66,7 +26,7 @@ struct HistoryView: View {
                 
                 VStack(spacing: 0) {
                     // Progress Summary Header
-                    ProgressSummaryHeaderView(sessions: filteredSessions)
+                    ProgressSummaryHeaderView(analytics: historyManager.analytics)
                         .padding(.top, 8)
                     
                     // Filter Picker
@@ -80,8 +40,8 @@ struct HistoryView: View {
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 12) {
-                                ForEach(Array(filteredSessions.enumerated()), id: \.offset) { index, session in
-                                    CompletedSessionCard(session: session)
+                                ForEach(filteredSessions) { session in
+                                    CompletedSessionCardNew(session: session)
                                 }
                             }
                             .padding(.horizontal)
@@ -106,7 +66,18 @@ struct HistoryView: View {
             #endif
         }
         .sheet(isPresented: $showingExportSheet) {
-            ExportHistoryView(sessions: filteredSessions)
+            ExportHistoryView(sessions: filteredSessions.map { session in
+                [
+                    "id": session.id.uuidString,
+                    "date": session.completionDate,
+                    "type": session.sessionType,
+                    "focus": session.focus,
+                    "sprintTimes": session.sprintTimes,
+                    "notes": session.notes ?? "",
+                    "location": session.location ?? "",
+                    "weather": session.weather ?? ""
+                ]
+            })
         }
     }
     
@@ -163,40 +134,7 @@ struct HistoryView: View {
 // MARK: - Progress Summary Header View
 
 struct ProgressSummaryHeaderView: View {
-    let sessions: [[String: Any]]
-    
-    private var totalSessions: Int { sessions.count }
-    
-    private var personalBest: Double {
-        let allTimes = sessions.compactMap { session -> Double? in
-            if let bestTime = session["bestTime"] as? Double {
-                return bestTime
-            }
-            return nil
-        }
-        return allTimes.min() ?? 0.0
-    }
-    
-    private var totalDistance: Double {
-        sessions.compactMap { session -> Double? in
-            if let totalReps = session["totalReps"] as? Int {
-                return Double(totalReps * 40) // Assuming 40-yard sprints
-            }
-            return nil
-        }.reduce(0, +)
-    }
-    
-    private var thisWeekSessions: Int {
-        let calendar = Calendar.current
-        let now = Date()
-        return sessions.filter { session in
-            if let dateString = session["date"] as? String,
-               let date = ISO8601DateFormatter().date(from: dateString) {
-                return calendar.isDate(date, equalTo: now, toGranularity: .weekOfYear)
-            }
-            return false
-        }.count
-    }
+    let analytics: SessionAnalytics
     
     var body: some View {
         VStack(spacing: 12) {
@@ -207,28 +145,28 @@ struct ProgressSummaryHeaderView: View {
             HStack(spacing: 20) {
                 ProgressStat(
                     title: "Sessions",
-                    value: "\(totalSessions)",
+                    value: "\(analytics.totalSessions)",
                     icon: "figure.run",
                     color: .blue
                 )
                 
                 ProgressStat(
                     title: "Personal Best",
-                    value: personalBest > 0 ? String(format: "%.2fs", personalBest) : "N/A",
+                    value: analytics.personalBest != nil ? String(format: "%.2fs", analytics.personalBest!) : "N/A",
                     icon: "stopwatch",
                     color: .green
                 )
                 
                 ProgressStat(
                     title: "This Week",
-                    value: "\(thisWeekSessions)",
+                    value: "\(analytics.thisWeekSessions)",
                     icon: "calendar",
                     color: .orange
                 )
                 
                 ProgressStat(
                     title: "Distance",
-                    value: "\(Int(totalDistance))yd",
+                    value: "\(Int(analytics.totalDistance))yd",
                     icon: "ruler",
                     color: .purple
                 )
@@ -250,12 +188,12 @@ struct ProgressSummaryHeaderView: View {
 // MARK: - Filter Picker View
 
 struct FilterPickerView: View {
-    @Binding var selectedFilter: HistoryView.HistoryFilter
+    @Binding var selectedFilter: HistoryFilter
     
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(HistoryView.HistoryFilter.allCases, id: \.self) { filter in
+                ForEach(HistoryFilter.allCases, id: \.self) { filter in
                     Button(action: {
                         selectedFilter = filter
                     }) {
@@ -300,43 +238,31 @@ struct ProgressStat: View {
     }
 }
 
-// MARK: - Completed Session Card
+// MARK: - Completed Session Card (New)
 
-struct CompletedSessionCard: View {
-    let session: [String: Any]
+struct CompletedSessionCardNew: View {
+    let session: CompletedSession
     
     private var sessionTitle: String {
-        let sessionType = session["sessionType"] as? String ?? "Training Session"
-        let week = session["week"] as? Int ?? 0
-        let day = session["day"] as? Int ?? 0
-        
-        if sessionType == "Time Trial" {
+        if session.sessionType == "Time Trial" {
             return "Time Trial"
-        } else if week == 0 && day == 0 {
+        } else if session.week == 0 && session.day == 0 {
             return "Watch Session"
         } else {
-            return "Week \(week), Day \(day)"
+            return "Week \(session.week), Day \(session.day)"
         }
     }
     
     private var sessionDate: String {
-        if let dateString = session["date"] as? String,
-           let date = ISO8601DateFormatter().date(from: dateString) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MMM d, yyyy"
-            return formatter.string(from: date)
-        }
-        return "Unknown Date"
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: session.completionDate)
     }
     
     private var sessionTime: String {
-        if let dateString = session["date"] as? String,
-           let date = ISO8601DateFormatter().date(from: dateString) {
-            let formatter = DateFormatter()
-            formatter.dateFormat = "h:mm a"
-            return formatter.string(from: date)
-        }
-        return ""
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: session.completionDate)
     }
     
     var body: some View {
@@ -350,29 +276,38 @@ struct CompletedSessionCard: View {
                             .foregroundColor(.white)
                         
                         // Session type indicator
-                        if let sessionType = session["sessionType"] as? String {
-                            if sessionType == "Time Trial" {
-                                Image(systemName: "stopwatch.fill")
-                                    .foregroundColor(.purple)
-                            } else {
-                                Image(systemName: "figure.run")
-                                    .foregroundColor(.blue)
-                            }
+                        if session.sessionType == "Time Trial" {
+                            Image(systemName: "stopwatch.fill")
+                                .foregroundColor(.purple)
+                        } else {
+                            Image(systemName: "figure.run")
+                                .foregroundColor(.blue)
+                        }
+                        
+                        // Completion status indicator
+                        if session.completionType == .stoppedPartway {
+                            Image(systemName: "pause.circle.fill")
+                                .foregroundColor(.orange)
+                        } else {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
                         }
                         
                         // Watch indicator for Session 0
-                        let week = session["week"] as? Int ?? 0
-                        let day = session["day"] as? Int ?? 0
-                        if week == 0 && day == 0 {
+                        if session.week == 0 && session.day == 0 {
                             Image(systemName: "applewatch")
                                 .foregroundColor(.green)
                         }
                     }
                     
-                    if let sessionType = session["sessionType"] as? String {
-                        Text(sessionType)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(session.sessionType)
                             .font(.subheadline)
                             .foregroundColor(.blue.opacity(0.8))
+                        
+                        Text(session.completionType.rawValue)
+                            .font(.caption)
+                            .foregroundColor(session.completionType == .completed ? .green : .orange)
                     }
                 }
                 
@@ -392,21 +327,15 @@ struct CompletedSessionCard: View {
             }
             
             // Performance Summary
-            PerformanceSummaryView(session: session)
+            PerformanceSummaryViewNew(session: session)
             
             // Training Times Display
-            if let drillTimes = session["drillTimes"] as? [Double],
-               let strideTimes = session["strideTimes"] as? [Double],
-               let sprintTimes = session["sprintTimes"] as? [Double] {
-                TrainingTimesView(
-                    drillTimes: drillTimes,
-                    strideTimes: strideTimes,
-                    sprintTimes: sprintTimes
-                )
+            if !session.sprintTimes.isEmpty {
+                TrainingTimesViewNew(session: session)
             }
             
             // Session Conditions (Weather, Location, etc.)
-            SessionEnvironmentView(session: session)
+            SessionEnvironmentViewNew(session: session)
         }
         .padding()
         .background(
@@ -871,6 +800,172 @@ struct HistoryFeatureRow: View {
 }
 
 // MARK: - Date Formatter Extension
+
+// MARK: - New Performance Components
+
+struct PerformanceSummaryViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Best Time
+            if let bestTime = session.bestTime {
+                StatBadge(
+                    title: "Best Time",
+                    value: String(format: "%.2fs", bestTime),
+                    icon: "stopwatch.fill",
+                    color: .green
+                )
+            }
+            
+            // Average Time
+            if let averageTime = session.averageTime {
+                StatBadge(
+                    title: "Average",
+                    value: String(format: "%.2fs", averageTime),
+                    icon: "chart.bar.fill",
+                    color: .blue
+                )
+            }
+            
+            // Completion Status
+            StatBadge(
+                title: "Completed",
+                value: "\(session.completedSprints)/\(session.totalSprints)",
+                icon: session.completionType == .completed ? "checkmark.circle" : "pause.circle",
+                color: session.completionType == .completed ? .green : .orange
+            )
+            
+            Spacer()
+        }
+    }
+}
+
+struct TrainingTimesViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "stopwatch")
+                    .foregroundColor(.yellow)
+                Text("Sprint Times")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                if session.completionType == .stoppedPartway {
+                    Text("Partial Session")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.orange.opacity(0.2))
+                        .cornerRadius(4)
+                }
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: min(session.sprintTimes.count, 4)), spacing: 6) {
+                ForEach(Array(session.sprintTimes.enumerated()), id: \.offset) { index, time in
+                    Text(String(format: "%.2f", time))
+                        .font(.caption2.monospacedDigit())
+                        .foregroundColor(time == session.sprintTimes.min() ? .yellow : .white.opacity(0.8))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.white.opacity(0.1))
+                        )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+struct SessionEnvironmentViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "location.circle")
+                    .foregroundColor(.cyan)
+                Text("Session Details")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                // Location
+                if let location = session.location {
+                    EnvironmentBadge(
+                        icon: "location",
+                        title: "Location",
+                        value: location,
+                        color: .purple
+                    )
+                }
+                
+                // Weather
+                if let weather = session.weather {
+                    EnvironmentBadge(
+                        icon: "cloud.sun",
+                        title: "Weather",
+                        value: weather,
+                        color: .cyan
+                    )
+                }
+                
+                // Temperature
+                if let temperature = session.temperature {
+                    EnvironmentBadge(
+                        icon: "thermometer",
+                        title: "Temperature",
+                        value: "\(Int(temperature))°F",
+                        color: .orange
+                    )
+                }
+                
+                // Focus Area
+                EnvironmentBadge(
+                    icon: "target",
+                    title: "Focus",
+                    value: session.focus,
+                    color: .yellow
+                )
+            }
+            
+            // Notes
+            if let notes = session.notes, !notes.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Notes")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.white.opacity(0.05))
+                        )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
 
 extension DateFormatter {
     static let sessionDate: DateFormatter = {

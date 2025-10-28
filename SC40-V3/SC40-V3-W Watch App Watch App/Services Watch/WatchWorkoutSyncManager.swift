@@ -201,6 +201,62 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
     func isAutoAdaptationActive() -> Bool {
         return adaptedWorkoutState != nil
     }
+    
+    // MARK: - Rep Data Sync
+    
+    func sendRepDataToPhone(_ repData: [String: Any]) {
+        #if canImport(WatchConnectivity)
+        guard WCSession.default.isReachable else {
+            print("📊 RepLog: iPhone not reachable, queuing rep data")
+            // Could queue for later sending
+            return
+        }
+        
+        WCSession.default.sendMessage(repData) { reply in
+            print("📊 RepLog: Rep data sent successfully - Reply: \(reply)")
+        } errorHandler: { error in
+            print("❌ RepLog: Failed to send rep data - \(error.localizedDescription)")
+        }
+        #endif
+    }
+    
+    func sendSessionDataToPhone(_ sessionData: SessionData) {
+        #if canImport(WatchConnectivity)
+        guard WCSession.default.isReachable else {
+            print("📊 RepLog: iPhone not reachable, saving session locally")
+            return
+        }
+        
+        let sessionMessage: [String: Any] = [
+            "type": "session_completed",
+            "sessionId": sessionData.id.uuidString,
+            "sessionType": sessionData.type,
+            "focus": sessionData.focus,
+            "week": sessionData.week,
+            "day": sessionData.day,
+            "startTime": sessionData.startTime.timeIntervalSince1970,
+            "endTime": sessionData.endTime?.timeIntervalSince1970 ?? 0,
+            "totalTime": sessionData.totalTime,
+            "averageTime": sessionData.averageTime,
+            "bestTime": sessionData.bestTime,
+            "repCount": sessionData.reps.count,
+            "reps": sessionData.reps.map { rep in
+                [
+                    "repNumber": rep.repNumber,
+                    "distance": rep.distance,
+                    "time": rep.splitTime,
+                    "timestamp": rep.gpsTime.timeIntervalSince1970
+                ]
+            }
+        ]
+        
+        WCSession.default.sendMessage(sessionMessage) { reply in
+            print("📊 RepLog: Session data sent successfully")
+        } errorHandler: { error in
+            print("❌ RepLog: Failed to send session data - \(error.localizedDescription)")
+        }
+        #endif
+    }
 }
 
 // MARK: - WCSessionDelegate Implementation

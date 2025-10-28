@@ -170,7 +170,7 @@ struct ProfileView: View {
                         
                         ProfileInfoRow(
                             label: "PB (40yd)",
-                            value: userProfileVM.profile.baselineTime == 0 ? "5.25 s" : "\(String(format: "%.2f", userProfileVM.profile.baselineTime)) s",
+                            value: "\(String(format: "%.2f", userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime)) s",
                             showContent: showContent,
                             delay: 2.0
                         )

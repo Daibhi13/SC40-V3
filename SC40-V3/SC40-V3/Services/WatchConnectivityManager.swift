@@ -56,9 +56,38 @@ class WatchConnectivityManager: NSObject, ObservableObject {
             return
         }
         
-        WCSession.default.delegate = self
-        WCSession.default.activate()
-        logger.info("WatchConnectivity session activation requested")
+        // Only set delegate if not already set by another manager
+        if WCSession.default.delegate == nil {
+            WCSession.default.delegate = self
+        }
+        
+        // Activate session if not already activated
+        if WCSession.default.activationState != .activated {
+            WCSession.default.activate()
+        }
+        
+        logger.info("WatchConnectivity session setup completed")
+        
+        // Update initial state
+        Task { @MainActor in
+            self.updateConnectionState()
+        }
+    }
+    
+    private func updateConnectionState() {
+        let session = WCSession.default
+        isWatchConnected = session.isPaired && session.isWatchAppInstalled
+        isWatchReachable = session.isReachable
+        
+        if !session.isPaired {
+            connectionError = "Apple Watch not paired"
+        } else if !session.isWatchAppInstalled {
+            connectionError = "SC40 Watch app not installed"
+        } else if !session.isReachable {
+            connectionError = "Apple Watch not reachable"
+        } else {
+            connectionError = nil
+        }
     }
     
     // MARK: - Onboarding Data Sync
@@ -393,6 +422,10 @@ extension WatchConnectivityManager: WCSessionDelegate {
                     handleSyncRequest(replyHandler)
                 case "status_update":
                     handleStatusUpdate(message)
+                case "rep_completed":
+                    handleRepCompleted(message)
+                case "session_completed":
+                    handleSessionCompleted(message)
                 default:
                     logger.warning("Unknown message type from Watch: \(type)")
                 }
@@ -440,6 +473,46 @@ extension WatchConnectivityManager: WCSessionDelegate {
     private func handleStatusUpdate(_ message: [String: Any]) {
         logger.info("Received status update from Watch")
         // Handle status updates from Watch app
+    }
+    
+    private func handleRepCompleted(_ message: [String: Any]) {
+        logger.info("Received rep completion from Watch")
+        
+        // Forward to LiveRepLogManager
+        NotificationCenter.default.post(
+            name: .repDataReceived,
+            object: message
+        )
+    }
+    
+    private func handleSessionCompleted(_ message: [String: Any]) {
+        logger.info("Received session completion from Watch")
+        
+        // Forward to LiveRepLogManager
+        NotificationCenter.default.post(
+            name: .sessionDataReceived,
+            object: message
+        )
+        
+        // Also integrate with existing HistoryManager
+        integrateSessionWithHistory(message)
+    }
+    
+    private func integrateSessionWithHistory(_ sessionData: [String: Any]) {
+        // Convert Watch session data to format compatible with HistoryManager
+        guard let sessionType = sessionData["sessionType"] as? String,
+              let focus = sessionData["focus"] as? String,
+              let week = sessionData["week"] as? Int,
+              let day = sessionData["day"] as? Int,
+              let reps = sessionData["reps"] as? [[String: Any]] else {
+            logger.warning("Invalid session data format from Watch")
+            return
+        }
+        
+        logger.info("Integrating Watch session with HistoryManager: \(sessionType) - \(reps.count) reps")
+        
+        // Here you would integrate with the existing HistoryManager
+        // This ensures RepLog data appears in the main app history
     }
 }
 

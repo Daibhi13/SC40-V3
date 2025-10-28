@@ -238,20 +238,32 @@ class WorkoutDataRecorder: ObservableObject {
     }
     
     private func saveToHistoryManager(_ sessionData: WorkoutSessionData) {
-        // Convert to TrainingSession format for HistoryManager
-        let _ = TrainingSession(
-            id: sessionData.session.id,
-            week: sessionData.session.week,
-            day: sessionData.session.day,
-            type: sessionData.session.type,
-            focus: sessionData.session.focus,
-            sprints: sessionData.session.sprints,
-            accessoryWork: sessionData.session.accessoryWork,
-            notes: sessionData.session.notes
-        )
+        // Extract sprint times from stage data
+        let sprintTimes = stageDataBuffer
+            .filter { $0.stage == .sprints }
+            .map { $0.time }
         
-        // Note: HistoryManager integration would go here when available
-        print("📊 Session data ready for HistoryManager integration")
+        // Determine completion type based on session data
+        let totalSprints = sessionData.session.sprints.reduce(0) { $0 + $1.reps }
+        let completedSprints = sprintTimes.count
+        let completionType: SessionCompletionType = completedSprints >= totalSprints ? .completed : .stoppedPartway
+        
+        // Record in HistoryManager for real-time updates
+        Task { @MainActor in
+            HistoryManager.shared.recordSessionCompletion(
+                session: sessionData.session,
+                completionType: completionType,
+                sprintTimes: sprintTimes,
+                completedSprints: completedSprints,
+                totalSprints: totalSprints,
+                notes: nil, // WorkoutSessionSummary doesn't have notes property
+                location: "GPS Tracked", // Could be enhanced with actual location
+                weather: nil, // Could be enhanced with weather API
+                temperature: nil
+            )
+        }
+        
+        print("📊 Session data recorded in HistoryManager: \(completionType.rawValue)")
     }
     
     func loadSessionHistory() -> [WorkoutSessionData] {

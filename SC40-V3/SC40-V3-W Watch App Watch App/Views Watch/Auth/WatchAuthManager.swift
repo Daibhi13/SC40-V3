@@ -184,9 +184,14 @@ class WatchAuthManager: ObservableObject {
     /// Load user profile
     private func loadUserProfile() {
         let userId = UserDefaults.standard.string(forKey: "SC40_UserId") ?? "unknown"
-        let level = UserDefaults.standard.string(forKey: "SC40_UserLevel") ?? "Intermediate"
+        // Check for synced level from iPhone first, then fallback to watch-specific level
+        let syncedLevel = UserDefaults.standard.string(forKey: "userLevel")
+        let watchLevel = UserDefaults.standard.string(forKey: "SC40_UserLevel")
+        let level = syncedLevel ?? watchLevel ?? "Intermediate"
         let targetTime = UserDefaults.standard.double(forKey: "SC40_TargetTime")
         let authMethod = UserDefaults.standard.string(forKey: "SC40_AuthMethod") ?? "Unknown"
+        
+        print("👤 WatchAuthManager: Loading profile - synced level: \(syncedLevel ?? "None"), watch level: \(watchLevel ?? "None"), final: \(level)")
         
         self.userProfile = WatchUserProfile(
             id: userId,

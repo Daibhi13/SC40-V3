@@ -131,6 +131,75 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         logger.info("Profile synced: \(name) - \(level)")
     }
     
+    private func handleOnboardingComplete(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+        logger.info("Handling onboarding completion from iPhone")
+        
+        // Extract user profile data
+        let name = message["name"] as? String ?? "User"
+        let level = message["level"] as? String ?? "Intermediate"
+        let baselineTime = message["baselineTime"] as? Double ?? 5.0
+        let frequency = message["frequency"] as? Int ?? 3
+        let age = message["age"] as? Int ?? 25
+        let height = message["height"] as? Int ?? 70
+        let weight = message["weight"] as? Double ?? 170.0
+        let currentWeek = message["currentWeek"] as? Int ?? 1
+        let currentDay = message["currentDay"] as? Int ?? 1
+        
+        // Update Watch UserDefaults with synced data
+        UserDefaults.standard.set(true, forKey: "SC40_OnboardingCompleted")
+        UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
+        UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
+        UserDefaults.standard.set(frequency, forKey: "SC40_UserFrequency")
+        UserDefaults.standard.set(name, forKey: "SC40_UserName")
+        UserDefaults.standard.set(age, forKey: "SC40_UserAge")
+        UserDefaults.standard.set(height, forKey: "SC40_UserHeight")
+        UserDefaults.standard.set(weight, forKey: "SC40_UserWeight")
+        UserDefaults.standard.set(currentWeek, forKey: "SC40_CurrentWeek")
+        UserDefaults.standard.set(currentDay, forKey: "SC40_CurrentDay")
+        
+        // Also save to the standard keys for compatibility
+        UserDefaults.standard.set(level, forKey: "userLevel")
+        UserDefaults.standard.set(frequency, forKey: "trainingFrequency")
+        UserDefaults.standard.set(baselineTime, forKey: "personalBest40yd")
+        
+        // Update WatchAuthManager if available
+        Task { @MainActor in
+            if let authManager = try? WatchAuthManager.shared {
+                authManager.userProfile = WatchUserProfile(
+                    id: name,
+                    level: level,
+                    targetTime: baselineTime,
+                    authMethod: "iPhone Sync",
+                    joinDate: Date()
+                )
+                authManager.authState = .authenticated
+                authManager.isAuthenticated = true
+                authManager.showOnboarding = false
+            }
+        }
+        
+        let reply: [String: Any] = [
+            "type": "onboarding_sync_response",
+            "status": "success",
+            "message": "Onboarding data synced to Watch",
+            "watchProfile": [
+                "name": name,
+                "level": level,
+                "targetTime": baselineTime,
+                "frequency": frequency
+            ],
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        
+        replyHandler(reply)
+        
+        messagesReceived += 1
+        lastMessageReceived = "Onboarding sync - \(name) (\(level))"
+        
+        logger.info("✅ Onboarding data synced to Watch: \(name) - \(level) - \(baselineTime)s")
+        print("✅ Watch: Onboarding data received and saved - Level: \(level), Target: \(baselineTime)s")
+    }
+    
     // MARK: - Test Methods
     
     func sendTestMessageToPhone() {
@@ -198,6 +267,9 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             case "test_profile_sync":
                 self.handleProfileSync(message, replyHandler: replyHandler)
                 
+            case "onboarding_complete":
+                self.handleOnboardingComplete(message, replyHandler: replyHandler)
+                
             default:
                 self.logger.warning("Unknown message type: \(messageType)")
                 replyHandler([
@@ -216,10 +288,67 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             
             if let type = userInfo["type"] as? String {
                 self.lastMessageReceived = "Background: \(type)"
+                
+                // Handle onboarding data sent via background transfer
+                if type == "onboarding_complete" {
+                    self.handleOnboardingCompleteBackground(userInfo)
+                }
             } else {
                 self.lastMessageReceived = "Background data received"
             }
         }
+    }
+    
+    private func handleOnboardingCompleteBackground(_ userInfo: [String: Any]) {
+        logger.info("Processing onboarding data from background transfer")
+        
+        // Extract user profile data (same as message handler)
+        let name = userInfo["name"] as? String ?? "User"
+        let level = userInfo["level"] as? String ?? "Intermediate"
+        let baselineTime = userInfo["baselineTime"] as? Double ?? 5.0
+        let frequency = userInfo["frequency"] as? Int ?? 3
+        let age = userInfo["age"] as? Int ?? 25
+        let height = userInfo["height"] as? Int ?? 70
+        let weight = userInfo["weight"] as? Double ?? 170.0
+        let currentWeek = userInfo["currentWeek"] as? Int ?? 1
+        let currentDay = userInfo["currentDay"] as? Int ?? 1
+        
+        // Update Watch UserDefaults with synced data
+        UserDefaults.standard.set(true, forKey: "SC40_OnboardingCompleted")
+        UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
+        UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
+        UserDefaults.standard.set(frequency, forKey: "SC40_UserFrequency")
+        UserDefaults.standard.set(name, forKey: "SC40_UserName")
+        UserDefaults.standard.set(age, forKey: "SC40_UserAge")
+        UserDefaults.standard.set(height, forKey: "SC40_UserHeight")
+        UserDefaults.standard.set(weight, forKey: "SC40_UserWeight")
+        UserDefaults.standard.set(currentWeek, forKey: "SC40_CurrentWeek")
+        UserDefaults.standard.set(currentDay, forKey: "SC40_CurrentDay")
+        
+        // Also save to the standard keys for compatibility
+        UserDefaults.standard.set(level, forKey: "userLevel")
+        UserDefaults.standard.set(frequency, forKey: "trainingFrequency")
+        UserDefaults.standard.set(baselineTime, forKey: "personalBest40yd")
+        
+        // Update WatchAuthManager if available
+        Task { @MainActor in
+            if let authManager = try? WatchAuthManager.shared {
+                authManager.userProfile = WatchUserProfile(
+                    id: name,
+                    level: level,
+                    targetTime: baselineTime,
+                    authMethod: "iPhone Sync",
+                    joinDate: Date()
+                )
+                authManager.authState = .authenticated
+                authManager.isAuthenticated = true
+                authManager.showOnboarding = false
+            }
+        }
+        
+        lastMessageReceived = "Onboarding sync (BG) - \(name) (\(level))"
+        logger.info("✅ Background onboarding sync complete: \(name) - \(level) - \(baselineTime)s")
+        print("✅ Watch: Background onboarding data received - Level: \(level), Target: \(baselineTime)s")
     }
 }
 

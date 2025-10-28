@@ -490,31 +490,18 @@ extension TrainingView {
         
         print("🏃‍♂️ TrainingView: Found \(levelSessions.count) sessions for \(userLevel) level")
         
-        // Generate sessions for 12-week program based on frequency (days per week)
-        var sessionIndex = 0
+        // NEW: Generate 12-week program using proper weekly structure
+        // This ensures proper week progression and session variety
         for week in 1...12 {
-            for day in 1...frequency {
-                if sessionIndex < levelSessions.count {
-                    let librarySession = levelSessions[sessionIndex]
-                    let session = convertLibrarySessionToTrainingSession(
-                        librarySession: librarySession,
-                        week: week,
-                        day: day
-                    )
-                    sessions.append(session)
-                    sessionIndex += 1
-                } else {
-                    // Cycle through sessions if we need more than available
-                    let cycleIndex = sessionIndex % levelSessions.count
-                    let librarySession = levelSessions[cycleIndex]
-                    let session = convertLibrarySessionToTrainingSession(
-                        librarySession: librarySession,
-                        week: week,
-                        day: day
-                    )
-                    sessions.append(session)
-                    sessionIndex += 1
-                }
+            for (dayIndex, librarySession) in levelSessions.enumerated() {
+                if dayIndex >= frequency { break } // Only generate sessions for the user's frequency
+                
+                let session = convertLibrarySessionToTrainingSession(
+                    librarySession: librarySession,
+                    week: week,
+                    day: dayIndex + 1
+                )
+                sessions.append(session)
                 
                 // Safety limit to prevent excessive sessions
                 if sessions.count >= 84 { // 12 weeks × 7 days max
@@ -531,6 +518,7 @@ extension TrainingView {
     }
     
     // Get sessions appropriate for user level with proper progression and recovery sessions
+    // UPDATED: Now supports ALL frequencies (1-7 days) with proper session types
     private func getSessionsForUserLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
         let frequency = userProfileVM.profile.frequency
         
@@ -584,44 +572,135 @@ extension TrainingView {
             }.map { convertSessionLibraryToComprehensive($0) }
         }
         
-        // Add recovery sessions based on frequency
-        if frequency >= 4 {
-            // 4-7 days: Add actual recovery and active recovery sessions
-            let recoverySessions = getRecoverySessionsForLevel(userLevel)
-            let activeRecoverySessions = getActiveRecoverySessionsForLevel(userLevel)
+        // NEW: Add recovery sessions for ALL frequencies (1-7 days)
+        // This ensures proper rest and active recovery regardless of training frequency
+        let recoverySessions = getRecoverySessionsForLevel(userLevel)
+        let activeRecoverySessions = getActiveRecoverySessionsForLevel(userLevel)
+        
+        // Create weekly program structure based on frequency
+        return createWeeklyProgram(
+            sprintSessions: sprintSessions,
+            recoverySessions: recoverySessions,
+            activeRecoverySessions: activeRecoverySessions,
+            frequency: frequency,
+            userLevel: userLevel
+        )
+    }
+    
+    // NEW: Create proper weekly program structure for any frequency (1-7 days)
+    private func createWeeklyProgram(
+        sprintSessions: [ComprehensiveSprintSession],
+        recoverySessions: [ComprehensiveSprintSession],
+        activeRecoverySessions: [ComprehensiveSprintSession],
+        frequency: Int,
+        userLevel: String
+    ) -> [ComprehensiveSprintSession] {
+        
+        var weeklyProgram: [ComprehensiveSprintSession] = []
+        
+        // Define weekly patterns for each frequency
+        switch frequency {
+        case 1:
+            // 1 day: Sprint only
+            weeklyProgram = [sprintSessions[0]]
             
-            // Interleave recovery sessions with sprint sessions
-            var combinedSessions: [ComprehensiveSprintSession] = []
-            let totalSessions = sprintSessions.count
-            let recoveryInterval = max(3, totalSessions / (recoverySessions.count + activeRecoverySessions.count))
+        case 2:
+            // 2 days: Sprint + Active Recovery
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel)
+            ]
             
-            var sprintIndex = 0
-            var recoveryIndex = 0
-            var activeRecoveryIndex = 0
+        case 3:
+            // 3 days: Sprint + Active Recovery + Sprint
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count]
+            ]
             
-            for i in 0..<totalSessions + recoverySessions.count + activeRecoverySessions.count {
-                if i % recoveryInterval == 0 && i > 0 {
-                    // Add recovery or active recovery session
-                    if recoveryIndex < recoverySessions.count && i % (recoveryInterval * 2) == 0 {
-                        combinedSessions.append(recoverySessions[recoveryIndex])
-                        recoveryIndex += 1
-                    } else if activeRecoveryIndex < activeRecoverySessions.count {
-                        combinedSessions.append(activeRecoverySessions[activeRecoveryIndex])
-                        activeRecoveryIndex += 1
-                    }
-                }
-                
-                if sprintIndex < sprintSessions.count {
-                    combinedSessions.append(sprintSessions[sprintIndex])
-                    sprintIndex += 1
-                }
-            }
+        case 4:
+            // 4 days: Sprint + Active Recovery + Sprint + Recovery
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count],
+                recoverySessions.first ?? createRestSession(userLevel)
+            ]
             
-            return combinedSessions
-        } else {
-            // 1-3 days: Just return sprint sessions (rest days will be handled as generic "Rest" cards)
-            return sprintSessions
+        case 5:
+            // 5 days: Sprint + Active Recovery + Sprint + Recovery + Sprint
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count],
+                recoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[2 % sprintSessions.count]
+            ]
+            
+        case 6:
+            // 6 days: Sprint + Active Recovery + Sprint + Recovery + Sprint + Active Recovery
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count],
+                recoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[2 % sprintSessions.count],
+                activeRecoverySessions[1 % activeRecoverySessions.count]
+            ]
+            
+        case 7:
+            // 7 days: Full week with proper recovery distribution
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count],
+                recoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[2 % sprintSessions.count],
+                activeRecoverySessions[1 % activeRecoverySessions.count],
+                createRestSession(userLevel) // Full rest day
+            ]
+            
+        default:
+            // Fallback to 3-day pattern
+            weeklyProgram = [
+                sprintSessions[0],
+                activeRecoverySessions.first ?? createRestSession(userLevel),
+                sprintSessions[1 % sprintSessions.count]
+            ]
         }
+        
+        // Extend the weekly program to fill 12 weeks with proper progression
+        var fullProgram: [ComprehensiveSprintSession] = []
+        let weeksToGenerate = 12
+        
+        for week in 1...weeksToGenerate {
+            for (dayIndex, sessionTemplate) in weeklyProgram.enumerated() {
+                // Create a copy with proper week/day progression
+                var weeklySession = sessionTemplate
+                // Add week-based progression if it's a sprint session
+                if sessionTemplate.distanceYards > 0 {
+                    let sessionIndex = ((week - 1) * weeklyProgram.count + dayIndex) % sprintSessions.count
+                    weeklySession = sprintSessions[sessionIndex]
+                }
+                fullProgram.append(weeklySession)
+            }
+        }
+        
+        return fullProgram
+    }
+    
+    // NEW: Create a proper rest session for any level
+    private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSession {
+        return ComprehensiveSprintSession(
+            id: UUID().hashValue,
+            name: "Complete Rest Day",
+            distanceYards: 0,
+            reps: 0,
+            restSeconds: 0,
+            focus: "Full recovery and restoration",
+            level: userLevel
+        )
     }
     
     // Get recovery sessions for user level from SessionLibrary
@@ -1524,7 +1603,25 @@ struct TrainingSessionCard: View {
     }
     
     private func getLevelDisplay() -> String {
-        return userLevel.uppercased()
+        // First check UserDefaults for the most recent level selection
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? userLevel
+        
+        // Ensure proper level formatting for all supported levels
+        let normalizedLevel = savedLevel.lowercased()
+        switch normalizedLevel {
+        case "beginner":
+            return "BEGINNER"
+        case "intermediate":
+            return "INTERMEDIATE"
+        case "advanced":
+            return "ADVANCED"
+        case "elite":
+            return "ELITE"
+        default:
+            // Fallback: capitalize whatever level is provided
+            print("⚠️ Unknown level '\(savedLevel)', using as-is")
+            return savedLevel.uppercased()
+        }
     }
     
     // Helper functions for recovery sessions
@@ -2600,20 +2697,31 @@ extension TrainingView {
         print("   Current profile level: \(userProfileVM.profile.level)")
         
         // Update profile if UserDefaults has newer data
+        var profileUpdated = false
+        
         if let level = savedLevel, level != userProfileVM.profile.level {
             print("🔄 TrainingView: Updating profile level from '\(userProfileVM.profile.level)' to '\(level)'")
             userProfileVM.profile.level = level
+            profileUpdated = true
         }
         
         if savedFrequency > 0 && savedFrequency != userProfileVM.profile.frequency {
             print("🔄 TrainingView: Updating profile frequency from \(userProfileVM.profile.frequency) to \(savedFrequency)")
             userProfileVM.profile.frequency = savedFrequency
+            profileUpdated = true
         }
         
         if savedPB > 0 && savedPB != userProfileVM.profile.baselineTime {
             print("🔄 TrainingView: Updating profile baseline time from \(userProfileVM.profile.baselineTime) to \(savedPB)")
             userProfileVM.profile.baselineTime = savedPB
             userProfileVM.profile.personalBests["40yd"] = savedPB
+            profileUpdated = true
+        }
+        
+        // Regenerate sessions if profile was updated
+        if profileUpdated {
+            print("🔄 TrainingView: Profile updated, regenerating dynamic sessions...")
+            dynamicSessions = generateDynamicSessions()
         }
     }
 }

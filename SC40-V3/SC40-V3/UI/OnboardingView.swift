@@ -7,6 +7,7 @@ struct OnboardingView: View {
     var onComplete: () -> Void
     
     @StateObject private var workflowManager = TrainingPreferencesWorkflow()
+    @StateObject private var watchConnectivity = WatchConnectivityManager.shared
     
     @State private var gender = "Male"
     @State private var age = 25
@@ -624,6 +625,11 @@ struct OnboardingView: View {
                     daysPerWeek: daysAvailable,
                     userProfileVM: userProfileVM
                 )
+                
+                // Sync onboarding data to Watch
+                print("🔄 Syncing onboarding data to Apple Watch...")
+                await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
+                print("✅ Onboarding data synced to Apple Watch")
                 
                 // Complete onboarding after workflow finishes
                 await MainActor.run {

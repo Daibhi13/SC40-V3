@@ -12,13 +12,94 @@ Comprehensive testing plan for SC40-V3 sprint training app with AI coaching feat
 **Duration:** 4-6 hours  
 **Team:** Development + QA  
 
-### 1.1 Core View Testing
-- [ ] **WelcomeView** - Onboarding flow and user registration
-- [ ] **TrainingView** - Main workout interface and session management
-- [ ] **UserProfileView** - Profile setup and preferences
-- [ ] **SprintTimerProWorkoutView** - Timer functionality and workout tracking
-- [ ] **MainProgramWorkoutView** - 12-week program interface
-- [ ] **MainProgramWorkoutWatchView** - Watch companion app
+### 1.1 Core View Testing - **COMPREHENSIVE SUCCESS PLAN**
+**Status:** ❌ Failed - Requires focused execution tomorrow  
+**Priority:** 🔴 CRITICAL - Production blocker  
+**Duration:** 4-6 hours with structured approach  
+
+#### **Pre-Testing Setup (30 minutes)**
+- [ ] Clean build both iPhone and Watch targets (delete derived data)
+- [ ] Ensure iPhone and Apple Watch paired and connected
+- [ ] Reset UserDefaults and onboarding state for fresh testing
+- [ ] Enable detailed console logging for debugging
+
+#### **Recent Critical Fixes to Verify:**
+- [ ] ✅ **TrainingView Level Display**: Shows correct user level (not "INTERMEDIATE" when "Beginner" selected)
+- [ ] ✅ **Week Progression Fix**: Cards show Week 1, 2, 3... (not all "Week 1")  
+- [ ] ✅ **Watch Onboarding Sync**: iPhone onboarding data syncs to Apple Watch
+- [ ] ✅ **Sprint Timer Pro Autonomous Flow**: New phase-based workout system
+- [ ] ✅ **Universal Frequency Support**: All 1-7 day options with proper recovery sessions
+
+#### **Core Views Testing Checklist:**
+
+##### **1. WelcomeView - Onboarding Flow** 🔴 **HIGH PRIORITY**
+- [ ] Fresh install launches to WelcomeView
+- [ ] User registration (email/password) works
+- [ ] Social login (Apple/Google) integration
+- [ ] All onboarding steps display correctly
+- [ ] Level, frequency, personal best inputs work
+- [ ] UserDefaults saves onboarding choices
+- [ ] **CRITICAL**: Console shows "🔄 Syncing onboarding data to Apple Watch..."
+- [ ] **CRITICAL**: Console shows "✅ Onboarding data synced to Apple Watch"
+- [ ] Watch receives and processes onboarding data
+- [ ] Smooth transition to main app
+
+##### **2. TrainingView - Main Workout Interface** 🔴 **HIGH PRIORITY**
+- [ ] **Level Display**: Shows correct user level (Beginner/Intermediate/Advanced/Elite)
+- [ ] **Week Progression**: Cards show Week 1, Week 2, Week 3... (not duplicate Week 1)
+- [ ] **Frequency Support**: Test all 1-7 day options work
+- [ ] **Recovery Sessions**: Proper rest days and active recovery included
+- [ ] **Session Variety**: Different sessions for different fitness levels
+- [ ] Navigation and card interactions work smoothly
+- [ ] **Test Data**: Beginner/3-day, Intermediate/5-day, Advanced/7-day
+
+##### **3. UserProfileView - Profile Setup** 🟡 **HIGH PRIORITY**
+- [ ] Displays correct user information from onboarding
+- [ ] Edit functionality works (level, frequency, personal best)
+- [ ] Changes sync between iPhone and Watch
+- [ ] Input validation prevents invalid data
+- [ ] Save/Cancel handling works properly
+- [ ] Visual feedback for all actions
+
+##### **4. SprintTimerProWorkoutView - Autonomous Flow** 🔴 **HIGH PRIORITY**
+- [ ] **Manual Picker Inputs**: Distance, sets, rest time selection
+- [ ] **Autonomous Phase Flow**: Warmup → Stretch → Drills → Strides → Sprints → Cooldown
+- [ ] **Phase Indicators**: Progress dots, countdown timers, phase colors
+- [ ] **Voice Announcements**: "Starting warm-up. Get your body ready."
+- [ ] **Sprint Execution**: Custom sprint sets with rest timers
+- [ ] **Completion**: "COMPLETE! Great Job!" message
+- [ ] **Test Flow**: 40yd × 6 sets × 2min rest through full autonomous workflow
+
+##### **5. MainProgramWorkoutView - 12-Week Program** 🟡 **MEDIUM PRIORITY**
+- [ ] 12-week program sessions load correctly
+- [ ] Week/day navigation works
+- [ ] Session details display properly
+- [ ] Workout execution flows correctly
+- [ ] Progress tracking saves properly
+
+##### **6. MainProgramWorkoutWatchView - Watch Companion** 🔴 **HIGH PRIORITY**
+- [ ] **Data Sync**: Receives session data from iPhone
+- [ ] **Autonomous Systems**: HealthKit, GPS, Interval Manager status indicators
+- [ ] **Phase Progression**: Workout phases advance automatically
+- [ ] **User Interaction**: Touch controls work properly
+- [ ] **Sync Back**: Workout data syncs back to iPhone
+- [ ] **Battery Optimization**: No excessive power drain
+
+#### **Success Criteria:**
+```
+✅ All 6 core views load without crashes
+✅ End-to-end flow: Onboarding → TrainingView → Watch sync works
+✅ Level display shows correct user selection
+✅ Sprint Timer Pro autonomous flow completes successfully  
+✅ Watch app receives and displays iPhone data
+✅ All user interactions work as expected
+```
+
+#### **Failure Escalation:**
+- **🔴 Critical**: Any view crashes or fails to load
+- **🟡 High**: Data sync issues between iPhone and Watch  
+- **🟢 Medium**: UI display issues or incorrect data
+- **⚪ Low**: Minor visual inconsistencies
 
 ### 1.2 Navigation Testing
 - [ ] Tab navigation between main sections

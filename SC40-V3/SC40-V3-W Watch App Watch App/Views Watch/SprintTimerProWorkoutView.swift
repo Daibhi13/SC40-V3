@@ -18,6 +18,7 @@ struct SprintTimerProWorkoutView: View {
     @State private var isWorkoutActive = false
     @State private var workoutTimer: Timer?
     @State private var elapsedTime: TimeInterval = 0
+    @State private var currentPhase: WorkoutPhase = .warmup
     @State private var restTimer: Timer?
     @State private var restTimeRemaining: TimeInterval = 0
     @State private var isResting = false
@@ -26,6 +27,16 @@ struct SprintTimerProWorkoutView: View {
     @State private var lastSprintTime: TimeInterval = 0
     @State private var avgSprintTime: TimeInterval = 0
     @State private var sprintTimes: [TimeInterval] = []
+    
+    enum WorkoutPhase: String, CaseIterable {
+        case warmup = "Warm-up"
+        case stretch = "Stretch"
+        case drills = "Drills"
+        case strides = "Strides"
+        case sprints = "Sprints"
+        case cooldown = "Cool-down"
+        case complete = "Complete"
+    }
     
     private let speechSynth = AVSpeechSynthesizer()
     private let colorTheme: ColorTheme = .apple
@@ -52,6 +63,49 @@ struct SprintTimerProWorkoutView: View {
     
     // Note: PremiumVoiceCoach, WorkoutMusicManager, and SubscriptionManager 
     // are iOS-only and not available in Watch target
+    
+    // MARK: - Computed Properties for Autonomous Flow
+    private var totalSets: Int {
+        return sets
+    }
+    
+    private var currentPhaseProgress: Double {
+        switch currentPhase {
+        case .warmup:
+            return min(elapsedTime / 180.0, 1.0) // 3 minutes warmup
+        case .stretch:
+            return min(elapsedTime / 120.0, 1.0) // 2 minutes stretch
+        case .drills:
+            return min(elapsedTime / 300.0, 1.0) // 5 minutes drills
+        case .strides:
+            return min(elapsedTime / 180.0, 1.0) // 3 minutes strides
+        case .sprints:
+            return Double(currentSet) / Double(totalSets)
+        case .cooldown:
+            return min(elapsedTime / 300.0, 1.0) // 5 minutes cooldown
+        case .complete:
+            return 1.0
+        }
+    }
+    
+    private var phaseTimeRemaining: TimeInterval {
+        switch currentPhase {
+        case .warmup:
+            return max(180.0 - elapsedTime, 0)
+        case .stretch:
+            return max(120.0 - elapsedTime, 0)
+        case .drills:
+            return max(300.0 - elapsedTime, 0)
+        case .strides:
+            return max(180.0 - elapsedTime, 0)
+        case .sprints:
+            return restTimeRemaining
+        case .cooldown:
+            return max(300.0 - elapsedTime, 0)
+        case .complete:
+            return 0
+        }
+    }
     
     var body: some View {
         ZStack {
@@ -159,6 +213,13 @@ struct SprintTimerProWorkoutView: View {
             // Add top padding to avoid status bar time overlap
             topStatsRow
                 .padding(.top, 8)
+            
+            // Autonomous Systems Status
+            autonomousSystemsStatus
+            
+            // Phase Indicator
+            phaseIndicator
+            
             Divider().background(Color.gray.opacity(0.4))
             mainModule
             Divider().background(Color.gray.opacity(0.4))
@@ -204,34 +265,74 @@ struct SprintTimerProWorkoutView: View {
         }
     }
     
-    // MARK: - Main Module
+    // MARK: - Main Module (Phase-Aware Display)
     private var mainModule: some View {
         VStack(spacing: 4) {
-            if isResting {
-                // Rest Timer Display
+            // Phase-specific content
+            switch currentPhase {
+            case .warmup, .stretch, .drills, .strides, .cooldown:
+                // Preparation phases
                 VStack(spacing: 8) {
-                    Text("REST")
+                    Image(systemName: getPhaseIcon())
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(phaseColor(for: currentPhase))
+                    
+                    Text(getMotivationalText())
                         .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(.blue)
+                        .foregroundColor(phaseColor(for: currentPhase))
                     
-                    Text(formatTime(restTimeRemaining))
+                    Text(formatTime(phaseTimeRemaining))
                         .font(.system(size: 36, weight: .black, design: .monospaced))
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
                     
-                    ProgressView(value: 1.0 - (restTimeRemaining / Double(restMinutes * 60)))
-                        .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                    ProgressView(value: currentPhaseProgress)
+                        .progressViewStyle(LinearProgressViewStyle(tint: phaseColor(for: currentPhase)))
                         .scaleEffect(y: 2)
                 }
-            } else {
-                // Sprint Timer Display
+                
+            case .sprints:
+                if isResting {
+                    // Rest Timer Display
+                    VStack(spacing: 8) {
+                        Text("REST")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.blue)
+                        
+                        Text(formatTime(restTimeRemaining))
+                            .font(.system(size: 36, weight: .black, design: .monospaced))
+                            .foregroundColor(.blue)
+                        
+                        ProgressView(value: 1.0 - (restTimeRemaining / Double(restMinutes * 60)))
+                            .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                            .scaleEffect(y: 2)
+                    }
+                } else {
+                    // Sprint Timer Display
+                    VStack(spacing: 8) {
+                        Text(isWorkoutActive ? "SPRINT" : "READY")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(isWorkoutActive ? .green : .yellow)
+                        
+                        Text(formatTime(elapsedTime))
+                            .font(.system(size: 42, weight: .black, design: .monospaced))
+                            .foregroundColor(.white)
+                    }
+                }
+                
+            case .complete:
+                // Workout Complete Display
                 VStack(spacing: 8) {
-                    Text(isWorkoutActive ? "SPRINT" : "READY")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundColor(isWorkoutActive ? .green : .yellow)
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 32, weight: .bold))
+                        .foregroundColor(.green)
                     
-                    Text(formatTime(elapsedTime))
-                        .font(.system(size: 42, weight: .black, design: .monospaced))
-                        .foregroundColor(.white)
+                    Text("COMPLETE!")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.green)
+                    
+                    Text("Great Job!")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.gray)
                 }
             }
         }
@@ -239,9 +340,24 @@ struct SprintTimerProWorkoutView: View {
         .padding(.vertical, 6)
         .contentShape(Rectangle())
         .onTapGesture {
+            handleMainModuleTap()
+        }
+    }
+    
+    private func handleMainModuleTap() {
+        switch currentPhase {
+        case .sprints:
             if !isResting {
                 toggleWorkout()
             }
+        case .warmup, .stretch, .drills, .strides, .cooldown:
+            // Allow manual phase advancement for preparation phases
+            if !isWorkoutActive {
+                advanceToNextPhase()
+            }
+        case .complete:
+            // Dismiss workout view
+            dismiss()
         }
     }
     
@@ -436,6 +552,11 @@ struct SprintTimerProWorkoutView: View {
             
             // Update WorkoutWatchViewModel
             sprintWorkoutVM.currentRep = currentSet
+        } else {
+            // All sprints completed - advance to cooldown phase
+            if currentPhase == .sprints {
+                advanceToNextPhase()
+            }
         }
     }
     
@@ -521,6 +642,131 @@ struct SprintTimerProWorkoutView: View {
         
         // Start premium entertainment systems
         startPremiumSystems(session: session)
+        
+        // Start autonomous phase progression
+        startPhaseProgression()
+    }
+    
+    // MARK: - Autonomous Phase Progression
+    private func startPhaseProgression() {
+        print("🔄 Starting autonomous phase progression...")
+        
+        // Start with warmup phase
+        currentPhase = .warmup
+        elapsedTime = 0
+        
+        // Start the main workout timer for phase progression
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            self.updatePhaseProgression()
+        }
+    }
+    
+    private func updatePhaseProgression() {
+        elapsedTime += 1.0
+        
+        // Check for automatic phase transitions
+        switch currentPhase {
+        case .warmup:
+            if elapsedTime >= 180 { // 3 minutes
+                advanceToNextPhase()
+            }
+        case .stretch:
+            if elapsedTime >= 120 { // 2 minutes (reset elapsedTime on phase change)
+                advanceToNextPhase()
+            }
+        case .drills:
+            if elapsedTime >= 300 { // 5 minutes
+                advanceToNextPhase()
+            }
+        case .strides:
+            if elapsedTime >= 180 { // 3 minutes
+                advanceToNextPhase()
+            }
+        case .sprints:
+            // Sprint phase managed by user interaction and rest timers
+            break
+        case .cooldown:
+            if elapsedTime >= 300 { // 5 minutes
+                advanceToNextPhase()
+            }
+        case .complete:
+            // Workout finished
+            break
+        }
+    }
+    
+    private func advanceToNextPhase() {
+        let phases: [WorkoutPhase] = [.warmup, .stretch, .drills, .strides, .sprints, .cooldown, .complete]
+        
+        if let currentIndex = phases.firstIndex(of: currentPhase),
+           currentIndex < phases.count - 1 {
+            
+            let nextPhase = phases[currentIndex + 1]
+            
+            withAnimation(.easeInOut(duration: 0.5)) {
+                currentPhase = nextPhase
+            }
+            
+            // Reset elapsed time for the new phase
+            elapsedTime = 0
+            
+            // Provide haptic and audio feedback
+            WKInterfaceDevice.current().play(.notification)
+            announcePhaseTransition(to: nextPhase)
+            
+            print("🔄 Advanced to phase: \(nextPhase.rawValue)")
+            
+            // Handle special phase transitions
+            handlePhaseTransition(to: nextPhase)
+        }
+    }
+    
+    private func handlePhaseTransition(to phase: WorkoutPhase) {
+        switch phase {
+        case .sprints:
+            // Initialize sprint tracking
+            currentSet = 1
+            isResting = false
+            restTimeRemaining = Double(restMinutes * 60)
+            print("🏃‍♂️ Entering sprint phase - \(sets) sets of \(distance)yd")
+            
+        case .cooldown:
+            // Ensure all sprints are completed
+            print("🧘‍♂️ Entering cooldown phase")
+            
+        case .complete:
+            // Workout finished
+            endAutonomousWorkout()
+            
+        default:
+            break
+        }
+    }
+    
+    private func announcePhaseTransition(to phase: WorkoutPhase) {
+        let announcement: String
+        
+        switch phase {
+        case .warmup:
+            announcement = "Starting warm-up. Get your body ready."
+        case .stretch:
+            announcement = "Time to stretch. Prepare your muscles."
+        case .drills:
+            announcement = "Drill time. Focus on technique."
+        case .strides:
+            announcement = "Build-up strides. Increase your pace gradually."
+        case .sprints:
+            announcement = "Sprint time! Give it everything you've got."
+        case .cooldown:
+            announcement = "Cool down time. Well done on completing your sprints."
+        case .complete:
+            announcement = "Workout complete! Great job today."
+        }
+        
+        let utterance = AVSpeechUtterance(string: announcement)
+        utterance.rate = 0.5
+        utterance.volume = 0.8
+        speechSynth.speak(utterance)
     }
     
     private func startPremiumSystems(session: TrainingSession) {
@@ -627,9 +873,154 @@ struct SprintTimerProWorkoutView: View {
         // In a real implementation, these would be @State variables
         print("🎯 SprintTimer Pro picker data updated: \(proPickerData.selectedDistance)yd x\(proPickerData.selectedReps) reps")
     }
+    
+    // MARK: - Autonomous Systems Display
+    private var autonomousSystemsStatus: some View {
+        HStack(spacing: 8) {
+            // HealthKit Status
+            StatusIndicator(
+                icon: "heart.fill",
+                isActive: workoutManager.isWorkoutActive,
+                color: .red
+            )
+            
+            // GPS Status
+            StatusIndicator(
+                icon: "location.fill",
+                isActive: gpsManager.isTracking,
+                color: .green
+            )
+            
+            // Interval Manager Status
+            StatusIndicator(
+                icon: "timer",
+                isActive: intervalManager.isActive,
+                color: .blue
+            )
+            
+            Spacer()
+            
+            // Current Phase Display
+            Text(currentPhase.rawValue.uppercased())
+                .font(.system(size: 10, weight: .bold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(phaseColor(for: currentPhase))
+                )
+        }
+        .padding(.horizontal, 4)
+    }
+    
+    // MARK: - Phase Indicator
+    private var phaseIndicator: some View {
+        VStack(spacing: 4) {
+            // Current Phase Display
+            HStack {
+                Text(currentPhase.rawValue)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                if currentPhase != .complete {
+                    Text(formatTime(phaseTimeRemaining))
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            // Progress Dots
+            HStack(spacing: 4) {
+                ForEach(WorkoutPhase.allCases.filter { $0 != .complete }, id: \.self) { phase in
+                    Circle()
+                        .fill(phase == currentPhase ? phaseColor(for: phase) : Color.gray.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                        .scaleEffect(phase == currentPhase ? 1.2 : 1.0)
+                        .animation(.easeInOut(duration: 0.3), value: currentPhase)
+                }
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+    }
+    
+    // MARK: - Helper Functions
+    private func phaseColor(for phase: WorkoutPhase) -> Color {
+        switch phase {
+        case .warmup:
+            return .orange
+        case .stretch:
+            return .purple
+        case .drills:
+            return .yellow
+        case .strides:
+            return .cyan
+        case .sprints:
+            return .red
+        case .cooldown:
+            return .blue
+        case .complete:
+            return .green
+        }
+    }
+    
+    private func getMotivationalText() -> String {
+        switch currentPhase {
+        case .warmup:
+            return "WARMING UP"
+        case .stretch:
+            return "STRETCHING"
+        case .drills:
+            return "DRILL TIME"
+        case .strides:
+            return "BUILD UP"
+        case .sprints:
+            return "SPRINT \(currentSet)/\(totalSets)"
+        case .cooldown:
+            return "COOLING DOWN"
+        case .complete:
+            return "COMPLETE!"
+        }
+    }
+    
+    private func getPhaseIcon() -> String {
+        switch currentPhase {
+        case .warmup:
+            return "flame.fill"
+        case .stretch:
+            return "figure.flexibility"
+        case .drills:
+            return "target"
+        case .strides:
+            return "speedometer"
+        case .sprints:
+            return "bolt.fill"
+        case .cooldown:
+            return "snowflake"
+        case .complete:
+            return "checkmark.circle.fill"
+        }
+    }
 }
 
 // MARK: - Supporting Views
+
+// Status Indicator Component
+struct StatusIndicator: View {
+    let icon: String
+    let isActive: Bool
+    let color: Color
+    
+    var body: some View {
+        Image(systemName: icon)
+            .font(.system(size: 10, weight: .bold))
+            .foregroundColor(isActive ? color : .gray)
+            .frame(width: 12, height: 12)
+    }
+}
 struct SprintControlWatchView: View {
     @Binding var isWorkoutActive: Bool
     let currentSet: Int

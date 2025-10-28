@@ -97,6 +97,11 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         locationManager.activityType = .fitness
         locationManager.distanceFilter = 1
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        
+        // Request location permission if not already granted
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
 
         #if canImport(WatchConnectivity)
         if WCSession.isSupported() {
@@ -431,13 +436,98 @@ extension WorkoutWatchViewModel: CLLocationManagerDelegate {
             }
         }
     }
+    
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        Task { @MainActor in
+            print("❌ GPS error: \(error.localizedDescription)")
+            
+            // Handle specific location errors
+            if let clError = error as? CLError {
+                switch clError.code {
+                case .denied:
+                    print("🚫 Location access denied - check privacy settings")
+                case .locationUnknown:
+                    print("📍 Location unknown - GPS signal weak")
+                case .network:
+                    print("🌐 Network error - check connectivity")
+                default:
+                    print("📍 Location error code: \(clError.code.rawValue)")
+                }
+            }
+        }
+    }
+    
+    nonisolated func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        Task { @MainActor in
+            switch status {
+            case .notDetermined:
+                print("📍 Location authorization not determined")
+                manager.requestWhenInUseAuthorization()
+            case .denied, .restricted:
+                print("🚫 Location access denied or restricted")
+            case .authorizedWhenInUse, .authorizedAlways:
+                print("✅ Location access authorized")
+                if isRunning {
+                    manager.startUpdatingLocation()
+                }
+            @unknown default:
+                print("📍 Unknown location authorization status")
+            }
+        }
+    }
 }
 
 // MARK: - WCSessionDelegate
 #if canImport(WatchConnectivity)
 extension WorkoutWatchViewModel: WCSessionDelegate {
-    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {}
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        Task { @MainActor in
+            if let error = error {
+                print("❌ WCSession activation failed: \(error.localizedDescription)")
+            } else {
+                print("✅ WCSession activated with state: \(activationState.rawValue)")
+            }
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        Task { @MainActor in
+            print("📱 Received message from iPhone: \(message)")
+            // Handle incoming messages from iPhone
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        Task { @MainActor in
+            print("📱 Received message with reply handler from iPhone: \(message)")
+            
+            // Send immediate acknowledgment to prevent timeout
+            replyHandler([
+                "status": "received",
+                "timestamp": Date().timeIntervalSince1970,
+                "source": "WorkoutWatchViewModel"
+            ])
+            
+            // Handle the message content
+            if let type = message["type"] as? String {
+                switch type {
+                case "workout_start":
+                    print("🏃‍♂️ iPhone requested workout start")
+                case "workout_stop":
+                    print("🛑 iPhone requested workout stop")
+                default:
+                    print("ℹ️ Unknown message type: \(type)")
+                }
+            }
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        Task { @MainActor in
+            print("📦 Received background data from iPhone: \(userInfo)")
+            // Handle background data transfer
+        }
+    }
 }
 #endif
 

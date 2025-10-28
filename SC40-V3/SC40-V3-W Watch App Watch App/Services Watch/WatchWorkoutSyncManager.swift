@@ -254,6 +254,11 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
             print("📊 RepLog: Session data sent successfully")
         } errorHandler: { error in
             print("❌ RepLog: Failed to send session data - \(error.localizedDescription)")
+            print("🔄 RepLog: Attempting background transfer as fallback...")
+            
+            // Use background transfer as fallback for timeout errors
+            WCSession.default.transferUserInfo(sessionMessage)
+            print("📤 RepLog: Session data queued for background transfer")
         }
         #endif
     }

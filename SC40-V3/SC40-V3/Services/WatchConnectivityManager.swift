@@ -413,26 +413,30 @@ extension WatchConnectivityManager: WCSessionDelegate {
         Task { @MainActor in
             logger.info("Received message from Watch: \(message)")
             
+            // Send immediate acknowledgment to prevent timeout
+            replyHandler(["status": "received", "timestamp": Date().timeIntervalSince1970])
+            
             // Handle messages from Watch (workout results, status updates, etc.)
             if let type = message["type"] as? String {
                 switch type {
                 case "workout_completed":
                     handleWorkoutCompletion(message)
                 case "sync_request":
-                    handleSyncRequest(replyHandler)
+                    // sync_request needs special handling as it uses replyHandler for data
+                    logger.warning("sync_request received but reply already sent - use background transfer instead")
                 case "status_update":
                     handleStatusUpdate(message)
                 case "rep_completed":
                     handleRepCompleted(message)
                 case "session_completed":
-                    handleSessionCompleted(message)
+                    // Process session completion asynchronously to prevent timeout
+                    Task.detached { [weak self] in
+                        await self?.handleSessionCompletedAsync(message)
+                    }
                 default:
                     logger.warning("Unknown message type from Watch: \(type)")
                 }
             }
-            
-            // Send acknowledgment
-            replyHandler(["status": "received", "timestamp": Date().timeIntervalSince1970])
         }
     }
     
@@ -496,6 +500,21 @@ extension WatchConnectivityManager: WCSessionDelegate {
         
         // Also integrate with existing HistoryManager
         integrateSessionWithHistory(message)
+    }
+    
+    private func handleSessionCompletedAsync(_ message: [String: Any]) async {
+        await MainActor.run {
+            logger.info("Processing session completion from Watch asynchronously")
+            
+            // Forward to LiveRepLogManager
+            NotificationCenter.default.post(
+                name: .sessionDataReceived,
+                object: message
+            )
+            
+            // Also integrate with existing HistoryManager
+            integrateSessionWithHistory(message)
+        }
     }
     
     private func integrateSessionWithHistory(_ sessionData: [String: Any]) {

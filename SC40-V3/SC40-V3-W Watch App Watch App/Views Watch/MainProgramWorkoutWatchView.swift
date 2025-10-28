@@ -401,40 +401,26 @@ struct MainProgramWorkoutWatchView: View {
     }
     
     private var realTimeMetrics: some View {
-        VStack(spacing: 8) {
-            // Current Phase Display (matches phase indicator)
-            VStack(spacing: 4) {
-                Text(currentPhase.rawValue.uppercased())
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(phaseColor(for: currentPhase))
-                    .tracking(1)
-                
-                // Show what's expected in this phase
-                Text(phaseInstructions(for: currentPhase))
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundColor(.white.opacity(0.8))
-                    .multilineTextAlignment(.center)
+        // Clean Distance and Pace Display
+        HStack(spacing: 20) {
+            VStack(spacing: 2) {
+                Text(String(format: "%.0f", gpsManager.currentDistance))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                Text("YDS")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(0.5)
             }
             
-            // Distance and Pace
-            HStack(spacing: 16) {
-                VStack {
-                    Text(String(format: "%.0f", gpsManager.currentDistance))
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                    Text("YDS")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                
-                VStack {
-                    Text(String(format: "%.1f", gpsManager.currentPace))
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.white)
-                    Text("MIN/MI")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                }
+            VStack(spacing: 2) {
+                Text(String(format: "%.1f", gpsManager.currentPace))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                Text("MIN/MI")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(0.5)
             }
         }
         .padding(.vertical, 8)
@@ -464,25 +450,43 @@ struct MainProgramWorkoutWatchView: View {
     }
     
     private var phaseIndicator: some View {
-        HStack(spacing: 8) {
-            ForEach(WorkoutPhase.allCases, id: \.self) { phase in
-                VStack(spacing: 2) {
+        VStack(spacing: 8) {
+            // Current Phase Display - Large and Clear
+            VStack(spacing: 4) {
+                Text(currentPhase.rawValue.uppercased())
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundColor(phaseColor(for: currentPhase))
+                    .tracking(1.2)
+                
+                Text(phaseInstructions(for: currentPhase))
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+            }
+            .padding(.vertical, 8)
+            .padding(.horizontal, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(phaseColor(for: currentPhase).opacity(0.15))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(phaseColor(for: currentPhase).opacity(0.4), lineWidth: 1)
+                    )
+            )
+            
+            // Progress Dots - Clean and Minimal
+            HStack(spacing: 6) {
+                ForEach(Array(WorkoutPhase.allCases.enumerated()), id: \.element) { index, phase in
                     Circle()
-                        .fill(currentPhase == phase ? Color.green : Color.white.opacity(0.3))
-                        .frame(width: 8, height: 8)
-                    
-                    Text(phase.rawValue)
-                        .font(.system(size: 8, weight: .medium))
-                        .foregroundColor(currentPhase == phase ? .green : .white.opacity(0.5))
+                        .fill(currentPhase == phase ? phaseColor(for: phase) : Color.white.opacity(0.3))
+                        .frame(width: currentPhase == phase ? 10 : 6, height: currentPhase == phase ? 10 : 6)
+                        .scaleEffect(currentPhase == phase ? 1.2 : 1.0)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentPhase)
                 }
             }
+            .padding(.horizontal, 16)
         }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.white.opacity(0.1))
-        )
     }
     
     private var currentSetDisplay: some View {
@@ -560,22 +564,23 @@ struct MainProgramWorkoutWatchView: View {
                 }
                 
             default:
-                // Other phases - show phase status and progress
-                VStack(spacing: 4) {
-                    Text("STATUS")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .tracking(1)
+                // Other phases - show motivational message and progress
+                VStack(spacing: 6) {
+                    Text(phaseMotivationalText(for: currentPhase))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
                     
-                    Text("ACTIVE")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(phaseColor(for: currentPhase))
-                        .tracking(0.5)
-                    
-                    // Show phase progress or remaining time
-                    Text(phaseProgressText(for: currentPhase))
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundColor(.white.opacity(0.6))
+                    // Phase progress indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: phaseIcon(for: currentPhase))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(phaseColor(for: currentPhase))
+                        
+                        Text(phaseProgressText(for: currentPhase))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
                 }
             }
         }
@@ -932,6 +937,42 @@ struct MainProgramWorkoutWatchView: View {
             return "Maximum effort"
         case .cooldown:
             return "Recovery time"
+        }
+    }
+    
+    /// Returns motivational text for each phase
+    private func phaseMotivationalText(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Get your body ready"
+        case .stretch:
+            return "Prepare your muscles"
+        case .drills:
+            return "Perfect your form"
+        case .strides:
+            return "Build momentum"
+        case .sprints:
+            return "Give it everything!"
+        case .cooldown:
+            return "Well done, recover"
+        }
+    }
+    
+    /// Returns appropriate icon for each phase
+    private func phaseIcon(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "flame.fill"
+        case .stretch:
+            return "figure.flexibility"
+        case .drills:
+            return "figure.run"
+        case .strides:
+            return "speedometer"
+        case .sprints:
+            return "bolt.fill"
+        case .cooldown:
+            return "leaf.fill"
         }
     }
 }

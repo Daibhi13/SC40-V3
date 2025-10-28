@@ -86,7 +86,13 @@ class WatchWorkoutManager: NSObject, ObservableObject {
             return
         }
         
-        print("🏃‍♂️ Starting autonomous workout session...")
+        // Clean up any existing sessions first
+        if workoutSession != nil {
+            print("🧹 Cleaning up existing session before starting new one")
+            cleanupWorkoutSession()
+        }
+        
+        print("🏃‍♂️ Creating new workout session...")
         
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = type
@@ -179,6 +185,27 @@ class WatchWorkoutManager: NSObject, ObservableObject {
     }
     
     private func cleanupWorkoutSession() {
+        print("🧹 Cleaning up workout session...")
+        
+        // Stop and end workout session properly
+        if let session = workoutSession {
+            if session.state == .running {
+                session.end()
+                print("🛑 Workout session ended")
+            }
+        }
+        
+        // Stop workout builder
+        if let builder = workoutBuilder {
+            builder.endCollection(withEnd: Date()) { [weak self] success, error in
+                if let error = error {
+                    print("❌ Error ending workout builder: \(error.localizedDescription)")
+                } else {
+                    print("✅ Workout builder ended successfully")
+                }
+            }
+        }
+        
         isWorkoutActive = false
         workoutSession = nil
         workoutBuilder = nil
@@ -193,6 +220,8 @@ class WatchWorkoutManager: NSObject, ObservableObject {
         currentPace = 0.0
         currentDistance = 0.0
         workoutDuration = 0
+        
+        print("✅ Workout session cleanup completed")
         
         // Clear data arrays
         heartRateData.removeAll()

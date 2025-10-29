@@ -471,8 +471,14 @@ extension TrainingView {
         
         // Use AlgorithmicSessionService as the backend engine (no UI)
         let algorithmicService = AlgorithmicSessionService.shared
+        let comprehensiveSystem = ComprehensiveSessionSystem.shared
         
         print("🤖 TrainingView: Using algorithmic backend engine for session generation")
+        print("📚 TrainingView: Enabling comprehensive session system with full library")
+        
+        // Enable automated session expansion
+        let expandedSessions = comprehensiveSystem.expandLibraryAutomatically()
+        print("🚀 TrainingView: Generated \(expandedSessions.count) new automated sessions")
         
         // Generate sessions using algorithmic intelligence
         let algorithmicSessions = algorithmicService.generateOptimizedSessions(

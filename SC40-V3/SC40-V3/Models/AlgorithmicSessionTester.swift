@@ -178,7 +178,7 @@ struct AlgorithmicSessionTester {
             print("    ✅ Sprint sessions: \(fundamentalCount) (should be high for consistency)")
             
         case "High Strength":
-            let powerCount = sessionTypeCounts["Sprint"] ?? 0 // Simplified - would check for plyometric notes
+            let _ = sessionTypeCounts["Sprint"] ?? 0 // Simplified - would check for plyometric notes
             print("    ✅ Power-focused sessions detected (strength optimization)")
             
         default:

@@ -65,7 +65,7 @@ class AlgorithmicSessionService: ObservableObject {
     ) -> [AlgorithmicSessionGenerator.AlgorithmicSessionType] {
         
         // Use Algorithms framework for intelligent session selection
-        let availableTypes = AlgorithmicSessionGenerator.AlgorithmicSessionType.allCases
+        _ = AlgorithmicSessionGenerator.AlgorithmicSessionType.allCases
         
         // Apply algorithmic logic based on user progression
         var sessionTypes: [AlgorithmicSessionGenerator.AlgorithmicSessionType] = []

@@ -48,7 +48,7 @@ class PerformanceDataCollector: ObservableObject {
         // This would integrate with the actual timing system
         var times: [Double] = []
         
-        for sprint in session.sprints {
+        for _ in session.sprints {
             // Simulate extracting times - in real implementation would get from GPS/timing data
             let baseTime = 5.0 // Base 40-yard time
             let variance = Double.random(in: -0.3...0.3)

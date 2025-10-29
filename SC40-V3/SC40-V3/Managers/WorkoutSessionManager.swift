@@ -17,6 +17,11 @@ class WorkoutSessionManager: ObservableObject {
     @Published var currentTime: TimeInterval = 0.0
     @Published var sessionSummary: WorkoutSessionSummary?
     
+    // Rep tracking properties
+    @Published var currentRep: Int = 0
+    @Published var totalReps: Int = 0
+    @Published var currentRepTime: Double = 0.0
+    
     // MARK: - Managers
     private let timerManager = WorkoutTimerManager.shared
     private let gpsManager = WorkoutGPSManager.shared

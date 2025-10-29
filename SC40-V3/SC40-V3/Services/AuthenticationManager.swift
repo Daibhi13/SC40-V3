@@ -139,25 +139,20 @@ class AuthenticationManager: NSObject, ObservableObject {
             }
         }
         #else
-        // Fallback mock implementation when Facebook SDK is not available
-        return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                let mockUser = AuthUser(
-                    id: "fb_\(UUID().uuidString)",
-                    name: "Facebook User",
-                    email: "user@facebook.com",
-                    profileImageURL: nil,
-                    provider: .facebook
-                )
-                continuation.resume(returning: mockUser)
-            }
-        }
+        // Facebook SDK not available - throw proper error
+        throw AuthError.socialLoginNotConfigured("Facebook SDK is not available. Please install FacebookLogin via Swift Package Manager.")
         #endif
     }
     
     // MARK: - Google Sign-In
     func signInWithGoogle() async throws -> AuthUser {
         #if canImport(GoogleSignIn)
+        // Check if Google Sign-In is properly configured
+        guard let clientId = GIDSignIn.sharedInstance.configuration?.clientID,
+              !clientId.contains("your-client-id") else {
+            throw AuthError.socialLoginNotConfigured("Google Sign-In is not properly configured. Please update GoogleService-Info.plist with your actual client ID.")
+        }
+        
         return try await withCheckedThrowingContinuation { continuation in
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let presentingViewController = windowScene.windows.first?.rootViewController else {
@@ -189,19 +184,8 @@ class AuthenticationManager: NSObject, ObservableObject {
             }
         }
         #else
-        // Fallback mock implementation when Google Sign-In SDK is not available
-        return try await withCheckedThrowingContinuation { continuation in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-                let mockUser = AuthUser(
-                    id: "google_\(UUID().uuidString)",
-                    name: "Google User",
-                    email: "user@gmail.com",
-                    profileImageURL: nil,
-                    provider: .google
-                )
-                continuation.resume(returning: mockUser)
-            }
-        }
+        // Google Sign-In SDK not available - throw proper error
+        throw AuthError.socialLoginNotConfigured("Google Sign-In SDK is not available. Please install GoogleSignIn via Swift Package Manager.")
         #endif
     }
     
@@ -218,19 +202,9 @@ class AuthenticationManager: NSObject, ObservableObject {
                 provider: .instagram
             )
         } catch {
-            // Fallback to mock implementation if Instagram auth fails
-            return try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    let mockUser = AuthUser(
-                        id: "ig_\(UUID().uuidString)",
-                        name: "Instagram User",
-                        email: nil,
-                        profileImageURL: nil,
-                        provider: .instagram
-                    )
-                    continuation.resume(returning: mockUser)
-                }
-            }
+            // Re-throw the original error instead of using mock data
+            print("❌ Instagram authentication failed: \(error.localizedDescription)")
+            throw error
         }
     }
     
@@ -356,6 +330,7 @@ enum AuthError: LocalizedError {
     case missingCredentials
     case authenticationFailed
     case cancelled
+    case socialLoginNotConfigured(String)
     case unknown
     
     var errorDescription: String? {
@@ -370,6 +345,8 @@ enum AuthError: LocalizedError {
             return "Authentication failed. Please try again."
         case .cancelled:
             return "Authentication was cancelled"
+        case .socialLoginNotConfigured(let message):
+            return message
         case .unknown:
             return "An unknown error occurred"
         }

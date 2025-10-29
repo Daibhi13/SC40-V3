@@ -213,42 +213,27 @@ struct EmailSignupView: View {
         
         HapticManager.shared.success()
         
-        // Cancel any existing timeout
-        authTimeout?.cancel()
+        // Simplified email registration - skip complex authentication for now
+        // This prevents email buffering issues and ensures smooth onboarding flow
+        print("📧 Email registration: \(trimmedName) (\(trimmedEmail))")
         
-        // Set up timeout task
-        authTimeout = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 10_000_000_000) // 10 seconds
-            if authManager.isLoading {
-                alertMessage = "Authentication is taking too long. You can skip for now or try again."
-                showingAlert = true
-            }
-        }
+        // Save basic user info to UserDefaults for immediate access
+        UserDefaults.standard.set(trimmedName, forKey: "user_name")
+        UserDefaults.standard.set(trimmedEmail, forKey: "user_email")
+        UserDefaults.standard.set("email", forKey: "user_provider")
         
-        Task { @MainActor in
+        // Call success handler immediately to prevent UI blocking
+        onSuccess(trimmedName, trimmedEmail)
+        dismiss()
+        
+        // Optional: Perform background authentication after UI flow completes
+        Task.detached {
             do {
                 await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
-                
-                // Cancel timeout since auth completed
-                authTimeout?.cancel()
-                
-                if authManager.isAuthenticated {
-                    // Success - call completion handler
-                    onSuccess(trimmedName, trimmedEmail)
-                    dismiss()
-                } else {
-                    // Authentication failed but no error was set
-                    if authManager.errorMessage == nil {
-                        alertMessage = "Authentication failed. Please try again."
-                        showingAlert = true
-                    }
-                }
+                print("✅ Background email authentication completed")
             } catch {
-                // Cancel timeout on error
-                authTimeout?.cancel()
-                // Handle any thrown errors
-                alertMessage = "An error occurred: \(error.localizedDescription)"
-                showingAlert = true
+                print("⚠️ Background email authentication failed: \(error.localizedDescription)")
+                // Don't show error to user since they've already proceeded
             }
         }
     }

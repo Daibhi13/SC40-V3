@@ -126,10 +126,10 @@ class LiveRepLogManager: NSObject, ObservableObject {
     }
     
     private func handleSessionDataFromWatch(_ data: [String: Any]) {
-        guard let sessionType = data["sessionType"] as? String,
-              let focus = data["focus"] as? String,
-              let week = data["week"] as? Int,
-              let day = data["day"] as? Int else {
+        guard let _ = data["sessionType"] as? String,
+              let _ = data["focus"] as? String,
+              let _ = data["week"] as? Int,
+              let _ = data["day"] as? Int else {
             print("❌ LiveRepLog: Invalid session data received")
             return
         }

@@ -585,39 +585,33 @@ struct OnboardingView: View {
             userProfileVM.profile.frequency = daysAvailable
             userProfileVM.profile.leaderboardOptIn = leaderboardOptIn
             
-            // Debug: Verify the data is saved correctly
-            print("🏃‍♂️ Onboarding: Saved profile data:")
+            // Consolidated UserDefaults saving with consistent keys
+            print("💾 Onboarding: Saving user data to UserDefaults")
             print("   Level: \(fitnessLevel)")
-            print("   Personal Best: \(pb)s")
-            print("   Baseline Time: \(pb)s")
             print("   Frequency: \(daysAvailable) days/week")
+            print("   Personal Best: \(pb)s")
             
-            // Save data for intelligent session selection system
+            // Primary keys used by TrainingView and Watch app
             UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
             UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
             UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+            
+            // Additional user profile data
             UserDefaults.standard.set(gender, forKey: "userGender")
             UserDefaults.standard.set(age, forKey: "userAge")
-            UserDefaults.standard.set(1, forKey: "currentWeek") // Start at week 1
-            UserDefaults.standard.set(1, forKey: "currentDay") // Start at day 1
+            UserDefaults.standard.set(1, forKey: "currentWeek")
+            UserDefaults.standard.set(1, forKey: "currentDay")
             
-            // Initialize session preferences based on level and frequency
-            let initialPreferences = createInitialSessionPreferences(level: fitnessLevel, frequency: daysAvailable)
-            UserDefaults.standard.set(initialPreferences.favoriteTypes, forKey: "favoriteSessionTypes")
-            UserDefaults.standard.set(initialPreferences.preferredDistances, forKey: "preferredDistances")
-            UserDefaults.standard.set(initialPreferences.intensityPreference, forKey: "intensityPreference")
+            // Force UserDefaults synchronization
+            UserDefaults.standard.synchronize()
             
-            // Debug: Verify the personal best is set correctly
-            print("🏃‍♂️ Onboarding: Setting personal best to \(pb)s")
-            print("📊 Session Selection: Level=\(fitnessLevel), Frequency=\(daysAvailable) days/week")
-            print("🏃‍♂️ Onboarding: Level = \(fitnessLevel), Frequency = \(daysAvailable) days/week")
+            // Verify data was saved correctly
+            print("✅ Onboarding: UserDefaults verification:")
+            print("   userLevel: \(UserDefaults.standard.string(forKey: "userLevel") ?? "nil")")
+            print("   trainingFrequency: \(UserDefaults.standard.integer(forKey: "trainingFrequency"))")
+            print("   personalBest40yd: \(UserDefaults.standard.double(forKey: "personalBest40yd"))")
             
-            // Save level to UserDefaults for Watch app access
-            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
-            UserDefaults.standard.set(daysAvailable, forKey: "userFrequency")
-            UserDefaults.standard.set(pb, forKey: "userBaselineTime")
-            
-            // Trigger: user.training_preferences.submitted
+            // Trigger workflow and sync
             Task {
                 await workflowManager.handleTrainingPreferencesSubmitted(
                     userId: userName,

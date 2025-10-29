@@ -93,8 +93,11 @@ class NewsService: ObservableObject {
         
         // Check if API key is configured
         guard apiKey != "YOUR_NEWS_API_KEY_HERE" && !apiKey.isEmpty else {
-            // Use mock data for development
-            await loadMockData()
+            // API key not configured - disable news feature
+            self.articles = []
+            self.errorMessage = "News feature requires API key configuration"
+            self.isLoading = false
+            print("⚠️ News API key not configured - feature disabled")
             return
         }
         
@@ -120,34 +123,11 @@ class NewsService: ObservableObject {
             self.errorMessage = "Failed to fetch news: \(error.localizedDescription)"
             print("❌ News fetch error: \(error)")
             
-            // Fallback to mock data on error
-            await loadMockData()
+            // Clear articles on error instead of using mock data
+            self.articles = []
         }
         
         isLoading = false
-    }
-    
-    private func loadMockData() async {
-        // Simulate network delay
-        try? await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        self.articles = NewsAPIConfig.mockArticles.map { mockArticle in
-            SprintNewsArticle(
-                id: UUID(),
-                title: mockArticle.title,
-                description: mockArticle.description,
-                url: mockArticle.url,
-                urlToImage: nil,
-                publishedAt: ISO8601DateFormatter().string(from: mockArticle.publishedAt),
-                source: NewsSource(id: nil, name: mockArticle.source),
-                category: mockArticle.category.rawValue,
-                relevanceScore: 10.0
-            )
-        }
-        
-        self.lastUpdated = Date()
-        self.errorMessage = nil
-        print("📰 Using mock news data for development")
     }
     
     // MARK: - Private Methods

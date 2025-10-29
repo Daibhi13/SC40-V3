@@ -519,16 +519,16 @@ extension WatchConnectivityManager: WCSessionDelegate {
     
     private func integrateSessionWithHistory(_ sessionData: [String: Any]) {
         // Convert Watch session data to format compatible with HistoryManager
-        guard let sessionType = sessionData["sessionType"] as? String,
-              let focus = sessionData["focus"] as? String,
-              let week = sessionData["week"] as? Int,
-              let day = sessionData["day"] as? Int,
+        guard let _ = sessionData["sessionType"] as? String,
+              let _ = sessionData["focus"] as? String,
+              let _ = sessionData["week"] as? Int,
+              let _ = sessionData["day"] as? Int,
               let reps = sessionData["reps"] as? [[String: Any]] else {
             logger.warning("Invalid session data format from Watch")
             return
         }
         
-        logger.info("Integrating Watch session with HistoryManager: \(sessionType) - \(reps.count) reps")
+        logger.info("Integrating Watch session with HistoryManager: \(reps.count) reps")
         
         // Here you would integrate with the existing HistoryManager
         // This ensures RepLog data appears in the main app history

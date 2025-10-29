@@ -259,18 +259,20 @@ class BiomechanicsAnalysisEngine: NSObject, ObservableObject {
     
     private func startRealtimeAnalysis() {
         Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] timer in
-            guard let self = self, self.isAnalyzing else {
-                timer.invalidate()
-                return
+            Task { @MainActor [weak self, timer] in
+                guard let self = self, self.isAnalyzing else {
+                    timer.invalidate()
+                    return
+                }
+                
+                await self.performRealtimeAnalysis()
             }
-            
-            self.performRealtimeAnalysis()
         }
     }
     
     // MARK: - Real-Time Analysis
     
-    private func performRealtimeAnalysis() {
+    private func performRealtimeAnalysis() async {
         guard !accelerometerData.isEmpty && !gyroscopeData.isEmpty else { return }
         
         // Analyze current sprint phase
@@ -708,18 +710,93 @@ class MovementEfficiencyCalculator {
     }
     
     private func calculateMechanicalAdvantage(_ accelData: [CMAccelerometerData], _ gyroData: [CMGyroData]) -> Double {
-        // Simplified mechanical advantage calculation
-        return 0.75 // Placeholder - would implement sophisticated biomechanical analysis
+        // Real mechanical advantage calculation based on acceleration patterns
+        guard !accelData.isEmpty && !gyroData.isEmpty else { return 0.5 }
+        
+        // Calculate forward acceleration efficiency
+        let forwardAccel = accelData.map { $0.acceleration.y } // Forward direction
+        let verticalAccel = accelData.map { $0.acceleration.z } // Vertical direction
+        
+        // Mechanical advantage = forward momentum / wasted vertical energy
+        let avgForwardAccel = forwardAccel.reduce(0, +) / Double(forwardAccel.count)
+        let avgVerticalAccel = abs(verticalAccel.reduce(0, +) / Double(verticalAccel.count))
+        
+        // Higher forward acceleration with lower vertical waste = better mechanical advantage
+        let mechanicalAdvantage = min(1.0, max(0.0, avgForwardAccel / (avgVerticalAccel + 0.1)))
+        
+        return mechanicalAdvantage
     }
     
     private func calculateRhythmConsistency(_ data: [CMAccelerometerData]) -> Double {
-        // Analyze step timing consistency
-        return 0.8 // Placeholder - would implement step detection and timing analysis
+        // Real step timing consistency analysis
+        guard data.count > 10 else { return 0.5 }
+        
+        // Detect step peaks in vertical acceleration
+        let verticalAccel = data.map { $0.acceleration.z }
+        var stepIntervals: [TimeInterval] = []
+        var lastPeakTime: TimeInterval = 0
+        
+        // Simple peak detection for step timing
+        for i in 1..<(verticalAccel.count - 1) {
+            let current = verticalAccel[i]
+            let prev = verticalAccel[i-1]
+            let next = verticalAccel[i+1]
+            
+            // Detect local maxima above threshold
+            if current > prev && current > next && current > 1.2 {
+                let currentTime = data[i].timestamp
+                if lastPeakTime > 0 {
+                    stepIntervals.append(currentTime - lastPeakTime)
+                }
+                lastPeakTime = currentTime
+            }
+        }
+        
+        guard stepIntervals.count > 2 else { return 0.5 }
+        
+        // Calculate consistency as inverse of coefficient of variation
+        let mean = stepIntervals.reduce(0, +) / Double(stepIntervals.count)
+        let variance = stepIntervals.map { pow($0 - mean, 2) }.reduce(0, +) / Double(stepIntervals.count)
+        let stdDev = sqrt(variance)
+        let coefficientOfVariation = stdDev / mean
+        
+        // Lower variation = higher consistency
+        return max(0.3, 1.0 - min(1.0, coefficientOfVariation))
     }
     
     private func calculatePowerTransfer(_ data: [CMAccelerometerData]) -> Double {
-        // Analyze power transfer efficiency
-        return 0.7 // Placeholder - would implement force vector analysis
+        // Real power transfer efficiency analysis
+        guard data.count > 5 else { return 0.5 }
+        
+        // Calculate force vectors and their efficiency
+        var forwardPower: Double = 0
+        var totalPower: Double = 0
+        
+        for i in 1..<data.count {
+            let current = data[i].acceleration
+            let previous = data[i-1].acceleration
+            let deltaTime = data[i].timestamp - data[i-1].timestamp
+            
+            // Calculate acceleration changes (jerk)
+            let forwardJerk = (current.y - previous.y) / deltaTime
+            let lateralJerk = (current.x - previous.x) / deltaTime
+            let verticalJerk = (current.z - previous.z) / deltaTime
+            
+            // Forward power contribution
+            forwardPower += abs(forwardJerk) * current.y
+            
+            // Total power (all directions)
+            totalPower += sqrt(forwardJerk * forwardJerk + 
+                             lateralJerk * lateralJerk + 
+                             verticalJerk * verticalJerk)
+        }
+        
+        guard totalPower > 0 else { return 0.5 }
+        
+        // Power transfer efficiency = forward power / total power
+        let efficiency = min(1.0, max(0.0, forwardPower / totalPower))
+        
+        return efficiency
     }
 }
 
@@ -727,22 +804,100 @@ class MovementEfficiencyCalculator {
 
 class StepDetector {
     func detectSteps(from data: [CMAccelerometerData]) -> [Date] {
-        // Implement step detection algorithm
-        return [] // Placeholder
+        // Real step detection algorithm using peak detection
+        guard data.count > 10 else { return [] }
+        
+        var stepTimes: [Date] = []
+        let verticalAccel = data.map { $0.acceleration.z }
+        let threshold: Double = 1.2 // Minimum acceleration for step detection
+        
+        // Detect peaks in vertical acceleration
+        for i in 1..<(verticalAccel.count - 1) {
+            let current = verticalAccel[i]
+            let prev = verticalAccel[i-1]
+            let next = verticalAccel[i+1]
+            
+            // Local maximum above threshold indicates a step
+            if current > prev && current > next && current > threshold {
+                stepTimes.append(Date(timeIntervalSince1970: data[i].timestamp))
+            }
+        }
+        
+        return stepTimes
     }
 }
 
 class GroundContactAnalyzer {
     func calculateContactTime(from data: [CMAccelerometerData]) -> Double {
-        // Analyze ground contact patterns
-        return 100.0 // milliseconds - placeholder
+        // Real ground contact time analysis
+        guard data.count > 10 else { return 150.0 }
+        
+        let verticalAccel = data.map { $0.acceleration.z }
+        var contactPeriods: [Double] = []
+        var inContact = false
+        var contactStart: TimeInterval = 0
+        
+        let contactThreshold: Double = 0.8 // Below this indicates ground contact
+        
+        for i in 0..<data.count {
+            let current = verticalAccel[i]
+            let timestamp = data[i].timestamp
+            
+            if !inContact && current < contactThreshold {
+                // Start of ground contact
+                inContact = true
+                contactStart = timestamp
+            } else if inContact && current > contactThreshold {
+                // End of ground contact
+                inContact = false
+                let contactDuration = (timestamp - contactStart) * 1000 // Convert to milliseconds
+                if contactDuration > 50 && contactDuration < 300 { // Reasonable contact time range
+                    contactPeriods.append(contactDuration)
+                }
+            }
+        }
+        
+        guard !contactPeriods.isEmpty else { return 150.0 }
+        
+        // Return average contact time
+        return contactPeriods.reduce(0, +) / Double(contactPeriods.count)
     }
 }
 
 class FlightTimeAnalyzer {
     func calculateFlightTime(from data: [CMAccelerometerData]) -> Double {
-        // Analyze flight time between contacts
-        return 80.0 // milliseconds - placeholder
+        // Real flight time analysis between ground contacts
+        guard data.count > 10 else { return 120.0 }
+        
+        let verticalAccel = data.map { $0.acceleration.z }
+        var flightPeriods: [Double] = []
+        var inFlight = false
+        var flightStart: TimeInterval = 0
+        
+        let flightThreshold: Double = 0.8 // Above this indicates flight phase
+        
+        for i in 0..<data.count {
+            let current = verticalAccel[i]
+            let timestamp = data[i].timestamp
+            
+            if !inFlight && current > flightThreshold {
+                // Start of flight phase
+                inFlight = true
+                flightStart = timestamp
+            } else if inFlight && current < flightThreshold {
+                // End of flight phase (ground contact)
+                inFlight = false
+                let flightDuration = (timestamp - flightStart) * 1000 // Convert to milliseconds
+                if flightDuration > 30 && flightDuration < 200 { // Reasonable flight time range
+                    flightPeriods.append(flightDuration)
+                }
+            }
+        }
+        
+        guard !flightPeriods.isEmpty else { return 120.0 }
+        
+        // Return average flight time
+        return flightPeriods.reduce(0, +) / Double(flightPeriods.count)
     }
 }
 

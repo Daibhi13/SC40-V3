@@ -713,9 +713,21 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
     }
     
     private func loadPerformanceHistory() -> [WorkoutResult] {
-        // Load from UserDefaults or Core Data
-        // Placeholder implementation
-        return []
+        // Load real performance history from HistoryManager
+        let historyManager = HistoryManager.shared
+        
+        return historyManager.completedSessions.compactMap { session in
+            guard let bestTime = session.bestTime else { return nil }
+            
+            return WorkoutResult(
+                sessionId: session.id,
+                date: session.completionDate,
+                performance: bestTime,
+                personalRecord: false, // Would need to calculate if this is a PR
+                consistency: session.averageTime ?? bestTime / bestTime, // Simple consistency metric
+                technique: 0.8 // Placeholder technique score
+            )
+        }
     }
     
     private func identifyStrengths(_ results: [WorkoutResult]) -> [String] {

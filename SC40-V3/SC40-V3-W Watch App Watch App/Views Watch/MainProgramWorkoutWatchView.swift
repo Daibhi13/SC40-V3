@@ -777,11 +777,15 @@ struct MainProgramWorkoutWatchView: View {
         
         // Save workout data when stopping
         let completedReps = (1...currentSet).map { repNumber in
-            CompletedRep(
+            // Get sprint result from GPS manager if available
+            let sprintResult = gpsManager.endSprint()
+            let sprintTime = sprintResult?.time ?? elapsedTime
+            
+            return CompletedRep(
                 repNumber: repNumber,
                 distance: session.sprints.first?.distanceYards ?? 40,
-                time: Double.random(in: 4.5...6.0), // Mock time - would be real data
-                heartRate: Int.random(in: 140...180),
+                time: sprintTime,
+                heartRate: workoutManager.currentHeartRate,
                 timestamp: Date()
             )
         }

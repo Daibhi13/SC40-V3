@@ -224,14 +224,51 @@ struct AutomatedWorkoutView: View {
                 metricsDisplayView
             }
             
-            // Rep Log - Always visible for user feedback (temporarily disabled for build)
-            VStack {
-                Text("Rep Log")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.white)
-                Text("Wave AI Integration Complete")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white.opacity(0.7))
+            // Rep Log - Live workout feedback system
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Rep Log")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    Text("Live")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.green)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.green.opacity(0.2))
+                        .cornerRadius(8)
+                }
+                
+                // Current rep display
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Current Rep")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                        Text("\(sessionManager.currentRep)/\(sessionManager.totalReps)")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("Time")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                        Text(sessionManager.currentRepTime > 0 ? String(format: "%.2fs", sessionManager.currentRepTime) : "--")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    }
+                }
+                
+                // Progress indicator
+                ProgressView(value: Double(sessionManager.currentRep) / Double(max(1, sessionManager.totalReps)))
+                    .progressViewStyle(LinearProgressViewStyle(tint: Color(red: 1.0, green: 0.8, blue: 0.0)))
+                    .scaleEffect(x: 1, y: 1.5, anchor: .center)
             }
             .frame(height: 180)
             .padding(.horizontal, 24)

@@ -198,10 +198,11 @@ class IntentsManager: NSObject, ObservableObject {
         // Handle the check progress intent
         print("Handling check progress intent")
         
-        // Get current progress data (mock data for example)
-        let currentWeek = 3
-        let sessionsCompleted = 4
-        let personalBest = 4.85
+        // Get real current progress data from HistoryManager and UserDefaults
+        let currentWeek = UserDefaults.standard.integer(forKey: "currentWeek")
+        let historyManager = HistoryManager.shared
+        let sessionsCompleted = historyManager.analytics.totalSessions
+        let personalBest = UserDefaults.standard.double(forKey: "personalBest40yd")
         
         let response = CheckProgressIntentResponse(code: .success, userActivity: nil)
         response.currentWeek = NSNumber(value: currentWeek)

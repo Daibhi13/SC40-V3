@@ -164,18 +164,16 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         
         // Update WatchAuthManager if available
         Task { @MainActor in
-            if let authManager = try? WatchAuthManager.shared {
-                authManager.userProfile = WatchUserProfile(
-                    id: name,
-                    level: level,
-                    targetTime: baselineTime,
-                    authMethod: "iPhone Sync",
-                    joinDate: Date()
-                )
-                authManager.authState = .authenticated
-                authManager.isAuthenticated = true
-                authManager.showOnboarding = false
-            }
+            let authManager = WatchAuthManager.shared
+            // Store user data in UserDefaults since simplified auth manager doesn't have userProfile
+            UserDefaults.standard.set(name, forKey: "user_name")
+            UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
+            UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
+            UserDefaults.standard.set("iPhone Sync", forKey: "SC40_AuthMethod")
+            
+            authManager.authState = .authenticated
+            authManager.isAuthenticated = true
+            authManager.showOnboarding = false
         }
         
         let reply: [String: Any] = [
@@ -332,18 +330,16 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
         
         // Update WatchAuthManager if available
         Task { @MainActor in
-            if let authManager = try? WatchAuthManager.shared {
-                authManager.userProfile = WatchUserProfile(
-                    id: name,
-                    level: level,
-                    targetTime: baselineTime,
-                    authMethod: "iPhone Sync",
-                    joinDate: Date()
-                )
-                authManager.authState = .authenticated
-                authManager.isAuthenticated = true
-                authManager.showOnboarding = false
-            }
+            let authManager = WatchAuthManager.shared
+            // Store user data in UserDefaults since simplified auth manager doesn't have userProfile
+            UserDefaults.standard.set(name, forKey: "user_name")
+            UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
+            UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
+            UserDefaults.standard.set("iPhone Sync", forKey: "SC40_AuthMethod")
+            
+            authManager.authState = .authenticated
+            authManager.isAuthenticated = true
+            authManager.showOnboarding = false
         }
         
         lastMessageReceived = "Onboarding sync (BG) - \(name) (\(level))"

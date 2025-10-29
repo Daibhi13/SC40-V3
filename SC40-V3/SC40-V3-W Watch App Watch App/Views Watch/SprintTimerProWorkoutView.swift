@@ -436,7 +436,7 @@ struct SprintTimerProWorkoutView: View {
     
     // MARK: - Workout Control Functions
     private func setupWorkout() {
-        heartRate = Int.random(in: 60...80) // Mock heart rate
+        heartRate = workoutManager.currentHeartRate > 0 ? workoutManager.currentHeartRate : 75 // Real heart rate with fallback
         restTimeRemaining = Double(restMinutes * 60)
         
         // Debug logging
@@ -473,7 +473,10 @@ struct SprintTimerProWorkoutView: View {
         // Start workout timer
         workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             elapsedTime += 0.1
-            heartRate = Int.random(in: 140...180) // Mock elevated heart rate
+            // Update heart rate from workout manager during active sprint
+            if workoutManager.currentHeartRate > 0 {
+                heartRate = workoutManager.currentHeartRate
+            }
         }
         
         // Speech feedback
@@ -513,7 +516,8 @@ struct SprintTimerProWorkoutView: View {
     private func startRestPeriod() {
         isResting = true
         restTimeRemaining = Double(restMinutes * 60)
-        heartRate = Int.random(in: 100...140) // Mock recovery heart rate
+        // Use real recovery heart rate or reasonable fallback
+        heartRate = workoutManager.currentHeartRate > 0 ? max(workoutManager.currentHeartRate - 20, 100) : 120
         
         // Initialize WorkoutWatchViewModel rest progress
         sprintWorkoutVM.repProgress = 1.0 // Start at full rest time
@@ -583,7 +587,8 @@ struct SprintTimerProWorkoutView: View {
         restTimer?.invalidate()
         workoutTimer = nil
         restTimer = nil
-        heartRate = Int.random(in: 60...80) // Mock resting heart rate
+        // Use real resting heart rate or reasonable fallback
+        heartRate = workoutManager.currentHeartRate > 0 ? max(workoutManager.currentHeartRate - 40, 60) : 70
     }
     private func speak(_ text: String) {
         let utterance = AVSpeechUtterance(string: text)
@@ -878,21 +883,21 @@ struct SprintTimerProWorkoutView: View {
     private var autonomousSystemsStatus: some View {
         HStack(spacing: 8) {
             // HealthKit Status
-            StatusIndicator(
+            StatusIcon(
                 icon: "heart.fill",
                 isActive: workoutManager.isWorkoutActive,
                 color: .red
             )
             
             // GPS Status
-            StatusIndicator(
+            StatusIcon(
                 icon: "location.fill",
                 isActive: gpsManager.isTracking,
                 color: .green
             )
             
             // Interval Manager Status
-            StatusIndicator(
+            StatusIcon(
                 icon: "timer",
                 isActive: intervalManager.isActive,
                 color: .blue
@@ -1008,8 +1013,8 @@ struct SprintTimerProWorkoutView: View {
 
 // MARK: - Supporting Views
 
-// Status Indicator Component
-struct StatusIndicator: View {
+// Status Icon Component
+struct StatusIcon: View {
     let icon: String
     let isActive: Bool
     let color: Color

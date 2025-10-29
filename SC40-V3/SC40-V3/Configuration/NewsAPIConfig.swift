@@ -4,7 +4,7 @@ import Foundation
 
 struct NewsAPIConfig {
     // IMPORTANT: Replace with your actual NewsAPI key from https://newsapi.org/
-    static let apiKey = "YOUR_NEWS_API_KEY_HERE"
+    static let apiKey = "d64696d2632a4cc19126031d9099c474"
     
     // News API endpoints
     static let baseURL = "https://newsapi.org/v2"

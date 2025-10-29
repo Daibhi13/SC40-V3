@@ -43,6 +43,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         }
         #endif
         
+        // Initialize backend services for production
+        initializeBackendServices()
+        
         return true
     }
     
@@ -67,8 +70,45 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         return handled
     }
-}
     
+    // MARK: - Backend Services Initialization
+    
+    private func initializeBackendServices() {
+        print("🚀 Initializing backend services for production...")
+        
+        // Initialize session automation engine
+        _ = SessionAutomationEngine.shared
+        print("🤖 SessionAutomationEngine initialized")
+        
+        // Initialize algorithmic session service
+        _ = AlgorithmicSessionService.shared
+        print("🧠 AlgorithmicSessionService initialized")
+        
+        // Initialize comprehensive session system
+        let comprehensiveSystem = ComprehensiveSessionSystem.shared
+        let libraryStats = comprehensiveSystem.getLibraryStatistics()
+        print("📚 ComprehensiveSessionSystem initialized with \(libraryStats.totalSessions) sessions")
+        
+        // Validate session distribution
+        let validation = comprehensiveSystem.validateSessionDistribution()
+        if validation.isValid {
+            print("✅ Session library validation passed")
+        } else {
+            print("⚠️ Session library validation issues: \(validation.issues.count)")
+        }
+        
+        // Initialize premium voice coach
+        let voiceCoach = PremiumVoiceCoach.shared
+        print("🎙️ PremiumVoiceCoach initialized (enabled: \(voiceCoach.isEnabled))")
+        
+        // Initialize advanced haptics
+        let haptics = AdvancedHapticsManager.shared
+        print("📳 AdvancedHapticsManager initialized (enabled: \(haptics.isEnabled))")
+        
+        print("✅ All backend services initialized successfully")
+    }
+}
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 

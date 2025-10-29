@@ -6,6 +6,11 @@ import CoreLocation
 import WatchConnectivity
 #endif
 
+// Import Watch services for live data access
+#if canImport(WatchKit)
+import WatchKit
+#endif
+
 /// Simplified workout phase enum for Watch
 enum WorkoutPhase: String, CaseIterable {
     case warmup = "Warm Up"
@@ -262,7 +267,9 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
 
     // MARK: - UI Computed Properties
     var heartRateString: String {
-        return "--" // Placeholder for heart rate
+        // TODO: Connect to real heart rate data from WatchWorkoutManager/HealthKitService
+        // For now, return placeholder until build issues are resolved
+        return "--" // No heart rate data available
     }
     
     // MARK: - Distance Display Logic (Fixed)
@@ -298,7 +305,13 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
     var currentPhaseLabel: String { currentPhase.displayName }
     
     var avgSplitString: String {
-        return "--" // Placeholder for average split
+        // TODO: Connect to real GPS split data from WatchGPSManager
+        if lastRepTime > 0 {
+            // Use last rep time as reference for now
+            return String(format: "%.2f", lastRepTime)
+        } else {
+            return "--" // No split data available
+        }
     }
     
     var lastSprintString: String { lastRepTimeString }

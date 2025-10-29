@@ -81,54 +81,6 @@ struct HistoryView: View {
         }
     }
     
-    // MARK: - Mock Data Helper
-    
-    private func getMockWorkoutHistory() -> [[String: Any]] {
-        let dateFormatter = ISO8601DateFormatter()
-        let now = Date()
-        
-        return [
-            [
-                "id": UUID().uuidString,
-                "date": dateFormatter.string(from: now.addingTimeInterval(-86400 * 2)), // 2 days ago
-                "sessionType": "Sprint Training",
-                "week": 1,
-                "day": 1,
-                "bestTime": 4.85,
-                "averageTime": 5.12,
-                "totalReps": 6,
-                "drillTimes": [3.2, 3.1, 3.0],
-                "strideTimes": [4.1, 4.0, 3.9],
-                "sprintTimes": [4.85, 4.92, 4.88]
-            ],
-            [
-                "id": UUID().uuidString,
-                "date": dateFormatter.string(from: now.addingTimeInterval(-86400 * 5)), // 5 days ago
-                "sessionType": "Time Trial",
-                "week": 0,
-                "day": 0,
-                "bestTime": 4.78,
-                "averageTime": 4.78,
-                "totalReps": 1,
-                "drillTimes": [],
-                "strideTimes": [],
-                "sprintTimes": [4.78]
-            ],
-            [
-                "id": UUID().uuidString,
-                "date": dateFormatter.string(from: now.addingTimeInterval(-86400 * 7)), // 1 week ago
-                "sessionType": "Sprint Training",
-                "week": 1,
-                "day": 2,
-                "bestTime": 4.92,
-                "averageTime": 5.18,
-                "totalReps": 8,
-                "drillTimes": [3.3, 3.2, 3.1],
-                "strideTimes": [4.2, 4.1, 4.0],
-                "sprintTimes": [4.92, 4.98, 5.05]
-            ]
-        ]
-    }
 }
 
 // MARK: - Progress Summary Header View

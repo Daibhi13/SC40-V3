@@ -947,7 +947,7 @@ struct MainProgramWorkoutView: View {
                                     .fill(Color.black.opacity(0.8))
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .stroke(Color.orange, lineWidth: 2)
+                                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
                                     )
                             )
                             .padding(.vertical, 8)

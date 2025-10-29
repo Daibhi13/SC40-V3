@@ -4,6 +4,7 @@ import os.log
 
 #if canImport(WatchConnectivity) && os(watchOS)
 import WatchConnectivity
+import WatchKit
 
 // MARK: - Live Watch Connectivity Handler
 // Handles connectivity testing messages from iPhone
@@ -64,6 +65,9 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
     private func handlePingTest(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("Handling ping test from iPhone")
         
+        // Provide haptic and audio feedback for ping
+        WKInterfaceDevice.current().play(.notification)
+        
         let reply: [String: Any] = [
             "type": "ping_response",
             "status": "success",
@@ -80,10 +84,15 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         
         messagesReceived += 1
         lastMessageReceived = "Ping test - replied successfully"
+        
+        print("📱 Watch: Ping received with haptic feedback")
     }
     
     private func handleWorkoutData(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("Handling workout data from iPhone")
+        
+        // Provide haptic and audio feedback for workout session received
+        WKInterfaceDevice.current().play(.success)
         
         // Extract workout information
         let sessionType = message["sessionType"] as? String ?? "Unknown"
@@ -105,10 +114,14 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         
         // Here you could trigger the actual workout UI on the watch
         logger.info("Workout data processed: \(sessionType) - \(focus)")
+        print("🏃‍♂️ Watch: Workout session received with success haptic - \(sessionType)")
     }
     
     private func handleProfileSync(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("Handling profile sync from iPhone")
+        
+        // Provide haptic feedback for profile sync
+        WKInterfaceDevice.current().play(.click)
         
         let name = message["name"] as? String ?? "Unknown"
         let level = message["level"] as? String ?? "Unknown"
@@ -129,10 +142,14 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         
         // Here you could save the profile data to Watch storage
         logger.info("Profile synced: \(name) - \(level)")
+        print("👤 Watch: Profile sync received with click haptic - \(name) (\(level))")
     }
     
     private func handleOnboardingComplete(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("Handling onboarding completion from iPhone")
+        
+        // Provide strong haptic feedback for onboarding completion
+        WKInterfaceDevice.current().play(.success)
         
         // Extract user profile data
         let name = message["name"] as? String ?? "User"
@@ -195,7 +212,7 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         lastMessageReceived = "Onboarding sync - \(name) (\(level))"
         
         logger.info("✅ Onboarding data synced to Watch: \(name) - \(level) - \(baselineTime)s")
-        print("✅ Watch: Onboarding data received and saved - Level: \(level), Target: \(baselineTime)s")
+        print("✅ Watch: Onboarding data received and saved with success haptic - Level: \(level), Target: \(baselineTime)s")
     }
     
     // MARK: - Test Methods
@@ -282,6 +299,10 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
     nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         Task { @MainActor in
             self.logger.info("Received background data from iPhone: \(userInfo)")
+            
+            // Provide haptic feedback for background data
+            WKInterfaceDevice.current().play(.notification)
+            
             self.messagesReceived += 1
             
             if let type = userInfo["type"] as? String {
@@ -294,11 +315,16 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             } else {
                 self.lastMessageReceived = "Background data received"
             }
+            
+            print("📱 Watch: Background data received with notification haptic")
         }
     }
     
     private func handleOnboardingCompleteBackground(_ userInfo: [String: Any]) {
         logger.info("Processing onboarding data from background transfer")
+        
+        // Provide haptic feedback for background onboarding sync
+        WKInterfaceDevice.current().play(.success)
         
         // Extract user profile data (same as message handler)
         let name = userInfo["name"] as? String ?? "User"
@@ -344,7 +370,7 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
         
         lastMessageReceived = "Onboarding sync (BG) - \(name) (\(level))"
         logger.info("✅ Background onboarding sync complete: \(name) - \(level) - \(baselineTime)s")
-        print("✅ Watch: Background onboarding data received - Level: \(level), Target: \(baselineTime)s")
+        print("✅ Watch: Background onboarding data received with success haptic - Level: \(level), Target: \(baselineTime)s")
     }
 }
 

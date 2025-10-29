@@ -12,34 +12,61 @@ struct ControlWatchView: View {
     @Environment(\.presentationMode) var presentationMode
     
     private func pauseWorkout() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         workoutVM.isPaused = true
         // Pause any running timers or GPS tracking
         workoutVM.pauseSession()
+        
+        print("⏸️ Workout paused")
     }
     
     private func playWorkout() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.start)
+        
         workoutVM.isPaused = false
         // Resume any paused timers or GPS tracking
         workoutVM.resumeSession()
+        
+        print("▶️ Workout resumed")
     }
     
     private func rewindSession() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Go back to previous rep or phase
         workoutVM.goToPreviousStep()
+        
+        print("⏪ Rewound to previous step")
     }
     
     private func forwardSession() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Move forward to next rep or phase
         workoutVM.goToNextStep()
+        
+        print("⏩ Advanced to next step")
     }
-    
 
     private func toggleHaptics() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Toggle haptic feedback on/off
         workoutVM.toggleHapticFeedback()
+        
+        print("🔊 Haptics \(workoutVM.isHapticEnabled ? "enabled" : "disabled")")
     }
     
     private func endWorkout() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.stop)
+        
         // Stop the workout session
         workoutVM.isRunning = false
         workoutVM.pauseSession()
@@ -202,6 +229,11 @@ struct ControlButton: View {
     
     var body: some View {
         Button(action: {
+            // Add haptic feedback for button press
+            let impactFeedback = WKHapticType.click
+            WKInterfaceDevice.current().play(impactFeedback)
+            
+            // Execute the action
             action()
         }) {
             Image(systemName: icon)

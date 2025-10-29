@@ -427,6 +427,7 @@ struct TrainingView: View {
     /// Refresh dynamic sessions when profile changes
     private func refreshDynamicSessions() {
         print("🔄 TrainingView: Refreshing dynamic sessions")
+        print("🔄 Profile: Level=\(userProfileVM.profile.level), Frequency=\(userProfileVM.profile.frequency), Week=\(userProfileVM.profile.currentWeek)")
         
         // Clear any cached sessions to force regeneration
         TrainingView.clearSessionCache()
@@ -439,9 +440,11 @@ struct TrainingView: View {
         
         print("✅ TrainingView: Generated \(newSessions.count) sessions for \(userProfileVM.profile.level) \(userProfileVM.profile.frequency)-day program")
         
-        // Log first few sessions for verification
-        for (index, session) in newSessions.prefix(3).enumerated() {
-            print("   Session \(index + 1): Week \(session.week), Day \(session.day) - \(session.type)")
+        // Log sessions for current week for verification
+        let currentWeekSessions = newSessions.filter { $0.week == userProfileVM.profile.currentWeek }
+        print("📅 Current Week \(userProfileVM.profile.currentWeek) sessions: \(currentWeekSessions.count)")
+        for session in currentWeekSessions {
+            print("   W\(session.week)D\(session.day): \(session.type)")
         }
     }
 }
@@ -1160,7 +1163,29 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
 extension TrainingView {
     // Main dashboard matching the exact screenshot design
     func mainDashboard(profile: UserProfile, userProfileVM: UserProfileViewModel) -> some View {
-        let sessionsToShow: [TrainingSession] = generateDynamicSessions()
+        // Get only the sessions for the current week based on user's frequency
+        let allSessions = generateDynamicSessions()
+        let currentWeek = profile.currentWeek
+        let frequency = profile.frequency
+        
+        // Filter sessions to show only current week's sessions (respecting frequency)
+        let sessionsToShow = allSessions.filter { session in
+            session.week == currentWeek && session.day <= frequency
+        }.sorted { $0.day < $1.day }
+        
+        // Remove any duplicates by day within the same week
+        let uniqueSessionsToShow = Dictionary(grouping: sessionsToShow, by: { $0.day })
+            .compactMap { (day, sessions) in sessions.first }
+            .sorted { $0.day < $1.day }
+        
+        print("🎯 Carousel: Generated \(allSessions.count) total sessions")
+        print("🎯 Carousel: Filtered to \(sessionsToShow.count) sessions for Week \(currentWeek)")
+        print("🎯 Carousel: Showing \(uniqueSessionsToShow.count) unique sessions (\(frequency) days/week)")
+        
+        // Debug: Print each session being shown
+        for session in uniqueSessionsToShow {
+            print("   📅 W\(session.week)D\(session.day): \(session.type)")
+        }
         
         return ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
@@ -1288,8 +1313,8 @@ extension TrainingView {
                         GeometryReader { geometry in
                             ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack(spacing: 40) {
-                                    ForEach(sessionsToShow.indices, id: \.self) { index in
-                                        let session = sessionsToShow[index]
+                                    ForEach(uniqueSessionsToShow.indices, id: \.self) { index in
+                                        let session = uniqueSessionsToShow[index]
                                         TrainingSessionCard(session: session, userLevel: profile.level)
                                             .frame(width: geometry.size.width - 40) // Full width minus padding for one card
                                             .onTapGesture {

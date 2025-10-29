@@ -774,6 +774,9 @@ struct SprintTimerProWorkoutView: View {
     }
     
     private func toggleWorkout() {
+        // Add haptic feedback for button press
+        WKInterfaceDevice.current().play(.click)
+        
         if isWorkoutActive {
             stopCurrentSprint()
         } else {
@@ -872,12 +875,18 @@ struct SprintTimerProWorkoutView: View {
     }
     
     private func nextSet() {
+        // Add haptic feedback for button press
+        WKInterfaceDevice.current().play(.click)
+        
         if currentSet < sets {
             currentSet += 1
             elapsedTime = 0
             
             // Update WorkoutWatchViewModel
             sprintWorkoutVM.currentRep = currentSet
+            
+            // Provide audio feedback
+            speak("Set \(currentSet) of \(sets)")
         } else {
             // All sprints completed - advance to cooldown phase
             if currentPhase == .sprints {
@@ -887,6 +896,9 @@ struct SprintTimerProWorkoutView: View {
     }
     
     private func endWorkout() {
+        // Add haptic feedback for button press
+        WKInterfaceDevice.current().play(.success)
+        
         stopWorkout()
         
         // Save workout data

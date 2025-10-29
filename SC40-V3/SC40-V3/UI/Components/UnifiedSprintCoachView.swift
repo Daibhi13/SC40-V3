@@ -555,7 +555,7 @@ struct UnifiedSprintCoachView: View {
                     .fill(.ultraThinMaterial)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
-                            .stroke(Color.orange, lineWidth: 2)
+                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
                     )
             )
             .padding(.horizontal, 20)
@@ -919,10 +919,10 @@ struct UnifiedSprintCoachView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.orange.opacity(0.2))
+                .fill(Color.white.opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.orange.opacity(0.5), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
                 )
         )
     }
@@ -1409,10 +1409,10 @@ struct UnifiedSprintCoachView: View {
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color.orange.opacity(0.2))
+                .fill(Color.white.opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.orange.opacity(0.5), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
                 )
         )
     }

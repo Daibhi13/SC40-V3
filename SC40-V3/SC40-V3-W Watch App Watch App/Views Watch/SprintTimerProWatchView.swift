@@ -22,28 +22,32 @@ struct SprintTimerProWatchView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                // SC40 Premium header
-                sc40Header
+                // Minimalist header
+                sitHeader
                 
-                // SC40 Sprint configuration
+                // Clean settings with better spacing
                 VStack(spacing: 16) {
-                    sc40SettingsSection
-                    sc40WorkoutPreview
+                    sitSettingsRows
                 }
                 .padding(.top, 24)
+                .padding(.bottom, 8)
                 
-                // SC40 start button
-                sc40StartButton
-                    .padding(.top, 32)
+                // Workout summary
+                workoutSummary
+                    .padding(.top, 16)
+                
+                Spacer(minLength: 24)
+                
+                // Enhanced start button
+                sitStartButton
                     .padding(.bottom, 20)
             }
         }
         .background(
             LinearGradient(
                 colors: [
-                    Color(red: 0.05, green: 0.05, blue: 0.15),
-                    Color(red: 0.1, green: 0.1, blue: 0.25),
-                    Color.black
+                    Color.black,
+                    Color(red: 0.05, green: 0.05, blue: 0.1)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
@@ -83,111 +87,70 @@ struct SprintTimerProWatchView: View {
         }
     }
     
-    // MARK: - SC40 Premium Header
-    private var sc40Header: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.8))
-                }
-                
-                Spacer()
-                
-                VStack(spacing: 2) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.yellow)
-                        
-                        Text("SPRINT TIMER PRO")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                            .tracking(0.5)
-                    }
-                    
-                    Text("Custom Sprint Workout")
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                
-                Spacer()
-                
-                Text(currentTime)
-                    .font(.system(size: 14, weight: .medium, design: .monospaced))
-                    .foregroundColor(.white.opacity(0.8))
+    // MARK: - Polished Header
+    private var sitHeader: some View {
+        HStack {
+            Button(action: { dismiss() }) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.white)
             }
-            
-            // Premium indicator bar
-            RoundedRectangle(cornerRadius: 2)
-                .fill(
-                    LinearGradient(
-                        colors: [.yellow, .orange, .yellow],
-                        startPoint: .leading,
-                        endPoint: .trailing
+            .frame(width: 30, height: 30)
+            .background(
+                Circle()
+                    .fill(Color.white.opacity(0.15))
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white.opacity(0.2), lineWidth: 0.5)
                     )
-                )
-                .frame(height: 3)
-                .padding(.horizontal, 40)
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 8)
-    }
-    
-    // MARK: - SC40 Settings Section
-    private var sc40SettingsSection: some View {
-        VStack(spacing: 16) {
-            // Section title
-            HStack {
-                Text("SPRINT CONFIGURATION")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.9))
-                    .tracking(0.8)
-                
-                Spacer()
-            }
-            .padding(.horizontal, 20)
+            )
             
-            // Settings grid
-            VStack(spacing: 12) {
-                // Distance setting
-                sc40SettingCard(
-                    icon: "ruler",
-                    label: "Distance",
-                    value: "\(selectedDistance)",
-                    unit: "YD",
-                    color: .cyan,
-                    action: { showDistancePicker = true }
-                )
-                
-                // Sets setting
-                sc40SettingCard(
-                    icon: "repeat",
-                    label: "Sets",
-                    value: "\(selectedSets)",
-                    unit: "REPS",
-                    color: .green,
-                    action: { showSetsPicker = true }
-                )
-                
-                // Rest setting
-                sc40SettingCard(
-                    icon: "clock",
-                    label: "Rest",
-                    value: "\(selectedRest)",
-                    unit: "MIN",
-                    color: .orange,
-                    action: { showRestPicker = true }
-                )
-            }
-            .padding(.horizontal, 16)
+            Spacer()
+            
+            Text(currentTime)
+                .font(.system(size: 15, weight: .medium, design: .monospaced))
+                .foregroundColor(.white.opacity(0.9))
         }
+        .padding(.horizontal, 18)
+        .padding(.top, 12)
+        .padding(.bottom, 8)
     }
     
-    // MARK: - SC40 Setting Card
-    private func sc40SettingCard(
-        icon: String,
+    // MARK: - Enhanced Settings Rows
+    private var sitSettingsRows: some View {
+        VStack(spacing: 14) {
+            // Distance Row
+            sitSettingRow(
+                label: "Distance",
+                value: "\(selectedDistance)",
+                unit: "YD",
+                color: .green,
+                action: { showDistancePicker = true }
+            )
+            
+            // Sets Row
+            sitSettingRow(
+                label: "Sets",
+                value: "\(selectedSets)",
+                unit: "reps",
+                color: .green,
+                action: { showSetsPicker = true }
+            )
+            
+            // Rest Row
+            sitSettingRow(
+                label: "Rest",
+                value: "\(selectedRest)",
+                unit: "min",
+                color: .green,
+                action: { showRestPicker = true }
+            )
+        }
+        .padding(.horizontal, 18)
+    }
+    
+    // MARK: - Clean Setting Row (No Icons)
+    private func sitSettingRow(
         label: String,
         value: String,
         unit: String,
@@ -195,169 +158,95 @@ struct SprintTimerProWatchView: View {
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            HStack(spacing: 12) {
-                // Icon with colored background
-                ZStack {
-                    Circle()
-                        .fill(color.opacity(0.2))
-                        .frame(width: 32, height: 32)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(color)
-                }
-                
+            HStack {
                 // Label
                 Text(label)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.white.opacity(0.9))
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.blue)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                // Value and unit
+                // Value and unit inline
                 HStack(spacing: 2) {
                     Text(value)
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundColor(color)
                     
                     Text(unit)
-                        .font(.system(size: 11, weight: .medium))
+                        .font(.system(size: 16, weight: .medium))
                         .foregroundColor(color)
-                }
-                
-                // Chevron
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.4))
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white.opacity(0.08))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.white.opacity(0.1), lineWidth: 1)
-                    )
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    // MARK: - SC40 Workout Preview
-    private var sc40WorkoutPreview: some View {
-        VStack(spacing: 12) {
-            HStack {
-                Text("WORKOUT PREVIEW")
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
-                    .foregroundColor(.white.opacity(0.9))
-                    .tracking(0.8)
-                
-                Spacer()
-            }
-            .padding(.horizontal, 20)
-            
-            VStack(spacing: 8) {
-                HStack {
-                    Image(systemName: "stopwatch")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.yellow)
-                    
-                    Text("Estimated Duration")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
-                    
-                    Spacer()
-                    
-                    Text("\(estimatedDuration) min")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
-                }
-                
-                HStack {
-                    Image(systemName: "flame")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.orange)
-                    
-                    Text("Total Volume")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
-                    
-                    Spacer()
-                    
-                    Text("\(selectedSets * selectedDistance) yards")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(.white)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white.opacity(0.05))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-                    )
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.2))
             )
-            .padding(.horizontal, 16)
         }
+        .buttonStyle(PlainButtonStyle())
     }
     
-    // MARK: - SC40 Premium Start Button
-    private var sc40StartButton: some View {
+    // MARK: - Workout Summary
+    private var workoutSummary: some View {
+        VStack(spacing: 8) {
+            HStack {
+                Image(systemName: "stopwatch")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(.yellow)
+                
+                Text("Total: \(selectedSets * selectedDistance) yards • ~\(estimatedDuration) min")
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+            }
+        }
+        .padding(.horizontal, 18)
+    }
+    
+    // MARK: - Enhanced Start Button
+    private var sitStartButton: some View {
         Button(action: {
-            print("🎯 SprintTimer Pro starting workout with: Distance=\(selectedDistance)yd, Sets=\(selectedSets), Rest=\(selectedRest)min")
+            print("SprintTimer Pro starting workout with: Distance=\(selectedDistance)yd, Sets=\(selectedSets), Rest=\(selectedRest)min")
             showWorkout = true
         }) {
-            VStack(spacing: 8) {
-                HStack(spacing: 8) {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 18, weight: .bold))
-                    
-                    Text("START SPRINT")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .tracking(1.0)
-                }
-                .foregroundColor(.black)
+            HStack(spacing: 10) {
+                Image(systemName: "bolt.fill")
+                    .font(.system(size: 16, weight: .bold))
                 
-                Text("Pro Workout Ready")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.black.opacity(0.7))
+                Text("START WORKOUT")
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                    .tracking(0.8)
             }
+            .foregroundColor(.black)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 ZStack {
-                    // Main gradient
                     LinearGradient(
                         colors: [
-                            Color(red: 1.0, green: 0.8, blue: 0.0),
-                            Color(red: 1.0, green: 0.6, blue: 0.0),
-                            Color(red: 1.0, green: 0.8, blue: 0.0)
+                            Color(red: 1.0, green: 0.85, blue: 0.0),
+                            Color(red: 1.0, green: 0.65, blue: 0.0)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                     
-                    // Subtle shine effect
                     LinearGradient(
                         colors: [
-                            Color.white.opacity(0.3),
-                            Color.clear,
-                            Color.white.opacity(0.1)
+                            Color.white.opacity(0.2),
+                            Color.clear
                         ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+                        startPoint: .top,
+                        endPoint: .bottom
                     )
                 }
             )
             .cornerRadius(16)
-            .shadow(color: Color.yellow.opacity(0.4), radius: 8, x: 0, y: 4)
+            .shadow(color: Color.yellow.opacity(0.3), radius: 6, x: 0, y: 3)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 18)
     }
     
-    // MARK: - SC40 Picker Sheet
+    // MARK: - Enhanced Picker Sheet
     private func sitPickerSheet<T: Hashable>(
         title: String,
         options: [T],
@@ -366,31 +255,43 @@ struct SprintTimerProWatchView: View {
     ) -> some View {
         NavigationView {
             VStack(spacing: 0) {
-                // Premium header
-                VStack(spacing: 8) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "crown.fill")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(.yellow)
-                        
-                        Text("SPRINT TIMER PRO")
-                            .font(.system(size: 12, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-                            .tracking(0.5)
+                // Enhanced header
+                HStack {
+                    Button("Back") {
+                        // Dismiss the appropriate picker
+                        if title == "Distance" { showDistancePicker = false }
+                        else if title == "Sets" { showSetsPicker = false }
+                        else if title == "Rest Time" { showRestPicker = false }
                     }
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.yellow)
                     
-                    Text("Select \(title)")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+                    Spacer()
+                    
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Spacer()
+                    
+                    Button("Done") {
+                        // Dismiss the appropriate picker
+                        if title == "Distance" { showDistancePicker = false }
+                        else if title == "Sets" { showSetsPicker = false }
+                        else if title == "Rest Time" { showRestPicker = false }
+                    }
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.yellow)
                 }
-                .padding(.top, 16)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 18)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
                 
-                // Picker
+                // Enhanced picker
                 Picker(title, selection: selectedValue) {
                     ForEach(options, id: \.self) { option in
                         Text(formatter(option))
-                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .font(.system(size: 17, weight: .medium, design: .rounded))
                             .foregroundColor(.white)
                     }
                 }
@@ -401,28 +302,14 @@ struct SprintTimerProWatchView: View {
             .background(
                 LinearGradient(
                     colors: [
-                        Color(red: 0.05, green: 0.05, blue: 0.15),
-                        Color(red: 0.1, green: 0.1, blue: 0.25),
-                        Color.black
+                        Color.black,
+                        Color(red: 0.05, green: 0.05, blue: 0.1)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
             )
-            .navigationTitle("")
             .navigationBarHidden(true)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") {
-                        // Dismiss the appropriate picker
-                        if title == "Distance" { showDistancePicker = false }
-                        else if title == "Sets" { showSetsPicker = false }
-                        else if title == "Rest Time" { showRestPicker = false }
-                    }
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.yellow)
-                }
-            }
         }
     }
     
@@ -434,11 +321,11 @@ struct SprintTimerProWatchView: View {
     }
     
     private var estimatedDuration: Int {
-        let sprintTime = selectedSets * 30 // 30 seconds per sprint (estimate)
+        let sprintTime = selectedSets * 15 // 15 seconds per sprint (realistic)
         let restTime = (selectedSets - 1) * selectedRest * 60 // rest between sets
-        let warmupCooldown = 300 // 5 minutes
+        let setupTime = 120 // 2 minutes setup
         
-        return (sprintTime + restTime + warmupCooldown) / 60
+        return max(1, (sprintTime + restTime + setupTime) / 60)
     }
 }
 

@@ -679,7 +679,7 @@ struct LeaderboardModuleView: View {
             .font(.adaptiveTitle)
         Text("Adaptive spacing: \(Int(WatchAdaptiveSizing.spacing))px")
             .font(.adaptiveBody)
-        Text("Module size: \(Int(WatchAdaptiveSizing.smallModuleSize.width))×\(Int(WatchAdaptiveSizing.smallModuleSize.height))")
+        Text("Module size: \(Int(WatchAdaptiveSizing.smallModuleSize.width))x\(Int(WatchAdaptiveSizing.smallModuleSize.height))")
             .font(.adaptiveCaption)
     }
     .adaptivePadding()

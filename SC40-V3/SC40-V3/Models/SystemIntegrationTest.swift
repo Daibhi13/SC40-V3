@@ -168,7 +168,7 @@ class SystemIntegrationTest: ObservableObject {
         
         // Test trend analysis
         let trends = collector.analyzePerformanceTrends()
-        let hasValidTrends = true // Simplified test
+        let hasValidTrends = collector.performanceHistory.count >= 3
         
         // Test optimization recommendations
         let testPerformanceData = AlgorithmicSessionGenerator.PerformanceData(

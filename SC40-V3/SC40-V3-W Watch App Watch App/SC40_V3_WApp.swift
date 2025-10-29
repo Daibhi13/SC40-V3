@@ -5,12 +5,15 @@
 //  Created by David O'Connell on 28/08/2025.
 //
 
-import SwiftUI
+// This file is deprecated - using SC40_V3_W_Watch_AppApp.swift as main entry point
+// Keeping for reference only
 
-struct SC40_V3_W_Watch_AppApp: App {
-    var body: some Scene {
-        WindowGroup {
-            ContentView()
-        }
-    }
-}
+// import SwiftUI
+
+// struct SC40_V3_W_Watch_AppApp: App {
+//     var body: some Scene {
+//         WindowGroup {
+//             ContentView()
+//         }
+//     }
+// }

@@ -98,7 +98,7 @@ struct WatchSessionPlaybackView_Previews: PreviewProvider {
             type: "Start",
             focus: "Sprint Mechanics",
             sprints: [sprintSet],
-            accessoryWork: ["W → S drills 3×5 yd → C | Target: 5.00s | Rest: 90s", "W → S drills 3×5 yd → C | Target: 4.98s | Rest: 92s"],
+            accessoryWork: ["W → S drills 3x5 yd → C | Target: 5.00s | Rest: 90s", "W → S drills 3x5 yd → C | Target: 4.98s | Rest: 92s"],
             notes: ""
         )
         WatchSessionPlaybackView(session: session)

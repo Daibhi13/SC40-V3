@@ -458,7 +458,7 @@ struct LiveSessionCard: View {
         }
         
         if let sprint = mainSprint {
-            return "\(sprint.reps)×\(sprint.distanceYards)yd"
+            return "\(sprint.reps)x\(sprint.distanceYards)yd"
         }
         
         return "Mixed Sprints"
@@ -517,7 +517,7 @@ struct SessionCard: View {
             Spacer()
             
             // Bottom info - HARDCODED (Legacy)
-            Text("5×40yd")
+            Text("5x40yd")
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(.white)
         }

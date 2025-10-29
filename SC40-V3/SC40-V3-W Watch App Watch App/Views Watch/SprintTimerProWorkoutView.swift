@@ -1122,7 +1122,7 @@ struct SprintTimerProWorkoutView: View {
                 .foregroundColor(.white)
                 .tracking(1)
             
-            Text("\(distance) yards × \(sets) sets")
+            Text("\(distance) yards x \(sets) sets")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)

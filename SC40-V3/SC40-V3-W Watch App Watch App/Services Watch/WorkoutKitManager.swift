@@ -269,9 +269,11 @@ class WorkoutKitManager: NSObject, ObservableObject {
     // MARK: - Workout Timer
     
     private func startWorkoutTimer() {
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+        let startTime = Date()
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             Task { @MainActor in
-                self.elapsedTime += 1
+                // Calculate elapsed time from start time for accuracy
+                self.elapsedTime = Date().timeIntervalSince(startTime)
             }
         }
     }

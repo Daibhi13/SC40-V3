@@ -17,7 +17,10 @@ struct SprintTimerProWorkoutView: View {
     @State private var currentSet = 1
     @State private var isWorkoutActive = false
     @State private var workoutTimer: Timer?
+    @State private var phaseTimer: Timer?
     @State private var elapsedTime: TimeInterval = 0
+    @State private var sprintStartTime: Date?
+    @State private var phaseElapsedTime: TimeInterval = 0
     @State private var currentPhase: WorkoutPhase = .warmup
     @State private var restTimer: Timer?
     @State private var restTimeRemaining: TimeInterval = 0
@@ -72,17 +75,17 @@ struct SprintTimerProWorkoutView: View {
     private var currentPhaseProgress: Double {
         switch currentPhase {
         case .warmup:
-            return min(elapsedTime / 180.0, 1.0) // 3 minutes warmup
+            return min(phaseElapsedTime / 180.0, 1.0) // 3 minutes warmup
         case .stretch:
-            return min(elapsedTime / 120.0, 1.0) // 2 minutes stretch
+            return min(phaseElapsedTime / 120.0, 1.0) // 2 minutes stretch
         case .drills:
-            return min(elapsedTime / 300.0, 1.0) // 5 minutes drills
+            return min(phaseElapsedTime / 300.0, 1.0) // 5 minutes drills
         case .strides:
-            return min(elapsedTime / 180.0, 1.0) // 3 minutes strides
+            return min(phaseElapsedTime / 180.0, 1.0) // 3 minutes strides
         case .sprints:
             return Double(currentSet) / Double(totalSets)
         case .cooldown:
-            return min(elapsedTime / 300.0, 1.0) // 5 minutes cooldown
+            return min(phaseElapsedTime / 300.0, 1.0) // 5 minutes cooldown
         case .complete:
             return 1.0
         }
@@ -91,17 +94,17 @@ struct SprintTimerProWorkoutView: View {
     private var phaseTimeRemaining: TimeInterval {
         switch currentPhase {
         case .warmup:
-            return max(180.0 - elapsedTime, 0)
+            return max(180.0 - phaseElapsedTime, 0)
         case .stretch:
-            return max(120.0 - elapsedTime, 0)
+            return max(120.0 - phaseElapsedTime, 0)
         case .drills:
-            return max(300.0 - elapsedTime, 0)
+            return max(300.0 - phaseElapsedTime, 0)
         case .strides:
-            return max(180.0 - elapsedTime, 0)
+            return max(180.0 - phaseElapsedTime, 0)
         case .sprints:
             return restTimeRemaining
         case .cooldown:
-            return max(300.0 - elapsedTime, 0)
+            return max(300.0 - phaseElapsedTime, 0)
         case .complete:
             return 0
         }
@@ -786,6 +789,7 @@ struct SprintTimerProWorkoutView: View {
     
     private func startSprint() {
         isWorkoutActive = true
+        sprintStartTime = Date()
         elapsedTime = 0
         
         // Update WorkoutWatchViewModel
@@ -795,9 +799,12 @@ struct SprintTimerProWorkoutView: View {
         // Sync to phone
         syncWorkoutStateToPhone()
         
-        // Start workout timer
+        // Start workout timer with Date-based calculation
         workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            elapsedTime += 0.1
+            // Calculate elapsed time from start time for accuracy
+            if let startTime = sprintStartTime {
+                elapsedTime = Date().timeIntervalSince(startTime)
+            }
             // Update heart rate from workout manager during active sprint
             if workoutManager.currentHeartRate > 0 {
                 heartRate = workoutManager.currentHeartRate
@@ -918,17 +925,17 @@ struct SprintTimerProWorkoutView: View {
         isWorkoutActive = false
         isResting = false
         workoutTimer?.invalidate()
+        phaseTimer?.invalidate()
         restTimer?.invalidate()
         workoutTimer = nil
+        phaseTimer = nil
         restTimer = nil
         // Use real resting heart rate or reasonable fallback
         heartRate = workoutManager.currentHeartRate > 0 ? max(workoutManager.currentHeartRate - 40, 60) : 70
     }
     private func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.5
-        speechSynth.speak(utterance)
+        // Use unified voice manager for consistent voice settings
+        UnifiedVoiceManager.shared.speak(text)
     }
     
     // MARK: - Integrated Autonomous Workout Lifecycle
@@ -994,38 +1001,38 @@ struct SprintTimerProWorkoutView: View {
         currentPhase = .warmup
         elapsedTime = 0
         
-        // Start the main workout timer for phase progression
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+        // Start separate phase progression timer
+        phaseTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             self.updatePhaseProgression()
         }
     }
     
     private func updatePhaseProgression() {
-        elapsedTime += 1.0
+        phaseElapsedTime += 1.0
         
         // Check for automatic phase transitions
         switch currentPhase {
         case .warmup:
-            if elapsedTime >= 180 { // 3 minutes
+            if phaseElapsedTime >= 180 { // 3 minutes
                 advanceToNextPhase()
             }
         case .stretch:
-            if elapsedTime >= 120 { // 2 minutes (reset elapsedTime on phase change)
+            if phaseElapsedTime >= 120 { // 2 minutes
                 advanceToNextPhase()
             }
         case .drills:
-            if elapsedTime >= 300 { // 5 minutes
+            if phaseElapsedTime >= 300 { // 5 minutes
                 advanceToNextPhase()
             }
         case .strides:
-            if elapsedTime >= 180 { // 3 minutes
+            if phaseElapsedTime >= 180 { // 3 minutes
                 advanceToNextPhase()
             }
         case .sprints:
             // Sprint phase managed by user interaction and rest timers
             break
         case .cooldown:
-            if elapsedTime >= 300 { // 5 minutes
+            if phaseElapsedTime >= 300 { // 5 minutes
                 advanceToNextPhase()
             }
         case .complete:
@@ -1046,8 +1053,8 @@ struct SprintTimerProWorkoutView: View {
                 currentPhase = nextPhase
             }
             
-            // Reset elapsed time for the new phase
-            elapsedTime = 0
+            // Reset phase elapsed time for the new phase
+            phaseElapsedTime = 0
             
             // Provide haptic and audio feedback
             WKInterfaceDevice.current().play(.notification)

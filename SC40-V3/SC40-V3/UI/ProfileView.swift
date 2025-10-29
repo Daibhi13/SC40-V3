@@ -119,60 +119,96 @@ struct ProfileView: View {
                     
                     // Profile Information
                     VStack(spacing: 16) {
+                        // Personal Information Section
+                        ProfileSectionHeader(title: "Personal Information", delay: 1.3, showContent: showContent)
+                        
+                        ProfileInfoRow(
+                            label: "Name",
+                            value: userProfileVM.profile.name.isEmpty ? "Your Name" : userProfileVM.profile.name,
+                            showContent: showContent,
+                            delay: 1.4
+                        )
+                        
                         ProfileInfoRow(
                             label: "Gender",
                             value: userProfileVM.profile.gender.isEmpty ? "Male" : userProfileVM.profile.gender,
                             showContent: showContent,
-                            delay: 1.3
+                            delay: 1.5
                         )
                         
                         ProfileInfoRow(
                             label: "Age",
-                            value: userProfileVM.profile.age == 0 ? "25" : "\(userProfileVM.profile.age)",
+                            value: userProfileVM.profile.age == 0 ? "25 years" : "\(userProfileVM.profile.age) years",
                             showContent: showContent,
-                            delay: 1.4
+                            delay: 1.6
+                        )
+                        
+                        // Body Metrics Section
+                        ProfileSectionHeader(title: "Body Metrics", delay: 1.7, showContent: showContent)
+                        
+                        ProfileInfoRow(
+                            label: "Height",
+                            value: formatHeight(Int(userProfileVM.profile.height)),
+                            showContent: showContent,
+                            delay: 1.8
                         )
                         
                         ProfileInfoRow(
                             label: "Weight",
                             value: (userProfileVM.profile.weight ?? 0) == 0 ? "170.0 lbs" : "\(String(format: "%.1f", userProfileVM.profile.weight ?? 170.0)) lbs",
                             showContent: showContent,
-                            delay: 1.5
+                            delay: 1.9
                         )
                         
+                        // Performance Section
+                        ProfileSectionHeader(title: "Performance", delay: 2.0, showContent: showContent)
+                        
                         ProfileInfoRow(
-                            label: "Height",
-                            value: userProfileVM.profile.height == 0 ? "70 in" : "\(userProfileVM.profile.height) in",
+                            label: "40-Yard Dash PB",
+                            value: "\(String(format: "%.2f", userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime)) seconds",
                             showContent: showContent,
-                            delay: 1.6
+                            delay: 2.1
                         )
                         
                         ProfileInfoRow(
                             label: "Fitness Level",
-                            value: userProfileVM.profile.level.isEmpty ? "Intermediate" : userProfileVM.profile.level,
+                            value: userProfileVM.profile.level.isEmpty ? "Intermediate" : userProfileVM.profile.level.uppercased(),
                             showContent: showContent,
-                            delay: 1.7
+                            delay: 2.2
+                        )
+                        
+                        // Training Section
+                        ProfileSectionHeader(title: "Training Schedule", delay: 2.3, showContent: showContent)
+                        
+                        ProfileInfoRow(
+                            label: "Training Frequency",
+                            value: userProfileVM.profile.frequency == 0 ? "3 days/week" : "\(userProfileVM.profile.frequency) days/week",
+                            showContent: showContent,
+                            delay: 2.4
                         )
                         
                         ProfileInfoRow(
-                            label: "Training Days/Week",
-                            value: userProfileVM.profile.frequency == 0 ? "3" : "\(userProfileVM.profile.frequency)",
+                            label: "Leaderboard",
+                            value: userProfileVM.profile.leaderboardOptIn ? "Participating" : "Not participating",
                             showContent: showContent,
-                            delay: 1.8
+                            delay: 2.5
+                        )
+                        
+                        // Current Progress Section
+                        ProfileSectionHeader(title: "Current Progress", delay: 2.6, showContent: showContent)
+                        
+                        ProfileInfoRow(
+                            label: "Current Week",
+                            value: "Week \(userProfileVM.profile.currentWeek) of 12",
+                            showContent: showContent,
+                            delay: 2.7
                         )
                         
                         ProfileInfoRow(
-                            label: "Leaderboard Opt-in",
-                            value: userProfileVM.profile.leaderboardOptIn ? "Yes" : "No",
+                            label: "Current Day",
+                            value: "Day \(userProfileVM.profile.currentDay)",
                             showContent: showContent,
-                            delay: 1.9
-                        )
-                        
-                        ProfileInfoRow(
-                            label: "PB (40yd)",
-                            value: "\(String(format: "%.2f", userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime)) s",
-                            showContent: showContent,
-                            delay: 2.0
+                            delay: 2.8
                         )
                     }
                     
@@ -229,8 +265,40 @@ struct ProfileView: View {
             }
         }
         .sheet(isPresented: $showEditProfile) {
-            EditProfileView(userProfileVM: userProfileVM, isPresented: .constant(true))
+            EditProfileView(userProfileVM: userProfileVM, isPresented: $showEditProfile)
         }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func formatHeight(_ heightInInches: Int) -> String {
+        if heightInInches == 0 {
+            return "5ft 10in"
+        }
+        let feet = heightInInches / 12
+        let inches = heightInInches % 12
+        return "\(feet)ft \(inches)in"
+    }
+}
+
+// MARK: - Profile Components
+
+struct ProfileSectionHeader: View {
+    let title: String
+    let delay: Double
+    let showContent: Bool
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 18, weight: .bold))
+                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+            
+            Spacer()
+        }
+        .padding(.top, 8)
+        .opacity(showContent ? 1 : 0)
+        .animation(.easeInOut(duration: 0.8).delay(delay), value: showContent)
     }
 }
 

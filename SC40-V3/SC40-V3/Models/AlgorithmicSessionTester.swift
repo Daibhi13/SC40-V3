@@ -7,14 +7,14 @@ struct AlgorithmicSessionTester {
     
     static func testAllSessionTypes() {
         print("🧪 Testing Algorithmic Session Generation - All Session Types")
-        print("=" * 60)
+        print(String(repeating: "=", count: 60))
         
         let levels = ["Beginner", "Intermediate", "Advanced", "Elite"]
         let frequencies = [1, 2, 3, 4, 5, 6, 7]
         
         for level in levels {
             print("\n📊 Testing Level: \(level)")
-            print("-" * 40)
+            print(String(repeating: "-", count: 40))
             
             for frequency in frequencies {
                 testSessionGeneration(level: level, frequency: frequency)
@@ -86,7 +86,7 @@ struct AlgorithmicSessionTester {
     
     private static func testPerformanceBasedOptimization() {
         print("\n🎯 Testing Performance-Based Optimization:")
-        print("-" * 40)
+        print(String(repeating: "-", count: 40))
         
         // Test high fatigue scenario
         let highFatigueData = AlgorithmicSessionGenerator.PerformanceData(
@@ -188,7 +188,7 @@ struct AlgorithmicSessionTester {
     
     private static func testScienceBasedEvolution() {
         print("\n🧬 Testing Science-Based Session Evolution:")
-        print("-" * 40)
+        print(String(repeating: "-", count: 40))
         
         // Test session generation with different algorithmic parameters
         let baselineWeek = generateTestWeek(weekNumber: 1)
@@ -306,12 +306,7 @@ struct AlgorithmicSessionTester {
 }
 
 // MARK: - String Extension for Test Formatting
-
-extension String {
-    static func *(lhs: String, rhs: Int) -> String {
-        return String(repeating: lhs, count: rhs)
-    }
-}
+// Note: String * operator already defined in other test files
 
 // MARK: - Test Runner
 
@@ -321,12 +316,12 @@ extension AlgorithmicSessionTester {
     /// Run comprehensive tests in debug builds
     static func runComprehensiveTests() {
         print("🚀 Starting Comprehensive Algorithmic Session Tests")
-        print("=" * 80)
+        print(String(repeating: "=", count: 80))
         
         testAllSessionTypes()
         
         print("\n🎉 All tests completed successfully!")
-        print("=" * 80)
+        print(String(repeating: "=", count: 80))
     }
 }
 #endif

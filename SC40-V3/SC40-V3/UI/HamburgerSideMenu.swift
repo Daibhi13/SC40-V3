@@ -175,20 +175,30 @@ struct HamburgerSideMenu<MenuType>: View {
                 VStack(spacing: 16) {
                     HStack {
                         HamburgerMenuRow(icon: "figure.run", label: "Accelerate", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
-                            // Accelerate action
-                            dismissMenu()
+                            // Navigate to main training view
+                            selectMenuItem(MenuSelection.main as! MenuType)
                         })
                     }
                     .padding(.horizontal, 24)
 
                     HStack(spacing: 24) {
-                        Button(action: { /* Facebook action */ }) {
+                        Button(action: { 
+                            // Open Facebook page
+                            if let url = URL(string: "https://www.facebook.com/SprintCoach40") {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
                             Image(systemName: "f.circle.fill")
                                 .font(.system(size: 24))
                                 .foregroundColor(Color(red: 0.2, green: 0.6, blue: 1.0))
                         }
                         
-                        Button(action: { /* Instagram action */ }) {
+                        Button(action: { 
+                            // Open Instagram page
+                            if let url = URL(string: "https://www.instagram.com/sprintcoach40") {
+                                UIApplication.shared.open(url)
+                            }
+                        }) {
                             Image(systemName: "camera.circle.fill")
                                 .font(.system(size: 24))
                                 .foregroundColor(Color(red: 0.8, green: 0.3, blue: 0.8))
@@ -240,6 +250,10 @@ struct HamburgerSideMenu<MenuType>: View {
     }
     
     private func selectMenuItem(_ selection: MenuType) {
+        // Add haptic feedback for menu selection
+        let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+        impactFeedback.impactOccurred()
+        
         onSelect(selection)
         dismissMenu()
     }

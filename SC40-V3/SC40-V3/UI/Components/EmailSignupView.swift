@@ -228,13 +228,8 @@ struct EmailSignupView: View {
         
         // Optional: Perform background authentication after UI flow completes
         Task.detached {
-            do {
-                await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
-                print("✅ Background email authentication completed")
-            } catch {
-                print("⚠️ Background email authentication failed: \(error.localizedDescription)")
-                // Don't show error to user since they've already proceeded
-            }
+            await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
+            print("✅ Background email authentication completed")
         }
     }
     

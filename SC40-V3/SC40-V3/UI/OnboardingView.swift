@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 // Import UserProfileViewModel from Models
 struct OnboardingView: View {
@@ -14,9 +15,9 @@ struct OnboardingView: View {
     @State private var heightFeet = 5
     @State private var heightInches = 10
     @State private var weight = 170
-    @State private var fitnessLevel = "Intermediate"
+    @State private var fitnessLevel = "Beginner"
     @State private var hasUserManuallySelectedLevel = false
-    @State private var daysAvailable = 3
+    @State private var daysAvailable = 7
     @State private var pbSeconds: Int = 5
     @State private var pbTenthsHundredths: Int = 25
     @State private var leaderboardOptIn: Bool = true
@@ -347,8 +348,8 @@ struct OnboardingView: View {
                                 .foregroundColor(.white.opacity(0.6))
                         }
                         .onAppear {
-                            // Only auto-set level if user hasn't manually selected one
-                            if !hasUserManuallySelectedLevel && fitnessLevel == "Intermediate" {
+                            // Only auto-set level if user hasn't manually selected one AND it's still default
+                            if !hasUserManuallySelectedLevel && fitnessLevel == "Beginner" {
                                 fitnessLevel = autoLevel
                             }
                         }
@@ -480,9 +481,10 @@ struct OnboardingView: View {
                         .font(.caption)
                         .bold()
                     
-                    Text("All 1-7 day options are available regardless of your level")
+                    Text("Whatever the level, all 1–7 day options are always available")
                         .font(.caption2)
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(.green)
+                        .bold()
                         .padding(.bottom, 4)
                     
                     Stepper("Days per week: \(daysAvailable)", value: $daysAvailable, in: 1...7)
@@ -611,6 +613,17 @@ struct OnboardingView: View {
             print("   trainingFrequency: \(UserDefaults.standard.integer(forKey: "trainingFrequency"))")
             print("   personalBest40yd: \(UserDefaults.standard.double(forKey: "personalBest40yd"))")
             
+            // Validate data consistency
+            let verifyLevel = UserDefaults.standard.string(forKey: "userLevel")
+            let verifyFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            
+            if verifyLevel != fitnessLevel {
+                print("⚠️ LEVEL MISMATCH: Saved '\(verifyLevel ?? "nil")' != Selected '\(fitnessLevel)'")
+            }
+            if verifyFreq != daysAvailable {
+                print("⚠️ FREQUENCY MISMATCH: Saved '\(verifyFreq)' != Selected '\(daysAvailable)'")
+            }
+            
             // Trigger workflow and sync
             Task {
                 await workflowManager.handleTrainingPreferencesSubmitted(
@@ -628,6 +641,10 @@ struct OnboardingView: View {
                     // Force session regeneration with updated profile
                     userProfileVM.refreshAdaptiveProgram()
                     print("🔄 Sessions regenerated with updated profile")
+                    
+                    // Force UI update by triggering objectWillChange
+                    userProfileVM.objectWillChange.send()
+                    print("🔄 UI update triggered")
                 }
                 
                 // Sync onboarding data to Watch

@@ -487,7 +487,6 @@ struct WatchConnectivityTestView: View {
                 addTestResult(result)
                 isRunningTests = false
             }
-            
         } catch {
             await MainActor.run {
                 let result = TestResult(

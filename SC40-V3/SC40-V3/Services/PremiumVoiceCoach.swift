@@ -240,7 +240,9 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
             queue: .main
         ) { [weak self] notification in
             if let performance = notification.object as? WorkoutResult {
-                self?.adaptCoachingToPerformance(performance)
+                Task { @MainActor in
+                    self?.adaptCoachingToPerformance(performance)
+                }
             }
         }
     }
@@ -571,12 +573,52 @@ class PremiumVoiceCoach: NSObject, ObservableObject {
         utterance.pitchMultiplier = 1.0
         utterance.preUtteranceDelay = 0.1
         utterance.postUtteranceDelay = 0.2
+        
+        // Sync voice settings to Watch
+        syncVoiceSettingsToWatch()
     }
     
     private func configureBasicVoice(_ utterance: AVSpeechUtterance) {
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = 0.5
         utterance.volume = 0.8
+        
+        // Sync basic voice settings to Watch
+        syncBasicVoiceSettingsToWatch()
+    }
+    
+    // MARK: - Watch Synchronization
+    
+    private func syncVoiceSettingsToWatch() {
+        let voiceSettings: [String: Any] = [
+            "voiceIdentifier": selectedVoice.identifier,
+            "speechRate": speechRate,
+            "speechVolume": volume,
+            "language": selectedVoice.language,
+            "isVoiceEnabled": true,
+            "voiceName": selectedVoice.name
+        ]
+        
+        // Send to Watch via WatchConnectivity
+        Task {
+            await WatchConnectivityManager.shared.syncVoiceSettings(voiceSettings)
+        }
+    }
+    
+    private func syncBasicVoiceSettingsToWatch() {
+        let voiceSettings: [String: Any] = [
+            "voiceIdentifier": "com.apple.ttsbundle.Samantha-compact",
+            "speechRate": 0.5,
+            "speechVolume": 0.8,
+            "language": "en-US",
+            "isVoiceEnabled": true,
+            "voiceName": "Default Coach"
+        ]
+        
+        // Send to Watch via WatchConnectivity
+        Task {
+            await WatchConnectivityManager.shared.syncVoiceSettings(voiceSettings)
+        }
     }
     
     // MARK: - Session Analysis

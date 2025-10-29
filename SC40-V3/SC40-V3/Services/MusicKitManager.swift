@@ -79,9 +79,18 @@ class MusicKitManager: ObservableObject {
     
     private func updateCurrentSong() {
         // Update current song from player state
-        if let currentEntry = player.queue.currentEntry,
-           let song = currentEntry.item as? Song {
-            currentSong = song
+        if let currentEntry = player.queue.currentEntry {
+            // Handle different types of music items
+            switch currentEntry.item {
+            case let song as Song:
+                currentSong = song
+            case let track as Track:
+                // Convert track to song if possible, or handle differently
+                print("🎵 Currently playing track: \(track.title)")
+                currentSong = nil // Track is not a Song type
+            default:
+                currentSong = nil
+            }
         }
         print("🎵 Now playing item changed")
     }
@@ -193,9 +202,19 @@ class MusicKitManager: ObservableObject {
             // Load playlist tracks
             let detailedPlaylist = try await playlist.with(.tracks)
             if let tracks = detailedPlaylist.tracks {
-                let songs = Array(tracks.compactMap { $0 as? Song })
-                await play(songs)
-                currentPlaylist = MusicItemCollection(songs)
+                // Handle tracks properly - they might not all be Songs
+                let playableItems = Array(tracks)
+                let songs = playableItems.compactMap { track -> Song? in
+                    // Only return if it's actually a Song
+                    return track as? Song
+                }
+                
+                if !songs.isEmpty {
+                    await play(songs)
+                    currentPlaylist = MusicItemCollection(songs)
+                } else {
+                    print("No playable songs found in playlist")
+                }
             }
         } catch {
             print("Failed to play playlist: \(error)")

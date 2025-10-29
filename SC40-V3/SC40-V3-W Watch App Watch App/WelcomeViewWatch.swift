@@ -39,8 +39,26 @@ struct WelcomeViewWatch: View {
             }
             .ignoresSafeArea()
             VStack(spacing: 16) {
-            Text("Welcome to SC40")
-                .font(.headline)
+            // Sprint branding with icon
+            HStack(spacing: 8) {
+                Image(systemName: "figure.run")
+                    .font(.title2)
+                    .foregroundColor(.yellow)
+                Text("SC40-V3")
+                    .font(.headline.bold())
+                    .foregroundColor(.white)
+            }
+            
+            Text("Sprint Training")
+                .font(.caption)
+                .foregroundColor(.gray)
+                .padding(.bottom, 4)
+            
+            Text("Ready, Sprinter?")
+                .font(.title3)
+                .foregroundColor(.white)
+                .padding(.bottom, 2)
+            
             Text("Enter your name to begin")
                 .font(.caption2)
                 .foregroundColor(.gray)

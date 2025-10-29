@@ -1,5 +1,10 @@
 import SwiftUI
 
+// MARK: - Notification Names
+extension Notification.Name {
+    static let profileDataUpdated = Notification.Name("profileDataUpdated")
+}
+
 struct ContentView: View {
     var body: some View {
         WatchMainView()
@@ -271,8 +276,10 @@ struct SprintTimerProCard: View {
 // Card 0: User Profile - ENTRY POINT
 struct UserProfileCard: View {
     @State private var userLevel: String = "Intermediate"
-    @State private var userName: String = "David"
+    @State private var userName: String = "User"
     @State private var frequency: Int = 3
+    @State private var personalBest: Double = 0.0
+    @State private var currentWeek: Int = 1
     
     var body: some View {
         VStack(spacing: 8) {
@@ -312,8 +319,8 @@ struct UserProfileCard: View {
             // Enhanced stats with progress
             VStack(spacing: 4) {
                 HStack(spacing: 8) {
-                    StatBadge(label: "Personal Best", value: "5.2s", color: .yellow)
-                    StatBadge(label: "Current Week", value: "1", color: .cyan)
+                    StatBadge(label: "Personal Best", value: personalBest > 0 ? String(format: "%.1fs", personalBest) : "N/A", color: .yellow)
+                    StatBadge(label: "Current Week", value: "\(currentWeek)", color: .cyan)
                 }
                 
                 HStack(spacing: 4) {
@@ -356,16 +363,38 @@ struct UserProfileCard: View {
             // DYNAMIC PROFILE REFRESH: Load current profile from UserDefaults
             refreshProfileData()
         }
+        .onReceive(NotificationCenter.default.publisher(for: UserDefaults.didChangeNotification)) { _ in
+            // REAL-TIME UPDATES: Refresh profile when UserDefaults change (from iPhone sync)
+            DispatchQueue.main.async {
+                refreshProfileData()
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .profileDataUpdated)) { _ in
+            // IMMEDIATE UPDATES: Refresh profile when specifically notified by connectivity handler
+            DispatchQueue.main.async {
+                refreshProfileData()
+                print("⚡ Watch: Profile UI updated immediately from iPhone sync")
+            }
+        }
     }
     
     private func refreshProfileData() {
         // Read from UserDefaults (synced from iPhone onboarding)
-        userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
-        userName = UserDefaults.standard.string(forKey: "user_name") ?? "SC40 Athlete"
-        frequency = UserDefaults.standard.integer(forKey: "trainingFrequency") > 0 ? 
-                   UserDefaults.standard.integer(forKey: "trainingFrequency") : 3
+        userLevel = UserDefaults.standard.string(forKey: "SC40_UserLevel") ?? 
+                   UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+        userName = UserDefaults.standard.string(forKey: "SC40_UserName") ?? 
+                  UserDefaults.standard.string(forKey: "user_name") ?? "SC40 Athlete"
+        frequency = UserDefaults.standard.integer(forKey: "SC40_UserFrequency") > 0 ? 
+                   UserDefaults.standard.integer(forKey: "SC40_UserFrequency") : 
+                   (UserDefaults.standard.integer(forKey: "trainingFrequency") > 0 ? 
+                    UserDefaults.standard.integer(forKey: "trainingFrequency") : 3)
+        personalBest = UserDefaults.standard.double(forKey: "SC40_TargetTime") > 0 ?
+                      UserDefaults.standard.double(forKey: "SC40_TargetTime") :
+                      UserDefaults.standard.double(forKey: "personalBest40yd")
+        currentWeek = UserDefaults.standard.integer(forKey: "SC40_CurrentWeek") > 0 ?
+                     UserDefaults.standard.integer(forKey: "SC40_CurrentWeek") : 1
         
-        print("🔄 Watch: Profile refreshed - Level: \(userLevel), Frequency: \(frequency) days")
+        print("🔄 Watch: Profile refreshed - Name: \(userName), Level: \(userLevel), Frequency: \(frequency) days, PB: \(personalBest)s, Week: \(currentWeek)")
     }
 }
 

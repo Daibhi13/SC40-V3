@@ -27,7 +27,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             logger.info("Loaded user profile for \(loaded.name)")
         } else {
             // Check for onboarding data in UserDefaults first
-            let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+            let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
             let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
             let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
             
@@ -42,7 +42,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
                 personalBests: savedPB > 0 ? ["40yd": savedPB] : [:], // Use saved PB if available
                 level: savedLevel, // Use saved level from onboarding
                 baselineTime: savedPB > 0 ? savedPB : 0.0, // Use saved baseline time
-                frequency: savedFrequency > 0 ? savedFrequency : 3, // Use saved frequency
+                frequency: savedFrequency > 0 ? savedFrequency : 7, // Default to 7 days - all options available
                 currentWeek: 1,
                 currentDay: 1,
                 leaderboardOptIn: true
@@ -92,7 +92,20 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         profile.currentWeek = savedWeek > 0 ? savedWeek : profile.currentWeek
         profile.currentDay = savedDay > 0 ? savedDay : profile.currentDay
         
-        logger.info("Profile refreshed from UserDefaults - Level: \(savedLevel), Frequency: \(savedFrequency)")
+        // Force save the updated profile to ensure persistence
+        saveProfile()
+        
+        // Also update UserDefaults with current profile state for consistency
+        UserDefaults.standard.set(profile.level, forKey: "userLevel")
+        UserDefaults.standard.set(profile.frequency, forKey: "trainingFrequency")
+        UserDefaults.standard.set(profile.baselineTime, forKey: "personalBest40yd")
+        UserDefaults.standard.synchronize()
+        
+        logger.info("✅ Profile refreshed and synchronized:")
+        logger.info("   Level: \(savedLevel) -> \(self.profile.level)")
+        logger.info("   Frequency: \(savedFrequency) -> \(self.profile.frequency)")
+        logger.info("   PB: \(savedPB) -> \(self.profile.baselineTime)")
+        logger.info("   Week/Day: \(savedWeek)/\(savedDay) -> \(self.profile.currentWeek)/\(self.profile.currentDay)")
     }
     
     func resetProfile() {
@@ -579,4 +592,94 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             profile.personalBests["40yd"] = baseline
         }
     }
+    
+    // MARK: - Session Generation for Watch Sync
+    
+    /// Generates all training sessions for the 12-week program for watch sync
+    func generateAllTrainingSessions() -> [TrainingSession] {
+        logger.info("🏃‍♂️ Generating all training sessions for 12-week program")
+        
+        var allSessions: [TrainingSession] = []
+        
+        // Generate sessions for all 12 weeks
+        for week in 1...12 {
+            let weeklySessions = generateWeekSessions(week: week)
+            allSessions.append(contentsOf: weeklySessions)
+        }
+        
+        logger.info("✅ Generated \(allSessions.count) total sessions for \(self.profile.level) \(self.profile.frequency)-day program")
+        return allSessions
+    }
+    
+    /// Generates sessions for a specific week
+    private func generateWeekSessions(week: Int) -> [TrainingSession] {
+        var weekSessions: [TrainingSession] = []
+        
+        // Generate sessions for each day of the week based on frequency
+        for day in 1...self.profile.frequency {
+            let session = generateSessionForWeekDay(week: week, day: day)
+            weekSessions.append(session)
+        }
+        
+        return weekSessions
+    }
+    
+    /// Generates a specific session for a week and day
+    private func generateSessionForWeekDay(week: Int, day: Int) -> TrainingSession {
+        // Use the session library to get appropriate session for level and week progression
+        let availableSessions = sessionLibrary.filter { $0.level == self.profile.level }
+        
+        // Select session based on week progression and day
+        let sessionIndex = ((week - 1) * self.profile.frequency + (day - 1)) % availableSessions.count
+        let templateSession = availableSessions[sessionIndex]
+        
+        // Convert to TrainingSession
+        let sprintSet = SprintSet(
+            distanceYards: templateSession.distance,
+            reps: templateSession.reps,
+            intensity: getIntensityFromDistance(templateSession.distance)
+        )
+        
+        return TrainingSession(
+            id: TrainingSession.stableSessionID(week: week, day: day),
+            week: week,
+            day: day,
+            type: templateSession.name,
+            focus: templateSession.focus,
+            sprints: [sprintSet],
+            accessoryWork: getAccessoryWorkForSession(templateSession),
+            notes: "Rest: \(templateSession.rest) minutes between reps"
+        )
+    }
+    
+    /// Gets intensity based on distance
+    private func getIntensityFromDistance(_ distance: Int) -> String {
+        switch distance {
+        case 0...20: return "moderate"
+        case 21...40: return "high"
+        case 41...60: return "max"
+        default: return "all-out"
+        }
+    }
+    
+    /// Gets accessory work for a session
+    private func getAccessoryWorkForSession(_ session: SprintSessionTemplate) -> [String] {
+        var accessoryWork = ["Dynamic warm-up"]
+        
+        switch session.focus.lowercased() {
+        case let focus where focus.contains("acceleration"):
+            accessoryWork.append(contentsOf: ["A-Skip drill", "Wall drives", "Starts practice"])
+        case let focus where focus.contains("speed"):
+            accessoryWork.append(contentsOf: ["High knees", "Butt kicks", "Flying runs"])
+        case let focus where focus.contains("drive"):
+            accessoryWork.append(contentsOf: ["Drive phase drills", "Arm action work"])
+        case let focus where focus.contains("endurance"):
+            accessoryWork.append(contentsOf: ["Tempo runs", "Recovery walks"])
+        default:
+            accessoryWork.append(contentsOf: ["Sprint drills", "Cool-down walk"])
+        }
+        
+        return accessoryWork
+    }
+    
 }

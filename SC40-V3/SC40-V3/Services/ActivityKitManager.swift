@@ -84,12 +84,8 @@ class ActivityKitManager: ObservableObject {
         
         let content = ActivityContent(state: updatedState, staleDate: nil)
         
-        do {
-            await activity.update(content)
-            print("Updated Live Activity")
-        } catch {
-            print("Failed to update Live Activity: \(error)")
-        }
+        await activity.update(content)
+        print("Updated Live Activity")
     }
     
     func endWorkoutActivity(
@@ -112,31 +108,21 @@ class ActivityKitManager: ObservableObject {
             staleDate: Calendar.current.date(byAdding: .minute, value: 5, to: Date())
         )
         
-        do {
-            await activity.end(finalContent, dismissalPolicy: .after(.now + 30))
-            currentActivity = nil
-            isActivityActive = false
-            
-            print("Ended Live Activity")
-            
-        } catch {
-            print("Failed to end Live Activity: \(error)")
-        }
+        await activity.end(finalContent, dismissalPolicy: .after(.now + 30))
+        currentActivity = nil
+        isActivityActive = false
+        
+        print("Ended Live Activity")
     }
     
     func cancelWorkoutActivity() async {
         guard let activity = currentActivity else { return }
         
-        do {
-            await activity.end(nil, dismissalPolicy: .immediate)
-            currentActivity = nil
-            isActivityActive = false
-            
-            print("Cancelled Live Activity")
-            
-        } catch {
-            print("Failed to cancel Live Activity: \(error)")
-        }
+        await activity.end(nil, dismissalPolicy: .immediate)
+        currentActivity = nil
+        isActivityActive = false
+        
+        print("Cancelled Live Activity")
     }
     
     // MARK: - Activity Monitoring

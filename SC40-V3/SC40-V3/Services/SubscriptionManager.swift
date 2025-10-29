@@ -210,13 +210,15 @@ class SubscriptionManager: NSObject, ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        do {
-            // Note: AppStore.sync() is not available in current StoreKit version
-            // try await AppStore.sync()
-            await updateSubscriptionStatus()
-        } catch {
-            errorMessage = "Failed to restore purchases: \(error.localizedDescription)"
-        }
+        // Note: AppStore.sync() is not available in current StoreKit version
+        // When available, this would be wrapped in do-catch:
+        // do {
+        //     try await AppStore.sync()
+        // } catch {
+        //     errorMessage = "Failed to restore purchases: \(error.localizedDescription)"
+        // }
+        
+        await updateSubscriptionStatus()
         
         isLoading = false
     }

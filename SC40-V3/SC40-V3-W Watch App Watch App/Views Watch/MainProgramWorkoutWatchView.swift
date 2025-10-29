@@ -10,6 +10,7 @@ struct MainProgramWorkoutWatchView: View {
     @State private var isWorkoutActive = false
     @State private var workoutTimer: Timer?
     @State private var elapsedTime: TimeInterval = 0
+    @State private var workoutStartTime: Date?
     @State private var currentPhase: WorkoutPhase = .warmup
     @StateObject private var workoutVM: WorkoutWatchViewModel
     @StateObject private var syncManager = WatchWorkoutSyncManager.shared
@@ -832,8 +833,13 @@ struct MainProgramWorkoutWatchView: View {
     // MARK: - Workout Control
     private func startWorkout() {
         isWorkoutActive = true
-        workoutTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            elapsedTime += 1
+        workoutStartTime = Date()
+        
+        workoutTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            // Calculate elapsed time from start time for accuracy
+            if let startTime = workoutStartTime {
+                elapsedTime = Date().timeIntervalSince(startTime)
+            }
             
             // Auto-advance phases based on time (complete 6-phase flow)
             if elapsedTime > 300 && currentPhase == .warmup { // 5 min warmup

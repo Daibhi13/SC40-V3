@@ -153,7 +153,9 @@ class MLSessionRecommendationEngine: ObservableObject {
             queue: .main
         ) { [weak self] notification in
             if let workoutData = notification.object as? CompletedWorkout {
-                self?.processNewWorkoutData(workoutData)
+                Task { @MainActor in
+                    self?.processNewWorkoutData(workoutData)
+                }
             }
         }
     }

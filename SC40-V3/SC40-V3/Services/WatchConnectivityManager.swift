@@ -21,6 +21,7 @@ enum WatchConnectivityError: LocalizedError {
             return "Watch session is not activated. Please restart the app."
         }
     }
+    
 }
 
 // MARK: - Enhanced Watch Connectivity Manager for Onboarding Flow Integration
@@ -130,19 +131,15 @@ class WatchConnectivityManager: NSObject, ObservableObject {
         } catch {
             logger.error("Failed to sync onboarding data: \(error.localizedDescription)")
             // Fallback to background transfer
-            do {
-                let onboardingData: [String: Any] = [
-                    "type": "onboarding_complete",
-                    "name": userProfile.name,
-                    "email": userProfile.email ?? "",
-                    "timestamp": Date().timeIntervalSince1970
-                ]
-                transferDataToWatch(onboardingData)
-                onboardingDataSynced = true
-                logger.info("Onboarding data sent via background transfer")
-            } catch {
-                connectionError = "Failed to sync profile to Watch"
-            }
+            let onboardingData: [String: Any] = [
+                "type": "onboarding_complete",
+                "name": userProfile.name,
+                "email": userProfile.email ?? "",
+                "timestamp": Date().timeIntervalSince1970
+            ]
+            transferDataToWatch(onboardingData)
+            onboardingDataSynced = true
+            logger.info("Onboarding data sent via background transfer")
         }
         
         isSyncing = false
@@ -151,58 +148,178 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     // MARK: - Training Sessions Sync
     
     func syncTrainingSessions(_ sessions: [TrainingSession]) async {
-        guard isWatchReachable else {
-            logger.warning("Watch not reachable - cannot sync training sessions")
-            return
+        // Always attempt sync - use background transfer if not immediately reachable
+        if !isWatchReachable {
+            logger.warning("Watch not immediately reachable - using background transfer")
         }
         
         isSyncing = true
         syncProgress = 0.1
         
-        do {
-            // Convert sessions to dictionary format for transmission
-            let sessionsData = sessions.map { session in
-                [
-                    "id": session.id.uuidString,
-                    "week": session.week,
-                    "day": session.day,
-                    "type": session.type,
-                    "focus": session.focus,
-                    "sprints": session.sprints.map { sprint in
-                        [
-                            "distanceYards": sprint.distanceYards,
-                            "reps": sprint.reps,
-                            "intensity": sprint.intensity
-                        ]
-                    },
-                    "accessoryWork": session.accessoryWork,
-                    "notes": session.notes ?? ""
-                ]
-            }
-            
-            syncProgress = 0.3
-            
-            let trainingData: [String: Any] = [
-                "type": "training_sessions",
-                "sessions": sessionsData,
-                "timestamp": Date().timeIntervalSince1970
+        // Convert sessions to dictionary format for transmission
+        let sessionsData = sessions.map { session in
+            [
+                "id": session.id.uuidString,
+                "week": session.week,
+                "day": session.day,
+                "type": session.type,
+                "focus": session.focus,
+                "sprints": session.sprints.map { sprint in
+                    [
+                        "distanceYards": sprint.distanceYards,
+                        "reps": sprint.reps,
+                        "intensity": sprint.intensity
+                    ]
+                },
+                "accessoryWork": session.accessoryWork,
+                "notes": session.notes ?? ""
             ]
-            
-            syncProgress = 0.7
-            
-            try await sendMessageToWatch(trainingData)
+        }
+        
+        syncProgress = 0.3
+        
+        let trainingData: [String: Any] = [
+            "type": "training_sessions",
+            "sessions": sessionsData,
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        
+        syncProgress = 0.7
+        
+        do {
+            if isWatchReachable {
+                try await sendMessageToWatch(trainingData)
+                logger.info("Training sessions synced successfully to Watch (\(sessions.count) sessions)")
+            } else {
+                // Use background transfer immediately if not reachable
+                throw WatchConnectivityError.watchNotReachable
+            }
             
             syncProgress = 1.0
             trainingSessionsSynced = true
             
-            logger.info("Training sessions synced successfully to Watch (\(sessions.count) sessions)")
-            
         } catch {
             logger.error("Failed to sync training sessions: \(error.localizedDescription)")
-            connectionError = "Failed to sync workouts to Watch"
+            
+            // Fallback to background transfer
+            logger.info("🔄 Falling back to background transfer for training sessions")
+            transferDataToWatch(trainingData)
+            trainingSessionsSynced = true
+            syncProgress = 1.0
+            logger.info("Training sessions queued for background transfer (\(sessions.count) sessions)")
         }
         
         isSyncing = false
+    }
+    
+    // MARK: - Optimized Session Transfer System
+    
+    /// Syncs the next batch of sessions optimally for immediate watch availability
+    func syncNextSessionBatch(from allSessions: [TrainingSession], currentWeek: Int, frequency: Int) async {
+        if !isWatchReachable {
+            logger.warning("Watch not reachable - using background transfer for session batch")
+        }
+        
+        // Determine optimal batch size based on frequency and data size
+        let optimalBatchSize = calculateOptimalBatchSize(frequency: frequency)
+        let nextSessions = getNextSessionBatch(from: allSessions, currentWeek: currentWeek, batchSize: optimalBatchSize)
+        
+        logger.info("🚀 Syncing next \(nextSessions.count) sessions to Watch (optimal batch size: \(optimalBatchSize))")
+        
+        await syncTrainingSessions(nextSessions)
+    }
+    
+    /// Immediately syncs current week sessions for instant availability
+    func syncCurrentWeekSessions(from allSessions: [TrainingSession], currentWeek: Int, frequency: Int) async {
+        if !isWatchReachable {
+            logger.warning("Watch not reachable - using background transfer for current week sessions")
+        }
+        
+        // Get current week sessions
+        let currentWeekSessions = allSessions.filter { session in
+            session.week == currentWeek && session.day <= frequency
+        }.sorted { $0.day < $1.day }
+        
+        // Remove duplicates by day
+        let uniqueCurrentWeekSessions = Dictionary(grouping: currentWeekSessions, by: { $0.day })
+            .compactMap { (day, sessions) in sessions.first }
+            .sorted { $0.day < $1.day }
+        
+        logger.info("⚡ Syncing current week \(currentWeek) sessions to Watch (\(uniqueCurrentWeekSessions.count) sessions)")
+        
+        await syncTrainingSessions(uniqueCurrentWeekSessions)
+    }
+    
+    /// Post-onboarding session sync for immediate training availability
+    func syncPostOnboardingSessions(userProfile: UserProfile, allSessions: [TrainingSession]) async {
+        if !isWatchReachable {
+            logger.warning("Watch not reachable - using background transfer for post-onboarding sessions")
+        }
+        
+        logger.info("🎯 Starting post-onboarding session sync for immediate training availability")
+        
+        // Phase 1: Sync current week sessions immediately (highest priority)
+        await syncCurrentWeekSessions(
+            from: allSessions, 
+            currentWeek: userProfile.currentWeek, 
+            frequency: userProfile.frequency
+        )
+        
+        // Phase 2: Sync next week sessions for seamless progression
+        let nextWeek = userProfile.currentWeek + 1
+        if nextWeek <= 12 {
+            await syncCurrentWeekSessions(
+                from: allSessions, 
+                currentWeek: nextWeek, 
+                frequency: userProfile.frequency
+            )
+        }
+        
+        // Phase 3: Background sync of additional sessions
+        await syncNextSessionBatch(
+            from: allSessions, 
+            currentWeek: userProfile.currentWeek, 
+            frequency: userProfile.frequency
+        )
+        
+        logger.info("✅ Post-onboarding session sync completed - sessions ready for immediate use")
+    }
+    
+    /// Calculates optimal batch size based on user frequency and data constraints
+    private func calculateOptimalBatchSize(frequency: Int) -> Int {
+        // Base calculation on frequency and WatchConnectivity limits
+        // WatchConnectivity has ~65KB message limit, each session ~1-2KB
+        let maxSessionsPerMessage = 30
+        
+        switch frequency {
+        case 1...2:
+            // Low frequency: sync 2-3 weeks ahead
+            return min(frequency * 3, maxSessionsPerMessage)
+        case 3...4:
+            // Medium frequency: sync 2 weeks ahead
+            return min(frequency * 2, maxSessionsPerMessage)
+        case 5...7:
+            // High frequency: sync 1.5 weeks ahead
+            return min(Int(Double(frequency) * 1.5), maxSessionsPerMessage)
+        default:
+            return min(frequency * 2, maxSessionsPerMessage)
+        }
+    }
+    
+    /// Gets the next batch of sessions for optimal transfer
+    private func getNextSessionBatch(from allSessions: [TrainingSession], currentWeek: Int, batchSize: Int) -> [TrainingSession] {
+        // Get sessions starting from current week
+        let upcomingSessions = allSessions.filter { session in
+            session.week >= currentWeek
+        }.sorted { session1, session2 in
+            if session1.week == session2.week {
+                return session1.day < session2.day
+            }
+            return session1.week < session2.week
+        }
+        
+        // Return the optimal batch size
+        return Array(upcomingSessions.prefix(batchSize))
     }
     
     // MARK: - Workout Launch Integration
@@ -210,6 +327,7 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     func launchWorkoutOnWatch(session: TrainingSession) async {
         guard isWatchReachable else {
             logger.warning("Watch not reachable - cannot launch workout")
+            connectionError = "Watch not reachable for workout launch"
             return
         }
         
@@ -243,31 +361,72 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     // MARK: - 7-Stage Flow Sync
     
     func sync7StageWorkoutFlow() async {
-        guard isWatchReachable else {
-            logger.warning("Watch not reachable - cannot sync 7-stage flow")
-            return
+        if !isWatchReachable {
+            logger.warning("Watch not reachable - using background transfer for 7-stage flow")
         }
         
+        let flowData: [String: Any] = [
+            "type": "workout_flow_update",
+            "stages": [
+                ["name": "warmup", "title": "Warm-Up", "color": "orange", "duration": 300],
+                ["name": "stretch", "title": "Stretch", "color": "pink", "duration": 300],
+                ["name": "drill", "title": "Drills", "color": "indigo", "duration": 360],
+                ["name": "strides", "title": "Strides", "color": "purple", "duration": 360],
+                ["name": "sprints", "title": "Sprints", "color": "green", "duration": 0],
+                ["name": "resting", "title": "Rest", "color": "yellow", "duration": 0],
+                ["name": "cooldown", "title": "Cooldown", "color": "blue", "duration": 300]
+            ],
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        
         do {
-            let flowData: [String: Any] = [
-                "type": "workout_flow_update",
-                "stages": [
-                    ["name": "warmup", "title": "Warm-Up", "color": "orange", "duration": 300],
-                    ["name": "stretch", "title": "Stretch", "color": "pink", "duration": 300],
-                    ["name": "drill", "title": "Drills", "color": "indigo", "duration": 360],
-                    ["name": "strides", "title": "Strides", "color": "purple", "duration": 360],
-                    ["name": "sprints", "title": "Sprints", "color": "green", "duration": 0],
-                    ["name": "resting", "title": "Rest", "color": "yellow", "duration": 0],
-                    ["name": "cooldown", "title": "Cooldown", "color": "blue", "duration": 300]
-                ],
-                "timestamp": Date().timeIntervalSince1970
-            ]
-            
-            try await sendMessageToWatch(flowData)
-            logger.info("7-stage workout flow synced to Watch")
+            if isWatchReachable {
+                try await sendMessageToWatch(flowData)
+                logger.info("7-stage workout flow synced to Watch")
+            } else {
+                // Use background transfer if not reachable
+                throw WatchConnectivityError.watchNotReachable
+            }
             
         } catch {
             logger.error("Failed to sync 7-stage flow: \(error.localizedDescription)")
+            
+            // Fallback to background transfer
+            logger.info("🔄 Falling back to background transfer for 7-stage flow")
+            transferDataToWatch(flowData)
+            logger.info("7-stage workflow queued for background transfer")
+        }
+    }
+    
+    // MARK: - Voice Settings Sync
+    
+    func syncVoiceSettings(_ voiceSettings: [String: Any]) async {
+        if !isWatchReachable {
+            logger.warning("Watch not reachable - using background transfer for voice settings")
+        }
+        
+        let voiceData: [String: Any] = [
+            "type": "voice_settings_update",
+            "settings": voiceSettings,
+            "timestamp": Date().timeIntervalSince1970
+        ]
+        
+        do {
+            if isWatchReachable {
+                try await sendMessageToWatch(voiceData)
+                logger.info("Voice settings synced successfully to Watch")
+            } else {
+                // Use background transfer if not reachable
+                throw WatchConnectivityError.watchNotReachable
+            }
+            
+        } catch {
+            logger.error("Failed to sync voice settings: \(error.localizedDescription)")
+            
+            // Fallback to background transfer
+            logger.info("🔄 Falling back to background transfer for voice settings")
+            transferDataToWatch(voiceData)
+            logger.info("Voice settings queued for background transfer")
         }
     }
     

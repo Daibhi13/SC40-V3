@@ -513,10 +513,8 @@ class WatchIntervalManager: ObservableObject {
     }
     
     private func speak(_ text: String) {
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = 0.5
-        utterance.volume = 0.8
-        speechSynthesizer.speak(utterance)
+        // Use unified voice manager for consistent voice settings
+        UnifiedVoiceManager.shared.speak(text)
     }
     
     // MARK: - Data Access

@@ -31,11 +31,8 @@ struct MainWorkoutWatchView: View {
     }
     
     private func speak(_ phrase: String) {
-        let utterance = AVSpeechUtterance(string: phrase)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.48
-        utterance.volume = 1.0 // Ensure full volume
-        speechSynth.speak(utterance)
+        // Use unified voice manager for consistent voice settings
+        UnifiedVoiceManager.shared.speak(phrase)
         print("🔊 Speaking: \(phrase)")
     }
     

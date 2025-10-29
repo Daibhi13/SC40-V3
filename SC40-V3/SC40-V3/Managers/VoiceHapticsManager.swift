@@ -85,6 +85,27 @@ class VoiceHapticsManager: NSObject, ObservableObject {
         
         isSpeaking = true
         speechSynthesizer.speak(utterance)
+        
+        // Sync voice settings to Watch
+        syncVoiceSettingsToWatch()
+    }
+    
+    // MARK: - Watch Synchronization
+    
+    private func syncVoiceSettingsToWatch() {
+        let voiceSettings: [String: Any] = [
+            "voiceIdentifier": "com.apple.ttsbundle.Samantha-compact",
+            "speechRate": 0.5,
+            "speechVolume": voiceVolume,
+            "language": "en-US",
+            "isVoiceEnabled": isVoiceEnabled,
+            "voiceName": "Default Coach"
+        ]
+        
+        // Send to Watch via WatchConnectivity
+        Task {
+            await WatchConnectivityManager.shared.syncVoiceSettings(voiceSettings)
+        }
     }
     
     private func processQueue() {

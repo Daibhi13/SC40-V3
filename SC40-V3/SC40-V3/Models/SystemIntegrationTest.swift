@@ -35,7 +35,7 @@ class SystemIntegrationTest: ObservableObject {
         }
         
         print("🚀 Starting System Integration Tests")
-        print("=" * 60)
+        print(String(repeating: "=", count: 60))
         
         // Test 1: Algorithmic Session Generation
         await testAlgorithmicSessionGeneration()
@@ -64,7 +64,7 @@ class SystemIntegrationTest: ObservableObject {
         
         print("\n🎉 System Integration Tests Complete!")
         print("Overall Status: \(overallStatus)")
-        print("=" * 60)
+        print(String(repeating: "=", count: 60))
     }
     
     // MARK: - Individual Tests

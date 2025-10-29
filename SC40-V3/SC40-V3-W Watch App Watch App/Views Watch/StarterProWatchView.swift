@@ -411,10 +411,8 @@ struct StarterProView: View {
     private let speechSynth = AVSpeechSynthesizer()
     
     private func speak(_ phrase: String) {
-        let utterance = AVSpeechUtterance(string: phrase)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.48
-        speechSynth.speak(utterance)
+        // Use unified voice manager for consistent voice settings
+        UnifiedVoiceManager.shared.speak(phrase)
     }
     
     private func playOlympicBeep() {

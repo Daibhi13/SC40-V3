@@ -552,10 +552,10 @@ struct MainProgramWorkoutView: View {
                                     .frame(maxWidth: .infinity)
                                     .background(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .fill(Color.orange.opacity(0.2))
+                                            .fill(Color.white.opacity(0.1))
                                             .overlay(
                                                 RoundedRectangle(cornerRadius: 16)
-                                                    .stroke(Color.orange.opacity(0.5), lineWidth: 1)
+                                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                             )
                                     )
                                 }
@@ -980,7 +980,7 @@ struct MainProgramWorkoutView: View {
     
     private func calculateSprintDuration() -> Int {
         // Calculate sprint phase duration from session data
-        guard let session = sessionData else { return 6 }
+        guard sessionData != nil else { return 6 }
         
         let totalReps = getTotalReps()
         let restBetweenReps = getRestTime() // seconds
@@ -1075,9 +1075,7 @@ struct MainProgramWorkoutView: View {
         
         // Add sprint reps to Rep Log
         for (index, sprintSet) in session.sprintSets.enumerated() {
-            let mockGoals: [MLTrainingGoal] = [
-                MLTrainingGoal(type: "speed", description: "Improve 40-yard time", targetDate: Date(), progress: 0.6)
-            ]
+            // Note: ML training goals would be integrated here in future versions
             let sprintRep = RepData(
                 rep: index + 1,
                 time: nil,
@@ -2640,10 +2638,10 @@ struct PhaseCard: View {
         .padding(.vertical, 16)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isActive ? Color.orange.opacity(0.2) : Color.white.opacity(0.1))
+                .fill(isActive ? Color.white.opacity(0.15) : Color.white.opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(isActive ? Color.orange : Color.white.opacity(0.3), lineWidth: 1)
+                        .stroke(isActive ? Color.white.opacity(0.4) : Color.white.opacity(0.3), lineWidth: 1)
                 )
         )
     }
@@ -3803,7 +3801,7 @@ struct EnhancedLiveRepLog: View {
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.orange.opacity(0.3), lineWidth: 1)
+                .stroke(Color.white.opacity(0.2), lineWidth: 1)
         )
     }
     
@@ -4303,10 +4301,10 @@ struct WorkoutProcessView: View {
                 .padding(.horizontal, 16)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.orange.opacity(0.2))
+                        .fill(Color.white.opacity(0.1))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.orange.opacity(0.4), lineWidth: 1)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
                         )
                 )
             }

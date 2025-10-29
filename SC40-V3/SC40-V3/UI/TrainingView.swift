@@ -1,4 +1,5 @@
 import SwiftUI
+import Combine
 
 #if os(iOS)
 import UIKit
@@ -188,11 +189,21 @@ struct TrainingView: View {
                     // LEVEL CHANGE DETECTION: Refresh sessions when level changes
                     print("🔄 TrainingView: Level changed from '\(oldLevel)' to '\(newLevel)' - refreshing sessions")
                     refreshDynamicSessions()
+                    
+                    // Force UI update
+                    DispatchQueue.main.async {
+                        userProfileVM.objectWillChange.send()
+                    }
                 }
                 .onChange(of: userProfileVM.profile.frequency) { oldFreq, newFreq in
                     // FREQUENCY CHANGE DETECTION: Refresh sessions when frequency changes
                     print("🔄 TrainingView: Frequency changed from \(oldFreq) to \(newFreq) days - refreshing sessions")
                     refreshDynamicSessions()
+                    
+                    // Force UI update
+                    DispatchQueue.main.async {
+                        userProfileVM.objectWillChange.send()
+                    }
                 }
             }
             
@@ -375,13 +386,13 @@ struct TrainingView: View {
     }
     
     private func getRestTimeForDistance(_ distance: Int) -> Int {
-        // Rest time in seconds based on distance
+        // Rest time in minutes based on distance
         switch distance {
-        case 0...20: return 60   // 1 minute
-        case 21...40: return 120 // 2 minutes
-        case 41...60: return 180 // 3 minutes
-        case 61...80: return 240 // 4 minutes
-        default: return 300      // 5 minutes
+        case 0...20: return 1   // 1 minute
+        case 21...40: return 2  // 2 minutes
+        case 41...60: return 3  // 3 minutes
+        case 61...80: return 4  // 4 minutes
+        default: return 5       // 5 minutes
         }
     }
     
@@ -399,8 +410,9 @@ struct TrainingView: View {
     private func calculateEstimatedDuration(_ session: TrainingSession) -> Int {
         // Calculate total session duration in minutes
         let sprintTime = session.sprints.reduce(0) { total, sprint in
-            let restTime = getRestTimeForDistance(sprint.distanceYards)
-            return total + (sprint.reps * (10 + restTime)) // 10 seconds per sprint + rest
+            let restTimeMinutes = getRestTimeForDistance(sprint.distanceYards)
+            let restTimeSeconds = restTimeMinutes * 60 // Convert minutes to seconds
+            return total + (sprint.reps * (10 + restTimeSeconds)) // 10 seconds per sprint + rest
         }
         let drillTime = session.accessoryWork.count * 90 // 90 seconds per drill
         let strideTime = 4 * 90 // 4 strides with 90 seconds each
@@ -446,6 +458,37 @@ struct TrainingView: View {
         for session in currentWeekSessions {
             print("   W\(session.week)D\(session.day): \(session.type)")
         }
+        
+        // Auto-sync sessions to watch for immediate availability
+        Task {
+            await autoSyncSessionsToWatch(newSessions)
+        }
+    }
+    
+    /// Automatically syncs sessions to watch when they're generated/updated
+    private func autoSyncSessionsToWatch(_ sessions: [TrainingSession]) async {
+        guard WatchConnectivityManager.shared.isWatchReachable else {
+            print("⌚ Watch not reachable - skipping auto-sync")
+            return
+        }
+        
+        print("🚀 Auto-syncing sessions to watch for immediate availability")
+        
+        // Sync current week sessions immediately for instant access
+        await WatchConnectivityManager.shared.syncCurrentWeekSessions(
+            from: sessions,
+            currentWeek: userProfileVM.profile.currentWeek,
+            frequency: userProfileVM.profile.frequency
+        )
+        
+        // Background sync of next batch for seamless progression
+        await WatchConnectivityManager.shared.syncNextSessionBatch(
+            from: sessions,
+            currentWeek: userProfileVM.profile.currentWeek,
+            frequency: userProfileVM.profile.frequency
+        )
+        
+        print("✅ Auto-sync to watch completed")
     }
 }
 
@@ -872,7 +915,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
         name: "Complete Rest Day",
         distanceYards: 0,
         reps: 0,
-        restSeconds: 0,
+        restMinutes: 0,
         focus: "Full recovery and restoration",
         level: userLevel
     )
@@ -891,7 +934,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
                 name: session.name,
                 distanceYards: 0, // Recovery sessions have no distance
                 reps: 0,
-                restSeconds: 0,
+                restMinutes: 0,
                 focus: session.focus,
                 level: session.level
             )
@@ -911,7 +954,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
                 name: session.name,
                 distanceYards: 0, // Active recovery sessions have no distance
                 reps: 0,
-                restSeconds: 0,
+                restMinutes: 0,
                 focus: session.focus,
                 level: session.level
             )
@@ -925,7 +968,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
             name: session.name,
             distanceYards: session.distance,
             reps: session.reps,
-            restSeconds: session.rest,
+            restMinutes: session.rest,
             focus: session.focus,
             level: session.level
         )
@@ -958,7 +1001,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
                 focus: librarySession.focus,
                 sprints: pyramidSprints,
                 accessoryWork: getAccessoryWorkForSession(librarySession),
-                notes: "Pyramid: \(pyramidString) yards, \(librarySession.restSeconds) seconds rest between reps"
+                notes: "Pyramid: \(pyramidString) yards, \(librarySession.restMinutes) minutes rest between reps"
             )
         }
         
@@ -977,7 +1020,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
             focus: librarySession.focus,
             sprints: [sprintSet],
             accessoryWork: getAccessoryWorkForSession(librarySession),
-            notes: "Rest: \(librarySession.restSeconds / 60) minutes between reps"
+            notes: "Rest: \(librarySession.restMinutes) minutes between reps"
         )
     }
     
@@ -2237,34 +2280,33 @@ struct TrainingSessionCard: View {
     
     // Helper functions for displaying rest time and level
     private func getRestTimeDisplay(_ distance: Int) -> String {
-        let restSeconds = getRestTimeForDistance(distance)
-        let minutes = restSeconds / 60
-        return "\(minutes) MIN"
+        let restMinutes = getRestTimeForDistance(distance)
+        return "\(restMinutes) MIN"
     }
     
     private func getRestTimeForDistance(_ distance: Int) -> Int {
-        // Use the actual rest times from the session library
+        // Use the actual rest times from the session library (now in minutes)
         // Find matching session in library for more accurate rest time
         if let matchingSession = sessionLibrary.first(where: { $0.distance == distance && $0.sessionType == .sprint }) {
             return matchingSession.rest
         }
         
-        // Fallback to calculated rest times
+        // Fallback to calculated rest times (in minutes)
         switch distance {
-        case 0...20: return 60   // 1 minute
-        case 21...40: return 120 // 2 minutes
-        case 41...60: return 180 // 3 minutes
-        case 61...80: return 240 // 4 minutes
-        default: return 300      // 5 minutes
+        case 0...20: return 1   // 1 minute
+        case 21...40: return 2  // 2 minutes
+        case 41...60: return 3  // 3 minutes
+        case 61...80: return 4  // 4 minutes
+        default: return 5       // 5 minutes
         }
     }
     
     private func getLevelDisplay() -> String {
-        // First check UserDefaults for the most recent level selection
-        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? userLevel
+        // Use the userLevel parameter passed to this component
+        let currentLevel = userLevel.isEmpty ? (UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate") : userLevel
         
         // Ensure proper level formatting for all supported levels
-        let normalizedLevel = savedLevel.lowercased()
+        let normalizedLevel = currentLevel.lowercased()
         switch normalizedLevel {
         case "beginner":
             return "BEGINNER"
@@ -2276,8 +2318,8 @@ struct TrainingSessionCard: View {
             return "ELITE"
         default:
             // Fallback: capitalize whatever level is provided
-            print("⚠️ Unknown level '\(savedLevel)', using as-is")
-            return savedLevel.uppercased()
+            print("⚠️ Unknown level '\(currentLevel)', using as-is")
+            return currentLevel.uppercased()
         }
     }
     

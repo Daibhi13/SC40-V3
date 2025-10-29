@@ -38,10 +38,18 @@ struct ContentView: View {
                     // Generate the full 12-week program immediately after onboarding
                     userProfileVM.refreshAdaptiveProgram()
                     
-                    // Sync onboarding data to Apple Watch
+                    // Sync onboarding data and sessions to Apple Watch for immediate availability
                     Task {
+                        // Phase 1: Sync onboarding data and workout flow
                         await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
                         await watchConnectivity.sync7StageWorkoutFlow()
+                        
+                        // Phase 2: Generate and sync training sessions for immediate watch availability
+                        let allSessions = userProfileVM.generateAllTrainingSessions()
+                        await watchConnectivity.syncPostOnboardingSessions(
+                            userProfile: userProfileVM.profile, 
+                            allSessions: allSessions
+                        )
                     }
                     
                     // Navigate directly to TrainingView after onboarding completion

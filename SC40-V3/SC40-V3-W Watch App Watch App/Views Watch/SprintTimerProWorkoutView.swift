@@ -221,11 +221,17 @@ struct SprintTimerProWorkoutView: View {
                     // Real-time Metrics
                     realTimeMetrics
                     
-                    // Motivational Display
-                    motivationalDisplay
+                    // Current Set/Rep Display
+                    currentSetDisplay
                     
                     // Timer Display
                     timerDisplay
+                    
+                    // Session Details
+                    sessionDetails
+                    
+                    // Progress Indicator
+                    progressIndicator
                     
                     // Swipe Instructions
                     swipeInstructions
@@ -374,36 +380,35 @@ struct SprintTimerProWorkoutView: View {
         return 100  // Fixed height to prevent layout shifts
     }
     
-    // MARK: - Real-time Metrics (Adaptive for All Watch Models)
+    // MARK: - Real-time Metrics (Matching MainProgramWorkoutWatchView)
     private var realTimeMetrics: some View {
-        GeometryReader { geometry in
-            // Clean Distance and Pace Display - Adaptive sizing
-            HStack(spacing: adaptiveMetricsSpacing(for: geometry.size)) {
-                VStack(spacing: 2) {
-                    Text(String(format: "%.0f", gpsManager.currentDistance))
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 22), weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .minimumScaleFactor(0.8)
-                    Text("YDS")
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .tracking(0.5)
-                }
-                
-                VStack(spacing: 2) {
-                    Text(String(format: "%.1f", gpsManager.currentPace))
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 22), weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
-                        .minimumScaleFactor(0.8)
-                    Text("MIN/MI")
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
-                        .foregroundColor(.white.opacity(0.7))
-                        .tracking(0.5)
-                }
+        // Clean Distance and Pace Display
+        HStack(spacing: 20) {
+            VStack(spacing: 2) {
+                Text(String(format: "%.0f", gpsManager.currentDistance))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                Text("YDS")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(0.5)
+            }
+            
+            VStack(spacing: 2) {
+                Text(String(format: "%.1f", gpsManager.currentPace))
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                Text("MIN/MI")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .tracking(0.5)
             }
         }
-        .frame(height: 50)
-        .padding(.vertical, adaptiveVerticalPadding(for: CGSize(width: 200, height: 200)))
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.1))
+        )
     }
     
     private func adaptiveMetricsSpacing(for size: CGSize) -> CGFloat {
@@ -414,50 +419,138 @@ struct SprintTimerProWorkoutView: View {
         }
     }
     
-    // MARK: - Motivational Display (Adaptive for All Watch Models)
-    private var motivationalDisplay: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 4) {
-                Text(phaseMotivationalText(for: currentPhase))
-                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 13), weight: .semibold, design: .rounded))
-                    .foregroundColor(.white)
-                    .multilineTextAlignment(.center)
-                    .minimumScaleFactor(0.9)
-                
-                // Phase progress indicator with icon - Adaptive sizing
-                HStack(spacing: 4) {
-                    Image(systemName: phaseIcon(for: currentPhase))
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 11), weight: .bold))
-                        .foregroundColor(phaseColor(for: currentPhase))
+    // MARK: - Current Set Display (Matching MainProgramWorkoutWatchView)
+    private var currentSetDisplay: some View {
+        VStack(spacing: 8) {
+            // Show different information based on current phase
+            switch currentPhase {
+            case .sprints:
+                // Sprint phase - show current distance and set information
+                VStack(spacing: 4) {
+                    // Show current distance prominently
+                    Text("\(distance)YD")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(.yellow)
+                        .tracking(1)
                     
-                    Text(phaseProgressText(for: currentPhase))
-                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
-                        .minimumScaleFactor(0.9)
+                    // Show set progress
+                    HStack(alignment: .bottom, spacing: 4) {
+                        Text("\(currentSet)")
+                            .font(.system(size: 32, weight: .black))
+                            .foregroundColor(.green)
+                        
+                        Text("/ \(sets)")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.7))
+                            .padding(.bottom, 2)
+                    }
+                    
+                    // Show set details
+                    Text("SET")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                        .tracking(1)
+                }
+                
+            default:
+                // Other phases - show motivational message and progress
+                VStack(spacing: 6) {
+                    Text(phaseMotivationalText(for: currentPhase))
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                    
+                    // Phase progress indicator
+                    HStack(spacing: 4) {
+                        Image(systemName: phaseIcon(for: currentPhase))
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundColor(phaseColor(for: currentPhase))
+                        
+                        Text(phaseProgressText(for: currentPhase))
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                    }
                 }
             }
         }
-        .frame(height: 40)
     }
     
-    // MARK: - Timer Display (Adaptive for All Watch Models)
+    // MARK: - Timer Display (Matching MainProgramWorkoutWatchView)
     private var timerDisplay: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 2) {
-                Text(formatTime(elapsedTime))
-                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 18), weight: .bold))
-                    .foregroundColor(.cyan)
-                    .monospacedDigit()
-                    .minimumScaleFactor(0.8)
+        VStack(spacing: 4) {
+            Text(formatTime(elapsedTime))
+                .font(.system(size: 20, weight: .bold))
+                .foregroundColor(.cyan)
+                .monospacedDigit()
+            
+            Text("ELAPSED TIME")
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+                .tracking(0.5)
+        }
+    }
+    
+    // MARK: - Session Details (Matching MainProgramWorkoutWatchView)
+    private var sessionDetails: some View {
+        VStack(spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("DISTANCE")
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                    
+                    Text("\(distance) YD")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                }
                 
-                Text("ELAPSED TIME")
-                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 8), weight: .medium))
-                    .foregroundColor(.white.opacity(0.6))
-                    .tracking(0.5)
-                    .minimumScaleFactor(0.9)
+                Spacer()
+                
+                VStack(alignment: .center, spacing: 2) {
+                    Text("INTENSITY")
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                    
+                    Text("MAX")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.red)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text("REST")
+                        .font(.system(size: 8, weight: .medium))
+                        .foregroundColor(.white.opacity(0.6))
+                    
+                    Text("\(restMinutes) MIN")
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundColor(.white)
+                }
             }
         }
-        .frame(height: 35)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+    
+    // MARK: - Progress Indicator (Matching MainProgramWorkoutWatchView)
+    private var progressIndicator: some View {
+        VStack(spacing: 4) {
+            // Progress bar
+            ProgressView(value: Double(currentSet), total: Double(sets))
+                .progressViewStyle(LinearProgressViewStyle(tint: .green))
+                .scaleEffect(x: 1, y: 2, anchor: .center)
+            
+            // Progress text
+            Text("\(currentSet) of \(sets) sets completed")
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+                .multilineTextAlignment(.center)
+        }
     }
     
     // MARK: - Top Stats Row (Enhanced with Autonomous Systems)
@@ -1116,11 +1209,13 @@ struct SprintTimerProWorkoutView: View {
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(.yellow)
                 .tracking(0.5)
+                .multilineTextAlignment(.center)
             
             Text("CUSTOM SPRINT TRAINING")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.white)
                 .tracking(1)
+                .multilineTextAlignment(.center)
             
             Text("\(distance) yards x \(sets) sets")
                 .font(.system(size: 11, weight: .medium))

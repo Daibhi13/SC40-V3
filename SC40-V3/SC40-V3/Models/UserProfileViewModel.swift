@@ -76,6 +76,25 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
+    func refreshFromUserDefaults() {
+        // Refresh profile data from UserDefaults (called after onboarding)
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? profile.level
+        let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+        let savedWeek = UserDefaults.standard.integer(forKey: "currentWeek")
+        let savedDay = UserDefaults.standard.integer(forKey: "currentDay")
+        
+        // Update profile with fresh UserDefaults data
+        profile.level = savedLevel
+        profile.frequency = savedFrequency > 0 ? savedFrequency : profile.frequency
+        profile.personalBests["40yd"] = savedPB > 0 ? savedPB : profile.personalBests["40yd"]
+        profile.baselineTime = savedPB > 0 ? savedPB : profile.baselineTime
+        profile.currentWeek = savedWeek > 0 ? savedWeek : profile.currentWeek
+        profile.currentDay = savedDay > 0 ? savedDay : profile.currentDay
+        
+        logger.info("Profile refreshed from UserDefaults - Level: \(savedLevel), Frequency: \(savedFrequency)")
+    }
+    
     func resetProfile() {
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
         self.profile = UserProfile(

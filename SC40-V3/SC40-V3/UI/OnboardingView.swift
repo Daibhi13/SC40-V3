@@ -620,10 +620,24 @@ struct OnboardingView: View {
                     userProfileVM: userProfileVM
                 )
                 
+                // Refresh profile from UserDefaults to ensure sync
+                await MainActor.run {
+                    userProfileVM.refreshFromUserDefaults()
+                    print("🔄 Profile refreshed from UserDefaults after onboarding")
+                    
+                    // Force session regeneration with updated profile
+                    userProfileVM.refreshAdaptiveProgram()
+                    print("🔄 Sessions regenerated with updated profile")
+                }
+                
                 // Sync onboarding data to Watch
                 print("🔄 Syncing onboarding data to Apple Watch...")
                 await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
                 print("✅ Onboarding data synced to Apple Watch")
+                
+                // Give a moment for session sync to complete
+                try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+                print("✅ Session sync completed")
                 
                 // Complete onboarding after workflow finishes
                 await MainActor.run {

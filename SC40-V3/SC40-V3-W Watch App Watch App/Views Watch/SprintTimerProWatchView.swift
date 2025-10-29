@@ -6,6 +6,9 @@ struct SprintTimerProWatchView: View {
     @State private var selectedSets = 3
     @State private var selectedRest = 2 // in minutes
     @State private var showWorkout = false
+    @State private var showDistancePicker = false
+    @State private var showSetsPicker = false
+    @State private var showRestPicker = false
     
     // Distance options (yards) - Match phone app
     private let distanceOptions = [10, 20, 25, 30, 40, 50, 60, 75, 100]
@@ -17,27 +20,24 @@ struct SprintTimerProWatchView: View {
     private let restOptions = Array(1...10)
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Compact header
-                    compactHeader
-                    
-                    // Ultra-compact SIT-style layout
-                    VStack(spacing: 0) {
-                        sitStylePickers
-                            .padding(.top, 8)
-                        
-                        // Start button (remove summary to save space)
-                        startButtonOnly
-                            .padding(.top, 16)
-                    }
-                }
+        VStack(spacing: 0) {
+            // SIT-style header
+            sitHeader
+            
+            // SIT-style compact settings
+            VStack(spacing: 12) {
+                sitSettingsRows
             }
-            .background(Color.black)
-            .navigationTitle("")
-            .navigationBarHidden(true)
+            .padding(.top, 20)
+            
+            Spacer()
+            
+            // SIT-style start button
+            sitStartButton
+                .padding(.bottom, 20)
         }
+        .background(Color.black)
+        .ignoresSafeArea()
         .fullScreenCover(isPresented: $showWorkout) {
             SprintTimerProWorkoutView(
                 distance: selectedDistance,
@@ -45,146 +45,158 @@ struct SprintTimerProWatchView: View {
                 restMinutes: selectedRest
             )
         }
+        .sheet(isPresented: $showDistancePicker) {
+            sitPickerSheet(
+                title: "Distance",
+                options: distanceOptions,
+                selectedValue: $selectedDistance,
+                formatter: { "\($0) YD" }
+            )
+        }
+        .sheet(isPresented: $showSetsPicker) {
+            sitPickerSheet(
+                title: "Sets",
+                options: setsOptions,
+                selectedValue: $selectedSets,
+                formatter: { "\($0)" }
+            )
+        }
+        .sheet(isPresented: $showRestPicker) {
+            sitPickerSheet(
+                title: "Rest Time",
+                options: restOptions,
+                selectedValue: $selectedRest,
+                formatter: { "\($0) MIN" }
+            )
+        }
     }
     
-    // MARK: - Minimal Header (SIT Style)
-    private var compactHeader: some View {
+    // MARK: - SIT Style Header
+    private var sitHeader: some View {
         HStack {
             Button("Cancel") {
                 dismiss()
             }
-            .font(.system(size: 14, weight: .medium))
+            .font(.system(size: 16, weight: .medium))
             .foregroundColor(.yellow)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.yellow.opacity(0.15))
+            )
             
             Spacer()
             
-            // Remove title to save space - context is clear from usage
+            Text("SIT Settings")
+                .font(.system(size: 18, weight: .medium))
+                .foregroundColor(.white)
             
             Spacer()
+            
+            Text(currentTime)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.white)
         }
         .padding(.horizontal, 16)
-        .padding(.top, 4)
+        .padding(.top, 8)
     }
     
-    // MARK: - Phone App Style Pickers (Adapted for Watch)
-    private var sitStylePickers: some View {
-        VStack(spacing: 8) {
-            // Distance Picker Row - Match phone app terminology
-            HStack {
-                Text("DISTANCE")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.8))
-                    .tracking(0.5)
-                    .frame(width: 60, alignment: .leading)
-                
-                Spacer()
-                
-                Picker("Distance", selection: $selectedDistance) {
-                    ForEach(distanceOptions, id: \.self) { distance in
-                        Text("\(distance) YD")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 70, height: 40)
-                .clipped()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white.opacity(0.1))
-                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-                )
-            }
+    // MARK: - SIT Style Settings Rows
+    private var sitSettingsRows: some View {
+        VStack(spacing: 12) {
+            // Distance Row - SIT Style
+            sitSettingRow(
+                label: "Distance",
+                value: "\(selectedDistance) YD",
+                color: .green,
+                action: { showDistancePicker = true }
+            )
             
-            // Reps Picker Row - Match phone app terminology
-            HStack {
-                Text("REPS")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.8))
-                    .tracking(0.5)
-                    .frame(width: 60, alignment: .leading)
-                
-                Spacer()
-                
-                Picker("Reps", selection: $selectedSets) {
-                    ForEach(setsOptions, id: \.self) { reps in
-                        Text("\(reps) REP\(reps == 1 ? "" : "S")")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 70, height: 40)
-                .clipped()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white.opacity(0.1))
-                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-                )
-            }
+            // Sets Row - SIT Style  
+            sitSettingRow(
+                label: "Sets",
+                value: "\(selectedSets)",
+                color: .green,
+                action: { showSetsPicker = true }
+            )
             
-            // Rest Time Picker Row - Match phone app terminology
-            HStack {
-                Text("REST TIME")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white.opacity(0.8))
-                    .tracking(0.5)
-                    .frame(width: 60, alignment: .leading)
-                
-                Spacer()
-                
-                Picker("Rest", selection: $selectedRest) {
-                    ForEach(restOptions, id: \.self) { rest in
-                        Text("\(rest) MIN\(rest == 1 ? "" : "S")")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundColor(.white)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 70, height: 40)
-                .clipped()
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white.opacity(0.1))
-                        .stroke(Color.yellow.opacity(0.3), lineWidth: 1)
-                )
-            }
+            // Rest Row - SIT Style
+            sitSettingRow(
+                label: "Rest",
+                value: String(format: "%02d:%02d", selectedRest, 0),
+                color: .green,
+                action: { showRestPicker = true }
+            )
+            
+            // Sounds Toggle - SIT Style
+            sitToggleRow(
+                label: "Sounds on",
+                isOn: .constant(true)
+            )
         }
         .padding(.horizontal, 16)
     }
     
-    // MARK: - Compact Workout Summary
-    private var workoutSummary: some View {
-        VStack(spacing: 6) {
-            Text("\(selectedSets) × \(selectedDistance)yd • \(selectedRest)min rest")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundColor(.green)
-                .multilineTextAlignment(.center)
-            
-            Text("Est. Duration: \(estimatedDuration) min")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundColor(.white.opacity(0.6))
+    // MARK: - SIT Style Setting Row
+    private func sitSettingRow(label: String, value: String, color: Color, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack {
+                Text(label)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.blue)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                Text(value)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(color)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.gray.opacity(0.2))
+            )
         }
-        .padding(.horizontal, 18)
+        .buttonStyle(PlainButtonStyle())
     }
     
-    // MARK: - Phone App Style Start Button
-    private var startButtonOnly: some View {
+    // MARK: - SIT Style Toggle Row
+    private func sitToggleRow(label: String, isOn: Binding<Bool>) -> some View {
+        HStack {
+            Text(label)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.blue)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Toggle("", isOn: isOn)
+                .labelsHidden()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.2))
+        )
+    }
+    
+    // MARK: - SIT Style Start Button
+    private var sitStartButton: some View {
         Button(action: {
             print("🎯 SprintTimer Pro starting workout with: Distance=\(selectedDistance)yd, Sets=\(selectedSets), Rest=\(selectedRest)min")
             showWorkout = true
         }) {
             HStack(spacing: 8) {
                 Image(systemName: "figure.run")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.system(size: 18, weight: .bold))
                 
                 Text("START WORKOUT")
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.system(size: 16, weight: .bold))
                     .tracking(0.5)
             }
             .foregroundColor(.black)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
+            .padding(.vertical, 14)
             .background(
                 LinearGradient(
                     colors: [.yellow, .orange],
@@ -192,13 +204,54 @@ struct SprintTimerProWatchView: View {
                     endPoint: .trailing
                 )
             )
-            .cornerRadius(20)
+            .cornerRadius(25)
         }
-        .padding(.horizontal, 16)
-        .padding(.bottom, 12)
+        .padding(.horizontal, 20)
+    }
+    
+    // MARK: - SIT Style Picker Sheet
+    private func sitPickerSheet<T: Hashable>(
+        title: String,
+        options: [T],
+        selectedValue: Binding<T>,
+        formatter: @escaping (T) -> String
+    ) -> some View {
+        NavigationView {
+            VStack {
+                Picker(title, selection: selectedValue) {
+                    ForEach(options, id: \.self) { option in
+                        Text(formatter(option))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .background(Color.black)
+            }
+            .background(Color.black)
+            .navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") {
+                        // Dismiss the appropriate picker
+                        if title == "Distance" { showDistancePicker = false }
+                        else if title == "Sets" { showSetsPicker = false }
+                        else if title == "Rest Time" { showRestPicker = false }
+                    }
+                    .foregroundColor(.yellow)
+                }
+            }
+        }
     }
     
     // MARK: - Computed Properties
+    private var currentTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: Date())
+    }
+    
     private var estimatedDuration: Int {
         let sprintTime = selectedSets * 30 // 30 seconds per sprint (estimate)
         let restTime = (selectedSets - 1) * selectedRest * 60 // rest between sets

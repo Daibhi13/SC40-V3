@@ -350,21 +350,6 @@ struct ConnectivityTestResult: Identifiable, Codable {
     let timestamp: Date
 }
 
-enum ConnectivityError: LocalizedError {
-    case timeout
-    case notReachable
-    case sessionNotActivated
-    
-    var errorDescription: String? {
-        switch self {
-        case .timeout:
-            return "Operation timed out"
-        case .notReachable:
-            return "Watch not reachable"
-        case .sessionNotActivated:
-            return "Session not activated"
-        }
-    }
-}
+// ConnectivityError enum moved to EnhancedConnectivityManager.swift to avoid duplication
 
 #endif

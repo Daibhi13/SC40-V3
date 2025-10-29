@@ -336,38 +336,80 @@ struct MainProgramWorkoutWatchView: View {
         }
     }
     
-    // MARK: - Main Workout View
+    // MARK: - Main Workout View (Adaptive for All Watch Models)
     private var mainWorkoutView: some View {
-        VStack(spacing: 12) {
-            // Header with top padding to avoid status bar time
-            workoutHeader
-                .padding(.top, 8)
-            
-            // Autonomous Systems Status
-            autonomousSystemsStatus
-            
-            // Phase Indicator
-            phaseIndicator
-            
-            // Real-time Metrics
-            realTimeMetrics
-            
-            // Current Set/Rep Display
-            currentSetDisplay
-            
-            // Timer Display
-            timerDisplay
-            
-            // Session Details
-            sessionDetails
-            
-            // Progress Indicator
-            progressIndicator
-            
-            // Swipe Instructions
-            swipeInstructions
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: adaptiveSpacing(for: geometry.size)) {
+                    // Phase Indicator with proper safe area handling
+                    phaseIndicator
+                        .padding(.top, adaptiveTopPadding(for: geometry.size))
+                    
+                    // Real-time Metrics
+                    realTimeMetrics
+                    
+                    // Current Set/Rep Display
+                    currentSetDisplay
+                    
+                    // Timer Display
+                    timerDisplay
+                    
+                    // Session Details
+                    sessionDetails
+                    
+                    // Progress Indicator
+                    progressIndicator
+                    
+                    // Swipe Instructions
+                    swipeInstructions
+                }
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
+                .padding(.bottom, adaptiveBottomPadding(for: geometry.size))
+            }
         }
-        .padding(16)
+    }
+    
+    // MARK: - Adaptive Layout Functions
+    private func adaptiveSpacing(for size: CGSize) -> CGFloat {
+        // Adjust spacing based on watch size
+        if size.height < 200 {
+            return 6  // 38mm/40mm watches - tighter spacing
+        } else if size.height < 220 {
+            return 8  // 42mm/44mm watches - medium spacing
+        } else {
+            return 10 // 45mm/49mm Ultra watches - more spacing
+        }
+    }
+    
+    private func adaptiveTopPadding(for size: CGSize) -> CGFloat {
+        // Ensure proper clearance from status bar/time
+        if size.height < 200 {
+            return 4   // Smaller watches need less padding
+        } else if size.height < 220 {
+            return 6   // Medium watches
+        } else {
+            return 8   // Larger watches can afford more padding
+        }
+    }
+    
+    private func adaptiveHorizontalPadding(for size: CGSize) -> CGFloat {
+        // Adjust horizontal padding based on watch width
+        if size.width < 170 {
+            return 8   // Smaller watches - less padding
+        } else if size.width < 190 {
+            return 12  // Medium watches
+        } else {
+            return 16  // Larger watches - more padding
+        }
+    }
+    
+    private func adaptiveBottomPadding(for size: CGSize) -> CGFloat {
+        // Ensure proper clearance from bottom
+        if size.height < 200 {
+            return 8
+        } else {
+            return 12
+        }
     }
     
     // MARK: - Autonomous Systems Display
@@ -450,43 +492,104 @@ struct MainProgramWorkoutWatchView: View {
     }
     
     private var phaseIndicator: some View {
-        VStack(spacing: 8) {
-            // Current Phase Display - Large and Clear
-            VStack(spacing: 4) {
-                Text(currentPhase.rawValue.uppercased())
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(phaseColor(for: currentPhase))
-                    .tracking(1.2)
+        GeometryReader { geometry in
+            VStack(spacing: 6) {
+                // Current Phase Display with Timer - Adaptive sizing
+                HStack {
+                    Text(currentPhase.rawValue.uppercased())
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 16), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .tracking(1.0)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    
+                    Spacer()
+                    
+                    // Phase timer in top right - Adaptive sizing
+                    Text(formatTime(phaseTimeRemaining))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 16), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                .padding(.vertical, adaptiveVerticalPadding(for: geometry.size))
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(phaseColor(for: currentPhase).opacity(0.8))
+                )
                 
+                // Phase instructions below - Adaptive sizing
                 Text(phaseInstructions(for: currentPhase))
-                    .font(.system(size: 11, weight: .medium))
+                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
                     .foregroundColor(.white.opacity(0.8))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
-            }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(phaseColor(for: currentPhase).opacity(0.15))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(phaseColor(for: currentPhase).opacity(0.4), lineWidth: 1)
-                    )
-            )
-            
-            // Progress Dots - Clean and Minimal
-            HStack(spacing: 6) {
-                ForEach(Array(WorkoutPhase.allCases.enumerated()), id: \.element) { index, phase in
-                    Circle()
-                        .fill(currentPhase == phase ? phaseColor(for: phase) : Color.white.opacity(0.3))
-                        .frame(width: currentPhase == phase ? 10 : 6, height: currentPhase == phase ? 10 : 6)
-                        .scaleEffect(currentPhase == phase ? 1.2 : 1.0)
-                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentPhase)
+                    .minimumScaleFactor(0.9)
+                
+                // Progress Dots - Adaptive sizing
+                HStack(spacing: adaptiveDotSpacing(for: geometry.size)) {
+                    ForEach(Array(WorkoutPhase.allCases.enumerated()), id: \.element) { index, phase in
+                        Circle()
+                            .fill(currentPhase == phase ? phaseColor(for: phase) : Color.white.opacity(0.3))
+                            .frame(width: adaptiveDotSize(for: geometry.size, isActive: currentPhase == phase), 
+                                   height: adaptiveDotSize(for: geometry.size, isActive: currentPhase == phase))
+                            .scaleEffect(currentPhase == phase ? 1.1 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentPhase)
+                    }
                 }
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
             }
-            .padding(.horizontal, 16)
         }
+        .frame(height: adaptivePhaseIndicatorHeight())
+    }
+    
+    // MARK: - Additional Adaptive Helper Functions
+    private func adaptiveFontSize(for size: CGSize, base: CGFloat) -> CGFloat {
+        let scaleFactor: CGFloat
+        if size.width < 170 {
+            scaleFactor = 0.85  // Smaller watches
+        } else if size.width < 190 {
+            scaleFactor = 0.95  // Medium watches
+        } else {
+            scaleFactor = 1.0   // Larger watches
+        }
+        return base * scaleFactor
+    }
+    
+    private func adaptiveVerticalPadding(for size: CGSize) -> CGFloat {
+        if size.height < 200 {
+            return 8   // Smaller watches
+        } else if size.height < 220 {
+            return 10  // Medium watches
+        } else {
+            return 12  // Larger watches
+        }
+    }
+    
+    private func adaptiveDotSpacing(for size: CGSize) -> CGFloat {
+        if size.width < 170 {
+            return 4   // Smaller watches - tighter spacing
+        } else {
+            return 6   // Larger watches - more spacing
+        }
+    }
+    
+    private func adaptiveDotSize(for size: CGSize, isActive: Bool) -> CGFloat {
+        let baseSize: CGFloat = size.width < 170 ? 5 : 6
+        return isActive ? baseSize + 2 : baseSize
+    }
+    
+    private func adaptivePhaseIndicatorHeight() -> CGFloat {
+        return 100  // Fixed height to prevent layout shifts
+    }
+    
+    /// Get phase time remaining
+    private var phaseTimeRemaining: TimeInterval {
+        // This should be calculated based on your phase timing logic
+        // For now, returning a placeholder value
+        return 300.0 - elapsedTime.truncatingRemainder(dividingBy: 300.0)
     }
     
     private var currentSetDisplay: some View {

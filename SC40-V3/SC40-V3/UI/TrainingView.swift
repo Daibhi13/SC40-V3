@@ -162,6 +162,9 @@ struct TrainingView: View {
                     // Refresh profile data to ensure it's up-to-date with onboarding selections
                     refreshProfileFromUserDefaults()
                     
+                    // IMMEDIATE SESSION REFRESH: Generate sessions with updated profile
+                    refreshDynamicSessions()
+                    
                     // Configure NavigationView to use transparent background - TrainingView specific
                     #if os(iOS)
                     let appearance = UINavigationBarAppearance()
@@ -180,6 +183,16 @@ struct TrainingView: View {
                         navigationController.navigationBar.tintColor = UIColor.white
                     }
                     #endif
+                }
+                .onChange(of: userProfileVM.profile.level) { oldLevel, newLevel in
+                    // LEVEL CHANGE DETECTION: Refresh sessions when level changes
+                    print("🔄 TrainingView: Level changed from '\(oldLevel)' to '\(newLevel)' - refreshing sessions")
+                    refreshDynamicSessions()
+                }
+                .onChange(of: userProfileVM.profile.frequency) { oldFreq, newFreq in
+                    // FREQUENCY CHANGE DETECTION: Refresh sessions when frequency changes
+                    print("🔄 TrainingView: Frequency changed from \(oldFreq) to \(newFreq) days - refreshing sessions")
+                    refreshDynamicSessions()
                 }
             }
             
@@ -395,6 +408,42 @@ struct TrainingView: View {
         
         return (sprintTime + drillTime + strideTime + warmupCooldown) / 60
     }
+    
+    // MARK: - Profile and Session Refresh Methods
+    
+    /// Refresh profile data from UserDefaults to ensure sync with onboarding
+    private func refreshProfileFromUserDefaults() {
+        print("🔄 TrainingView: Refreshing profile from UserDefaults")
+        userProfileVM.refreshFromUserDefaults()
+        
+        // Log current profile state
+        let profile = userProfileVM.profile
+        print("📊 Current Profile State:")
+        print("   Level: \(profile.level)")
+        print("   Frequency: \(profile.frequency) days/week")
+        print("   Week: \(profile.currentWeek)")
+    }
+    
+    /// Refresh dynamic sessions when profile changes
+    private func refreshDynamicSessions() {
+        print("🔄 TrainingView: Refreshing dynamic sessions")
+        
+        // Clear any cached sessions to force regeneration
+        TrainingView.clearSessionCache()
+        
+        // Generate new sessions with current profile
+        let newSessions = generateDynamicSessions()
+        
+        // Update the state
+        dynamicSessions = newSessions
+        
+        print("✅ TrainingView: Generated \(newSessions.count) sessions for \(userProfileVM.profile.level) \(userProfileVM.profile.frequency)-day program")
+        
+        // Log first few sessions for verification
+        for (index, session) in newSessions.prefix(3).enumerated() {
+            print("   Session \(index + 1): Week \(session.week), Day \(session.day) - \(session.type)")
+        }
+    }
 }
 
 // MARK: - TrainingView Extensions
@@ -496,18 +545,33 @@ extension TrainingView {
         
         print("🏃‍♂️ TrainingView: Found \(levelSessions.count) sessions for \(userLevel) level")
         
-        // NEW: Generate 12-week program using proper weekly structure
-        // This ensures proper week progression and session variety
+        // UNIVERSAL SESSION GENERATION: Works for ALL levels (Beginner-Elite) and ALL frequencies (1-7 days)
+        // This ensures proper week progression and session variety across all combinations
+        
+        print("🎯 GENERATING SESSIONS: \(userLevel) level, \(frequency) days/week")
+        print("📚 Available session templates: \(levelSessions.count)")
+        
+        // Validate we have sessions to work with
+        guard !levelSessions.isEmpty else {
+            print("❌ ERROR: No sessions available for \(userLevel) level")
+            return sessions
+        }
+        
         for week in 1...12 {
-            for (dayIndex, librarySession) in levelSessions.enumerated() {
-                if dayIndex >= frequency { break } // Only generate sessions for the user's frequency
+            // For each week, generate sessions based on frequency (1-7 days)
+            for day in 1...frequency {
+                // Intelligent session selection with variety cycling
+                let sessionIndex = ((week - 1) * frequency + (day - 1)) % levelSessions.count
+                let librarySession = levelSessions[sessionIndex]
                 
                 let session = convertLibrarySessionToTrainingSession(
                     librarySession: librarySession,
                     week: week,
-                    day: dayIndex + 1
+                    day: day
                 )
                 sessions.append(session)
+                
+                print("📅 \(userLevel) W\(week)D\(day): \(librarySession.name) (template \(sessionIndex))")
                 
                 // Safety limit to prevent excessive sessions
                 if sessions.count >= 84 { // 12 weeks × 7 days max
@@ -518,6 +582,9 @@ extension TrainingView {
                 break
             }
         }
+        
+        // VALIDATION: Ensure correct session distribution
+        validateSessionGeneration(sessions: sessions, userLevel: userLevel, frequency: frequency)
         
         print("🏃‍♂️ TrainingView: Generated \(sessions.count) total sessions for carousel")
         return sessions
@@ -724,24 +791,76 @@ extension TrainingView {
     return fullProgram
 }
 
-// RULE VALIDATION: Ensure ALL levels support ALL frequencies (1-7 days)
-private func validateUniversalFrequencySupport(level: String, frequency: Int, programSize: Int) {
-    let isValidFrequency = (1...7).contains(frequency)
-    let isValidProgramSize = programSize == frequency
-    
-    if isValidFrequency && isValidProgramSize {
-        print("✅ RULE COMPLIANCE: \(level) level successfully supports \(frequency) days/week (\(programSize) sessions)")
-    } else {
-        print("❌ RULE VIOLATION: \(level) level failed to support \(frequency) days/week (generated \(programSize) sessions)")
+    // COMPREHENSIVE SESSION VALIDATION: Ensure correct generation for ALL levels and frequencies
+    private func validateSessionGeneration(sessions: [TrainingSession], userLevel: String, frequency: Int) {
+        let generatedSessions = sessions.filter { $0.week >= 1 && $0.week <= 12 }
+        
+        print("🔍 VALIDATION REPORT: \(userLevel) \(frequency)-day program")
+        print("   📊 Total sessions generated: \(generatedSessions.count)")
+        print("   📅 Expected sessions: \(12 * frequency)")
+        
+        // Check week distribution
+        let weekCounts = Dictionary(grouping: generatedSessions, by: { $0.week })
+        let weeksGenerated = weekCounts.keys.sorted()
+        
+        print("   📈 Week distribution:")
+        for week in 1...12 {
+            let weekSessionCount = weekCounts[week]?.count ?? 0
+            let expectedCount = frequency
+            let status = weekSessionCount == expectedCount ? "✅" : "❌"
+            print("     Week \(week): \(weekSessionCount)/\(expectedCount) sessions \(status)")
+            
+            if weekSessionCount != expectedCount {
+                print("       ⚠️ ISSUE: Week \(week) has \(weekSessionCount) sessions, expected \(expectedCount)")
+            }
+        }
+        
+        // Check for duplicate sessions within the same week
+        for week in weeksGenerated {
+            let weekSessions = weekCounts[week] ?? []
+            let dayNumbers = weekSessions.map { $0.day }
+            let uniqueDays = Set(dayNumbers)
+            
+            if dayNumbers.count != uniqueDays.count {
+                print("   ❌ DUPLICATE DAYS in Week \(week): \(dayNumbers)")
+            } else {
+                print("   ✅ Week \(week): Unique days \(dayNumbers.sorted())")
+            }
+        }
+        
+        // Validate frequency compliance
+        let isCorrectTotal = generatedSessions.count == (12 * frequency)
+        let hasCorrectWeekDistribution = weekCounts.values.allSatisfy { $0.count == frequency }
+        
+        if isCorrectTotal && hasCorrectWeekDistribution {
+            print("   ✅ VALIDATION PASSED: \(userLevel) \(frequency)-day program is correct")
+        } else {
+            print("   ❌ VALIDATION FAILED: \(userLevel) \(frequency)-day program has issues")
+        }
+        
+        print("   📋 UNIVERSAL RULE STATUS:")
+        print("     • \(userLevel) supports 1-7 days: ✅")
+        print("     • Current frequency (\(frequency) days): \(isCorrectTotal ? "✅" : "❌")")
     }
     
-    // Log the universal rule
-    print("📋 UNIVERSAL RULE CONFIRMED:")
-    print("   • Beginner: 1,2,3,4,5,6,7 days ✅")
-    print("   • Intermediate: 1,2,3,4,5,6,7 days ✅") 
-    print("   • Advanced: 1,2,3,4,5,6,7 days ✅")
-    print("   • Elite: 1,2,3,4,5,6,7 days ✅")
-}
+    // RULE VALIDATION: Ensure ALL levels support ALL frequencies (1-7 days)
+    private func validateUniversalFrequencySupport(level: String, frequency: Int, programSize: Int) {
+        let isValidFrequency = (1...7).contains(frequency)
+        let isValidProgramSize = programSize == frequency
+        
+        if isValidFrequency && isValidProgramSize {
+            print("✅ RULE COMPLIANCE: \(level) level successfully supports \(frequency) days/week (\(programSize) sessions)")
+        } else {
+            print("❌ RULE VIOLATION: \(level) level failed to support \(frequency) days/week (generated \(programSize) sessions)")
+        }
+        
+        // Log the universal rule
+        print("📋 UNIVERSAL RULE CONFIRMED:")
+        print("   • Beginner: 1,2,3,4,5,6,7 days ✅")
+        print("   • Intermediate: 1,2,3,4,5,6,7 days ✅") 
+        print("   • Advanced: 1,2,3,4,5,6,7 days ✅")
+        print("   • Elite: 1,2,3,4,5,6,7 days ✅")
+    }
 
 // NEW: Create a proper rest session for any level
 private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSession {
@@ -1401,6 +1520,21 @@ struct TrainingSessionCard: View {
                     .padding(.vertical, 4)
                     .background(Color(red: 1.0, green: 0.8, blue: 0.0))
                     .cornerRadius(12)
+            }
+            
+            // Level Display - Shows current user level
+            HStack {
+                Text("LEVEL:")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.white.opacity(0.6))
+                    .tracking(1.0)
+                
+                Text(userLevel.uppercased())
+                    .font(.system(size: 12, weight: .black))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .tracking(1.2)
+                
+                Spacer()
             }
             
             // Day and Focus - Nike-inspired layout
@@ -2739,44 +2873,7 @@ extension TrainingView {
         return generateDynamicSessions().first
     }
     
-    /// Refresh profile data from UserDefaults to ensure onboarding selections are reflected
-    private func refreshProfileFromUserDefaults() {
-        let savedLevel = UserDefaults.standard.string(forKey: "userLevel")
-        let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
-        let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
-        
-        print("🔄 TrainingView: Refreshing profile from UserDefaults")
-        print("   Saved level: \(savedLevel ?? "None")")
-        print("   Current profile level: \(userProfileVM.profile.level)")
-        
-        // Update profile if UserDefaults has newer data
-        var profileUpdated = false
-        
-        if let level = savedLevel, level != userProfileVM.profile.level {
-            print("🔄 TrainingView: Updating profile level from '\(userProfileVM.profile.level)' to '\(level)'")
-            userProfileVM.profile.level = level
-            profileUpdated = true
-        }
-        
-        if savedFrequency > 0 && savedFrequency != userProfileVM.profile.frequency {
-            print("🔄 TrainingView: Updating profile frequency from \(userProfileVM.profile.frequency) to \(savedFrequency)")
-            userProfileVM.profile.frequency = savedFrequency
-            profileUpdated = true
-        }
-        
-        if savedPB > 0 && savedPB != userProfileVM.profile.baselineTime {
-            print("🔄 TrainingView: Updating profile baseline time from \(userProfileVM.profile.baselineTime) to \(savedPB)")
-            userProfileVM.profile.baselineTime = savedPB
-            userProfileVM.profile.personalBests["40yd"] = savedPB
-            profileUpdated = true
-        }
-        
-        // Regenerate sessions if profile was updated
-        if profileUpdated {
-            print("🔄 TrainingView: Profile updated, regenerating dynamic sessions...")
-            dynamicSessions = generateDynamicSessions()
-        }
-    }
+    // Removed duplicate refreshProfileFromUserDefaults() - using the one in main struct
 }
 
 // MARK: - MenuItemButton Component

@@ -147,18 +147,27 @@ class WatchSessionManager: ObservableObject {
             TrainingSession(
                 week: 1, 
                 day: 1, 
-                type: "Sprint Training", 
-                focus: "Acceleration", 
-                sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "Max")], 
-                accessoryWork: ["Dynamic Warm-up", "Cool-down"]
+                type: "Speed Training", 
+                focus: "Maximum Velocity", 
+                sprints: [
+                    SprintSet(distanceYards: 40, reps: 6, intensity: "Max"),
+                    SprintSet(distanceYards: 60, reps: 4, intensity: "Max")
+                ], 
+                accessoryWork: ["Dynamic Warm-up", "Speed Mechanics", "Cool-down"]
             ),
             TrainingSession(
                 week: 1, 
                 day: 2, 
-                type: "Speed Endurance", 
-                focus: "Lactate Tolerance", 
-                sprints: [SprintSet(distanceYards: 60, reps: 4, intensity: "Sub-max")], 
-                accessoryWork: ["Stretching", "Recovery"]
+                type: "Pyramid Training", 
+                focus: "Progressive Distance", 
+                sprints: [
+                    SprintSet(distanceYards: 20, reps: 2, intensity: "Max"),
+                    SprintSet(distanceYards: 40, reps: 2, intensity: "Max"),
+                    SprintSet(distanceYards: 60, reps: 2, intensity: "Max"),
+                    SprintSet(distanceYards: 40, reps: 2, intensity: "Max"),
+                    SprintSet(distanceYards: 20, reps: 2, intensity: "Max")
+                ], 
+                accessoryWork: ["Dynamic Warm-up", "Pyramid Progression", "Recovery"]
             )
         ]
         

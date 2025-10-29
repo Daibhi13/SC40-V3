@@ -70,7 +70,8 @@ struct SessionCardsView: View {
     @State private var showSyncTesting = false
     @State private var showTestingDashboard = false
     
-    // Initialize connectivity handler for live testing
+    // Connect to live session data
+    @StateObject private var sessionManager = WatchSessionManager.shared
     @StateObject private var connectivityHandler = LiveWatchConnectivityHandler.shared
     
     var body: some View {
@@ -91,38 +92,15 @@ struct SessionCardsView: View {
                         // Navigate to profile settings or onboarding
                     }
                 
-                // Cards 1, 2: Training Sessions (RIGHT of Profile)
-                SessionCard(week: 1, day: 1, type: "Sprint Training", focus: "Acceleration")
-                    .tag(1)
-                    .onTapGesture {
-                        selectedSession = TrainingSession(
-                            week: 1,
-                            day: 1,
-                            type: "Sprint Training",
-                            focus: "Acceleration",
-                            sprints: [
-                                SprintSet(distanceYards: 40, reps: 5, intensity: "max")
-                            ],
-                            accessoryWork: ["Dynamic Warm-up", "Cool-down Stretching"]
-                        )
-                        showWorkout = true
-                    }
-                
-                SessionCard(week: 1, day: 2, type: "Speed Endurance", focus: "Lactate Tolerance")
-                    .tag(2)
-                    .onTapGesture {
-                        selectedSession = TrainingSession(
-                            week: 1,
-                            day: 2,
-                            type: "Speed Endurance",
-                            focus: "Lactate Tolerance",
-                            sprints: [
-                                SprintSet(distanceYards: 60, reps: 4, intensity: "submax")
-                            ],
-                            accessoryWork: ["Dynamic Warm-up", "Recovery Jog", "Cool-down Stretching"]
-                        )
-                        showWorkout = true
-                    }
+                // Dynamic Training Sessions from Live Data
+                ForEach(Array(sessionManager.trainingSessions.prefix(2).enumerated()), id: \.element.id) { index, session in
+                    LiveSessionCard(session: session)
+                        .tag(index + 1)
+                        .onTapGesture {
+                            selectedSession = session
+                            showWorkout = true
+                        }
+                }
             }
             #if os(watchOS)
             .tabViewStyle(.page)
@@ -198,6 +176,20 @@ struct SessionCardsView: View {
         }
         .sheet(isPresented: $showTestingDashboard) {
             TestingDashboardView()
+                .onAppear {
+                    // WATCH APP STARTUP: Ensure profile data is current
+                    print("🔄 Watch: SessionCardsView appeared - checking for profile updates")
+                    
+                    // Request fresh session data from iPhone
+                    sessionManager.requestTrainingSessionsFromPhone()
+                }
+        }
+        .onAppear {
+            // WATCH APP STARTUP: Ensure profile data is current
+            print("🔄 Watch: SessionCardsView appeared - checking for profile updates")
+            
+            // Request fresh session data from iPhone
+            sessionManager.requestTrainingSessionsFromPhone()
         }
     }
 }
@@ -278,6 +270,10 @@ struct SprintTimerProCard: View {
 
 // Card 0: User Profile - ENTRY POINT
 struct UserProfileCard: View {
+    @State private var userLevel: String = "Intermediate"
+    @State private var userName: String = "David"
+    @State private var frequency: Int = 3
+    
     var body: some View {
         VStack(spacing: 8) {
             // Welcome header
@@ -293,19 +289,19 @@ struct UserProfileCard: View {
             
             Spacer()
             
-            // Main profile content - compact layout
+            // Main profile content - DYNAMIC from UserDefaults
             VStack(spacing: 8) {
-                Text("David")
+                Text(userName)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.white)
                     .lineLimit(1)
                 
-                Text("Intermediate")
+                Text(userLevel.uppercased())
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.cyan)
                     .lineLimit(1)
                 
-                Text("3 days/week")
+                Text("\(frequency) days/week")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)
@@ -356,9 +352,120 @@ struct UserProfileCard: View {
                 )
         )
         .padding(.horizontal, 4)
+        .onAppear {
+            // DYNAMIC PROFILE REFRESH: Load current profile from UserDefaults
+            refreshProfileData()
+        }
+    }
+    
+    private func refreshProfileData() {
+        // Read from UserDefaults (synced from iPhone onboarding)
+        userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+        userName = UserDefaults.standard.string(forKey: "user_name") ?? "SC40 Athlete"
+        frequency = UserDefaults.standard.integer(forKey: "trainingFrequency") > 0 ? 
+                   UserDefaults.standard.integer(forKey: "trainingFrequency") : 3
+        
+        print("🔄 Watch: Profile refreshed - Level: \(userLevel), Frequency: \(frequency) days")
     }
 }
 
+// MARK: - Live Session Card (Dynamic Data)
+struct LiveSessionCard: View {
+    let session: TrainingSession
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            // Header with live session data
+            HStack {
+                Text("W\(session.week)/D\(session.day)")
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.yellow)
+                    .cornerRadius(6)
+                
+                Spacer()
+                
+                Text("MAX")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.white)
+                    .cornerRadius(4)
+            }
+            
+            Spacer()
+            
+            // Main content with live session data
+            VStack(spacing: 4) {
+                Text(session.type)
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.white)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.center)
+                
+                Text(session.focus)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .multilineTextAlignment(.center)
+            }
+            
+            Spacer()
+            
+            // Bottom info - LIVE SESSION DATA
+            Text(formatSessionSprints(session.sprints))
+                .font(.system(size: 13, weight: .bold))
+                .foregroundColor(.white)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(10)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.15, green: 0.1, blue: 0.25).opacity(0.9),
+                            Color(red: 0.1, green: 0.05, blue: 0.2).opacity(0.95)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.yellow.opacity(0.4), lineWidth: 1.5)
+                )
+        )
+        .padding(.horizontal, 4)
+    }
+    
+    // Format sprint information dynamically
+    private func formatSessionSprints(_ sprints: [SprintSet]) -> String {
+        guard !sprints.isEmpty else { return "No Sprints" }
+        
+        // Get the main sprint set (usually the longest distance or highest reps)
+        let mainSprint = sprints.max { first, second in
+            // Prioritize by distance first, then by reps
+            if first.distanceYards != second.distanceYards {
+                return first.distanceYards < second.distanceYards
+            }
+            return first.reps < second.reps
+        }
+        
+        if let sprint = mainSprint {
+            return "\(sprint.reps)×\(sprint.distanceYards)yd"
+        }
+        
+        return "Mixed Sprints"
+    }
+}
+
+// MARK: - Legacy Session Card (Static Data)
 struct SessionCard: View {
     let week: Int
     let day: Int
@@ -409,7 +516,7 @@ struct SessionCard: View {
             
             Spacer()
             
-            // Bottom info
+            // Bottom info - HARDCODED (Legacy)
             Text("5×40yd")
                 .font(.system(size: 13, weight: .bold))
                 .foregroundColor(.white)

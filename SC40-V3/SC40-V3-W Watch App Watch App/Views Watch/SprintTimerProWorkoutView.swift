@@ -108,18 +108,19 @@ struct SprintTimerProWorkoutView: View {
     }
     
     var body: some View {
-        ZStack {
-            // Match phone app gradient background
-            LinearGradient(
-                colors: [
-                    Color(red: 0.15, green: 0.2, blue: 0.35),
-                    Color(red: 0.2, green: 0.25, blue: 0.45),
-                    Color(red: 0.25, green: 0.3, blue: 0.5)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+        GeometryReader { geometry in
+            ZStack {
+                // Background - MainProgramWorkoutWatchView style
+                LinearGradient(
+                    colors: [
+                        Color.black,
+                        Color.purple.opacity(0.3),
+                        Color.black
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
             
             // Main content with swipe navigation
             TabView(selection: $currentView) {
@@ -136,8 +137,8 @@ struct SprintTimerProWorkoutView: View {
                 )
                 .tag(WorkoutViewType.control)
                 
-                // Main Workout View (Center)
-                mainTabContent
+                // Main Workout View (Center) - MainProgramWorkoutWatchView style
+                mainWorkoutView
                     .tag(WorkoutViewType.main)
                 
                 // Music View (Right swipe from Main) - Watch Compatible
@@ -205,30 +206,258 @@ struct SprintTimerProWorkoutView: View {
             // End autonomous systems
             endAutonomousWorkout()
         }
+        }
     }
     
-    // MARK: - Main Tab Content (Following MainWorkoutWatchView Pattern)
-    private var mainTabContent: some View {
-        VStack(spacing: 6) {
-            // Add top padding to avoid status bar time overlap
-            topStatsRow
-                .padding(.top, 8)
-            
-            // Autonomous Systems Status
-            autonomousSystemsStatus
-            
-            // Phase Indicator
-            phaseIndicator
-            
-            Divider().background(Color.gray.opacity(0.4))
-            mainModule
-            Divider().background(Color.gray.opacity(0.4))
-            bottomStatsRow
-            
-            // Swipe Instructions
-            swipeInstructions
+    // MARK: - Main Workout View (Adaptive for All Watch Models)
+    private var mainWorkoutView: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: adaptiveSpacing(for: geometry.size)) {
+                    // Phase Indicator with proper safe area handling
+                    phaseIndicator
+                        .padding(.top, adaptiveTopPadding(for: geometry.size))
+                    
+                    // Real-time Metrics
+                    realTimeMetrics
+                    
+                    // Motivational Display
+                    motivationalDisplay
+                    
+                    // Timer Display
+                    timerDisplay
+                    
+                    // Swipe Instructions
+                    swipeInstructions
+                }
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
+                .padding(.bottom, adaptiveBottomPadding(for: geometry.size))
+            }
         }
-        .padding(.horizontal, 6)
+    }
+    
+    // MARK: - Adaptive Layout Functions
+    private func adaptiveSpacing(for size: CGSize) -> CGFloat {
+        // Adjust spacing based on watch size
+        if size.height < 200 {
+            return 6  // 38mm/40mm watches - tighter spacing
+        } else if size.height < 220 {
+            return 8  // 42mm/44mm watches - medium spacing
+        } else {
+            return 10 // 45mm/49mm Ultra watches - more spacing
+        }
+    }
+    
+    private func adaptiveTopPadding(for size: CGSize) -> CGFloat {
+        // Ensure proper clearance from status bar/time
+        if size.height < 200 {
+            return 4   // Smaller watches need less padding
+        } else if size.height < 220 {
+            return 6   // Medium watches
+        } else {
+            return 8   // Larger watches can afford more padding
+        }
+    }
+    
+    private func adaptiveHorizontalPadding(for size: CGSize) -> CGFloat {
+        // Adjust horizontal padding based on watch width
+        if size.width < 170 {
+            return 8   // Smaller watches - less padding
+        } else if size.width < 190 {
+            return 12  // Medium watches
+        } else {
+            return 16  // Larger watches - more padding
+        }
+    }
+    
+    private func adaptiveBottomPadding(for size: CGSize) -> CGFloat {
+        // Ensure proper clearance from bottom
+        if size.height < 200 {
+            return 8
+        } else {
+            return 12
+        }
+    }
+    
+    // MARK: - Phase Indicator (Adaptive for All Watch Models)
+    private var phaseIndicator: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 6) {
+                // Current Phase Display with Timer - Adaptive sizing
+                HStack {
+                    Text(currentPhase.rawValue.uppercased())
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 16), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .tracking(1.0)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    
+                    Spacer()
+                    
+                    // Phase timer in top right - Adaptive sizing
+                    Text(formatTime(phaseTimeRemaining))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 16), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                }
+                .padding(.vertical, adaptiveVerticalPadding(for: geometry.size))
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(phaseColor(for: currentPhase).opacity(0.8))
+                )
+                
+                // Phase instructions below - Adaptive sizing
+                Text(phaseInstructions(for: currentPhase))
+                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.9)
+                
+                // Progress Dots - Adaptive sizing
+                HStack(spacing: adaptiveDotSpacing(for: geometry.size)) {
+                    ForEach(Array(WorkoutPhase.allCases.filter { $0 != .complete }.enumerated()), id: \.element) { index, phase in
+                        Circle()
+                            .fill(currentPhase == phase ? phaseColor(for: phase) : Color.white.opacity(0.3))
+                            .frame(width: adaptiveDotSize(for: geometry.size, isActive: currentPhase == phase), 
+                                   height: adaptiveDotSize(for: geometry.size, isActive: currentPhase == phase))
+                            .scaleEffect(currentPhase == phase ? 1.1 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentPhase)
+                    }
+                }
+                .padding(.horizontal, adaptiveHorizontalPadding(for: geometry.size))
+            }
+        }
+        .frame(height: adaptivePhaseIndicatorHeight())
+    }
+    
+    // MARK: - Additional Adaptive Helper Functions
+    private func adaptiveFontSize(for size: CGSize, base: CGFloat) -> CGFloat {
+        let scaleFactor: CGFloat
+        if size.width < 170 {
+            scaleFactor = 0.85  // Smaller watches
+        } else if size.width < 190 {
+            scaleFactor = 0.95  // Medium watches
+        } else {
+            scaleFactor = 1.0   // Larger watches
+        }
+        return base * scaleFactor
+    }
+    
+    private func adaptiveVerticalPadding(for size: CGSize) -> CGFloat {
+        if size.height < 200 {
+            return 8   // Smaller watches
+        } else if size.height < 220 {
+            return 10  // Medium watches
+        } else {
+            return 12  // Larger watches
+        }
+    }
+    
+    private func adaptiveDotSpacing(for size: CGSize) -> CGFloat {
+        if size.width < 170 {
+            return 4   // Smaller watches - tighter spacing
+        } else {
+            return 6   // Larger watches - more spacing
+        }
+    }
+    
+    private func adaptiveDotSize(for size: CGSize, isActive: Bool) -> CGFloat {
+        let baseSize: CGFloat = size.width < 170 ? 5 : 6
+        return isActive ? baseSize + 2 : baseSize
+    }
+    
+    private func adaptivePhaseIndicatorHeight() -> CGFloat {
+        return 100  // Fixed height to prevent layout shifts
+    }
+    
+    // MARK: - Real-time Metrics (Adaptive for All Watch Models)
+    private var realTimeMetrics: some View {
+        GeometryReader { geometry in
+            // Clean Distance and Pace Display - Adaptive sizing
+            HStack(spacing: adaptiveMetricsSpacing(for: geometry.size)) {
+                VStack(spacing: 2) {
+                    Text(String(format: "%.0f", gpsManager.currentDistance))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 22), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .minimumScaleFactor(0.8)
+                    Text("YDS")
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(0.5)
+                }
+                
+                VStack(spacing: 2) {
+                    Text(String(format: "%.1f", gpsManager.currentPace))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 22), weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+                        .minimumScaleFactor(0.8)
+                    Text("MIN/MI")
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                        .tracking(0.5)
+                }
+            }
+        }
+        .frame(height: 50)
+        .padding(.vertical, adaptiveVerticalPadding(for: CGSize(width: 200, height: 200)))
+    }
+    
+    private func adaptiveMetricsSpacing(for size: CGSize) -> CGFloat {
+        if size.width < 170 {
+            return 15  // Smaller watches - tighter spacing
+        } else {
+            return 20  // Larger watches - more spacing
+        }
+    }
+    
+    // MARK: - Motivational Display (Adaptive for All Watch Models)
+    private var motivationalDisplay: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 4) {
+                Text(phaseMotivationalText(for: currentPhase))
+                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 13), weight: .semibold, design: .rounded))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .minimumScaleFactor(0.9)
+                
+                // Phase progress indicator with icon - Adaptive sizing
+                HStack(spacing: 4) {
+                    Image(systemName: phaseIcon(for: currentPhase))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 11), weight: .bold))
+                        .foregroundColor(phaseColor(for: currentPhase))
+                    
+                    Text(phaseProgressText(for: currentPhase))
+                        .font(.system(size: adaptiveFontSize(for: geometry.size, base: 10), weight: .medium))
+                        .foregroundColor(.white.opacity(0.8))
+                        .minimumScaleFactor(0.9)
+                }
+            }
+        }
+        .frame(height: 40)
+    }
+    
+    // MARK: - Timer Display (Adaptive for All Watch Models)
+    private var timerDisplay: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 2) {
+                Text(formatTime(elapsedTime))
+                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 18), weight: .bold))
+                    .foregroundColor(.cyan)
+                    .monospacedDigit()
+                    .minimumScaleFactor(0.8)
+                
+                Text("ELAPSED TIME")
+                    .font(.system(size: adaptiveFontSize(for: geometry.size, base: 8), weight: .medium))
+                    .foregroundColor(.white.opacity(0.6))
+                    .tracking(0.5)
+                    .minimumScaleFactor(0.9)
+            }
+        }
+        .frame(height: 35)
     }
     
     // MARK: - Top Stats Row (Enhanced with Autonomous Systems)
@@ -879,77 +1108,55 @@ struct SprintTimerProWorkoutView: View {
         print("🎯 SprintTimer Pro picker data updated: \(proPickerData.selectedDistance)yd x\(proPickerData.selectedReps) reps")
     }
     
-    // MARK: - Autonomous Systems Display
+    // MARK: - MainProgramWorkoutWatchView Style Components
+    
+    private var workoutHeader: some View {
+        VStack(spacing: 4) {
+            Text("Sprint Timer Pro")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(.yellow)
+                .tracking(0.5)
+            
+            Text("CUSTOM SPRINT TRAINING")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.white)
+                .tracking(1)
+            
+            Text("\(distance) yards × \(sets) sets")
+                .font(.system(size: 11, weight: .medium))
+                .foregroundColor(.white.opacity(0.7))
+                .multilineTextAlignment(.center)
+        }
+    }
+    
+    // MARK: - Enhanced Autonomous Systems Display
     private var autonomousSystemsStatus: some View {
         HStack(spacing: 8) {
             // HealthKit Status
-            StatusIcon(
+            StatusIndicator(
                 icon: "heart.fill",
-                isActive: workoutManager.isWorkoutActive,
-                color: .red
+                value: "\(workoutManager.currentHeartRate)",
+                label: "BPM",
+                color: workoutManager.isWorkoutActive ? .red : .gray
             )
             
             // GPS Status
-            StatusIcon(
+            StatusIndicator(
                 icon: "location.fill",
-                isActive: gpsManager.isTracking,
-                color: .green
+                value: String(format: "%.1f", gpsManager.currentSpeed),
+                label: "MPH",
+                color: gpsManager.isTracking ? .green : .gray
             )
             
-            // Interval Manager Status
-            StatusIcon(
+            // Interval Status
+            StatusIndicator(
                 icon: "timer",
-                isActive: intervalManager.isActive,
-                color: .blue
+                value: "\(intervalManager.currentInterval)",
+                label: "SET",
+                color: intervalManager.isActive ? .blue : .gray
             )
-            
-            Spacer()
-            
-            // Current Phase Display
-            Text(currentPhase.rawValue.uppercased())
-                .font(.system(size: 10, weight: .bold))
-                .foregroundColor(.white)
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(phaseColor(for: currentPhase))
-                )
-        }
-        .padding(.horizontal, 4)
-    }
-    
-    // MARK: - Phase Indicator
-    private var phaseIndicator: some View {
-        VStack(spacing: 4) {
-            // Current Phase Display
-            HStack {
-                Text(currentPhase.rawValue)
-                    .font(.system(size: 16, weight: .bold))
-                    .foregroundColor(.white)
-                
-                Spacer()
-                
-                if currentPhase != .complete {
-                    Text(formatTime(phaseTimeRemaining))
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.gray)
-                }
-            }
-            
-            // Progress Dots
-            HStack(spacing: 4) {
-                ForEach(WorkoutPhase.allCases.filter { $0 != .complete }, id: \.self) { phase in
-                    Circle()
-                        .fill(phase == currentPhase ? phaseColor(for: phase) : Color.gray.opacity(0.3))
-                        .frame(width: 6, height: 6)
-                        .scaleEffect(phase == currentPhase ? 1.2 : 1.0)
-                        .animation(.easeInOut(duration: 0.3), value: currentPhase)
-                }
-            }
         }
         .padding(.horizontal, 8)
-        .padding(.vertical, 4)
     }
     
     // MARK: - Helper Functions
@@ -1005,6 +1212,88 @@ struct SprintTimerProWorkoutView: View {
             return "bolt.fill"
         case .cooldown:
             return "snowflake"
+        case .complete:
+            return "checkmark.circle.fill"
+        }
+    }
+    
+    // MARK: - MainProgramWorkoutWatchView Style Helper Functions
+    
+    /// Returns specific instructions for what to do in each phase - EXACT match
+    private func phaseInstructions(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Light jogging, leg swings, arm circles"
+        case .stretch:
+            return "Dynamic stretching routine"
+        case .drills:
+            return "A-skips, B-skips, high knees"
+        case .strides:
+            return "Build to 80% effort over 20 yards"
+        case .sprints:
+            return "Maximum effort \(distance)-yard sprints"
+        case .cooldown:
+            return "Easy walking, static stretching"
+        case .complete:
+            return "Workout completed successfully"
+        }
+    }
+    
+    /// Returns progress text for each phase - EXACT match
+    private func phaseProgressText(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Get your body ready"
+        case .stretch:
+            return "Improve mobility"
+        case .drills:
+            return "Focus on technique"
+        case .strides:
+            return "Build up speed"
+        case .sprints:
+            return "Maximum effort"
+        case .cooldown:
+            return "Recovery time"
+        case .complete:
+            return "Well done!"
+        }
+    }
+    
+    /// Returns motivational text for each phase - EXACT match
+    private func phaseMotivationalText(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "Get your body ready"
+        case .stretch:
+            return "Prepare your muscles"
+        case .drills:
+            return "Perfect your form"
+        case .strides:
+            return "Build momentum"
+        case .sprints:
+            return "Give it everything!"
+        case .cooldown:
+            return "Well done, recover"
+        case .complete:
+            return "Workout complete!"
+        }
+    }
+    
+    /// Returns appropriate icon for each phase - EXACT match
+    private func phaseIcon(for phase: WorkoutPhase) -> String {
+        switch phase {
+        case .warmup:
+            return "flame.fill"
+        case .stretch:
+            return "figure.flexibility"
+        case .drills:
+            return "figure.run"
+        case .strides:
+            return "speedometer"
+        case .sprints:
+            return "bolt.fill"
+        case .cooldown:
+            return "leaf.fill"
         case .complete:
             return "checkmark.circle.fill"
         }

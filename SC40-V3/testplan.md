@@ -35,7 +35,7 @@ Comprehensive testing plan for SC40-V3 sprint training app with AI coaching feat
 ##### **1. WelcomeView - Onboarding Flow** 🔴 **HIGH PRIORITY**
 - [x] Fresh install launches to WelcomeView
 - [x] User registration (email/password) works
-- [ ] Social login (Apple/Google) integration - Yes
+- [ ] Social login (Apple/Google) integration
 - [ ] All onboarding steps display correctly
 - [ ] Level, frequency, personal best inputs work
 - [ ] UserDefaults saves onboarding choices

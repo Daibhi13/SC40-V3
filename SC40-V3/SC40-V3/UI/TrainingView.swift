@@ -937,6 +937,32 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
         week: Int,
         day: Int
     ) -> TrainingSession {
+        // Special handling for all Pyramid sessions
+        if librarySession.name.contains("Pyramid") {
+            let pyramidDistances = generatePyramidPattern(for: librarySession)
+            let pyramidSprints = pyramidDistances.map { distance in
+                SprintSet(
+                    distanceYards: distance,
+                    reps: 1,
+                    intensity: getIntensityFromDistance(distance)
+                )
+            }
+            
+            let pyramidString = pyramidDistances.map { "\($0)" }.joined(separator: "→")
+            
+            return TrainingSession(
+                id: TrainingSession.stableSessionID(week: week, day: day),
+                week: week,
+                day: day,
+                type: librarySession.name,
+                focus: librarySession.focus,
+                sprints: pyramidSprints,
+                accessoryWork: getAccessoryWorkForSession(librarySession),
+                notes: "Pyramid: \(pyramidString) yards, \(librarySession.restSeconds) seconds rest between reps"
+            )
+        }
+        
+        // Standard session handling
         let sprintSet = SprintSet(
             distanceYards: librarySession.distanceYards,
             reps: librarySession.reps,
@@ -962,6 +988,405 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
         case 41...60: return "max"
         default: return "all-out"
         }
+    }
+    
+    // MARK: - Pyramid Pattern Generator
+    /// Generates pyramid distance patterns based on session type and characteristics
+    private func generatePyramidPattern(for session: ComprehensiveSprintSession) -> [Int] {
+        let maxDistance = session.distanceYards
+        let sessionName = session.name.lowercased()
+        let level = session.level.lowercased()
+        
+        // Determine increment pattern based on session characteristics
+        let increment = determinePyramidIncrement(maxDistance: maxDistance, sessionName: sessionName, level: level)
+        
+        // Generate base pyramid pattern
+        var pattern: [Int] = []
+        
+        // Special patterns for specific pyramid types
+        switch sessionName {
+        case let name where name.contains("fibonacci"):
+            pattern = generateFibonacciPyramid(maxDistance: maxDistance)
+        case let name where name.contains("golden"):
+            pattern = generateGoldenRatioPyramid(maxDistance: maxDistance)
+        case let name where name.contains("prime"):
+            pattern = generatePrimePyramid(maxDistance: maxDistance)
+        case let name where name.contains("micro"):
+            pattern = generateMicroPyramid(maxDistance: maxDistance)
+        case let name where name.contains("macro") || name.contains("big") || name.contains("giant") || name.contains("massive"):
+            pattern = generateMacroPyramid(maxDistance: maxDistance)
+        case let name where name.contains("twin") || name.contains("double"):
+            pattern = generateDoublePeakPyramid(maxDistance: maxDistance)
+        case let name where name.contains("triple") || name.contains("three"):
+            pattern = generateTriplePeakPyramid(maxDistance: maxDistance)
+        case let name where name.contains("plateau") || name.contains("mesa") || name.contains("table"):
+            pattern = generatePlateauPyramid(maxDistance: maxDistance, increment: increment)
+        case let name where name.contains("wave") || name.contains("oscillat") || name.contains("ripple"):
+            pattern = generateWavePyramid(maxDistance: maxDistance, increment: increment)
+        case let name where name.contains("steep"):
+            pattern = generateSteepPyramid(maxDistance: maxDistance, increment: increment)
+        case let name where name.contains("gentle"):
+            pattern = generateGentlePyramid(maxDistance: maxDistance, increment: increment)
+        case let name where name.contains("odd"):
+            pattern = generateOddIncrementPyramid(maxDistance: maxDistance)
+        case let name where name.contains("even"):
+            pattern = generateEvenIncrementPyramid(maxDistance: maxDistance)
+        case let name where name.contains("mixed") || name.contains("random") || name.contains("chaos"):
+            pattern = generateMixedIncrementPyramid(maxDistance: maxDistance)
+        default:
+            // Standard symmetric pyramid
+            pattern = generateStandardPyramid(maxDistance: maxDistance, increment: increment)
+        }
+        
+        // Ensure pattern matches expected rep count (approximately)
+        if pattern.count != session.reps {
+            // Adjust pattern to match expected reps
+            pattern = adjustPatternToReps(pattern: pattern, targetReps: session.reps, maxDistance: maxDistance)
+        }
+        
+        return pattern
+    }
+    
+    private func determinePyramidIncrement(maxDistance: Int, sessionName: String, level: String) -> Int {
+        // Determine increment based on max distance and level
+        switch maxDistance {
+        case 0...30:
+            return level == "beginner" ? 5 : 10
+        case 31...50:
+            return sessionName.contains("micro") ? 5 : 10
+        case 51...70:
+            return sessionName.contains("macro") ? 15 : 10
+        case 71...100:
+            return sessionName.contains("macro") || sessionName.contains("giant") ? 20 : 15
+        default:
+            return 10
+        }
+    }
+    
+    // Standard symmetric pyramid: builds up then down
+    private func generateStandardPyramid(maxDistance: Int, increment: Int) -> [Int] {
+        var pattern: [Int] = []
+        
+        // Build up
+        var current = increment
+        while current <= maxDistance {
+            pattern.append(current)
+            current += increment
+        }
+        
+        // Build down (skip the peak to avoid duplication)
+        current = maxDistance - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Fibonacci sequence pyramid
+    private func generateFibonacciPyramid(maxDistance: Int) -> [Int] {
+        var fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+        let scaledFib = fib.compactMap { $0 <= maxDistance ? $0 : nil }
+        
+        // Create pyramid from fibonacci sequence
+        var pattern = scaledFib
+        let reversedPattern = Array(scaledFib.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Golden ratio based pyramid
+    private func generateGoldenRatioPyramid(maxDistance: Int) -> [Int] {
+        let goldenRatio = 1.618
+        var pattern: [Int] = []
+        var current = 5.0
+        
+        // Build up using golden ratio
+        while Int(current) <= maxDistance {
+            pattern.append(Int(current))
+            current *= goldenRatio
+        }
+        
+        // Build down
+        let reversedPattern = Array(pattern.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Prime numbers pyramid
+    private func generatePrimePyramid(maxDistance: Int) -> [Int] {
+        let primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
+        let validPrimes = primes.filter { $0 <= maxDistance }
+        
+        var pattern = validPrimes
+        let reversedPattern = Array(validPrimes.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Micro pyramid with 5-yard increments
+    private func generateMicroPyramid(maxDistance: Int) -> [Int] {
+        return generateStandardPyramid(maxDistance: maxDistance, increment: 5)
+    }
+    
+    // Macro pyramid with large increments
+    private func generateMacroPyramid(maxDistance: Int) -> [Int] {
+        let increment = maxDistance > 80 ? 20 : 15
+        return generateStandardPyramid(maxDistance: maxDistance, increment: increment)
+    }
+    
+    // Double peak pyramid
+    private func generateDoublePeakPyramid(maxDistance: Int) -> [Int] {
+        let peak1 = Int(Double(maxDistance) * 0.7)
+        let peak2 = maxDistance
+        let increment = maxDistance > 60 ? 10 : 5
+        
+        var pattern: [Int] = []
+        
+        // First peak
+        var current = increment
+        while current <= peak1 {
+            pattern.append(current)
+            current += increment
+        }
+        current = peak1 - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        // Second peak
+        current = increment
+        while current <= peak2 {
+            pattern.append(current)
+            current += increment
+        }
+        current = peak2 - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Triple peak pyramid
+    private func generateTriplePeakPyramid(maxDistance: Int) -> [Int] {
+        let peak1 = Int(Double(maxDistance) * 0.5)
+        let peak2 = Int(Double(maxDistance) * 0.75)
+        let peak3 = maxDistance
+        let increment = 10
+        
+        var pattern: [Int] = []
+        
+        // Three peaks with valleys between
+        for peak in [peak1, peak2, peak3] {
+            var current = increment
+            while current <= peak {
+                pattern.append(current)
+                current += increment
+            }
+            current = peak - increment
+            while current >= increment && peak != peak3 { // Don't descend after final peak
+                pattern.append(current)
+                current -= increment
+            }
+        }
+        
+        // Final descent from peak3
+        var current = peak3 - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Plateau pyramid (flat top)
+    private func generatePlateauPyramid(maxDistance: Int, increment: Int) -> [Int] {
+        var pattern: [Int] = []
+        
+        // Build up
+        var current = increment
+        while current < maxDistance {
+            pattern.append(current)
+            current += increment
+        }
+        
+        // Plateau (repeat max distance 3 times)
+        for _ in 0..<3 {
+            pattern.append(maxDistance)
+        }
+        
+        // Build down
+        current = maxDistance - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Wave pyramid (multiple peaks and valleys)
+    private func generateWavePyramid(maxDistance: Int, increment: Int) -> [Int] {
+        var pattern: [Int] = []
+        let waveCount = 3
+        let waveHeight = maxDistance / waveCount
+        
+        for wave in 1...waveCount {
+            let peakHeight = waveHeight * wave
+            
+            // Build up to wave peak
+            var current = increment
+            while current <= peakHeight {
+                pattern.append(current)
+                current += increment
+            }
+            
+            // Build down from wave peak (except last wave)
+            if wave < waveCount {
+                current = peakHeight - increment
+                while current >= increment {
+                    pattern.append(current)
+                    current -= increment
+                }
+            }
+        }
+        
+        // Final descent
+        var current = maxDistance - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Steep pyramid (quick ascent, slow descent)
+    private func generateSteepPyramid(maxDistance: Int, increment: Int) -> [Int] {
+        var pattern: [Int] = []
+        
+        // Quick ascent with larger increments
+        var current = increment * 2
+        while current <= maxDistance {
+            pattern.append(current)
+            current += increment * 2
+        }
+        
+        // Slow descent with smaller increments
+        current = maxDistance - increment
+        while current >= increment {
+            pattern.append(current)
+            current -= increment
+        }
+        
+        return pattern
+    }
+    
+    // Gentle pyramid (slow ascent, quick descent)
+    private func generateGentlePyramid(maxDistance: Int, increment: Int) -> [Int] {
+        var pattern: [Int] = []
+        
+        // Slow ascent with smaller increments
+        var current = increment
+        while current <= maxDistance {
+            pattern.append(current)
+            current += increment
+        }
+        
+        // Quick descent with larger increments
+        current = maxDistance - (increment * 2)
+        while current >= increment {
+            pattern.append(current)
+            current -= increment * 2
+        }
+        
+        return pattern
+    }
+    
+    // Odd increment pyramid
+    private func generateOddIncrementPyramid(maxDistance: Int) -> [Int] {
+        var pattern: [Int] = []
+        let oddIncrements = [5, 15, 25, 35, 45, 55, 65, 75, 85, 95]
+        
+        for distance in oddIncrements {
+            if distance <= maxDistance {
+                pattern.append(distance)
+            }
+        }
+        
+        let reversedPattern = Array(pattern.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Even increment pyramid
+    private func generateEvenIncrementPyramid(maxDistance: Int) -> [Int] {
+        var pattern: [Int] = []
+        let evenIncrements = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+        
+        for distance in evenIncrements {
+            if distance <= maxDistance {
+                pattern.append(distance)
+            }
+        }
+        
+        let reversedPattern = Array(pattern.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Mixed increment pyramid
+    private func generateMixedIncrementPyramid(maxDistance: Int) -> [Int] {
+        let mixedIncrements = [7, 18, 23, 35, 42, 58, 67, 73, 89, 95]
+        var pattern: [Int] = []
+        
+        for distance in mixedIncrements {
+            if distance <= maxDistance {
+                pattern.append(distance)
+            }
+        }
+        
+        let reversedPattern = Array(pattern.dropLast().reversed())
+        pattern.append(contentsOf: reversedPattern)
+        
+        return pattern
+    }
+    
+    // Adjust pattern to match target rep count
+    private func adjustPatternToReps(pattern: [Int], targetReps: Int, maxDistance: Int) -> [Int] {
+        var adjustedPattern = pattern
+        
+        if pattern.count < targetReps {
+            // Add more reps by extending the pattern
+            let difference = targetReps - pattern.count
+            let increment = maxDistance / 10
+            
+            for i in 0..<difference {
+                let additionalDistance = increment * (i + 1)
+                if additionalDistance <= maxDistance {
+                    adjustedPattern.insert(additionalDistance, at: adjustedPattern.count / 2)
+                }
+            }
+        } else if pattern.count > targetReps {
+            // Remove reps by trimming the pattern
+            let difference = pattern.count - targetReps
+            let removeCount = difference / 2
+            
+            // Remove from both ends
+            adjustedPattern = Array(adjustedPattern.dropFirst(removeCount).dropLast(difference - removeCount))
+        }
+        
+        return adjustedPattern
     }
     
     private func getAccessoryWorkForSession(_ session: ComprehensiveSprintSession) -> [String] {
@@ -1589,29 +2014,49 @@ struct TrainingSessionCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
                     if let firstSprint = session.sprints.first, firstSprint.distanceYards > 0 {
-                        // Sprint session display - Enhanced formatting
-                        HStack(alignment: .bottom, spacing: 6) {
-                            Text("\(firstSprint.reps)")
-                                .font(.system(size: 28, weight: .black))
-                                .foregroundColor(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
+                        // Special handling for all Pyramid sessions
+                        if session.type.contains("Pyramid") {
+                            // Show pyramid structure dynamically
+                            let pyramidPattern = session.sprints.map { "\($0.distanceYards)" }.joined(separator: "→")
+                            let repCount = session.sprints.count
                             
-                            Text("×")
-                                .font(.system(size: 18, weight: .bold))
-                                .foregroundColor(.white.opacity(0.7))
-                                .padding(.bottom, 2)
-                            
-                            Text("\(firstSprint.distanceYards)")
-                                .font(.system(size: 20, weight: .black))
-                                .foregroundColor(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                            
-                            Text("YD")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.white.opacity(0.8))
-                                .padding(.bottom, 1)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(repCount)×PYRAMID")
+                                    .font(.system(size: 20, weight: .black))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                                
+                                Text(pyramidPattern)
+                                    .font(.system(size: pyramidPattern.count > 30 ? 10 : 12, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.7)
+                            }
+                        } else {
+                            // Standard sprint session display - Enhanced formatting
+                            HStack(alignment: .bottom, spacing: 6) {
+                                Text("\(firstSprint.reps)")
+                                    .font(.system(size: 28, weight: .black))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                
+                                Text("×")
+                                    .font(.system(size: 18, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .padding(.bottom, 2)
+                                
+                                Text("\(firstSprint.distanceYards)")
+                                    .font(.system(size: 20, weight: .black))
+                                    .foregroundColor(.white)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                
+                                Text("YD")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .padding(.bottom, 1)
+                            }
                         }
                         
                         Spacer()

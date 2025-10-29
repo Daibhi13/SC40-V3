@@ -340,7 +340,148 @@ let sessionLibrary: [SprintSessionTemplate] = [
     SprintSessionTemplate(id: 261, name: "Advanced Active Recovery C - Flush Circuit", distance: 0, reps: 0, rest: 0, focus: "Aerobic maintenance and flow", level: "Advanced", sessionType: LibrarySessionType.activeRecovery),
     SprintSessionTemplate(id: 262, name: "Elite Active Recovery A - Sprint Rhythm Maintenance", distance: 0, reps: 0, rest: 0, focus: "Elite stride rhythm", level: "Elite", sessionType: LibrarySessionType.activeRecovery),
     SprintSessionTemplate(id: 263, name: "Elite Active Recovery B - Elite Flow Session", distance: 0, reps: 0, rest: 0, focus: "Technical control and rhythm", level: "Elite", sessionType: LibrarySessionType.activeRecovery),
-    SprintSessionTemplate(id: 264, name: "Elite Active Recovery C - CNS Light Stimulus", distance: 0, reps: 0, rest: 0, focus: "Nervous system refresh", level: "Elite", sessionType: LibrarySessionType.activeRecovery)
+    SprintSessionTemplate(id: 264, name: "Elite Active Recovery C - CNS Light Stimulus", distance: 0, reps: 0, rest: 0, focus: "Nervous system refresh", level: "Elite", sessionType: LibrarySessionType.activeRecovery),
+    
+    // MARK: - Pyramid Sessions (265-364) - 100 Pyramid Variations
+    // BEGINNER PYRAMIDS (Speed Focus - Short Peaks)
+    SprintSessionTemplate(id: 265, name: "Mini Pyramid", distance: 20, reps: 5, rest: 60, focus: "Speed Development", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 266, name: "Basic Pyramid", distance: 30, reps: 7, rest: 90, focus: "Speed Progression", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 267, name: "Step Pyramid", distance: 25, reps: 5, rest: 75, focus: "Acceleration", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 268, name: "Quick Pyramid", distance: 35, reps: 7, rest: 90, focus: "Speed Development", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 269, name: "Short Pyramid", distance: 40, reps: 7, rest: 120, focus: "Max Velocity", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 270, name: "Micro Pyramid", distance: 15, reps: 5, rest: 45, focus: "Acceleration", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 271, name: "Build Pyramid", distance: 45, reps: 9, rest: 120, focus: "Speed Endurance", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 272, name: "Fast Pyramid", distance: 50, reps: 9, rest: 150, focus: "Speed Endurance", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 273, name: "Power Pyramid", distance: 30, reps: 9, rest: 90, focus: "Power Development", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 274, name: "Drive Pyramid", distance: 35, reps: 9, rest: 105, focus: "Drive Phase", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    
+    // INTERMEDIATE PYRAMIDS (Balanced Speed-Endurance)
+    SprintSessionTemplate(id: 275, name: "Classic Pyramid", distance: 40, reps: 7, rest: 120, focus: "Progressive Distance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 276, name: "Extended Pyramid", distance: 60, reps: 11, rest: 180, focus: "Speed Endurance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 277, name: "Double Pyramid", distance: 50, reps: 13, rest: 150, focus: "Endurance Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 278, name: "Peak Pyramid", distance: 70, reps: 13, rest: 210, focus: "Peak Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 279, name: "Wave Pyramid", distance: 55, reps: 11, rest: 165, focus: "Speed Waves", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 280, name: "Climb Pyramid", distance: 65, reps: 11, rest: 195, focus: "Progressive Build", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 281, name: "Flow Pyramid", distance: 45, reps: 9, rest: 135, focus: "Rhythm Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 282, name: "Tempo Pyramid", distance: 75, reps: 13, rest: 225, focus: "Tempo Endurance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 283, name: "Stride Pyramid", distance: 80, reps: 15, rest: 240, focus: "Stride Endurance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 284, name: "Rhythm Pyramid", distance: 55, reps: 9, rest: 165, focus: "Rhythm Development", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    
+    // ADVANCED PYRAMIDS (Endurance Focus - Longer Peaks)
+    SprintSessionTemplate(id: 285, name: "Endurance Pyramid", distance: 100, reps: 19, rest: 300, focus: "Speed Endurance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 286, name: "Distance Pyramid", distance: 90, reps: 17, rest: 270, focus: "Distance Speed", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 287, name: "Long Pyramid", distance: 85, reps: 15, rest: 255, focus: "Long Speed", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 288, name: "Volume Pyramid", distance: 95, reps: 17, rest: 285, focus: "Volume Training", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 289, name: "Capacity Pyramid", distance: 80, reps: 13, rest: 240, focus: "Speed Capacity", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 290, name: "Power Endurance Pyramid", distance: 75, reps: 11, rest: 225, focus: "Power Endurance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 291, name: "Max Pyramid", distance: 100, reps: 21, rest: 300, focus: "Maximum Endurance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 292, name: "Elite Pyramid", distance: 90, reps: 19, rest: 270, focus: "Elite Development", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 293, name: "Challenge Pyramid", distance: 85, reps: 17, rest: 255, focus: "Challenge Training", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 294, name: "Ultimate Pyramid", distance: 95, reps: 19, rest: 285, focus: "Ultimate Speed", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // ELITE PYRAMIDS (Maximum Endurance - Complex Patterns)
+    SprintSessionTemplate(id: 295, name: "Master Pyramid", distance: 100, reps: 21, rest: 300, focus: "Master Level", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 296, name: "Champion Pyramid", distance: 95, reps: 19, rest: 285, focus: "Championship Training", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 297, name: "Pro Pyramid", distance: 90, reps: 17, rest: 270, focus: "Professional Level", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 298, name: "Olympic Pyramid", distance: 100, reps: 23, rest: 300, focus: "Olympic Preparation", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 299, name: "World Class Pyramid", distance: 95, reps: 21, rest: 285, focus: "World Class Speed", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 300, name: "Record Pyramid", distance: 90, reps: 19, rest: 270, focus: "Record Breaking", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 301, name: "Legendary Pyramid", distance: 100, reps: 25, rest: 300, focus: "Legendary Performance", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 302, name: "Supreme Pyramid", distance: 85, reps: 15, rest: 255, focus: "Supreme Speed", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 303, name: "Apex Pyramid", distance: 95, reps: 17, rest: 285, focus: "Apex Performance", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 304, name: "Peak Performance Pyramid", distance: 100, reps: 27, rest: 300, focus: "Peak Performance", level: "Elite", sessionType: LibrarySessionType.sprint),
+    
+    // SPECIALIZED PYRAMIDS (Unique Patterns & Increments)
+    SprintSessionTemplate(id: 305, name: "Fibonacci Pyramid", distance: 55, reps: 9, rest: 165, focus: "Mathematical Progression", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 306, name: "Golden Pyramid", distance: 62, reps: 11, rest: 186, focus: "Golden Ratio", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 307, name: "Prime Pyramid", distance: 47, reps: 9, rest: 141, focus: "Prime Numbers", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 308, name: "Odd Pyramid", distance: 45, reps: 9, rest: 135, focus: "Odd Increments", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 309, name: "Even Pyramid", distance: 60, reps: 11, rest: 180, focus: "Even Increments", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 310, name: "Mixed Pyramid", distance: 67, reps: 13, rest: 201, focus: "Mixed Increments", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 311, name: "Random Pyramid", distance: 73, reps: 11, rest: 219, focus: "Random Progression", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 312, name: "Chaos Pyramid", distance: 58, reps: 13, rest: 174, focus: "Chaos Training", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 313, name: "Custom Pyramid", distance: 85, reps: 15, rest: 255, focus: "Custom Pattern", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 314, name: "Adaptive Pyramid", distance: 70, reps: 13, rest: 210, focus: "Adaptive Training", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // MICRO PYRAMIDS (5-yard increments)
+    SprintSessionTemplate(id: 315, name: "Micro Speed Pyramid", distance: 25, reps: 7, rest: 75, focus: "Micro Progression", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 316, name: "Fine Pyramid", distance: 35, reps: 9, rest: 105, focus: "Fine Tuning", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 317, name: "Precision Pyramid", distance: 45, reps: 11, rest: 135, focus: "Precision Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 318, name: "Detail Pyramid", distance: 55, reps: 13, rest: 165, focus: "Detail Work", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 319, name: "Refined Pyramid", distance: 65, reps: 15, rest: 195, focus: "Refined Speed", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // MACRO PYRAMIDS (15-20 yard increments)
+    SprintSessionTemplate(id: 320, name: "Macro Pyramid", distance: 80, reps: 9, rest: 240, focus: "Macro Progression", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 321, name: "Big Step Pyramid", distance: 100, reps: 11, rest: 300, focus: "Big Steps", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 322, name: "Giant Pyramid", distance: 90, reps: 9, rest: 270, focus: "Giant Steps", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 323, name: "Massive Pyramid", distance: 100, reps: 13, rest: 300, focus: "Massive Progression", level: "Elite", sessionType: LibrarySessionType.sprint),
+    
+    // ASYMMETRIC PYRAMIDS (Different up/down patterns)
+    SprintSessionTemplate(id: 324, name: "Steep Pyramid", distance: 60, reps: 9, rest: 180, focus: "Steep Climb", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 325, name: "Gentle Pyramid", distance: 50, reps: 13, rest: 150, focus: "Gentle Build", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 326, name: "Skewed Pyramid", distance: 70, reps: 11, rest: 210, focus: "Asymmetric Pattern", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 327, name: "Lopsided Pyramid", distance: 65, reps: 13, rest: 195, focus: "Uneven Build", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // DOUBLE PEAK PYRAMIDS
+    SprintSessionTemplate(id: 328, name: "Twin Peak Pyramid", distance: 60, reps: 15, rest: 180, focus: "Double Peak", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 329, name: "Double Summit Pyramid", distance: 70, reps: 17, rest: 210, focus: "Two Summits", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 330, name: "Dual Apex Pyramid", distance: 80, reps: 19, rest: 240, focus: "Dual Peaks", level: "Elite", sessionType: LibrarySessionType.sprint),
+    
+    // TRIPLE PEAK PYRAMIDS
+    SprintSessionTemplate(id: 331, name: "Triple Peak Pyramid", distance: 50, reps: 21, rest: 150, focus: "Triple Peak", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 332, name: "Three Summit Pyramid", distance: 60, reps: 23, rest: 180, focus: "Three Summits", level: "Elite", sessionType: LibrarySessionType.sprint),
+    
+    // PLATEAU PYRAMIDS (Flat tops)
+    SprintSessionTemplate(id: 333, name: "Plateau Pyramid", distance: 40, reps: 11, rest: 120, focus: "Plateau Training", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 334, name: "Mesa Pyramid", distance: 60, reps: 15, rest: 180, focus: "Mesa Pattern", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 335, name: "Table Pyramid", distance: 80, reps: 17, rest: 240, focus: "Table Top", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // WAVE PYRAMIDS (Multiple peaks and valleys)
+    SprintSessionTemplate(id: 336, name: "Wave Pattern Pyramid", distance: 70, reps: 19, rest: 210, focus: "Wave Pattern", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 337, name: "Oscillating Pyramid", distance: 60, reps: 17, rest: 180, focus: "Oscillation", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 338, name: "Ripple Pyramid", distance: 50, reps: 15, rest: 150, focus: "Ripple Effect", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // SPEED-SPECIFIC PYRAMIDS
+    SprintSessionTemplate(id: 339, name: "Acceleration Pyramid", distance: 30, reps: 9, rest: 90, focus: "Acceleration Focus", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 340, name: "Max Velocity Pyramid", distance: 50, reps: 11, rest: 150, focus: "Max Velocity", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 341, name: "Speed Maintenance Pyramid", distance: 70, reps: 13, rest: 210, focus: "Speed Maintenance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 342, name: "Deceleration Pyramid", distance: 90, reps: 15, rest: 270, focus: "Deceleration Control", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // ENDURANCE-SPECIFIC PYRAMIDS
+    SprintSessionTemplate(id: 343, name: "Short Endurance Pyramid", distance: 60, reps: 13, rest: 120, focus: "Short Endurance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 344, name: "Medium Endurance Pyramid", distance: 80, reps: 15, rest: 160, focus: "Medium Endurance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 345, name: "Long Endurance Pyramid", distance: 100, reps: 17, rest: 200, focus: "Long Endurance", level: "Elite", sessionType: LibrarySessionType.sprint),
+    
+    // RECOVERY PYRAMIDS (Active recovery focus)
+    SprintSessionTemplate(id: 346, name: "Recovery Pyramid", distance: 40, reps: 9, rest: 180, focus: "Active Recovery", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 347, name: "Easy Pyramid", distance: 30, reps: 7, rest: 150, focus: "Easy Pace", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 348, name: "Gentle Build Pyramid", distance: 50, reps: 11, rest: 200, focus: "Gentle Build", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    
+    // POWER PYRAMIDS (Explosive focus)
+    SprintSessionTemplate(id: 349, name: "Explosive Pyramid", distance: 35, reps: 7, rest: 210, focus: "Explosive Power", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 350, name: "Power Burst Pyramid", distance: 45, reps: 9, rest: 270, focus: "Power Bursts", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 351, name: "Dynamic Pyramid", distance: 55, reps: 11, rest: 330, focus: "Dynamic Power", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // TECHNICAL PYRAMIDS (Form focus)
+    SprintSessionTemplate(id: 352, name: "Form Pyramid", distance: 40, reps: 9, rest: 120, focus: "Form Development", level: "Beginner", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 353, name: "Technique Pyramid", distance: 50, reps: 11, rest: 150, focus: "Technique Work", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 354, name: "Mechanics Pyramid", distance: 60, reps: 13, rest: 180, focus: "Mechanics Focus", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    
+    // SEASONAL PYRAMIDS (Periodization)
+    SprintSessionTemplate(id: 355, name: "Base Building Pyramid", distance: 70, reps: 15, rest: 140, focus: "Base Building", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 356, name: "Competition Prep Pyramid", distance: 50, reps: 9, rest: 300, focus: "Competition Prep", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 357, name: "Peak Season Pyramid", distance: 40, reps: 7, rest: 360, focus: "Peak Performance", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 358, name: "Off Season Pyramid", distance: 80, reps: 17, rest: 160, focus: "Off Season", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    
+    // WEATHER-SPECIFIC PYRAMIDS
+    SprintSessionTemplate(id: 359, name: "Wind Training Pyramid", distance: 60, reps: 11, rest: 180, focus: "Wind Resistance", level: "Advanced", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 360, name: "Heat Adaptation Pyramid", distance: 50, reps: 9, rest: 240, focus: "Heat Training", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 361, name: "Cold Weather Pyramid", distance: 40, reps: 11, rest: 120, focus: "Cold Adaptation", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    
+    // FINAL SPECIALTY PYRAMIDS
+    SprintSessionTemplate(id: 362, name: "Mental Toughness Pyramid", distance: 90, reps: 19, rest: 180, focus: "Mental Strength", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 363, name: "Breakthrough Pyramid", distance: 100, reps: 21, rest: 200, focus: "Performance Breakthrough", level: "Elite", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 364, name: "Ultimate Challenge Pyramid", distance: 100, reps: 25, rest: 240, focus: "Ultimate Challenge", level: "Elite", sessionType: LibrarySessionType.sprint)
 ]
 
 // MARK: - Comprehensive Session Templates

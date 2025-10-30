@@ -5,24 +5,7 @@ import os.log
 #if canImport(WatchConnectivity) && os(iOS)
 import WatchConnectivity
 
-// MARK: - Watch Connectivity Errors
-enum WatchConnectivityError: LocalizedError {
-    case watchNotReachable
-    case timeout
-    case sessionNotActivated
-    
-    var errorDescription: String? {
-        switch self {
-        case .watchNotReachable:
-            return "Apple Watch is not reachable. Make sure your Watch is nearby and connected."
-        case .timeout:
-            return "Watch communication timed out. Please try again."
-        case .sessionNotActivated:
-            return "Watch session is not activated. Please restart the app."
-        }
-    }
-    
-}
+// Note: WatchConnectivityError is defined in WatchConnectivityErrorHandler.swift
 
 // MARK: - Enhanced Watch Connectivity Manager for Onboarding Flow Integration
 @MainActor
@@ -432,37 +415,36 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     
     // MARK: - Helper Methods
     
+    private func transferDataToWatch(_ data: [String: Any]) {
+        guard WCSession.default.activationState == .activated else {
+            logger.warning("Cannot transfer data - WCSession not activated")
+            return
+        }
+        
+        do {
+            try WCSession.default.updateApplicationContext(data)
+            logger.info("Data transferred to Watch via application context")
+        } catch {
+            logger.error("Failed to transfer data to Watch: \(error.localizedDescription)")
+        }
+    }
+    
     func sendMessageToWatch(_ message: [String: Any]) async throws {
         // Check if Watch is reachable before sending
         guard WCSession.default.isReachable else {
             throw WatchConnectivityError.watchNotReachable
         }
         
-        return try await withTimeout(seconds: 10) {
-            try await withCheckedThrowingContinuation { continuation in
-                WCSession.default.sendMessage(message) { reply in
-                    self.logger.info("Watch message sent successfully with reply: \(reply)")
-                    continuation.resume()
-                } errorHandler: { error in
-                    self.logger.error("Watch message failed: \(error.localizedDescription)")
-                    continuation.resume(throwing: error)
-                }
+        try await withCheckedThrowingContinuation { continuation in
+            WCSession.default.sendMessage(message) { reply in
+                continuation.resume()
+            } errorHandler: { error in
+                continuation.resume(throwing: error)
             }
         }
     }
-    
-    // MARK: - Background Transfer Helper
-    
-    private func transferDataToWatch(_ data: [String: Any]) {
-        guard WCSession.default.activationState == .activated else {
-            logger.error("Cannot transfer data - WCSession not activated")
-            return
-        }
-        
-        // Use transferUserInfo for reliable background data transfer
-        WCSession.default.transferUserInfo(data)
-        logger.info("Data queued for background transfer to Watch")
-    }
+
+    // Note: sync7StageWorkoutFlow is implemented above in the class
     
     // MARK: - Timeout Helper
     
@@ -583,6 +565,10 @@ extension WatchConnectivityManager: WCSessionDelegate {
                 case "sync_request":
                     // sync_request needs special handling as it uses replyHandler for data
                     logger.warning("sync_request received but reply already sent - use background transfer instead")
+                case "request_sessions":
+                    // CRITICAL FIX: Handle session requests from Watch
+                    handleSessionRequest(message, replyHandler: replyHandler)
+                    return // Don't send duplicate reply
                 case "status_update":
                     handleStatusUpdate(message)
                 case "rep_completed":
@@ -623,6 +609,150 @@ extension WatchConnectivityManager: WCSessionDelegate {
         // Update iPhone app with results, sync to HealthKit, etc.
     }
     
+    private func handleSessionRequest(_ message: [String: Any], replyHandler: @escaping ([String: Any]) -> Void) {
+        logger.info("📱 Watch requesting training sessions - generating current program")
+        
+        // Get current user profile and generate sessions
+        // This should integrate with the existing session generation system
+        Task {
+            do {
+                // Generate sessions using the same logic as TrainingView
+                let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+                let frequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+                let currentWeek = UserDefaults.standard.integer(forKey: "currentWeek") > 0 ? 
+                                 UserDefaults.standard.integer(forKey: "currentWeek") : 1
+                
+                print("📊 iPhone: Generating sessions for Watch - Level: \(userLevel), Frequency: \(frequency), Week: \(currentWeek)")
+                
+                // Create sample sessions that match the phone's session generation logic
+                let sessions = generateSessionsForWatch(level: userLevel, frequency: frequency, currentWeek: currentWeek)
+                
+                let sessionsData = sessions.map { session in
+                    [
+                        "id": session.id.uuidString,
+                        "week": session.week,
+                        "day": session.day,
+                        "type": session.type,
+                        "focus": session.focus,
+                        "sprints": session.sprints.map { sprint in
+                            [
+                                "distanceYards": sprint.distanceYards,
+                                "reps": sprint.reps,
+                                "intensity": sprint.intensity
+                            ]
+                        },
+                        "accessoryWork": session.accessoryWork,
+                        "notes": session.notes ?? ""
+                    ]
+                }
+                
+                await MainActor.run {
+                    replyHandler([
+                        "status": "success",
+                        "sessions": sessionsData,
+                        "sessionCount": sessionsData.count,
+                        "userLevel": userLevel,
+                        "frequency": frequency,
+                        "currentWeek": currentWeek,
+                        "timestamp": Date().timeIntervalSince1970
+                    ])
+                    
+                    print("✅ iPhone: Sent \(sessionsData.count) sessions to Watch")
+                }
+                
+            } catch {
+                await MainActor.run {
+                    logger.error("Failed to generate sessions for Watch: \(error.localizedDescription)")
+                    replyHandler([
+                        "status": "error",
+                        "error": error.localizedDescription,
+                        "timestamp": Date().timeIntervalSince1970
+                    ])
+                }
+            }
+        }
+    }
+    
+    private func generateSessionsForWatch(level: String, frequency: Int, currentWeek: Int) -> [TrainingSession] {
+        // Generate a few sessions for the current week based on user's profile
+        var sessions: [TrainingSession] = []
+        
+        // Create sessions for the current week based on frequency
+        for day in 1...min(frequency, 7) {
+            let session = TrainingSession(
+                week: currentWeek,
+                day: day,
+                type: getSessionTypeForLevel(level, day: day),
+                focus: getSessionFocusForLevel(level, day: day),
+                sprints: getSprintsForLevel(level, day: day),
+                accessoryWork: getAccessoryWorkForLevel(level)
+            )
+            sessions.append(session)
+        }
+        
+        return sessions
+    }
+    
+    private func getSessionTypeForLevel(_ level: String, day: Int) -> String {
+        switch level.lowercased() {
+        case "beginner":
+            return day % 2 == 1 ? "Speed Training" : "Technique Focus"
+        case "intermediate":
+            return day % 3 == 1 ? "Speed Training" : (day % 3 == 2 ? "Power Development" : "Endurance")
+        case "advanced":
+            return day % 3 == 1 ? "Max Velocity" : (day % 3 == 2 ? "Speed Endurance" : "Power Training")
+        case "elite":
+            return day % 4 == 1 ? "Competition Prep" : (day % 4 == 2 ? "Max Velocity" : (day % 4 == 3 ? "Speed Endurance" : "Recovery"))
+        default:
+            return "Speed Training"
+        }
+    }
+    
+    private func getSessionFocusForLevel(_ level: String, day: Int) -> String {
+        switch level.lowercased() {
+        case "beginner":
+            return day % 2 == 1 ? "Basic Speed Development" : "Running Mechanics"
+        case "intermediate":
+            return day % 3 == 1 ? "Acceleration Training" : (day % 3 == 2 ? "Explosive Power" : "Speed Maintenance")
+        case "advanced":
+            return day % 3 == 1 ? "Maximum Velocity" : (day % 3 == 2 ? "Lactate Tolerance" : "Power Output")
+        case "elite":
+            return day % 4 == 1 ? "Race Simulation" : (day % 4 == 2 ? "Peak Velocity" : (day % 4 == 3 ? "Speed Endurance" : "Active Recovery"))
+        default:
+            return "Speed Development"
+        }
+    }
+    
+    private func getSprintsForLevel(_ level: String, day: Int) -> [SprintSet] {
+        switch level.lowercased() {
+        case "beginner":
+            return [SprintSet(distanceYards: 20 + (day * 5), reps: 4, intensity: "Sub-Max")]
+        case "intermediate":
+            return [SprintSet(distanceYards: 30 + (day * 10), reps: 5, intensity: "Max")]
+        case "advanced":
+            return [SprintSet(distanceYards: 40 + (day * 10), reps: 6, intensity: "Max")]
+        case "elite":
+            return [SprintSet(distanceYards: 50 + (day * 10), reps: 4, intensity: "Race")]
+        default:
+            return [SprintSet(distanceYards: 40, reps: 5, intensity: "Max")]
+        }
+    }
+    
+    private func getAccessoryWorkForLevel(_ level: String) -> [String] {
+        switch level.lowercased() {
+        case "beginner":
+            return ["Dynamic Warm-up", "Basic Drills", "Cool-down"]
+        case "intermediate":
+            return ["Dynamic Warm-up", "Speed Mechanics", "Plyometrics", "Cool-down"]
+        case "advanced":
+            return ["Competition Warm-up", "Advanced Drills", "Power Training", "Recovery"]
+        case "elite":
+            return ["Elite Warm-up", "Competition Drills", "Peak Power", "Professional Recovery"]
+        default:
+            return ["Dynamic Warm-up", "Speed Drills", "Cool-down"]
+        }
+    }
+
     private func handleSyncRequest(_ replyHandler: @escaping ([String: Any]) -> Void) {
         logger.info("Watch requesting sync - sending current data")
         // Send current user profile and training sessions to Watch
@@ -693,5 +823,7 @@ extension WatchConnectivityManager: WCSessionDelegate {
         // This ensures RepLog data appears in the main app history
     }
 }
+
+// Note: WCSessionDelegate methods are implemented in the main class body above
 
 #endif

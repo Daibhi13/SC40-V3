@@ -399,11 +399,7 @@ enum Feature: CaseIterable {
     case researchContribution
 }
 
-enum StoreError: Error {
-    case failedVerification
-    case productNotFound
-    case purchaseFailed
-}
+// Note: StoreError is defined in StoreKitManager.swift to avoid duplication
 
 struct PurchaseEvent {
     let productId: String

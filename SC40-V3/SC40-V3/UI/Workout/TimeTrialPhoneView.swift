@@ -177,22 +177,33 @@ struct TimeTrialPhoneView: View {
     }
     
     private func saveTimeTrialResult(time: Double) {
-        // TODO: Save to history when HistoryManager is available
-        // let timeTrialSession = TrainingSession(
-        //     week: 0,
-        //     day: 0,
-        //     type: "Time Trial",
-        //     focus: "40 Yard Performance Test",
-        //     sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "100%")],
-        //     accessoryWork: [],
-        //     notes: "Time Trial - \(String(format: "%.2f", time))s"
-        // )
-        // HistoryManager.shared.addSession(timeTrialSession)
+        // ✅ FIXED: Save to HistoryManager for session tracking
+        let timeTrialSession = TrainingSession(
+            week: 0,
+            day: 0,
+            type: "Time Trial",
+            focus: "40 Yard Performance Test",
+            sprints: [SprintSet(distanceYards: 40, reps: 1, intensity: "100%")],
+            accessoryWork: [],
+            notes: "Time Trial - \(String(format: "%.2f", time))s"
+        )
+        
+        // Record completed session in HistoryManager
+        HistoryManager.shared.recordFullSession(
+            session: timeTrialSession,
+            sprintTimes: [time],
+            notes: "Time Trial completed on iPhone - \(String(format: "%.2f", time))s",
+            location: nil,
+            weather: nil
+        )
+        
+        print("📊 Time Trial saved to HistoryManager: \(String(format: "%.2f", time))s")
         
         // Update personal best if this is better
         let currentPB = userProfileVM.profile.personalBests["40yd"] ?? userProfileVM.profile.baselineTime
         if time < currentPB {
             userProfileVM.updatePersonalBest(time)
+            print("🏆 New Personal Best! \(String(format: "%.2f", time))s")
         }
     }
 }

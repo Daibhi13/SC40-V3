@@ -23,10 +23,10 @@ struct QuickTrainingSection: View {
             
             // Quick training cards
             HStack(spacing: 12) {
-                // Time Trial card
+                // Time Trial card - Full width since Quick Sprint removed for safety
                 QuickTrainingCard(
                     title: "Time Trial",
-                    subtitle: "40 Yard Test",
+                    subtitle: "40 Yard Performance Test",
                     icon: "stopwatch",
                     color: .purple,
                     isPro: true
@@ -38,16 +38,10 @@ struct QuickTrainingSection: View {
                     }
                 }
                 
-                // Quick Sprint card
-                QuickTrainingCard(
-                    title: "Quick Sprint",
-                    subtitle: "5 min session",
-                    icon: "figure.run",
-                    color: .orange,
-                    isPro: false
-                ) {
-                    // TODO: Implement quick sprint
-                }
+                Spacer()
+                
+                // Note: Quick Sprint removed - proper sprinting requires full warmup process
+                // No such thing as a safe 5-minute sprint session
             }
         }
         .padding(20)

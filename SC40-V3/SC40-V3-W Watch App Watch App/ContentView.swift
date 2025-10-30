@@ -196,6 +196,28 @@ struct SessionCardsView: View {
             // Request fresh session data from iPhone
             sessionManager.requestTrainingSessionsFromPhone()
         }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("trainingSessionsUpdated"))) { _ in
+            // REAL-TIME SESSION UPDATES: Refresh UI when sessions arrive from iPhone
+            print("⚡ Watch: Training sessions updated - UI will refresh automatically via @StateObject")
+            // No manual refresh needed - @StateObject sessionManager will trigger UI update
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("profileDataUpdated"))) { _ in
+            // REAL-TIME PROFILE UPDATES: Refresh sessions when profile changes
+            print("⚡ Watch: Profile updated - requesting fresh sessions to match new profile")
+            sessionManager.requestTrainingSessionsFromPhone()
+        }
+        .onReceive(sessionManager.$trainingSessions) { sessions in
+            // SESSION COUNT MONITORING: Log session changes for debugging
+            print("📊 Watch: Session count updated - now showing \(sessions.count) sessions")
+            
+            // Validate session data matches phone expectations
+            if !sessions.isEmpty {
+                let firstSession = sessions[0]
+                print("📋 Watch: First session - W\(firstSession.week)D\(firstSession.day): \(firstSession.type)")
+                print("📋 Watch: Session focus: \(firstSession.focus)")
+                print("📋 Watch: Sprint data: \(firstSession.sprints.count) sprint sets")
+            }
+        }
     }
 }
 

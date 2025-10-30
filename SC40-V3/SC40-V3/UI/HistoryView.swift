@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct HistoryView: View {
-    @StateObject private var historyManager = HistoryManager.shared
+    @ObservedObject private var historyManager = HistoryManager.shared
     @State private var selectedFilter: HistoryFilter = .all
     @State private var showingExportSheet = false
     

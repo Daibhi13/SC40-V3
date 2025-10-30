@@ -129,15 +129,28 @@ struct UserProfileView: View {
                         label: "Import From Apple Health", 
                         value: "\u{2665} IMPORT", 
                         action: {
-                            // TODO: Import from HealthKit - temporarily disabled
-                            // HealthKitManager.shared.requestAuthorization { success, error in
-                            //     if success {
-                            //         HealthKitManager.shared.fetchProfileData { height, weight, age, gender in
-                            //             Task { @MainActor in
-                            //                 if let height = height {
-                            //                     userProfileVM.profile.height = height
-                            //                 }
-                            //                 if let weight = weight {
+                            Task {
+                                let success = await HealthKitManager.shared.requestAuthorization()
+                                if success {
+                                    if let profileData = await HealthKitManager.shared.fetchProfileData() {
+                                        await MainActor.run {
+                                            if let height = profileData.height {
+                                                userProfileVM.profile.height = height
+                                            }
+                                            if let weight = profileData.weight {
+                                                userProfileVM.profile.weight = weight
+                                            }
+                                            if let age = profileData.age {
+                                                userProfileVM.profile.age = age
+                                            }
+                                            if let gender = profileData.gender {
+                                                userProfileVM.profile.gender = gender
+                                            }
+                                            print("✅ Profile updated from HealthKit")
+                                        }
+                                    }
+                                }
+                            }
                             //                     userProfileVM.profile.weight = weight
                             //                 }
                             //                 if let age = age {

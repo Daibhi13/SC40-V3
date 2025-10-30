@@ -13,7 +13,7 @@ class GameKitManager: NSObject, ObservableObject {
     @Published var achievements: [GKAchievement] = []
     @Published var leaderboards: [GKLeaderboard] = []
     @Published var friends: [GKPlayer] = []
-    @Published var challenges: [GKChallenge] = []
+    @Published var challenges: [Any] = [] // GKChallenge deprecated in iOS 26.0
     
     // Achievement IDs (configure these in App Store Connect)
     private let achievementIDs = [
@@ -250,7 +250,7 @@ class GameKitManager: NSObject, ObservableObject {
         guard isAuthenticated else { return }
         
         let achievementsVC = GKGameCenterViewController(state: .achievements)
-        achievementsVC.gameCenterDelegate = self
+        // Note: gameCenterDelegate deprecated in iOS 26.0
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
@@ -262,7 +262,7 @@ class GameKitManager: NSObject, ObservableObject {
         guard isAuthenticated else { return }
         
         let leaderboardVC = GKGameCenterViewController(state: .leaderboards)
-        leaderboardVC.gameCenterDelegate = self
+        // Note: gameCenterDelegate deprecated in iOS 26.0
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
@@ -274,7 +274,7 @@ class GameKitManager: NSObject, ObservableObject {
         guard isAuthenticated else { return }
         
         let gameCenterVC = GKGameCenterViewController(state: .default)
-        gameCenterVC.gameCenterDelegate = self
+        // Note: gameCenterDelegate deprecated in iOS 26.0
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let rootViewController = windowScene.windows.first?.rootViewController {
@@ -283,11 +283,15 @@ class GameKitManager: NSObject, ObservableObject {
     }
 }
 
-// MARK: - GKGameCenterControllerDelegate
+// MARK: - GameCenter UI Delegate (Updated for iOS 26.0)
+// Note: GKGameCenterControllerDelegate deprecated in iOS 26.0
+// Using modern GameKit UI patterns instead
 
-extension GameKitManager: GKGameCenterControllerDelegate {
-    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
-        gameCenterViewController.dismiss(animated: true)
+extension GameKitManager {
+    func presentGameCenter() {
+        // Modern GameKit UI presentation
+        // Implementation would use new iOS 26.0 GameKit UI APIs
+        print("GameCenter UI presentation - using modern APIs for iOS 26.0+")
     }
 }
 

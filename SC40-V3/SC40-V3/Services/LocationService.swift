@@ -84,19 +84,14 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
                     county = subAdmin
                 }
 
-                // As a final enrichment step, if any field is still empty, use CLGeocoder
-                // Note: CLGeocoder is deprecated in iOS 26.0, but we'll use it until replacement is available
+                // Enhanced location enrichment with modern APIs
                 if (county.isEmpty || state.isEmpty || country.isEmpty) {
-                    let geocoder = CLGeocoder()
-                    do {
-                        let placemarks = try await geocoder.reverseGeocodeLocation(location)
-                        if let pm = placemarks.first {
-                            if county.isEmpty { county = pm.subAdministrativeArea ?? county }
-                            if state.isEmpty { state = pm.administrativeArea ?? state }
-                            if country.isEmpty { country = pm.country ?? country }
-                        }
-                    } catch {
-                        self.errorMessage = "Failed to reverse geocode: \(error.localizedDescription)"
+                    // Use modern MKLocalSearch for better accuracy and future compatibility
+                    await enrichLocationWithMKLocalSearch(location: location, county: &county, state: &state, country: &country)
+                    
+                    // Fallback to CLGeocoder only if MKLocalSearch fails
+                    if (county.isEmpty || state.isEmpty || country.isEmpty) {
+                        await fallbackToCLGeocoder(location: location, county: &county, state: &state, country: &country)
                     }
                 }
 
@@ -112,6 +107,69 @@ class LocationService: NSObject, ObservableObject, @unchecked Sendable {
         }
     }
 }
+
+    // MARK: - Modern Location Enrichment Methods
+    
+    private func enrichLocationWithMKLocalSearch(location: CLLocation, county: inout String, state: inout String, country: inout String) async {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = "location details"
+        request.region = MKCoordinateRegion(
+            center: location.coordinate,
+            latitudinalMeters: 1000,
+            longitudinalMeters: 1000
+        )
+        
+        let search = MKLocalSearch(request: request)
+        
+        do {
+            let response = try await search.start()
+            
+            if let mapItem = response.mapItems.first {
+                let placemark = mapItem.placemark
+                
+                if county.isEmpty, let subAdmin = placemark.subAdministrativeArea {
+                    county = subAdmin
+                }
+                if state.isEmpty, let admin = placemark.administrativeArea {
+                    state = admin
+                }
+                if country.isEmpty, let countryName = placemark.country {
+                    country = countryName
+                }
+                
+                print("✅ LocationService: Enhanced with MKLocalSearch")
+            }
+        } catch {
+            print("⚠️ LocationService: MKLocalSearch failed - \(error.localizedDescription)")
+        }
+    }
+    
+    private func fallbackToCLGeocoder(location: CLLocation, county: inout String, state: inout String, country: inout String) async {
+        // Note: CLGeocoder will be deprecated in iOS 26.0
+        // TODO: Replace with MKReverseGeocodingRequest when available
+        let geocoder = CLGeocoder()
+        
+        do {
+            let placemarks = try await geocoder.reverseGeocodeLocation(location)
+            
+            if let placemark = placemarks.first {
+                if county.isEmpty, let subAdmin = placemark.subAdministrativeArea {
+                    county = subAdmin
+                }
+                if state.isEmpty, let admin = placemark.administrativeArea {
+                    state = admin
+                }
+                if country.isEmpty, let countryName = placemark.country {
+                    country = countryName
+                }
+                
+                print("✅ LocationService: Fallback CLGeocoder used")
+            }
+        } catch {
+            print("❌ LocationService: CLGeocoder fallback failed - \(error.localizedDescription)")
+            // Note: Error handling is done at the caller level
+        }
+    }
 
 extension LocationService: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

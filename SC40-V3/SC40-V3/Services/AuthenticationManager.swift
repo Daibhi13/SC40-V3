@@ -70,7 +70,7 @@ class AuthenticationManager: NSObject, ObservableObject {
             let authorizationController = ASAuthorizationController(authorizationRequests: [request])
             
             // Create strong references to prevent deallocation
-            let delegate = AppleSignInDelegate { result in
+            let delegate = AppleSignInDelegate { [weak self] result in
                 continuation.resume(with: result)
             }
             let presentationProvider = AppleSignInPresentationContextProvider()

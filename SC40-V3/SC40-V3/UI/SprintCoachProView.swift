@@ -30,7 +30,15 @@ struct SprintCoachProView: View {
                     .font(.body)
                     .foregroundColor(.brandSecondary)
                 Button(action: {
-                    // TODO: Add StoreKit2 purchase logic here
+                    Task {
+                        if let monthlyProduct = StoreKitManager.shared.monthlyProduct {
+                            do {
+                                _ = try await StoreKitManager.shared.purchase(monthlyProduct)
+                            } catch {
+                                print("Purchase failed: \(error.localizedDescription)")
+                            }
+                        }
+                    }
                 }) {
                     Text("Subscribe to Sprint Coach Pro")
                         .font(.headline)

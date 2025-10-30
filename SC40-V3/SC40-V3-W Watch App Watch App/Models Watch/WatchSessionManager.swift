@@ -27,11 +27,38 @@ class WatchSessionManager: ObservableObject {
     }
     
     private func loadStoredSessions() {
-        // Load sessions from UserDefaults if available
+        // ENHANCED SESSION LOADING: Handle both TrainingSession objects and raw JSON data
+        
+        // First try to load TrainingSession objects (from WatchSessionManager)
         if let data = UserDefaults.standard.data(forKey: "trainingSessions"),
            let sessions = try? JSONDecoder().decode([TrainingSession].self, from: data) {
             self.trainingSessions = sessions
+            print("✅ Watch: Loaded \(sessions.count) TrainingSession objects from storage")
+            return
         }
+        
+        // Fallback: Load raw JSON data from LiveWatchConnectivityHandler
+        if let data = UserDefaults.standard.data(forKey: "trainingSessions"),
+           let sessionsArray = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
+            
+            var parsedSessions: [TrainingSession] = []
+            
+            for sessionData in sessionsArray {
+                if let session = parseTrainingSession(from: sessionData) {
+                    parsedSessions.append(session)
+                }
+            }
+            
+            if !parsedSessions.isEmpty {
+                self.trainingSessions = parsedSessions
+                // Re-save as proper TrainingSession objects for future loads
+                saveSessionsToStorage(parsedSessions)
+                print("✅ Watch: Parsed \(parsedSessions.count) sessions from JSON data and converted to TrainingSession objects")
+                return
+            }
+        }
+        
+        print("⚠️ Watch: No stored sessions found - will request from iPhone or use fallback")
     }
     
     private func setupConnectivityObservers() {
@@ -43,6 +70,25 @@ class WatchSessionManager: ObservableObject {
                 if isConnected {
                     self?.requestTrainingSessionsFromPhone()
                 }
+            }
+            .store(in: &cancellables)
+        
+        // CRITICAL FIX: Listen for training sessions updates from LiveWatchConnectivityHandler
+        NotificationCenter.default.publisher(for: NSNotification.Name("trainingSessionsUpdated"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("🔄 Watch: Training sessions updated notification received - refreshing session data")
+                self?.loadStoredSessions()
+                self?.objectWillChange.send() // Force UI update
+            }
+            .store(in: &cancellables)
+        
+        // REAL-TIME PROFILE UPDATES: Listen for profile changes that affect sessions
+        NotificationCenter.default.publisher(for: NSNotification.Name("profileDataUpdated"))
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                print("🔄 Watch: Profile updated - requesting fresh sessions from iPhone")
+                self?.requestTrainingSessionsFromPhone()
             }
             .store(in: &cancellables)
     }

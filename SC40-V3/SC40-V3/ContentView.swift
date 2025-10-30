@@ -18,7 +18,7 @@ enum AppFlowStep {
 struct ContentView: View {
     @State private var step: AppFlowStep = .welcome
     @StateObject private var userProfileVM = UserProfileViewModel()
-    @StateObject private var watchConnectivity = WatchConnectivityManager.shared
+    @ObservedObject private var watchConnectivity = WatchConnectivityManager.shared
     
     var body: some View {
         ZStack {

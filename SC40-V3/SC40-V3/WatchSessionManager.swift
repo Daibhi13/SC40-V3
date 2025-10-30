@@ -965,8 +965,13 @@ import os.log
             // Convert watch workout data to TrainingSession format
             if let trainingSession = convertWatchWorkoutToTrainingSession(workout) {
                 // Save to HistoryManager so it appears in phone's HistoryView
-                // TODO: Add to history when HistoryManager is available
-            // HistoryManager.shared.addCompletedSession(trainingSession)
+                HistoryManager.shared.recordFullSession(
+                    session: trainingSession,
+                    sprintTimes: trainingSession.sprintTimes,
+                    notes: trainingSession.sessionNotes,
+                    location: nil,
+                    weather: nil
+                )
                 logger.info("Saved watch workout to HistoryManager: \(trainingSession.type)")
                 
                 // Post notification for UI updates

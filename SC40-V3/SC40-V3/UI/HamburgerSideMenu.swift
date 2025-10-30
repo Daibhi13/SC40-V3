@@ -7,6 +7,7 @@ enum MenuSelection {
     case leaderboard
     case smartHub
     case watchConnectivity
+    case syncDemo
     case settings
     case helpInfo
     case news
@@ -129,6 +130,10 @@ struct HamburgerSideMenu<MenuType>: View {
 
                     HamburgerMenuRow(icon: "applewatch", label: "Watch Connectivity", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
                         selectMenuItem(MenuSelection.watchConnectivity as! MenuType)
+                    })
+
+                    HamburgerMenuRow(icon: "arrow.triangle.2.circlepath", label: "Training Sync Demo", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {
+                        selectMenuItem(MenuSelection.syncDemo as! MenuType)
                     })
 
                     HamburgerMenuRow(icon: "gearshape", label: "Settings", color: Color(red: 1.0, green: 0.8, blue: 0.0), action: {

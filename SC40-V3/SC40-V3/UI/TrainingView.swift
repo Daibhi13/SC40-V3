@@ -19,6 +19,7 @@ import UIKit
 struct TrainingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     @StateObject private var watchConnectivity = WatchConnectivityManager.shared
+    @EnvironmentObject private var syncManager: TrainingSynchronizationManager
     @AppStorage("isProUser") private var isProUser: Bool = false
     @State private var showMenu = false
     @State private var selectedMenu: MenuSelection = .main
@@ -30,6 +31,7 @@ struct TrainingView: View {
     @State private var selectedSessionForWorkout: TrainingSession?
     @State private var dynamicSessions: [TrainingSession] = []
     @State private var showWatchConnectivityTest = false
+    @State private var showSyncDemo = false
 
     var body: some View {
         let profile = userProfileVM.profile
@@ -79,6 +81,8 @@ struct TrainingView: View {
                         AnyView(Enhanced40YardSmartView())
                     case .watchConnectivity:
                         AnyView(LiveWatchConnectivityTestView())
+                    case .syncDemo:
+                        AnyView(TrainingSynchronizationView())
                     case .settings:
                         AnyView(SettingsView())
                     case .helpInfo:

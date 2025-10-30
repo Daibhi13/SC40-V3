@@ -366,7 +366,7 @@ class TrainingSynchronizationManager: ObservableObject {
     
     private func setupSynchronization() {
         logger.info("🚀 Training Synchronization Manager initialized")
-        logger.info("📊 Supporting \(supportedLevels.count) levels × \(supportedDays.count) days = \(supportedLevels.count * supportedDays.count) combinations")
+        logger.info("📊 Supporting \(self.supportedLevels.count) levels × \(self.supportedDays.count) days = \(self.supportedLevels.count * self.supportedDays.count) combinations")
     }
 }
 

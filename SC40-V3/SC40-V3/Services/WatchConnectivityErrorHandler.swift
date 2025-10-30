@@ -299,7 +299,7 @@ class WatchConnectivityErrorHandler: ObservableObject {
             connectionState = .error(lastError ?? .sessionNotActivated)
         }
         
-        logger.info("📊 Connection state updated: \(connectionState)")
+        logger.info("📊 Connection state updated: \(self.connectionState)")
     }
     
     // MARK: - Public Interface

@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var step: AppFlowStep = .welcome
     @StateObject private var userProfileVM = UserProfileViewModel()
     @ObservedObject private var watchConnectivity = WatchConnectivityManager.shared
+    @EnvironmentObject private var syncManager: TrainingSynchronizationManager
     
     var body: some View {
         ZStack {
@@ -38,13 +39,31 @@ struct ContentView: View {
                     // Generate the full 12-week program immediately after onboarding
                     userProfileVM.refreshAdaptiveProgram()
                     
-                    // Sync onboarding data and sessions to Apple Watch for immediate availability
+                    // NEW: Use integrated synchronization system
                     Task {
-                        // Phase 1: Sync onboarding data and workout flow
+                        // Phase 1: Sync onboarding data and workout flow (existing)
                         await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
                         await watchConnectivity.sync7StageWorkoutFlow()
                         
-                        // Phase 2: Generate and sync training sessions for immediate watch availability
+                        // Phase 2: Use new Training Synchronization System
+                        // Convert user profile level to TrainingLevel enum
+                        let trainingLevel: TrainingLevel = {
+                            switch userProfileVM.profile.level.lowercased() {
+                            case "beginner": return .beginner
+                            case "intermediate": return .intermediate
+                            case "advanced": return .advanced
+                            case "pro", "elite": return .pro
+                            default: return .beginner
+                            }
+                        }()
+                        
+                        // Synchronize training program using the new system
+                        await syncManager.synchronizeTrainingProgram(
+                            level: trainingLevel,
+                            days: userProfileVM.profile.frequency
+                        )
+                        
+                        // Legacy sync for compatibility (can be removed later)
                         let allSessions = userProfileVM.generateAllTrainingSessions()
                         await watchConnectivity.syncPostOnboardingSessions(
                             userProfile: userProfileVM.profile, 

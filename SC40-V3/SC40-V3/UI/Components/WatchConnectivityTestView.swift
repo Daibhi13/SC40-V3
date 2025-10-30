@@ -211,12 +211,12 @@ struct WatchConnectivityTestView: View {
                 }
                 
                 TestButton(
-                    title: "Data Sync",
+                    title: "Force Sync",
                     icon: "arrow.triangle.2.circlepath",
                     color: .green,
                     isRunning: isRunningTests && currentTestIndex == 1
                 ) {
-                    Task { await runDataSyncTest() }
+                    Task { await runForceSyncTest() }
                 }
                 
                 TestButton(
@@ -414,6 +414,32 @@ struct WatchConnectivityTestView: View {
         }
     }
     
+    private func runForceSyncTest() async {
+        guard !isRunningTests else { return }
+        
+        await MainActor.run {
+            isRunningTests = true
+            currentTestIndex = 1
+            testStartTime = Date()
+        }
+        
+        // Trigger manual sync of training data
+        await watchConnectivity.forceSyncTrainingData()
+        
+        await MainActor.run {
+            let result = TestResult(
+                id: UUID(),
+                testName: "Force Training Sync",
+                success: watchConnectivity.trainingSessionsSynced,
+                duration: Date().timeIntervalSince(testStartTime ?? Date()),
+                details: watchConnectivity.trainingSessionsSynced ? "Successfully synced training data to watch" : "Failed to sync training data",
+                timestamp: Date()
+            )
+            addTestResult(result)
+            isRunningTests = false
+        }
+    }
+    
     private func runDataSyncTest() async {
         guard !isRunningTests else { return }
         
@@ -423,15 +449,16 @@ struct WatchConnectivityTestView: View {
             testStartTime = Date()
         }
         
+        // Create test profile data
         let testProfile = UserProfile(
             name: "Test User",
             email: "test@example.com",
-            gender: "Other",
+            gender: "Male",
             age: 25,
-            height: 180,
-            weight: 75,
-            personalBests: [:],
-            level: "intermediate",
+            height: 70,
+            weight: 150,
+            personalBests: ["40yd": 5.5],
+            level: "Intermediate",
             baselineTime: 5.5,
             frequency: 3
         )

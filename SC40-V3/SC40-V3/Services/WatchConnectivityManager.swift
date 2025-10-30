@@ -130,6 +130,56 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     
     // MARK: - Training Sessions Sync
     
+    /// Manual sync trigger for complete training data synchronization
+    func forceSyncTrainingData() async {
+        logger.info("🔄 Manual sync triggered - forcing complete training data sync")
+        
+        isSyncing = true
+        syncProgress = 0.0
+        
+        do {
+            // Get user profile data
+            let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+            let trainingFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            let actualFrequency = trainingFrequency > 0 ? trainingFrequency : 3
+            
+            logger.info("📊 Manual sync: Level=\(userLevel), Frequency=\(actualFrequency) days/week")
+            
+            // Generate sessions using UnifiedSessionGenerator
+            let unifiedGenerator = UnifiedSessionGenerator.shared
+            let allSessions = unifiedGenerator.generateUnified12WeekProgram(
+                userLevel: userLevel,
+                frequency: actualFrequency,
+                userPreferences: nil
+            )
+            
+            syncProgress = 0.3
+            
+            // Sync training sessions to watch
+            await syncTrainingSessions(allSessions)
+            
+            syncProgress = 0.8
+            
+            // Update sync status
+            await MainActor.run {
+                self.trainingSessionsSynced = true
+                self.syncProgress = 1.0
+                self.isSyncing = false
+                
+                logger.info("✅ Manual sync completed - \(allSessions.count) sessions synced")
+            }
+            
+        } catch {
+            await MainActor.run {
+                self.connectionError = "Sync failed: \(error.localizedDescription)"
+                self.isSyncing = false
+                self.syncProgress = 0.0
+                
+                logger.error("❌ Manual sync failed: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func syncTrainingSessions(_ sessions: [TrainingSession]) async {
         // Always attempt sync - use background transfer if not immediately reachable
         if !isWatchReachable {
@@ -729,12 +779,13 @@ extension WatchConnectivityManager: WCSessionDelegate {
         let namingService = DynamicSessionNamingService.shared
         
         // Generate appropriate distance for the level
-        let (distance, _) = getDistanceAndIntensityForLevel(level)
+        let (distance, intensity) = getDistanceAndIntensityForLevel(level)
         
         return namingService.generateSessionFocus(
             userLevel: level,
             distance: distance,
             reps: 4, // Default reps
+            intensity: intensity,
             weekNumber: 1, // Default to week 1 for fallback
             dayInWeek: day
         )

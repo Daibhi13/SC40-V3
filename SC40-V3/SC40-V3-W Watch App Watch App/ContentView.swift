@@ -102,6 +102,8 @@ struct SessionCardsView: View {
                     LiveSessionCard(session: session)
                         .tag(index + 1)
                         .onTapGesture {
+                            print("🏃‍♂️ Session tapped: \(session.type) - W\(session.week)D\(session.day)")
+                            print("🏃‍♂️ Sprint sets: \(session.sprints.count)")
                             selectedSession = session
                             showWorkout = true
                         }
@@ -170,10 +172,34 @@ struct SessionCardsView: View {
         }
         .sheet(isPresented: $showWorkout) {
             if let session = selectedSession {
-                MainProgramWorkoutWatchView(session: session)
+                print("🏃‍♂️ Presenting workout for: \(session.type)")
+                return AnyView(MainProgramWorkoutWatchView(session: session))
             } else {
-                Text("Loading Workout...")
-                    .foregroundColor(.white)
+                print("⚠️ No session selected - showing loading state")
+                return AnyView(
+                    VStack(spacing: 16) {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .yellow))
+                            .scaleEffect(1.5)
+                        
+                        Text("Loading Workout...")
+                            .foregroundColor(.white)
+                            .font(.headline)
+                        
+                        Text("Preparing your training session...")
+                            .foregroundColor(.white.opacity(0.7))
+                            .font(.caption)
+                            .multilineTextAlignment(.center)
+                        
+                        Button("Cancel") {
+                            showWorkout = false
+                        }
+                        .foregroundColor(.yellow)
+                        .padding(.top)
+                    }
+                    .padding()
+                    .background(Color.black.opacity(0.8))
+                )
             }
         }
         .sheet(isPresented: $showSyncTesting) {
@@ -494,9 +520,25 @@ struct LiveSessionCard: View {
     private func formatSessionSprints(_ sprints: [SprintSet]) -> String {
         guard !sprints.isEmpty else { return "No Sprints" }
         
-        // Get the main sprint set (usually the longest distance or highest reps)
+        // Check if this is the pyramid workout (10, 20, 30, 40, 30, 20, 10)
+        let distances = sprints.map { $0.distanceYards }.sorted()
+        let pyramidPattern = [10, 20, 30, 40, 30, 20, 10].sorted()
+        
+        if distances == pyramidPattern {
+            // Display pyramid pattern
+            let pyramidDistances = sprints.map { $0.distanceYards }
+            return pyramidDistances.map { "\($0)" }.joined(separator: "-") + "yd"
+        }
+        
+        // For other workouts, show total sets and distance range
+        if sprints.count > 3 {
+            let minDistance = sprints.map { $0.distanceYards }.min() ?? 0
+            let maxDistance = sprints.map { $0.distanceYards }.max() ?? 0
+            return "\(sprints.count) sets: \(minDistance)-\(maxDistance)yd"
+        }
+        
+        // For simple workouts, show traditional format
         let mainSprint = sprints.max { first, second in
-            // Prioritize by distance first, then by reps
             if first.distanceYards != second.distanceYards {
                 return first.distanceYards < second.distanceYards
             }

@@ -135,11 +135,28 @@ class AppStartupManager: ObservableObject {
     private func sendTrainingPlanToWatch() async throws {
         logger.info("📤 Sending training plan to watch")
         
-        // Use the existing sync manager to send training data
-        // Note: Using default values for level and days since this is startup sync
-        await syncManager.synchronizeTrainingProgram(level: .beginner, days: 28)
+        // Get actual user profile data from UserDefaults
+        let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+        let trainingFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let actualFrequency = trainingFrequency > 0 ? trainingFrequency : 3 // Default to 3 days
         
-        logger.info("✅ Training plan sync completed")
+        logger.info("📊 Syncing with user data: Level=\(userLevel), Frequency=\(actualFrequency) days/week")
+        
+        // Convert user level string to TrainingLevel enum
+        let trainingLevel: TrainingLevel = {
+            switch userLevel.lowercased() {
+            case "beginner": return .beginner
+            case "intermediate": return .intermediate
+            case "advanced": return .advanced
+            case "pro", "elite": return .pro
+            default: return .beginner
+            }
+        }()
+        
+        // Use the existing sync manager to send training data with actual user profile
+        await syncManager.synchronizeTrainingProgram(level: trainingLevel, days: actualFrequency)
+        
+        logger.info("✅ Training plan sync completed for \(userLevel) level, \(actualFrequency) days/week")
     }
     
     private func updateSyncStatus(_ success: Bool) {

@@ -20,8 +20,11 @@ class WatchSessionManager: ObservableObject {
         loadStoredSessions()
         setupConnectivityObservers()
         
-        // Only create mock sessions if no stored sessions and no phone connection
+        // Ensure we always have at least one session available immediately
         if trainingSessions.isEmpty {
+            // Create immediate fallback session first
+            createFallbackSessions()
+            // Then try to sync with iPhone in background
             requestTrainingSessionsFromPhone()
         }
     }
@@ -144,8 +147,16 @@ class WatchSessionManager: ObservableObject {
         if !receivedSessions.isEmpty {
             self.trainingSessions = receivedSessions
             saveSessionsToStorage(receivedSessions)
-            print("✅ Loaded \(receivedSessions.count) sessions from iPhone")
+            print("✅ SYNC SUCCESS: Loaded \(receivedSessions.count) sessions from iPhone")
+            
+            // Log session details for first 2 weeks
+            let firstTwoWeeks = receivedSessions.filter { $0.week <= 2 }.sorted { ($0.week, $0.day) < ($1.week, $1.day) }
+            print("📋 First 2 weeks available: \(firstTwoWeeks.count) sessions")
+            for session in firstTwoWeeks.prefix(4) {
+                print("   • W\(session.week)D\(session.day): \(session.type)")
+            }
         } else {
+            print("⚠️ SYNC FAILED: No sessions received, using pyramid fallback")
             createFallbackSessions()
         }
     }
@@ -185,26 +196,55 @@ class WatchSessionManager: ObservableObject {
     
     private func createFallbackSessions() {
         // Only create fallback sessions if we have no stored sessions
-        guard trainingSessions.isEmpty else { return }
+        guard trainingSessions.isEmpty else { 
+            print("📋 Sessions already exist (\(trainingSessions.count)), skipping fallback creation")
+            return 
+        }
         
-        print("⚠️ Creating fallback sessions - iPhone sync unavailable")
+        print("⚠️ Creating immediate W1/D1 pyramid fallback session - iPhone sync unavailable")
         
-        // Get user's onboarding data from UserDefaults
-        let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
-        let frequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
-        let actualFrequency = frequency > 0 ? frequency : 1 // Default to 1 day if not set
+        // Create immediate W1/D1 pyramid session (10, 20, 30, 40, 30, 20, 10)
+        let pyramidSession = createPyramidFallbackSession()
         
-        print("📋 Generating fallback sessions for: \(userLevel) level, \(actualFrequency) days/week")
+        trainingSessions = [pyramidSession]
+        saveSessionsToStorage([pyramidSession])
         
-        let fallbackSessions = generateLevelAppropriateSessions(
-            level: userLevel, 
-            frequency: actualFrequency
+        print("✅ Created immediate W1/D1 pyramid fallback session - ready to use!")
+        print("🏃‍♂️ Pyramid structure: 10, 20, 30, 40, 30, 20, 10 yards")
+        print("📊 Session details: \(pyramidSession.type) - \(pyramidSession.focus)")
+        print("🏃‍♂️ Sprint sets: \(pyramidSession.sprints.count) sets")
+    }
+    
+    private func createPyramidFallbackSession() -> TrainingSession {
+        // Create pyramid sprint sets: 10, 20, 30, 40, 30, 20, 10 yards
+        let pyramidSprints = [
+            SprintSet(distanceYards: 10, reps: 1, intensity: "Build"),
+            SprintSet(distanceYards: 20, reps: 1, intensity: "Moderate"),
+            SprintSet(distanceYards: 30, reps: 1, intensity: "Strong"),
+            SprintSet(distanceYards: 40, reps: 1, intensity: "Max"),
+            SprintSet(distanceYards: 30, reps: 1, intensity: "Strong"),
+            SprintSet(distanceYards: 20, reps: 1, intensity: "Moderate"),
+            SprintSet(distanceYards: 10, reps: 1, intensity: "Build")
+        ]
+        
+        // Create basic accessory work
+        let accessoryWork = [
+            "5 min dynamic warm-up",
+            "2x10 high knees",
+            "2x10 butt kicks",
+            "2x10 leg swings",
+            "5 min cool-down walk"
+        ]
+        
+        return TrainingSession(
+            id: UUID(),
+            week: 1,
+            day: 1,
+            type: "Pyramid Sprint Workout",
+            focus: "Speed Development & Conditioning",
+            sprints: pyramidSprints,
+            accessoryWork: accessoryWork
         )
-        
-        trainingSessions = fallbackSessions
-        saveSessionsToStorage(fallbackSessions)
-        
-        print("✅ Created \(fallbackSessions.count) fallback sessions based on user profile")
     }
     
     private func generateLevelAppropriateSessions(level: String, frequency: Int) -> [TrainingSession] {

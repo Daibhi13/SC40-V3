@@ -2964,7 +2964,7 @@ struct WorkoutSprintRow: View {
                 .fill(isActive ? Color.white.opacity(0.08) : Color.white.opacity(0.02))
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(isActive ? Color.orange.opacity(0.3) : Color.clear, lineWidth: 1)
+                        .stroke(Color.clear, lineWidth: 1)
                 )
         )
     }
@@ -3782,7 +3782,7 @@ struct EnhancedLiveRepLog: View {
                                         .foregroundColor(selectedTab == tab ? .orange : .white.opacity(0.6))
                                     
                                     Rectangle()
-                                        .fill(selectedTab == tab ? Color.orange : Color.clear)
+                                        .fill(Color.clear)
                                         .frame(height: 2)
                                 }
                             }

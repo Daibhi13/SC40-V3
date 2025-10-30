@@ -522,11 +522,11 @@ import os.log
     private func getOptimalSessionBatch(sessions: [TrainingSession], userWeek: Int, frequency: Int) -> [TrainingSession] {
         let sortedSessions = sessions.sorted { ($0.week, $0.day) < ($1.week, $1.day) }
         
-        // PHASE 1: Always send Week 1 first (immediate access for ALL frequencies 1-7)
+        // PHASE 1: Send first 2 weeks for new users (immediate access + progression)
         if userWeek <= 1 {
-            let week1Sessions = sortedSessions.filter { $0.week == 1 }
-            logger.info("📦 PHASE 1: Sending Week 1 (\(week1Sessions.count) sessions) for \(frequency) days/week")
-            return week1Sessions
+            let firstTwoWeeksSessions = sortedSessions.filter { $0.week <= 2 }
+            logger.info("📦 PHASE 1: Sending Weeks 1-2 (\(firstTwoWeeksSessions.count) sessions) for \(frequency) days/week")
+            return firstTwoWeeksSessions
         }
         
         // PHASE 2: Send optimal batch for Week 2 based on frequency

@@ -29,11 +29,12 @@ class DynamicSessionNamingService {
         return "\(levelModifier) \(baseType)"
     }
     
-    /// Generate dynamic session focus based on user profile and session characteristics
+    /// Generate session focus based on user level and training phase
     func generateSessionFocus(
         userLevel: String,
         distance: Int,
         reps: Int,
+        intensity: String,
         weekNumber: Int,
         dayInWeek: Int
     ) -> String {
@@ -48,6 +49,18 @@ class DynamicSessionNamingService {
             distance: distance,
             dayInWeek: dayInWeek
         )
+        
+        // FIXED: Avoid duplicate "Development" words
+        if levelFocus.contains("Development") && phaseFocus.contains("Development") {
+            // If both contain "Development", just use the level focus
+            return levelFocus
+        } else if levelFocus.contains("Development") && phaseFocus == "Mechanics" {
+            // For Week 1, clean up "Power Development Mechanics" to "Speed Development"
+            return "Speed Development"
+        } else if levelFocus == "Power Development" && phaseFocus == "Mechanics" {
+            // Specific fix for intermediate level Week 1
+            return "Power Development Mechanics"
+        }
         
         return "\(levelFocus) \(phaseFocus)"
     }
@@ -231,6 +244,7 @@ extension DynamicSessionNamingService {
             userLevel: userLevel,
             distance: distance,
             reps: reps,
+            intensity: intensity,
             weekNumber: weekNumber,
             dayInWeek: dayInWeek
         )

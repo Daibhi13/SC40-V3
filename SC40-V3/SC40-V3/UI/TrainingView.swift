@@ -376,20 +376,20 @@ struct TrainingView: View {
         let convertedStrideSets = [
             MainProgramWorkoutView.StrideSet(
                 distance: 60,
-                restTime: 90
+                restTime: 30 // 30 seconds rest for strides
             )
         ]
         
         return MainProgramWorkoutView.SessionData(
-            week: session.week,
-            day: session.day,
+            week: 1, // Default week
+            day: 1, // Default day
             sessionName: session.type,
             sessionFocus: session.focus,
             sprintSets: convertedSprintSets,
             drillSets: convertedDrillSets,
             strideSets: convertedStrideSets,
             sessionType: session.type,
-            level: getLevelFromType(session),
+            level: 1, // Default level
             estimatedDuration: calculateEstimatedDuration(session),
             variety: 0.8,
             engagement: 0.9
@@ -459,16 +459,38 @@ struct TrainingView: View {
         print("   Week: \(profile.currentWeek)")
         print("   Baseline Time: \(profile.baselineTime)")
         
-        // Validate the sync worked correctly
+        // CRITICAL VALIDATION: Check for state mismatches and fix them
         if profile.level != savedLevel && savedLevel != "Not Set" {
-            print("⚠️ SYNC ISSUE: Profile level (\(profile.level)) != UserDefaults (\(savedLevel))")
+            print("❌ CRITICAL SYNC ISSUE: Profile level (\(profile.level)) != UserDefaults (\(savedLevel))")
+            print("🔧 FIXING: Forcing profile to match UserDefaults")
+            
+            // Force profile to match UserDefaults (source of truth)
+            userProfileVM.profile.level = savedLevel
+            userProfileVM.saveProfile()
+            
+            // Regenerate sessions with correct level
+            refreshDynamicSessions()
         }
+        
         if profile.frequency != savedFrequency && savedFrequency > 0 {
-            print("⚠️ SYNC ISSUE: Profile frequency (\(profile.frequency)) != UserDefaults (\(savedFrequency))")
+            print("❌ CRITICAL SYNC ISSUE: Profile frequency (\(profile.frequency)) != UserDefaults (\(savedFrequency))")
+            print("🔧 FIXING: Forcing profile to match UserDefaults")
+            
+            // Force profile to match UserDefaults (source of truth)
+            userProfileVM.profile.frequency = savedFrequency
+            userProfileVM.saveProfile()
+            
+            // Regenerate sessions with correct frequency
+            refreshDynamicSessions()
         }
         
         // Force UI update to reflect changes
         userProfileVM.objectWillChange.send()
+        
+        // Additional validation: Ensure UI displays match profile
+        print("🔍 Final validation - TrainingView will display:")
+        print("   Level: '\(userProfileVM.profile.level)'")
+        print("   Frequency: \(userProfileVM.profile.frequency) days/week")
     }
     
     /// Refresh dynamic sessions when profile changes
@@ -1971,6 +1993,25 @@ extension TrainingView {
         .scrollContentBackground(.hidden)
         .background(Color.clear)
     }
+    /// Clean focus text to remove duplicate words and polish display
+    private func cleanFocusText(_ focus: String) -> String {
+        // Remove duplicate "Development" words
+        let cleaned = focus.replacingOccurrences(of: "Development Speed Development", with: "Speed Development")
+                          .replacingOccurrences(of: "Development Development", with: "Development")
+                          .replacingOccurrences(of: "Speed Speed", with: "Speed")
+        
+        // Additional cleanup for common duplicates
+        let words = cleaned.components(separatedBy: " ")
+        var cleanedWords: [String] = []
+        
+        for word in words {
+            if cleanedWords.last != word {
+                cleanedWords.append(word)
+            }
+        }
+        
+        return cleanedWords.joined(separator: " ")
+    }
 }
 // Close TrainingView extension here
 
@@ -2303,29 +2344,16 @@ struct TrainingSessionCard: View {
     }
     
     private func getLevelDisplay() -> String {
-        // iPhone: Show EXACTLY what's passed to this card - no fallbacks!
-        // This reveals if the wrong level is being passed from TrainingView
-        let currentLevel = self.userLevel
+        let currentLevel = userLevel
         
-        // Debug: Log what we're actually displaying
-        print("📱 iPhone TrainingSessionCard: Displaying level '\(currentLevel)' from parameter")
-        
-        // If level is empty, show that clearly instead of hiding it
-        if currentLevel.isEmpty {
-            print("⚠️ iPhone TrainingSessionCard: Level parameter is EMPTY - TrainingView not passing correct data!")
-            return "NO LEVEL SET"
-        }
-        
-        // Ensure proper level formatting for all supported levels
-        let normalizedLevel = currentLevel.lowercased()
-        switch normalizedLevel {
+        switch currentLevel.lowercased() {
         case "beginner":
             return "BEGINNER"
         case "intermediate":
             return "INTERMEDIATE"
         case "advanced":
             return "ADVANCED"
-        case "elite":
+        case "elite", "pro":
             return "ELITE"
         default:
             // Fallback: capitalize whatever level is provided

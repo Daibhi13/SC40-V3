@@ -141,6 +141,11 @@ struct OnboardingView: View {
             .navigationBarHidden(true)
             #endif
         }
+        .onAppear {
+            // Clear stale state before onboarding starts to prevent old state carryover
+            userProfileVM.resetUserState()
+            print("🧹 OnboardingView: Cleared stale user state before starting onboarding")
+        }
     }
     
     // MARK: - 40 Yard PB Section
@@ -613,15 +618,23 @@ struct OnboardingView: View {
             print("   trainingFrequency: \(UserDefaults.standard.integer(forKey: "trainingFrequency"))")
             print("   personalBest40yd: \(UserDefaults.standard.double(forKey: "personalBest40yd"))")
             
-            // Validate data consistency
+            // CRITICAL VALIDATION: Ensure data was saved correctly
             let verifyLevel = UserDefaults.standard.string(forKey: "userLevel")
             let verifyFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
             
             if verifyLevel != fitnessLevel {
                 print("❌ CRITICAL: LEVEL MISMATCH - Saved '\(verifyLevel ?? "nil")' != Selected '\(fitnessLevel)'")
+                // Force re-save if mismatch detected
+                UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+                UserDefaults.standard.synchronize()
+                print("🔧 FIXED: Re-saved level as '\(fitnessLevel)'")
             }
             if verifyFreq != daysAvailable {
                 print("❌ CRITICAL: FREQUENCY MISMATCH - Saved '\(verifyFreq)' != Selected '\(daysAvailable)'")
+                // Force re-save if mismatch detected
+                UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+                UserDefaults.standard.synchronize()
+                print("🔧 FIXED: Re-saved frequency as '\(daysAvailable)'")
             }
             
             // Validate UserProfileViewModel was updated

@@ -73,7 +73,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
 
     // MARK: - Persistence
     
-    private func saveProfile() {
+    func saveProfile() {
         do {
             let data = try JSONEncoder().encode(self.profile)
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
@@ -88,34 +88,98 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     
     func refreshFromUserDefaults() {
         // Refresh profile data from UserDefaults (called after onboarding)
-        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? profile.level
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel")
         let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
         let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
         let savedWeek = UserDefaults.standard.integer(forKey: "currentWeek")
         let savedDay = UserDefaults.standard.integer(forKey: "currentDay")
         
-        // Update profile with fresh UserDefaults data
-        profile.level = savedLevel
-        profile.frequency = savedFrequency > 0 ? savedFrequency : profile.frequency
-        profile.personalBests["40yd"] = savedPB > 0 ? savedPB : profile.personalBests["40yd"]
-        profile.baselineTime = savedPB > 0 ? savedPB : profile.baselineTime
-        profile.currentWeek = savedWeek > 0 ? savedWeek : profile.currentWeek
-        profile.currentDay = savedDay > 0 ? savedDay : profile.currentDay
+        logger.info("🔄 Refreshing profile from UserDefaults:")
+        logger.info("   UserDefaults userLevel: '\(savedLevel ?? "nil")'")
+        logger.info("   UserDefaults trainingFrequency: \(savedFrequency)")
+        logger.info("   Current profile level: '\(self.profile.level)'")
+        logger.info("   Current profile frequency: \(self.profile.frequency)")
+        
+        // CRITICAL FIX: Only update if UserDefaults has valid data
+        // Don't fall back to current profile values to prevent state mismatch
+        if let validLevel = savedLevel, !validLevel.isEmpty {
+            profile.level = validLevel
+            logger.info("✅ Updated profile level to: '\(validLevel)'")
+        } else {
+            logger.warning("⚠️ No valid level in UserDefaults, keeping current: '\(self.profile.level)'")
+        }
+        
+        if savedFrequency > 0 {
+            profile.frequency = savedFrequency
+            logger.info("✅ Updated profile frequency to: \(savedFrequency)")
+        } else {
+            logger.warning("⚠️ No valid frequency in UserDefaults, keeping current: \(self.profile.frequency)")
+        }
+        
+        if savedPB > 0 {
+            profile.personalBests["40yd"] = savedPB
+            profile.baselineTime = savedPB
+            logger.info("✅ Updated profile PB to: \(savedPB)")
+        }
+        
+        if savedWeek > 0 {
+            profile.currentWeek = savedWeek
+        }
+        
+        if savedDay > 0 {
+            profile.currentDay = savedDay
+        }
         
         // Force save the updated profile to ensure persistence
         saveProfile()
         
-        // Also update UserDefaults with current profile state for consistency
+        // Ensure UserDefaults consistency - write back current profile state
         UserDefaults.standard.set(profile.level, forKey: "userLevel")
         UserDefaults.standard.set(profile.frequency, forKey: "trainingFrequency")
         UserDefaults.standard.set(profile.baselineTime, forKey: "personalBest40yd")
+        UserDefaults.standard.set(profile.currentWeek, forKey: "currentWeek")
+        UserDefaults.standard.set(profile.currentDay, forKey: "currentDay")
         UserDefaults.standard.synchronize()
         
-        logger.info("✅ Profile refreshed and synchronized:")
-        logger.info("   Level: \(savedLevel) -> \(self.profile.level)")
-        logger.info("   Frequency: \(savedFrequency) -> \(self.profile.frequency)")
-        logger.info("   PB: \(savedPB) -> \(self.profile.baselineTime)")
-        logger.info("   Week/Day: \(savedWeek)/\(savedDay) -> \(self.profile.currentWeek)/\(self.profile.currentDay)")
+        logger.info("✅ Profile refresh completed:")
+        logger.info("   Final level: '\(self.profile.level)'")
+        logger.info("   Final frequency: \(self.profile.frequency)")
+        logger.info("   Final PB: \(self.profile.baselineTime)")
+        logger.info("   Final Week/Day: \(self.profile.currentWeek)/\(self.profile.currentDay)")
+    }
+    
+    /// Clear stale state before onboarding to prevent old state carryover
+    func resetUserState() {
+        logger.info("🧹 Clearing stale user state before onboarding")
+        
+        // Clear all onboarding-related UserDefaults
+        UserDefaults.standard.removeObject(forKey: "userLevel")
+        UserDefaults.standard.removeObject(forKey: "trainingFrequency")
+        UserDefaults.standard.removeObject(forKey: "personalBest40yd")
+        UserDefaults.standard.removeObject(forKey: "currentWeek")
+        UserDefaults.standard.removeObject(forKey: "currentDay")
+        UserDefaults.standard.removeObject(forKey: "userGender")
+        UserDefaults.standard.removeObject(forKey: "userAge")
+        UserDefaults.standard.synchronize()
+        
+        // Reset profile to clean state
+        profile = UserProfile(
+            name: "New User",
+            email: nil,
+            gender: "Male",
+            age: 25,
+            height: 70,
+            weight: nil,
+            personalBests: [:],
+            level: "Beginner", // Clean default
+            baselineTime: 0.0,
+            frequency: 3, // Clean default
+            currentWeek: 1,
+            currentDay: 1,
+            leaderboardOptIn: true
+        )
+        
+        logger.info("✅ User state cleared - ready for fresh onboarding")
     }
     
     func resetProfile() {

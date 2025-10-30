@@ -83,6 +83,8 @@ struct TrainingView: View {
                         AnyView(LiveWatchConnectivityTestView())
                     case .syncDemo:
                         AnyView(TrainingSynchronizationView())
+                    case .onboardingTests:
+                        AnyView(OnboardingLevelDaysTestSuite())
                     case .settings:
                         AnyView(SettingsView())
                     case .helpInfo:

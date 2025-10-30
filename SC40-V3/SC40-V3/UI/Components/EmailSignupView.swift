@@ -13,8 +13,7 @@ struct EmailSignupView: View {
     var onSuccess: (String, String) -> Void
     
     var body: some View {
-        NavigationView {
-            ZStack {
+        ZStack {
                 // Premium gradient background matching WelcomeView
                 LinearGradient(
                     colors: [
@@ -176,8 +175,6 @@ struct EmailSignupView: View {
                 }
                 .padding(.top, 60)
             }
-            .navigationBarHidden(true)
-        }
         .alert("Error", isPresented: $showingAlert) {
             Button("OK") { }
         } message: {
@@ -209,12 +206,21 @@ struct EmailSignupView: View {
         let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedEmail = emailAddress.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard isFormValid else { return }
+        guard isFormValid else { 
+            print("⚠️ Form validation failed")
+            return 
+        }
         
         // Prevent multiple submissions
-        guard !authManager.isLoading else { return }
+        guard !authManager.isLoading else { 
+            print("⚠️ Authentication already in progress")
+            return 
+        }
         
-        HapticManager.shared.success()
+        // Safe haptic feedback
+        DispatchQueue.main.async {
+            HapticManager.shared.success()
+        }
         
         // Simplified email registration - skip complex authentication for now
         // This prevents email buffering issues and ensures smooth onboarding flow
@@ -225,11 +231,12 @@ struct EmailSignupView: View {
         UserDefaults.standard.set(trimmedEmail, forKey: "user_email")
         UserDefaults.standard.set("email", forKey: "user_provider")
         
-        // Add small delay to ensure UI state is stable before callback
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            // Call success handler immediately to prevent UI blocking
-            onSuccess(trimmedName, trimmedEmail)
-            dismiss()
+        // Call success handler immediately to prevent UI blocking
+        onSuccess(trimmedName, trimmedEmail)
+        
+        // Dismiss sheet safely
+        DispatchQueue.main.async {
+            self.dismiss()
         }
         
         // Optional: Perform background authentication after UI flow completes
@@ -239,6 +246,7 @@ struct EmailSignupView: View {
                 print("✅ Background email authentication completed")
             } catch {
                 print("⚠️ Background authentication failed: \(error)")
+                // Don't show error to user since main flow already completed
             }
         }
     }

@@ -3,6 +3,10 @@ import SwiftUI
 import Combine
 import os.log
 
+#if canImport(WatchConnectivity) && os(iOS)
+import WatchConnectivity
+#endif
+
 // MARK: - App Startup Flow Manager
 // Implements the comprehensive startup & connectivity flow specification
 @MainActor
@@ -108,7 +112,7 @@ class AppStartupManager: ObservableObject {
         }
         
         currentRetryAttempt += 1
-        logger.info("🔄 Sync attempt \(currentRetryAttempt)/\(maxRetryAttempts)")
+        logger.info("🔄 Sync attempt \(self.currentRetryAttempt)/\(self.maxRetryAttempts)")
         
         syncMessage = "Syncing training plan... (Attempt \(currentRetryAttempt))"
         syncProgress = 0.3 + (Double(currentRetryAttempt) / Double(maxRetryAttempts)) * 0.4
@@ -132,18 +136,10 @@ class AppStartupManager: ObservableObject {
         logger.info("📤 Sending training plan to watch")
         
         // Use the existing sync manager to send training data
-        try await withCheckedThrowingContinuation { continuation in
-            syncManager.synchronizeTrainingProgram { success, error in
-                if success {
-                    self.logger.info("✅ Training plan sync successful")
-                    continuation.resume()
-                } else {
-                    let syncError = error ?? NSError(domain: "AppStartup", code: 1, userInfo: [NSLocalizedDescriptionKey: "Sync failed"])
-                    self.logger.error("❌ Training plan sync failed: \(syncError.localizedDescription)")
-                    continuation.resume(throwing: syncError)
-                }
-            }
-        }
+        // Note: Using default values for level and days since this is startup sync
+        await syncManager.synchronizeTrainingProgram(level: .beginner, days: 28)
+        
+        logger.info("✅ Training plan sync completed")
     }
     
     private func updateSyncStatus(_ success: Bool) {

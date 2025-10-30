@@ -14,10 +14,7 @@ struct EntryIOSView: View {
     var body: some View {
         if showContentView {
             ContentView()
-        } else if startupManager.canProceedToMainView && !showWelcome {
-            // Startup complete, check if user needs onboarding
-            ContentView()
-        } else if startupManager.isConnectivityCheckComplete && showWelcome {
+        } else if showWelcome {
             WelcomeView(onContinue: { name, email in
                 // Store user data safely with error handling
                 UserDefaults.standard.set(name, forKey: "welcomeUserName")
@@ -32,9 +29,6 @@ struct EntryIOSView: View {
                     }
                 }
             })
-        } else if !startupManager.isConnectivityCheckComplete {
-            // Show startup sync view during connectivity check and sync
-            StartupSyncView(startupManager: startupManager)
         } else {
             // Original splash screen (fallback)
             ZStack {
@@ -197,9 +191,6 @@ struct EntryIOSView: View {
                 }
             }
             .onAppear {
-                // Initialize startup flow
-                startupManager.onAppLaunch()
-                
                 // Staggered animation sequence for premium reveal
                 withAnimation(.easeInOut(duration: 1.2).delay(0.2)) {
                     animateLogo = true
@@ -223,8 +214,8 @@ struct EntryIOSView: View {
 
                 // Auto-advance after premium display time
                 Task { @MainActor in
-                    try? await Task.sleep(nanoseconds: 4_000_000_000) // 4 seconds for premium experience
-                    if !showWelcome && startupManager.isConnectivityCheckComplete {
+                    try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds for streamlined experience
+                    if !showWelcome {
                         withAnimation(.easeInOut(duration: 0.8)) {
                             showWelcome = true
                         }

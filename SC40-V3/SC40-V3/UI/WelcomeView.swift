@@ -133,7 +133,10 @@ struct WelcomeView: View {
                             performSocialLogin(with: .google)
                         }
                         SocialIconButton(color: Color(red: 0.3, green: 0.8, blue: 0.3), icon: "envelope.circle.fill") {
-                            showEmailSheet = true
+                            // Safe sheet presentation
+                            DispatchQueue.main.async {
+                                showEmailSheet = true
+                            }
                         }
                     }
                     .padding(.bottom, 80)

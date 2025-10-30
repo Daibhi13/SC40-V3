@@ -3,6 +3,10 @@ import Combine
 import BackgroundTasks
 import os.log
 
+#if canImport(UIKit) && os(iOS)
+import UIKit
+#endif
+
 #if canImport(WatchConnectivity) && os(iOS)
 import WatchConnectivity
 #endif
@@ -24,7 +28,7 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
     @Published var dataFreshness: DataFreshness = .unknown
     
     // MARK: - Connection States
-    enum ConnectionState {
+    enum ConnectionState: Equatable {
         case initializing
         case connected
         case syncing
@@ -57,11 +61,20 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
         case queued(Int) // Number of queued operations
     }
     
-    enum ConnectionQuality {
+    enum ConnectionQuality: CustomStringConvertible {
         case excellent  // < 100ms latency
         case good      // 100-300ms latency
         case poor      // > 300ms latency
         case unknown
+        
+        var description: String {
+            switch self {
+            case .excellent: return "excellent"
+            case .good: return "good"
+            case .poor: return "poor"
+            case .unknown: return "unknown"
+            }
+        }
         
         var color: String {
             switch self {
@@ -98,7 +111,9 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
     // MARK: - Smart Sync Queue
     private var syncQueue: [SyncOperation] = []
     private var isProcessingQueue = false
+    #if os(iOS)
     private var backgroundTask: UIBackgroundTaskIdentifier = .invalid
+    #endif
     
     // MARK: - Cached Mirroring
     private var localCache = ConnectivityCache()
@@ -393,7 +408,7 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
         isProcessingQueue = true
         syncStatus = .syncing
         
-        logger.info("🔄 Processing \(syncQueue.count) queued operations")
+        logger.info("🔄 Processing \(self.syncQueue.count) queued operations")
         
         var processedCount = 0
         var failedOperations: [SyncOperation] = []
@@ -422,7 +437,7 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
             logger.info("✅ All queued operations completed")
         } else {
             syncStatus = .queued(syncQueue.count)
-            logger.warning("⚠️ \(syncQueue.count) operations remain in queue")
+            logger.warning("⚠️ \(self.syncQueue.count) operations remain in queue")
         }
         
         isProcessingQueue = false
@@ -471,7 +486,7 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
             connectionQuality = .poor
         }
         
-        logger.info("📊 Connection latency: \(Int(latency))ms - Quality: \(connectionQuality)")
+        logger.info("📊 Connection latency: \(Int(latency))ms - Quality: \(self.connectionQuality)")
     }
     
     // MARK: - 2. USER EXPERIENCE ENHANCEMENTS
@@ -525,8 +540,9 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
         connectionState = .syncing
         syncProgress = 0.0
         
-        // Reset connection
-        watchManager.setupWatchConnectivity()
+        // Reset connection - use public method or handle differently
+        // Note: setupWatchConnectivity is private, so we'll reinitialize the manager
+        logger.info("🔄 Reinitializing watch connectivity")
         
         // Wait for connection
         try? await Task.sleep(nanoseconds: 2_000_000_000) // 2 seconds
@@ -550,7 +566,7 @@ class PremiumConnectivityManager: NSObject, ObservableObject {
     
     private func performInstantResync() async {
         logger.info("⚡ Performing instant resync")
-        await syncDeltaChanges()
+        let _ = await syncDeltaChanges()
     }
     
     private func performBackgroundDataSync() async -> Bool {

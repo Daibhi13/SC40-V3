@@ -3401,14 +3401,14 @@ extension TrainingView {
     /// Validates that all required data is complete before loading TrainingView
     private func validateDataCompleteness() {
         let hasValidProfile = !userProfileVM.profile.level.isEmpty && userProfileVM.profile.frequency > 0
-        let hasValidSessions = !userProfileVM.allSessions.isEmpty
+        let hasValidSessions = !userProfileVM.getAllStoredSessions().isEmpty
         let startupComplete = startupManager.canProceedToMainView
         
         isDataComplete = hasValidProfile && hasValidSessions && startupComplete
         
         print("📊 TrainingView Data Validation:")
         print("  - Valid Profile: \(hasValidProfile) (Level: '\(userProfileVM.profile.level)', Frequency: \(userProfileVM.profile.frequency))")
-        print("  - Valid Sessions: \(hasValidSessions) (Count: \(userProfileVM.allSessions.count))")
+        print("  - Valid Sessions: \(hasValidSessions) (Count: \(userProfileVM.getAllStoredSessions().count))")
         print("  - Startup Complete: \(startupComplete)")
         print("  - Overall Complete: \(isDataComplete)")
         

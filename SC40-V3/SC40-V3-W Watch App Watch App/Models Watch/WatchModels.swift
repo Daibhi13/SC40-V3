@@ -173,12 +173,7 @@ public struct TrainingSession: Codable, Identifiable, Sendable {
         self.notes = notes
     }
 
-    public static func stableSessionID(week: Int, day: Int) -> UUID {
-        let weekString = String(format: "%04d", week)
-        let dayString = String(format: "%04d", day)
-        let baseString = "00000000-0000-\(weekString)-\(dayString)-000000000000"
-        return UUID(uuidString: baseString) ?? UUID()
-    }
+    // Note: stableSessionID method moved to UnifiedSessionGenerator.swift to avoid duplication
 }
 
 // Feedback structure for completed sessions

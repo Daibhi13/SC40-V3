@@ -112,7 +112,7 @@ struct OnboardingLevelDaysTestSuite: View {
         .foregroundColor(.white)
     }
     
-    private func backgroundColorForStatus(_ status: TestStatus) -> Color {
+    private func backgroundColorForStatus(_ status: OnboardingTestStatus) -> Color {
         switch status {
         case .pending: return .gray
         case .running: return .blue
@@ -237,7 +237,7 @@ struct OnboardingLevelDaysTestSuite: View {
         .cornerRadius(12)
     }
     
-    private func testResultRow(index: Int, result: TestResult) -> some View {
+    private func testResultRow(index: Int, result: OnboardingTestResult) -> some View {
         let combination = testCombinations[index]
         
         return HStack {
@@ -252,7 +252,7 @@ struct OnboardingLevelDaysTestSuite: View {
                     .font(.caption)
                     .fontWeight(.medium)
                 
-                if let message = result.message {
+                if let message = result.errorMessage {
                     Text(message)
                         .font(.caption2)
                         .foregroundColor(.secondary)
@@ -262,8 +262,8 @@ struct OnboardingLevelDaysTestSuite: View {
             Spacer()
             
             // Timing info
-            if let duration = result.duration {
-                Text(String(format: "%.1fs", duration))
+            if result.duration > 0 {
+                Text(String(format: "%.1fs", result.duration))
                     .font(.caption2)
                     .foregroundColor(.secondary)
             }
@@ -274,7 +274,7 @@ struct OnboardingLevelDaysTestSuite: View {
         .cornerRadius(6)
     }
     
-    private func iconForStatus(_ status: TestStatus) -> String {
+    private func iconForStatus(_ status: OnboardingTestStatus) -> String {
         switch status {
         case .pending: return "clock"
         case .running: return "arrow.clockwise"
@@ -284,7 +284,7 @@ struct OnboardingLevelDaysTestSuite: View {
         }
     }
     
-    private func colorForStatus(_ status: TestStatus) -> Color {
+    private func colorForStatus(_ status: OnboardingTestStatus) -> Color {
         switch status {
         case .pending: return .gray
         case .running: return .blue
@@ -340,7 +340,7 @@ struct OnboardingLevelDaysTestSuite: View {
 // MARK: - Test Runner
 
 class TestRunner: ObservableObject {
-    @Published var testResults: [TestResult] = []
+    @Published var testResults: [OnboardingTestResult] = []
     @Published var isRunning = false
     
     private var combinations: [(level: TrainingLevel, days: Int)] = []
@@ -350,10 +350,10 @@ class TestRunner: ObservableObject {
     func setupTestSuite(combinations: [(level: TrainingLevel, days: Int)], syncManager: TrainingSynchronizationManager) {
         self.combinations = combinations
         self.syncManager = syncManager
-        self.testResults = Array(repeating: TestResult(), count: combinations.count)
+        self.testResults = Array(repeating: OnboardingTestResult(), count: combinations.count)
     }
     
-    func getTestStatus(for index: Int) -> TestStatus {
+    func getTestStatus(for index: Int) -> OnboardingTestStatus {
         guard index < testResults.count else { return .pending }
         return testResults[index].status
     }
@@ -387,12 +387,12 @@ class TestRunner: ObservableObject {
         let startTime = Date()
         
         await MainActor.run {
-            testResults[index] = TestResult(status: .running, startTime: startTime)
+            testResults[index] = OnboardingTestResult(status: .running, startTime: startTime)
         }
         
         guard let syncManager = syncManager else {
             await MainActor.run {
-                testResults[index] = TestResult(
+                testResults[index] = OnboardingTestResult(
                     status: .failed,
                     message: "SyncManager not available",
                     startTime: startTime,
@@ -411,7 +411,7 @@ class TestRunner: ObservableObject {
             
             if verificationResult.success {
                 await MainActor.run {
-                    testResults[index] = TestResult(
+                    testResults[index] = OnboardingTestResult(
                         status: .passed,
                         message: "✅ UI/UX updated correctly",
                         startTime: startTime,
@@ -424,7 +424,7 @@ class TestRunner: ObservableObject {
                     let fixResult = await attemptAutoFix(level: combination.level, days: combination.days, syncManager: syncManager, issue: verificationResult.issue)
                     
                     await MainActor.run {
-                        testResults[index] = TestResult(
+                        testResults[index] = OnboardingTestResult(
                             status: fixResult.success ? .fixed : .failed,
                             message: fixResult.message,
                             startTime: startTime,
@@ -433,9 +433,9 @@ class TestRunner: ObservableObject {
                     }
                 } else {
                     await MainActor.run {
-                        testResults[index] = TestResult(
+                        testResults[index] = OnboardingTestResult(
                             status: .failed,
-                            message: "❌ \(verificationResult.issue)",
+                            message: "❌ \(verificationResult.issue ?? "Unknown issue")",
                             startTime: startTime,
                             duration: Date().timeIntervalSince(startTime)
                         )
@@ -444,7 +444,7 @@ class TestRunner: ObservableObject {
             }
         } catch {
             await MainActor.run {
-                testResults[index] = TestResult(
+                testResults[index] = OnboardingTestResult(
                     status: .failed,
                     message: "❌ Error: \(error.localizedDescription)",
                     startTime: startTime,
@@ -460,7 +460,7 @@ class TestRunner: ObservableObject {
         
         // Check 1: Verify level is set correctly
         guard syncManager.selectedLevel == level else {
-            return VerificationResult(success: false, issue: "Level not updated: expected \(level.label), got \(syncManager.selectedLevel?.label ?? "nil")")
+            return VerificationResult(success: false, issue: "Level not updated: expected \(level.label), got \(syncManager.selectedLevel.label)")
         }
         
         // Check 2: Verify days are set correctly
@@ -519,7 +519,7 @@ class TestRunner: ObservableObject {
     }
     
     func resetTests() {
-        testResults = Array(repeating: TestResult(), count: combinations.count)
+        testResults = Array(repeating: OnboardingTestResult(), count: combinations.count)
         shouldStop = false
         isRunning = false
     }
@@ -527,7 +527,7 @@ class TestRunner: ObservableObject {
 
 // MARK: - Supporting Types
 
-enum TestStatus {
+enum OnboardingTestStatus {
     case pending
     case running
     case passed
@@ -535,11 +535,66 @@ enum TestStatus {
     case fixed
 }
 
-struct TestResult {
-    var status: TestStatus = .pending
-    var message: String? = nil
-    var startTime: Date? = nil
-    var duration: TimeInterval? = nil
+struct OnboardingTestResult {
+    let level: TrainingLevel
+    let days: Int
+    let status: OnboardingTestStatus
+    let duration: TimeInterval
+    let errorMessage: String?
+    let timestamp: Date
+    let sessionCount: Int?
+    let compilationID: String?
+    let isPhoneSynced: Bool
+    let isWatchSynced: Bool
+    let autoFixAttempted: Bool
+    let autoFixSuccessful: Bool
+    
+    // Default initializer for pending tests
+    init() {
+        self.level = .beginner
+        self.days = 1
+        self.status = .pending
+        self.duration = 0
+        self.errorMessage = nil
+        self.timestamp = Date()
+        self.sessionCount = nil
+        self.compilationID = nil
+        self.isPhoneSynced = false
+        self.isWatchSynced = false
+        self.autoFixAttempted = false
+        self.autoFixSuccessful = false
+    }
+    
+    // Convenience initializers for compatibility
+    init(status: OnboardingTestStatus, startTime: Date) {
+        self.level = .beginner
+        self.days = 1
+        self.status = status
+        self.duration = Date().timeIntervalSince(startTime)
+        self.errorMessage = nil
+        self.timestamp = startTime
+        self.sessionCount = nil
+        self.compilationID = nil
+        self.isPhoneSynced = false
+        self.isWatchSynced = false
+        self.autoFixAttempted = false
+        self.autoFixSuccessful = false
+    }
+    
+    init(status: OnboardingTestStatus, message: String, startTime: Date, duration: TimeInterval) {
+        self.level = .beginner
+        self.days = 1
+        self.status = status
+        self.duration = duration
+        self.errorMessage = message
+        self.timestamp = startTime
+        self.sessionCount = nil
+        self.compilationID = nil
+        self.isPhoneSynced = false
+        self.isWatchSynced = false
+        self.autoFixAttempted = status == .fixed
+        self.autoFixSuccessful = status == .fixed
+    }
 }
 
 struct VerificationResult {

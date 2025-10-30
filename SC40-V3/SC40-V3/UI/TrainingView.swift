@@ -19,6 +19,8 @@ import UIKit
 struct TrainingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     @StateObject private var watchConnectivity = WatchConnectivityManager.shared
+    @StateObject private var startupManager = AppStartupManager.shared
+    @StateObject private var premiumConnectivity = PremiumConnectivityManager.shared
     @EnvironmentObject private var syncManager: TrainingSynchronizationManager
     @AppStorage("isProUser") private var isProUser: Bool = false
     @State private var showMenu = false
@@ -31,7 +33,9 @@ struct TrainingView: View {
     @State private var selectedSessionForWorkout: TrainingSession?
     @State private var dynamicSessions: [TrainingSession] = []
     @State private var showWatchConnectivityTest = false
+    @State private var isDataComplete = false
     @State private var showSyncDemo = false
+    @State private var cancellables = Set<AnyCancellable>()
 
     var body: some View {
         let profile = userProfileVM.profile
@@ -79,12 +83,6 @@ struct TrainingView: View {
                         AnyView(EnhancedLeaderboardView(currentUser: profile))
                     case .smartHub:
                         AnyView(Enhanced40YardSmartView())
-                    case .watchConnectivity:
-                        AnyView(LiveWatchConnectivityTestView())
-                    case .syncDemo:
-                        AnyView(TrainingSynchronizationView())
-                    case .onboardingTests:
-                        AnyView(OnboardingLevelDaysTestSuite())
                     case .settings:
                         AnyView(SettingsView())
                     case .helpInfo:
@@ -132,32 +130,15 @@ struct TrainingView: View {
                     }
                     
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            showWatchConnectivityTest = true
-                            #if os(iOS)
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            #endif
-                        }) {
-                            HStack(spacing: 12) {
-                                Circle()
-                                    .fill(watchConnectivity.isWatchReachable ? Color.green : Color.red)
-                                    .frame(width: 8, height: 8)
-                                Image(systemName: "applewatch")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.yellow)
-                                Image(systemName: "bell.fill")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.yellow)
+                        CompactConnectivityIndicator(connectivityManager: premiumConnectivity)
+                            .onTapGesture {
+                                showWatchConnectivityTest = true
+                                #if os(iOS)
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                #endif
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color.black.opacity(0.3))
-                            )
-                        }
-                        .accessibilityLabel("Watch Connectivity Test")
-                        .accessibilityHint("Opens watch connectivity testing and diagnostics")
+                            .accessibilityLabel("Premium Connectivity Status")
+                            .accessibilityHint("Shows connection quality and sync status")
                     }
                 }
                 .navigationViewStyle(StackNavigationViewStyle())
@@ -166,11 +147,35 @@ struct TrainingView: View {
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .preferredColorScheme(.dark)
                 .onAppear {
+                    // Validate data completeness before loading
+                    validateDataCompleteness()
+                    
+                    // Only proceed if startup is complete and data is valid
+                    guard startupManager.canProceedToMainView else {
+                        print("⚠️ TrainingView: Startup not complete, deferring initialization")
+                        return
+                    }
+                    
                     // Refresh profile data to ensure it's up-to-date with onboarding selections
                     refreshProfileFromUserDefaults()
                     
                     // IMMEDIATE SESSION REFRESH: Generate sessions with updated profile
                     refreshDynamicSessions()
+                    
+                    // Setup training plan update listener
+                    setupTrainingPlanUpdateListener()
+                    
+                    // FORCE UI UPDATE: Trigger view refresh after profile changes
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        userProfileVM.objectWillChange.send()
+                        print("🔄 TrainingView: Forced UI update after profile refresh")
+                        
+                        // Also sync updated profile to Watch
+                        Task {
+                            await WatchConnectivityManager.shared.syncOnboardingData(userProfile: userProfileVM.profile)
+                            print("🔄 TrainingView: Synced updated profile to Watch")
+                        }
+                    }
                     
                     // Configure NavigationView to use transparent background - TrainingView specific
                     #if os(iOS)
@@ -432,14 +437,38 @@ struct TrainingView: View {
     /// Refresh profile data from UserDefaults to ensure sync with onboarding
     private func refreshProfileFromUserDefaults() {
         print("🔄 TrainingView: Refreshing profile from UserDefaults")
+        
+        // First, check what's actually in UserDefaults
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Not Set"
+        let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+        
+        print("📋 UserDefaults Values:")
+        print("   userLevel: '\(savedLevel)'")
+        print("   trainingFrequency: \(savedFrequency)")
+        print("   personalBest40yd: \(savedPB)")
+        
+        // Refresh the profile
         userProfileVM.refreshFromUserDefaults()
         
-        // Log current profile state
+        // Log current profile state after refresh
         let profile = userProfileVM.profile
-        print("📊 Current Profile State:")
-        print("   Level: \(profile.level)")
+        print("📊 Profile State After Refresh:")
+        print("   Level: '\(profile.level)'")
         print("   Frequency: \(profile.frequency) days/week")
         print("   Week: \(profile.currentWeek)")
+        print("   Baseline Time: \(profile.baselineTime)")
+        
+        // Validate the sync worked correctly
+        if profile.level != savedLevel && savedLevel != "Not Set" {
+            print("⚠️ SYNC ISSUE: Profile level (\(profile.level)) != UserDefaults (\(savedLevel))")
+        }
+        if profile.frequency != savedFrequency && savedFrequency > 0 {
+            print("⚠️ SYNC ISSUE: Profile frequency (\(profile.frequency)) != UserDefaults (\(savedFrequency))")
+        }
+        
+        // Force UI update to reflect changes
+        userProfileVM.objectWillChange.send()
     }
     
     /// Refresh dynamic sessions when profile changes
@@ -551,7 +580,7 @@ extension TrainingView {
         return cachedSessions
     }
 
-    // Dynamic sessions generated using algorithmic backend engine
+    // Use UnifiedSessionGenerator for consistent iPhone/Watch synchronization
     private func generateDynamicSessions() -> [TrainingSession] {
         let userLevel = userProfileVM.profile.level
         let currentWeek = userProfileVM.profile.currentWeek
@@ -570,76 +599,19 @@ extension TrainingView {
             print("⚠️ TrainingView: MISMATCH! Profile level (\(userLevel)) != UserDefaults level (\(savedLevel))")
         }
         
-        // Use AlgorithmicSessionService as the backend engine (no UI)
-        let algorithmicService = AlgorithmicSessionService.shared
-        let comprehensiveSystem = ComprehensiveSessionSystem.shared
-        
-        print("🤖 TrainingView: Using algorithmic backend engine for session generation")
-        print("📚 TrainingView: Enabling comprehensive session system with full library")
-        
-        // Enable automated session expansion
-        let expandedSessions = comprehensiveSystem.expandLibraryAutomatically()
-        print("🚀 TrainingView: Generated \(expandedSessions.count) new automated sessions")
-        
-        // Generate sessions using algorithmic intelligence
-        let algorithmicSessions = algorithmicService.generateOptimizedSessions(
-            for: userLevel,
+        // Use UnifiedSessionGenerator to ensure iPhone/Watch synchronization
+        print("🔄 TrainingView: Using UnifiedSessionGenerator for session consistency")
+        let unifiedGenerator = UnifiedSessionGenerator.shared
+        let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
+            userLevel: userLevel,
             frequency: frequency,
-            currentWeek: currentWeek,
-            performanceHistory: []
+            userPreferences: nil
         )
         
-        // Combine algorithmic sessions with library sessions for variety
-        var sessions: [TrainingSession] = algorithmicSessions
+        print("📱 TrainingView: Generated \(unifiedSessions.count) unified sessions")
+        print("📱 TrainingView: Sessions will match Watch exactly for W1/D1 through W12/D\(frequency)")
         
-        // Add additional sessions from library if needed
-        let levelSessions = getSessionsForUserLevel(userLevel)
-        
-        print("🏃‍♂️ TrainingView: Found \(levelSessions.count) sessions for \(userLevel) level")
-        
-        // UNIVERSAL SESSION GENERATION: Works for ALL levels (Beginner-Elite) and ALL frequencies (1-7 days)
-        // This ensures proper week progression and session variety across all combinations
-        
-        print("🎯 GENERATING SESSIONS: \(userLevel) level, \(frequency) days/week")
-        print("📚 Available session templates: \(levelSessions.count)")
-        
-        // Validate we have sessions to work with
-        guard !levelSessions.isEmpty else {
-            print("❌ ERROR: No sessions available for \(userLevel) level")
-            return sessions
-        }
-        
-        for week in 1...12 {
-            // For each week, generate sessions based on frequency (1-7 days)
-            for day in 1...frequency {
-                // Intelligent session selection with variety cycling
-                let sessionIndex = ((week - 1) * frequency + (day - 1)) % levelSessions.count
-                let librarySession = levelSessions[sessionIndex]
-                
-                let session = convertLibrarySessionToTrainingSession(
-                    librarySession: librarySession,
-                    week: week,
-                    day: day
-                )
-                sessions.append(session)
-                
-                print("📅 \(userLevel) W\(week)D\(day): \(librarySession.name) (template \(sessionIndex))")
-                
-                // Safety limit to prevent excessive sessions
-                if sessions.count >= 84 { // 12 weeks × 7 days max
-                    break
-                }
-            }
-            if sessions.count >= 84 {
-                break
-            }
-        }
-        
-        // VALIDATION: Ensure correct session distribution
-        validateSessionGeneration(sessions: sessions, userLevel: userLevel, frequency: frequency)
-        
-        print("🏃‍♂️ TrainingView: Generated \(sessions.count) total sessions for carousel")
-        return sessions
+        return unifiedSessions
     }
     
     // Get sessions appropriate for user level with proper progression and recovery sessions
@@ -1135,7 +1107,7 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
     
     // Fibonacci sequence pyramid
     private func generateFibonacciPyramid(maxDistance: Int) -> [Int] {
-        var fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+        let fib = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
         let scaledFib = fib.compactMap { $0 <= maxDistance ? $0 : nil }
         
         // Create pyramid from fibonacci sequence
@@ -1637,10 +1609,28 @@ private func createRestSession(_ userLevel: String) -> ComprehensiveSprintSessio
 extension TrainingView {
     // Main dashboard matching the exact screenshot design
     func mainDashboard(profile: UserProfile, userProfileVM: UserProfileViewModel) -> some View {
-        // Get only the sessions for the current week based on user's frequency
-        let allSessions = generateDynamicSessions()
+        // Debug: Log the profile data being used in mainDashboard
+        print("🏠 MainDashboard: Using profile data:")
+        print("   Level: '\(profile.level)'")
+        print("   Frequency: \(profile.frequency) days/week")
+        print("   Current Week: \(profile.currentWeek)")
+        print("   Baseline Time: \(profile.baselineTime)")
+        
+        // Get stored sessions from UserProfileViewModel (live state)
+        let allStoredSessions = userProfileVM.getAllStoredSessions()
         let currentWeek = profile.currentWeek
         let frequency = profile.frequency
+        
+        print("🎯 Carousel: Using \(allStoredSessions.count) stored sessions from live state")
+        
+        // Convert stored sessions to TrainingSession format for compatibility
+        let allSessions = allStoredSessions.isEmpty ? generateDynamicSessions() : allStoredSessions
+        
+        if allStoredSessions.isEmpty {
+            print("⚠️ Carousel: No stored sessions found, falling back to dynamic generation")
+        } else {
+            print("✅ Carousel: Using live session array from state")
+        }
         
         // Filter sessions to show only current week's sessions (respecting frequency)
         let sessionsToShow = allSessions.filter { session in
@@ -1760,6 +1750,11 @@ extension TrainingView {
                 }
                 .padding(.top, 20)
                 .padding(.bottom, 24)
+
+                // Premium Connectivity Status
+                PremiumConnectivityStatusView(connectivityManager: premiumConnectivity)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 16)
 
                 // Elite Training Program Section
                 VStack(alignment: .leading, spacing: 20) {
@@ -2308,8 +2303,18 @@ struct TrainingSessionCard: View {
     }
     
     private func getLevelDisplay() -> String {
-        // Use the userLevel parameter passed to this component
-        let currentLevel = userLevel.isEmpty ? (UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate") : userLevel
+        // iPhone: Show EXACTLY what's passed to this card - no fallbacks!
+        // This reveals if the wrong level is being passed from TrainingView
+        let currentLevel = self.userLevel
+        
+        // Debug: Log what we're actually displaying
+        print("📱 iPhone TrainingSessionCard: Displaying level '\(currentLevel)' from parameter")
+        
+        // If level is empty, show that clearly instead of hiding it
+        if currentLevel.isEmpty {
+            print("⚠️ iPhone TrainingSessionCard: Level parameter is EMPTY - TrainingView not passing correct data!")
+            return "NO LEVEL SET"
+        }
         
         // Ensure proper level formatting for all supported levels
         let normalizedLevel = currentLevel.lowercased()
@@ -3389,6 +3394,90 @@ struct FeatureTag: View {
 extension TrainingView {
     private func getCurrentTrainingSession() -> TrainingSession? {
         return generateDynamicSessions().first
+    }
+    
+    // MARK: - Startup Flow Integration
+    
+    /// Validates that all required data is complete before loading TrainingView
+    private func validateDataCompleteness() {
+        let hasValidProfile = !userProfileVM.profile.level.isEmpty && userProfileVM.profile.frequency > 0
+        let hasValidSessions = !userProfileVM.allSessions.isEmpty
+        let startupComplete = startupManager.canProceedToMainView
+        
+        isDataComplete = hasValidProfile && hasValidSessions && startupComplete
+        
+        print("📊 TrainingView Data Validation:")
+        print("  - Valid Profile: \(hasValidProfile) (Level: '\(userProfileVM.profile.level)', Frequency: \(userProfileVM.profile.frequency))")
+        print("  - Valid Sessions: \(hasValidSessions) (Count: \(userProfileVM.allSessions.count))")
+        print("  - Startup Complete: \(startupComplete)")
+        print("  - Overall Complete: \(isDataComplete)")
+        
+        if !isDataComplete {
+            print("⚠️ TrainingView: Data incomplete - UI may show loading state")
+        }
+    }
+    
+    /// Sets up listener for training plan updates from startup manager
+    private func setupTrainingPlanUpdateListener() {
+        print("🔄 TrainingView: Setting up training plan update listener")
+        
+        // Listen for sync completion
+        startupManager.$canProceedToMainView
+            .receive(on: DispatchQueue.main)
+            .sink { canProceed in
+                if canProceed {
+                    self.onTrainingPlanUpdate()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Listen for watch connectivity changes
+        watchConnectivity.$trainingSessionsSynced
+            .receive(on: DispatchQueue.main)
+            .sink { synced in
+                if synced {
+                    self.onTrainingPlanUpdate()
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    /// Handles training plan updates - refreshes UI and syncs to watch
+    private func onTrainingPlanUpdate() {
+        print("🔄 TrainingView: Training plan updated - refreshing UI")
+        
+        // Refresh local sessions
+        refreshDynamicSessions()
+        
+        // Update UI
+        DispatchQueue.main.async {
+            self.userProfileVM.objectWillChange.send()
+        }
+        
+        // Send update to watch
+        sendTrainingPlanUpdateToWatch()
+    }
+    
+    /// Sends training plan update message to watch
+    private func sendTrainingPlanUpdateToWatch() {
+        let message = [
+            "type": "TRAINING_PLAN_UPDATE",
+            "payload": [
+                "level": userProfileVM.profile.level,
+                "frequency": userProfileVM.profile.frequency,
+                "currentWeek": userProfileVM.profile.currentWeek,
+                "sessionCount": dynamicSessions.count,
+                "timestamp": Date().timeIntervalSince1970
+            ]
+        ] as [String: Any]
+        
+        watchConnectivity.sendMessage(message) { success in
+            if success {
+                print("✅ TrainingView: Training plan update sent to watch")
+            } else {
+                print("⚠️ TrainingView: Failed to send training plan update to watch")
+            }
+        }
     }
     
     // Removed duplicate refreshProfileFromUserDefaults() - using the one in main struct

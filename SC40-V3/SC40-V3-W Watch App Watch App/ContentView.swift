@@ -297,11 +297,10 @@ struct SprintTimerProCard: View {
 
 // Card 0: User Profile - ENTRY POINT
 struct UserProfileCard: View {
-    @State private var userLevel: String = "Intermediate"
     @State private var userName: String = "User"
-    @State private var frequency: Int = 3
     @State private var personalBest: Double = 0.0
     @State private var currentWeek: Int = 1
+    // Note: Level and frequency no longer displayed on welcome card
     
     var body: some View {
         VStack(spacing: 8) {
@@ -318,19 +317,19 @@ struct UserProfileCard: View {
             
             Spacer()
             
-            // Main profile content - DYNAMIC from UserDefaults
+            // Main profile content - No level/day info shown
             VStack(spacing: 8) {
                 Text(userName)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.white)
                     .lineLimit(1)
                 
-                Text(userLevel.uppercased())
+                Text("Ready to Train")
                     .font(.system(size: 12, weight: .medium))
                     .foregroundColor(.cyan)
                     .lineLimit(1)
                 
-                Text("\(frequency) days/week")
+                Text("Program Synced")
                     .font(.system(size: 11, weight: .medium))
                     .foregroundColor(.gray)
                     .lineLimit(1)
@@ -402,21 +401,17 @@ struct UserProfileCard: View {
     
     private func refreshProfileData() {
         // Read from UserDefaults (synced from iPhone onboarding)
-        userLevel = UserDefaults.standard.string(forKey: "SC40_UserLevel") ?? 
-                   UserDefaults.standard.string(forKey: "userLevel") ?? "Intermediate"
+        // Only load data that's actually displayed on welcome card
         userName = UserDefaults.standard.string(forKey: "SC40_UserName") ?? 
                   UserDefaults.standard.string(forKey: "user_name") ?? "SC40 Athlete"
-        frequency = UserDefaults.standard.integer(forKey: "SC40_UserFrequency") > 0 ? 
-                   UserDefaults.standard.integer(forKey: "SC40_UserFrequency") : 
-                   (UserDefaults.standard.integer(forKey: "trainingFrequency") > 0 ? 
-                    UserDefaults.standard.integer(forKey: "trainingFrequency") : 3)
         personalBest = UserDefaults.standard.double(forKey: "SC40_TargetTime") > 0 ?
                       UserDefaults.standard.double(forKey: "SC40_TargetTime") :
                       UserDefaults.standard.double(forKey: "personalBest40yd")
         currentWeek = UserDefaults.standard.integer(forKey: "SC40_CurrentWeek") > 0 ?
                      UserDefaults.standard.integer(forKey: "SC40_CurrentWeek") : 1
         
-        print("🔄 Watch: Profile refreshed - Name: \(userName), Level: \(userLevel), Frequency: \(frequency) days, PB: \(personalBest)s, Week: \(currentWeek)")
+        print("🔄 Watch: Profile refreshed - Name: \(userName), PB: \(personalBest)s, Week: \(currentWeek)")
+        print("📝 Note: Level and frequency not displayed on welcome card")
     }
 }
 

@@ -190,8 +190,8 @@ struct SessionConfiguration {
             workoutVariation: .acceleration
         ),
         SessionConfiguration(
-            sessionName: "30 Yard Speed Foundation",
-            sessionType: "Speed Training",
+            sessionName: "Foundation 30yd × 8",
+            sessionType: "Foundation Speed Development",
             distance: 30,
             reps: 8,
             restMinutes: 2,
@@ -205,8 +205,8 @@ struct SessionConfiguration {
         
         // Intermediate Sessions
         SessionConfiguration(
-            sessionName: "40 Yard Speed Development",
-            sessionType: "Speed Training",
+            sessionName: "Progressive 40yd × 6",
+            sessionType: "Progressive Speed Development",
             distance: 40,
             reps: 6,
             restMinutes: 2,
@@ -218,8 +218,8 @@ struct SessionConfiguration {
             workoutVariation: .standard
         ),
         SessionConfiguration(
-            sessionName: "Pyramid Power (20-30-40-30-20)",
-            sessionType: "Pyramid Training",
+            sessionName: "Progressive 20-40yd Power Pyramid",
+            sessionType: "Progressive Pyramid Development",
             distance: 40, // Max distance
             reps: 5,
             restMinutes: 3,

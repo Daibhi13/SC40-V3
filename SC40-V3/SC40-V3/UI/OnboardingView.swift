@@ -618,10 +618,22 @@ struct OnboardingView: View {
             let verifyFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
             
             if verifyLevel != fitnessLevel {
-                print("⚠️ LEVEL MISMATCH: Saved '\(verifyLevel ?? "nil")' != Selected '\(fitnessLevel)'")
+                print("❌ CRITICAL: LEVEL MISMATCH - Saved '\(verifyLevel ?? "nil")' != Selected '\(fitnessLevel)'")
             }
             if verifyFreq != daysAvailable {
-                print("⚠️ FREQUENCY MISMATCH: Saved '\(verifyFreq)' != Selected '\(daysAvailable)'")
+                print("❌ CRITICAL: FREQUENCY MISMATCH - Saved '\(verifyFreq)' != Selected '\(daysAvailable)'")
+            }
+            
+            // Validate UserProfileViewModel was updated
+            print("📱 Onboarding: UserProfileViewModel validation:")
+            print("   Profile level: '\(userProfileVM.profile.level)'")
+            print("   Profile frequency: \(userProfileVM.profile.frequency)")
+            
+            if userProfileVM.profile.level != fitnessLevel {
+                print("❌ CRITICAL: PROFILE LEVEL MISMATCH - Profile '\(userProfileVM.profile.level)' != Selected '\(fitnessLevel)'")
+            }
+            if userProfileVM.profile.frequency != daysAvailable {
+                print("❌ CRITICAL: PROFILE FREQUENCY MISMATCH - Profile '\(userProfileVM.profile.frequency)' != Selected '\(daysAvailable)'")
             }
             
             // Trigger workflow and sync

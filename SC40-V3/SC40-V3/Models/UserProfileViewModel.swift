@@ -16,6 +16,16 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     // Session storage to avoid circular dependencies
     private var allSessions: [UUID: TrainingSession] = [:] // Using TrainingSession now
     private var completedSessions: [UUID: TrainingSession] = [:]
+    
+    /// Get all stored training sessions (for UI access)
+    func getAllStoredSessions() -> [TrainingSession] {
+        return Array(allSessions.values).sorted { session1, session2 in
+            if session1.week != session2.week {
+                return session1.week < session2.week
+            }
+            return session1.day < session2.day
+        }
+    }
 
     // Automatically refresh upcoming sessions when feedback is updated
     private var cancellables = Set<AnyCancellable>()
@@ -172,9 +182,9 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
-    // Enable adaptive program generation using SessionLibrary with Algorithms
+    // Enable adaptive program generation using Unified Session Generator for iPhone/Watch sync
     func refreshAdaptiveProgram() {
-        LoggingService.shared.session.info("Generating adaptive program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
+        LoggingService.shared.session.info("Generating unified 12-week program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
         
         // Create user preferences object
         let userPreferences = UserSessionPreferences(
@@ -185,23 +195,16 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             manualOverrides: profile.manualSessionOverrides
         )
         
-        // Use Algorithms framework for intelligent session optimization
-        _ = AlgorithmicWorkoutOptimizer.shared
-        
-        // Initialize performance data collection for algorithmic optimization
-        _ = PerformanceDataCollector.shared
-        
-        // Generate real training sessions using algorithmic SessionLibrary with all session types
-        let weeklyPrograms = WeeklyProgramTemplate.generateWithUserPreferences(
-            level: profile.level,
-            totalDaysPerWeek: profile.frequency,
-            userPreferences: userPreferences,
-            includeActiveRecovery: profile.frequency >= 6,
-            includeRestDay: profile.frequency >= 7
+        // Use Unified Session Generator to ensure iPhone/Watch synchronization
+        let unifiedGenerator = UnifiedSessionGenerator.shared
+        let trainingSessions = unifiedGenerator.generateUnified12WeekProgram(
+            userLevel: profile.level,
+            frequency: profile.frequency,
+            userPreferences: userPreferences
         )
         
-        // Convert weekly programs to TrainingSession objects
-        let trainingSessions = convertWeeklyProgramsToTrainingSessions(weeklyPrograms)
+        print("📱 iPhone: Generated \(trainingSessions.count) unified sessions")
+        print("📱 iPhone: Sessions will match Watch exactly for W1/D1 through W12/D\(profile.frequency)")
         
         // Store sessions in local storage and update profile with session IDs
         var sessionIDs: [UUID] = []
@@ -217,6 +220,26 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         
         // Send updated sessions to watch
         sendSessionsToWatch()
+    }
+    
+    /// Update UserProfileViewModel with unified sessions from UnifiedSessionGenerator
+    func updateWithUnifiedSessions(_ sessions: [TrainingSession]) {
+        print("📱 UserProfileViewModel: Updating with \(sessions.count) unified sessions")
+        
+        // Clear existing sessions and update with unified ones
+        allSessions.removeAll()
+        var sessionIDs: [UUID] = []
+        
+        for session in sessions {
+            allSessions[session.id] = session
+            sessionIDs.append(session.id)
+        }
+        
+        profile.sessionIDs = sessionIDs
+        logger.info("Updated UserProfileViewModel with \(sessions.count) unified sessions")
+        
+        // Trigger UI update
+        objectWillChange.send()
     }
     
     // MARK: - Performance Data Integration

@@ -415,9 +415,9 @@ class TrainingPlanGenerator {
         switch weekNumber {
         case 1...3: return "Foundation & Mechanics"
         case 4...6: return "Acceleration Development"
-        case 7...9: return "Maximum Velocity"
+        case 7...9: return "Velocity Development"
         case 10...12: return "Peak Performance"
-        default: return "General Training"
+        default: return "Progressive Training"
         }
     }
     

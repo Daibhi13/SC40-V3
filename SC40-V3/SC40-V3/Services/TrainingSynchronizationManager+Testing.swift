@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import os
 
 // MARK: - TrainingSynchronizationManager Testing Extensions
 
@@ -29,12 +30,12 @@ extension TrainingSynchronizationManager {
     }
     
     /// Validates the current state matches expected values
-    func validateState(expectedLevel: TrainingLevel, expectedDays: Int) -> ValidationResult {
+    func validateState(expectedLevel: TrainingLevel, expectedDays: Int) -> TrainingSyncValidationResult {
         var issues: [String] = []
         
         // Check level
         if selectedLevel != expectedLevel {
-            issues.append("Level mismatch: expected \(expectedLevel.label), got \(selectedLevel?.label ?? "nil")")
+            issues.append("Level mismatch: expected \(expectedLevel.label), got \(selectedLevel.label)")
         }
         
         // Check days
@@ -58,7 +59,7 @@ extension TrainingSynchronizationManager {
             issues.append("Phone not synced")
         }
         
-        return ValidationResult(
+        return TrainingSyncValidationResult(
             isValid: issues.isEmpty,
             issues: issues,
             level: selectedLevel,
@@ -96,7 +97,7 @@ extension TrainingSynchronizationManager {
         // Fix 2: Regenerate sessions if count is wrong
         let expectedSessionCount = targetDays * 12
         if activeSessions.count != expectedSessionCount {
-            let newSessions = generateSessionModel(level: targetLevel, days: targetDays)
+            let newSessions = await generateSessionModel(level: targetLevel, days: targetDays)
             await MainActor.run {
                 self.activeSessions = newSessions
             }
@@ -182,7 +183,7 @@ extension TrainingSynchronizationManager {
         }
         
         // Step 4: Generate session model
-        let sessions = generateSessionModel(level: level, days: days)
+        let sessions = await generateSessionModel(level: level, days: days)
         await MainActor.run {
             self.activeSessions = sessions
         }
@@ -218,7 +219,7 @@ extension TrainingSynchronizationManager {
 
 // MARK: - Testing Support Types
 
-struct ValidationResult {
+struct TrainingSyncValidationResult {
     let isValid: Bool
     let issues: [String]
     let level: TrainingLevel?
@@ -253,5 +254,5 @@ struct OnboardingSimulationResult {
     let duration: TimeInterval
     let compilationID: String
     let sessionCount: Int
-    let validationResult: ValidationResult
+    let validationResult: TrainingSyncValidationResult
 }

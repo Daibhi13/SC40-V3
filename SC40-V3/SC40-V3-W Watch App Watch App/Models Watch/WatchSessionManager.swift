@@ -189,36 +189,128 @@ class WatchSessionManager: ObservableObject {
         
         print("⚠️ Creating fallback sessions - iPhone sync unavailable")
         
-        let fallbackSessions = [
-            TrainingSession(
-                week: 1, 
-                day: 1, 
-                type: "Speed Training", 
-                focus: "Maximum Velocity", 
-                sprints: [
-                    SprintSet(distanceYards: 40, reps: 6, intensity: "Max"),
-                    SprintSet(distanceYards: 60, reps: 4, intensity: "Max")
-                ], 
-                accessoryWork: ["Dynamic Warm-up", "Speed Mechanics", "Cool-down"]
-            ),
-            TrainingSession(
-                week: 1, 
-                day: 2, 
-                type: "Pyramid Training", 
-                focus: "Progressive Distance", 
-                sprints: [
-                    SprintSet(distanceYards: 20, reps: 2, intensity: "Max"),
-                    SprintSet(distanceYards: 40, reps: 2, intensity: "Max"),
-                    SprintSet(distanceYards: 60, reps: 2, intensity: "Max"),
-                    SprintSet(distanceYards: 40, reps: 2, intensity: "Max"),
-                    SprintSet(distanceYards: 20, reps: 2, intensity: "Max")
-                ], 
-                accessoryWork: ["Dynamic Warm-up", "Pyramid Progression", "Recovery"]
-            )
-        ]
+        // Get user's onboarding data from UserDefaults
+        let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+        let frequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let actualFrequency = frequency > 0 ? frequency : 1 // Default to 1 day if not set
+        
+        print("📋 Generating fallback sessions for: \(userLevel) level, \(actualFrequency) days/week")
+        
+        let fallbackSessions = generateLevelAppropriateSessions(
+            level: userLevel, 
+            frequency: actualFrequency
+        )
         
         trainingSessions = fallbackSessions
         saveSessionsToStorage(fallbackSessions)
+        
+        print("✅ Created \(fallbackSessions.count) fallback sessions based on user profile")
+    }
+    
+    private func generateLevelAppropriateSessions(level: String, frequency: Int) -> [TrainingSession] {
+        // Use Unified Session Generator to ensure iPhone/Watch synchronization
+        let unifiedGenerator = UnifiedSessionGenerator.shared
+        let allSessions = unifiedGenerator.generateUnified12WeekProgram(
+            userLevel: level,
+            frequency: frequency,
+            userPreferences: nil
+        )
+        
+        print("⌚ Watch: Generated \(allSessions.count) unified sessions")
+        print("⌚ Watch: Sessions will match iPhone exactly for W1/D1 through W12/D\(frequency)")
+        
+        // Return first week sessions for immediate display, but store all sessions
+        let firstWeekSessions = allSessions.filter { $0.week == 1 }
+        
+        // Store all sessions for future use
+        trainingSessions = allSessions
+        saveSessionsToStorage(allSessions)
+        
+        return firstWeekSessions
+    }
+    
+    private func createSessionForLevel(level: String, week: Int, day: Int) -> TrainingSession {
+        switch level.lowercased() {
+        case "beginner":
+            return createBeginnerSession(week: week, day: day)
+        case "intermediate":
+            return createIntermediateSession(week: week, day: day)
+        case "advanced":
+            return createAdvancedSession(week: week, day: day)
+        case "pro", "elite":
+            return createProSession(week: week, day: day)
+        default:
+            return createBeginnerSession(week: week, day: day)
+        }
+    }
+    
+    private func createBeginnerSession(week: Int, day: Int) -> TrainingSession {
+        let sessionTypes = ["Basic Speed", "Acceleration", "Form Running"]
+        let focuses = ["Technique Focus", "Speed Development", "Movement Quality"]
+        
+        return TrainingSession(
+            week: week,
+            day: day,
+            type: sessionTypes[day % sessionTypes.count],
+            focus: focuses[day % focuses.count],
+            sprints: [
+                SprintSet(distanceYards: 20, reps: 3, intensity: "Moderate"),
+                SprintSet(distanceYards: 30, reps: 3, intensity: "Moderate")
+            ],
+            accessoryWork: ["Dynamic Warm-up", "Basic Drills", "Cool-down"]
+        )
+    }
+    
+    private func createIntermediateSession(week: Int, day: Int) -> TrainingSession {
+        let sessionTypes = ["Speed Development", "Acceleration Work", "Tempo Running"]
+        let focuses = ["Speed Building", "Power Development", "Endurance Speed"]
+        
+        return TrainingSession(
+            week: week,
+            day: day,
+            type: sessionTypes[day % sessionTypes.count],
+            focus: focuses[day % focuses.count],
+            sprints: [
+                SprintSet(distanceYards: 30, reps: 4, intensity: "High"),
+                SprintSet(distanceYards: 40, reps: 3, intensity: "High")
+            ],
+            accessoryWork: ["Dynamic Warm-up", "Speed Drills", "Recovery"]
+        )
+    }
+    
+    private func createAdvancedSession(week: Int, day: Int) -> TrainingSession {
+        let sessionTypes = ["High-Intensity Speed", "Power Development", "Speed Endurance"]
+        let focuses = ["Maximum Velocity", "Explosive Power", "Speed Maintenance"]
+        
+        return TrainingSession(
+            week: week,
+            day: day,
+            type: sessionTypes[day % sessionTypes.count],
+            focus: focuses[day % focuses.count],
+            sprints: [
+                SprintSet(distanceYards: 40, reps: 4, intensity: "Max"),
+                SprintSet(distanceYards: 50, reps: 3, intensity: "Max")
+            ],
+            accessoryWork: ["Dynamic Warm-up", "Advanced Drills", "Recovery Work"]
+        )
+    }
+    
+    private func createProSession(week: Int, day: Int) -> TrainingSession {
+        let sessionTypes = ["Elite Speed Training", "Maximum Power", "Competition Prep"]
+        let focuses = ["Peak Velocity", "Elite Performance", "Race Preparation"]
+        
+        return TrainingSession(
+            week: week,
+            day: day,
+            type: sessionTypes[day % sessionTypes.count],
+            focus: focuses[day % focuses.count],
+            sprints: [
+                SprintSet(distanceYards: 40, reps: 5, intensity: "Max"),
+                SprintSet(distanceYards: 60, reps: 4, intensity: "Max"),
+                SprintSet(distanceYards: 80, reps: 2, intensity: "Max")
+            ],
+            accessoryWork: ["Elite Warm-up", "Competition Drills", "Performance Recovery"]
+        )
     }
     
     // Legacy method for backward compatibility

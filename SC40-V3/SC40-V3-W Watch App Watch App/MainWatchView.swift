@@ -135,13 +135,13 @@ struct MainWatchView: View {
                     .multilineTextAlignment(.center)
             }
             
-            // User stats
+            // Status indicators (no level/day info shown)
             HStack(spacing: 12) {
                 VStack(spacing: 2) {
-                    Text(UserDefaults.standard.string(forKey: "userLevel") ?? "Training Mode")
+                    Text("Ready")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.green)
-                    Text("Level")
+                    Text("Training")
                         .font(.system(size: 8, weight: .medium))
                         .foregroundColor(.gray)
                 }
@@ -151,7 +151,7 @@ struct MainWatchView: View {
                 .cornerRadius(8)
                 
                 VStack(spacing: 2) {
-                    Text("Ready")
+                    Text("Synced")
                         .font(.system(size: 12, weight: .bold))
                         .foregroundColor(.blue)
                     Text("Program")
@@ -244,6 +244,6 @@ struct MainWatchView: View {
         .onAppear {
             UserDefaults.standard.set(true, forKey: "onboardingComplete")
             UserDefaults.standard.set("David", forKey: "userName")
-            UserDefaults.standard.set("Intermediate", forKey: "userLevel")
+            // No level/day info stored for welcome card
         }
 }

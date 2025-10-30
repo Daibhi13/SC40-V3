@@ -356,7 +356,7 @@ let sessionLibrary: [SprintSessionTemplate] = [
     SprintSessionTemplate(id: 274, name: "Drive Pyramid", distance: 35, reps: 9, rest: 2, focus: "Drive Phase", level: "Beginner", sessionType: LibrarySessionType.sprint),
     
     // INTERMEDIATE PYRAMIDS (Balanced Speed-Endurance)
-    SprintSessionTemplate(id: 275, name: "Classic Pyramid", distance: 40, reps: 7, rest: 2, focus: "Progressive Distance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
+    SprintSessionTemplate(id: 275, name: "Progressive 20-40yd Classic", distance: 40, reps: 7, rest: 2, focus: "Speed Building Development", level: "Intermediate", sessionType: LibrarySessionType.sprint),
     SprintSessionTemplate(id: 276, name: "Extended Pyramid", distance: 60, reps: 11, rest: 3, focus: "Speed Endurance", level: "Intermediate", sessionType: LibrarySessionType.sprint),
     SprintSessionTemplate(id: 277, name: "Double Pyramid", distance: 50, reps: 13, rest: 3, focus: "Endurance Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),
     SprintSessionTemplate(id: 278, name: "Peak Pyramid", distance: 70, reps: 13, rest: 4, focus: "Peak Speed", level: "Intermediate", sessionType: LibrarySessionType.sprint),

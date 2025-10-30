@@ -101,7 +101,7 @@ class ComprehensiveSessionSystem: @unchecked Sendable {
     // MARK: - Session Validation
     
     /// Validates that all session types are properly distributed across levels
-    func validateSessionDistribution() -> ValidationResult {
+    func validateSessionDistribution() -> SessionValidationResult {
         let stats = getLibraryStatistics()
         var issues: [String] = []
         var recommendations: [String] = []
@@ -127,7 +127,7 @@ class ComprehensiveSessionSystem: @unchecked Sendable {
             recommendations.append("Expand pyramid library with more variations")
         }
         
-        return ValidationResult(
+        return SessionValidationResult(
             isValid: issues.isEmpty,
             issues: issues,
             recommendations: recommendations,
@@ -218,7 +218,7 @@ struct SpecialCategoryBreakdown {
     let plyometric: Int
 }
 
-struct ValidationResult {
+struct SessionValidationResult {
     let isValid: Bool
     let issues: [String]
     let recommendations: [String]

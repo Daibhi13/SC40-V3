@@ -418,18 +418,4 @@ extension EnhancedConnectivityManager: WCSessionDelegate {
 
 // MARK: - Supporting Types
 
-enum ConnectivityError: LocalizedError {
-    case timeout
-    case watchNotReachable
-    case sessionNotActivated
-    case dataCorrupted
-    
-    var errorDescription: String? {
-        switch self {
-        case .timeout: return "Connection timeout"
-        case .watchNotReachable: return "Watch not reachable"
-        case .sessionNotActivated: return "Session not activated"
-        case .dataCorrupted: return "Data corrupted during transfer"
-        }
-    }
-}
+// ConnectivityError is now defined in ConnectivityError.swift

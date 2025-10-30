@@ -211,6 +211,9 @@ struct EmailSignupView: View {
         
         guard isFormValid else { return }
         
+        // Prevent multiple submissions
+        guard !authManager.isLoading else { return }
+        
         HapticManager.shared.success()
         
         // Simplified email registration - skip complex authentication for now
@@ -222,14 +225,21 @@ struct EmailSignupView: View {
         UserDefaults.standard.set(trimmedEmail, forKey: "user_email")
         UserDefaults.standard.set("email", forKey: "user_provider")
         
-        // Call success handler immediately to prevent UI blocking
-        onSuccess(trimmedName, trimmedEmail)
-        dismiss()
+        // Add small delay to ensure UI state is stable before callback
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            // Call success handler immediately to prevent UI blocking
+            onSuccess(trimmedName, trimmedEmail)
+            dismiss()
+        }
         
         // Optional: Perform background authentication after UI flow completes
         Task.detached {
-            await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
-            print("✅ Background email authentication completed")
+            do {
+                await authManager.authenticate(with: .email, name: trimmedName, email: trimmedEmail)
+                print("✅ Background email authentication completed")
+            } catch {
+                print("⚠️ Background authentication failed: \(error)")
+            }
         }
     }
     

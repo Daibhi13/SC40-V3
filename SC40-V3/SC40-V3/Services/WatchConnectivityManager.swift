@@ -694,33 +694,50 @@ extension WatchConnectivityManager: WCSessionDelegate {
     }
     
     private func getSessionTypeForLevel(_ level: String, day: Int) -> String {
+        // Use dynamic session naming service instead of hardcoded values
+        let namingService = DynamicSessionNamingService.shared
+        
+        // Generate appropriate distance and intensity for the level
+        let (distance, intensity) = getDistanceAndIntensityForLevel(level)
+        
+        return namingService.generateSessionType(
+            userLevel: level,
+            distance: distance,
+            reps: 4, // Default reps
+            intensity: intensity,
+            dayInWeek: day
+        )
+    }
+    
+    private func getDistanceAndIntensityForLevel(_ level: String) -> (distance: Int, intensity: String) {
         switch level.lowercased() {
         case "beginner":
-            return day % 2 == 1 ? "Speed Training" : "Technique Focus"
+            return (25, "Moderate")
         case "intermediate":
-            return day % 3 == 1 ? "Speed Training" : (day % 3 == 2 ? "Power Development" : "Endurance")
+            return (35, "High")
         case "advanced":
-            return day % 3 == 1 ? "Max Velocity" : (day % 3 == 2 ? "Speed Endurance" : "Power Training")
-        case "elite":
-            return day % 4 == 1 ? "Competition Prep" : (day % 4 == 2 ? "Max Velocity" : (day % 4 == 3 ? "Speed Endurance" : "Recovery"))
+            return (45, "Max")
+        case "elite", "pro":
+            return (55, "Max")
         default:
-            return "Speed Training"
+            return (30, "Moderate")
         }
     }
     
     private func getSessionFocusForLevel(_ level: String, day: Int) -> String {
-        switch level.lowercased() {
-        case "beginner":
-            return day % 2 == 1 ? "Basic Speed Development" : "Running Mechanics"
-        case "intermediate":
-            return day % 3 == 1 ? "Acceleration Training" : (day % 3 == 2 ? "Explosive Power" : "Speed Maintenance")
-        case "advanced":
-            return day % 3 == 1 ? "Maximum Velocity" : (day % 3 == 2 ? "Lactate Tolerance" : "Power Output")
-        case "elite":
-            return day % 4 == 1 ? "Race Simulation" : (day % 4 == 2 ? "Peak Velocity" : (day % 4 == 3 ? "Speed Endurance" : "Active Recovery"))
-        default:
-            return "Speed Development"
-        }
+        // Use dynamic session naming service instead of hardcoded values
+        let namingService = DynamicSessionNamingService.shared
+        
+        // Generate appropriate distance for the level
+        let (distance, _) = getDistanceAndIntensityForLevel(level)
+        
+        return namingService.generateSessionFocus(
+            userLevel: level,
+            distance: distance,
+            reps: 4, // Default reps
+            weekNumber: 1, // Default to week 1 for fallback
+            dayInWeek: day
+        )
     }
     
     private func getSprintsForLevel(_ level: String, day: Int) -> [SprintSet] {

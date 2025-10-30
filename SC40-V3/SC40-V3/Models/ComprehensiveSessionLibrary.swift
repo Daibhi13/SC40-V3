@@ -64,12 +64,12 @@ let comprehensiveSprintSessions: [ComprehensiveSprintSession] = [
     ComprehensiveSprintSession(id: 23, name: "15+30 yd Ladder", distanceYards: 30, reps: 3, restMinutes: 2, focus: "Accel → Drive", level: "Beginner"),
     ComprehensiveSprintSession(id: 24, name: "20+20 yd Split", distanceYards: 20, reps: 5, restMinutes: 2, focus: "Accel mechanics", level: "Beginner"),
     ComprehensiveSprintSession(id: 25, name: "10–20–30 yd Pyramid", distanceYards: 30, reps: 3, restMinutes: 2, focus: "Accel progression", level: "Beginner"),
-    ComprehensiveSprintSession(id: 26, name: "Pyramid Training", distanceYards: 40, reps: 7, restMinutes: 2, focus: "Progressive Distance", level: "Intermediate"),
+    ComprehensiveSprintSession(id: 26, name: "Progressive 20-40yd Pyramid", distanceYards: 40, reps: 7, restMinutes: 2, focus: "Speed Building Development", level: "Intermediate"),
     ComprehensiveSprintSession(id: 27, name: "25–35–45 yd Ladder", distanceYards: 45, reps: 4, restMinutes: 3, focus: "Accel + Max Speed", level: "Intermediate"),
     ComprehensiveSprintSession(id: 28, name: "30–40–50 yd Ladder", distanceYards: 50, reps: 3, restMinutes: 3, focus: "Speed Endurance", level: "Intermediate"),
     ComprehensiveSprintSession(id: 29, name: "40 yd ×6", distanceYards: 40, reps: 6, restMinutes: 2, focus: "Speed", level: "Intermediate"),
     ComprehensiveSprintSession(id: 30, name: "50 yd ×5", distanceYards: 50, reps: 5, restMinutes: 3, focus: "Speed", level: "Intermediate"),
-    ComprehensiveSprintSession(id: 31, name: "Speed Training", distanceYards: 40, reps: 3, restMinutes: 3, focus: "Maximum Velocity", level: "Intermediate"),
+    ComprehensiveSprintSession(id: 31, name: "Progressive 40yd × 3", distanceYards: 40, reps: 3, restMinutes: 3, focus: "Speed Building Velocity", level: "Intermediate"),
     ComprehensiveSprintSession(id: 32, name: "70 yd ×3", distanceYards: 70, reps: 3, restMinutes: 4, focus: "Speed Endurance", level: "Advanced"),
     ComprehensiveSprintSession(id: 33, name: "80 yd ×3", distanceYards: 80, reps: 3, restMinutes: 5, focus: "Repeat Sprints", level: "Advanced"),
     ComprehensiveSprintSession(id: 34, name: "90 yd ×3", distanceYards: 90, reps: 3, restMinutes: 5, focus: "Top-End Speed", level: "Advanced"),
@@ -105,7 +105,7 @@ let comprehensiveSprintSessions: [ComprehensiveSprintSession] = [
     ComprehensiveSprintSession(id: 61, name: "Drive Pyramid", distanceYards: 35, reps: 9, restMinutes: 2, focus: "Drive Phase", level: "Beginner"),
     
     // INTERMEDIATE PYRAMIDS (Balanced Speed-Endurance)
-    ComprehensiveSprintSession(id: 62, name: "Classic Pyramid", distanceYards: 40, reps: 7, restMinutes: 2, focus: "Progressive Distance", level: "Intermediate"),
+    ComprehensiveSprintSession(id: 62, name: "Progressive 20-40yd Classic", distanceYards: 40, reps: 7, restMinutes: 2, focus: "Speed Building Development", level: "Intermediate"),
     ComprehensiveSprintSession(id: 63, name: "Extended Pyramid", distanceYards: 60, reps: 11, restMinutes: 3, focus: "Speed Endurance", level: "Intermediate"),
     ComprehensiveSprintSession(id: 64, name: "Double Pyramid", distanceYards: 50, reps: 13, restMinutes: 3, focus: "Endurance Speed", level: "Intermediate"),
     ComprehensiveSprintSession(id: 65, name: "Peak Pyramid", distanceYards: 70, reps: 13, restMinutes: 4, focus: "Peak Speed", level: "Intermediate"),

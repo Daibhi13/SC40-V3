@@ -236,7 +236,7 @@ class StoreKitService: ObservableObject {
         }
     }
     
-    private nonisolated func checkVerified<T>(_ result: VerificationResult<T>) throws -> T {
+    private nonisolated func checkVerified<T>(_ result: StoreKit.VerificationResult<T>) throws -> T {
         switch result {
         case .verified(let signedType):
             return signedType

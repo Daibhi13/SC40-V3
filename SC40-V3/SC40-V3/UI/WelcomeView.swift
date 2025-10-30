@@ -45,13 +45,19 @@ struct WelcomeView: View {
 
     // MARK: - Authentication Methods
     private func performSocialLogin(with provider: AuthenticationManager.AuthProvider) {
-        Task {
-            await authManager.authenticate(with: provider)
-            
-            if authManager.isAuthenticated, let user = authManager.currentUser {
-                onContinue(user.name, user.email)
-            } else if let error = authManager.errorMessage {
-                errorMessage = error
+        Task { @MainActor in
+            do {
+                await authManager.authenticate(with: provider)
+                
+                if authManager.isAuthenticated, let user = authManager.currentUser {
+                    onContinue(user.name, user.email)
+                } else if let error = authManager.errorMessage {
+                    errorMessage = error
+                    showErrorAlert = true
+                }
+            } catch {
+                // Handle any authentication errors gracefully
+                errorMessage = "Authentication failed: \(error.localizedDescription)"
                 showErrorAlert = true
             }
         }

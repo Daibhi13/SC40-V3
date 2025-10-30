@@ -27,12 +27,12 @@ class TrainingSynchronizationManager: ObservableObject {
     @Published var isWatchSynced = false
     @Published var lastSyncTimestamp: Date?
     
-    private let logger = Logger(subsystem: "com.accelerate.sc40", category: "TrainingSynchronization")
+    internal let logger = Logger(subsystem: "com.accelerate.sc40", category: "TrainingSynchronization")
     private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Training Combinations (4 Levels × 7 Days = 28 Total)
-    private let supportedLevels: [TrainingLevel] = [.beginner, .intermediate, .advanced, .pro]
-    private let supportedDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
+    internal let supportedLevels: [TrainingLevel] = [.beginner, .intermediate, .advanced, .pro]
+    internal let supportedDays: [Int] = [1, 2, 3, 4, 5, 6, 7]
     
     private init() {
         setupSynchronization()
@@ -83,26 +83,21 @@ class TrainingSynchronizationManager: ObservableObject {
     
     // MARK: - Session Model Generation
     
-    /// Generates training sessions based on Level × Days combination
-    private func generateSessionModel(level: TrainingLevel, days: Int) async -> [TrainingSession] {
-        logger.info("📊 Generating session model for \(level.rawValue) × \(days) days")
+    /// Generates training sessions based on Level × Days combination using UnifiedSessionGenerator
+    internal func generateSessionModel(level: TrainingLevel, days: Int) async -> [TrainingSession] {
+        logger.info("📊 Generating session model for \(level.rawValue) × \(days) days using UnifiedSessionGenerator")
         
-        var sessions: [TrainingSession] = []
+        // Use UnifiedSessionGenerator to ensure iPhone/Watch synchronization
+        let unifiedGenerator = UnifiedSessionGenerator.shared
+        let sessions = unifiedGenerator.generateUnified12WeekProgram(
+            userLevel: level.rawValue,
+            frequency: days,
+            userPreferences: nil
+        )
         
-        // Generate 12 weeks of training (standard program length)
-        for week in 1...12 {
-            for day in 1...days {
-                let session = createTrainingSession(
-                    week: week,
-                    day: day,
-                    level: level,
-                    totalDaysPerWeek: days
-                )
-                sessions.append(session)
-            }
-        }
+        logger.info("📈 Generated \(sessions.count) sessions (\(12) weeks × \(days) days) via UnifiedSessionGenerator")
+        logger.info("🔄 Sessions will match Watch exactly for W1/D1 through W12/D\(days)")
         
-        logger.info("📈 Generated \(sessions.count) sessions (\(12) weeks × \(days) days)")
         return sessions
     }
     

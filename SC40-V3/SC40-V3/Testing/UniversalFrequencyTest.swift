@@ -149,9 +149,4 @@ extension UniversalFrequencyTest {
     }
 }
 
-// String extension for padding (if not available)
-extension String {
-    static func * (left: String, right: Int) -> String {
-        return String(repeating: left, count: right)
-    }
-}
+// Note: String * operator extension moved to Run28CombinationTest.swift to avoid duplication

@@ -94,12 +94,17 @@ struct SprintTimerProWorkoutView: View {
     }
     
     private func determineSessionType() -> String {
-        switch distance {
-        case 10...25: return "Acceleration Training"
-        case 26...45: return "Speed Training"
-        case 46...60: return "Max Velocity Training"
-        default: return "Endurance Training"
-        }
+        // Use dynamic session naming based on user level and distance
+        let namingService = DynamicSessionNamingService.shared
+        let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+        
+        return namingService.generateSessionType(
+            userLevel: userLevel,
+            distance: distance,
+            reps: reps,
+            intensity: "High",
+            dayInWeek: 1
+        )
     }
     
     private func determineDifficulty() -> String {

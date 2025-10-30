@@ -30,22 +30,27 @@ struct ContentView: View {
                 .glassEffect(blurRadius: 24, opacity: 0.92)
             switch step {
             case .welcome:
-                WelcomeView(onContinue: { name, _ in
-                    userProfileVM.profile.name = name
-                    withAnimation { step = .onboarding(name: name) }
+                WelcomeView(onContinue: { name, email in
+                    // Safely update profile with error handling
+                    DispatchQueue.main.async {
+                        userProfileVM.profile.name = name
+                        if let email = email {
+                            userProfileVM.profile.email = email
+                        }
+                        withAnimation(.easeInOut(duration: 0.3)) { 
+                            step = .onboarding(name: name) 
+                        }
+                    }
                 })
             case .onboarding(let name):
                 OnboardingView(userName: name, userProfileVM: userProfileVM, onComplete: {
-                    // Generate the full 12-week program immediately after onboarding
-                    userProfileVM.refreshAdaptiveProgram()
-                    
-                    // NEW: Use integrated synchronization system
+                    // Use ONLY the integrated synchronization system for consistency
                     Task {
-                        // Phase 1: Sync onboarding data and workout flow (existing)
+                        // Phase 1: Sync onboarding data and workout flow
                         await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
                         await watchConnectivity.sync7StageWorkoutFlow()
                         
-                        // Phase 2: Use new Training Synchronization System
+                        // Phase 2: Use UNIFIED Training Synchronization System ONLY
                         // Convert user profile level to TrainingLevel enum
                         let trainingLevel: TrainingLevel = {
                             switch userProfileVM.profile.level.lowercased() {
@@ -57,18 +62,28 @@ struct ContentView: View {
                             }
                         }()
                         
-                        // Synchronize training program using the new system
+                        print("🔄 ContentView: Starting unified sync for \(trainingLevel.rawValue) × \(userProfileVM.profile.frequency) days")
+                        
+                        // Synchronize training program using the unified system
                         await syncManager.synchronizeTrainingProgram(
                             level: trainingLevel,
                             days: userProfileVM.profile.frequency
                         )
                         
-                        // Legacy sync for compatibility (can be removed later)
-                        let allSessions = userProfileVM.generateAllTrainingSessions()
-                        await watchConnectivity.syncPostOnboardingSessions(
-                            userProfile: userProfileVM.profile, 
-                            allSessions: allSessions
+                        // Update UserProfileViewModel with unified sessions for UI consistency
+                        let unifiedGenerator = UnifiedSessionGenerator.shared
+                        let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
+                            userLevel: trainingLevel.rawValue,
+                            frequency: userProfileVM.profile.frequency,
+                            userPreferences: nil
                         )
+                        
+                        // Store unified sessions in UserProfileViewModel
+                        await MainActor.run {
+                            userProfileVM.updateWithUnifiedSessions(unifiedSessions)
+                        }
+                        
+                        print("✅ ContentView: Unified sync completed - iPhone and Watch should now match exactly")
                     }
                     
                     // Navigate directly to TrainingView after onboarding completion

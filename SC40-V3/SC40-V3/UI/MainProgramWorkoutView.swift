@@ -249,10 +249,21 @@ struct MainProgramWorkoutView: View {
     // MARK: - Session Configuration Creation
     private func createSessionConfigFromSessionData() -> SessionConfiguration {
         guard let session = sessionData else {
-            // Default configuration if no session data
+            // Default configuration if no session data - use dynamic naming
+            let namingService = DynamicSessionNamingService.shared
+            let userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+            let sessionConfig = namingService.generateSessionConfiguration(
+                userLevel: userLevel,
+                distance: 40,
+                reps: 4,
+                intensity: "Moderate",
+                weekNumber: 1,
+                dayInWeek: 1
+            )
+            
             return SessionConfiguration(
-                sessionName: "Default Sprint Session",
-                sessionType: "Speed Training",
+                sessionName: sessionConfig.name,
+                sessionType: sessionConfig.type,
                 distance: 40,
                 reps: 4,
                 restMinutes: 2,

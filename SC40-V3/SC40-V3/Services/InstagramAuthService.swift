@@ -6,10 +6,10 @@ import Combine
 class InstagramAuthService: NSObject, ObservableObject {
     static let shared = InstagramAuthService()
     
-    // Instagram App Configuration
-    private let clientId = "YOUR_INSTAGRAM_CLIENT_ID" // Replace with your Instagram App ID
-    private let clientSecret = "YOUR_INSTAGRAM_CLIENT_SECRET" // Replace with your Instagram App Secret
-    private let redirectURI = "https://your-app.com/auth/instagram/callback" // Replace with your redirect URI
+    // Instagram App Configuration - DISABLED for now to prevent crashes
+    private let clientId = "" // Instagram not configured - will show error instead of crashing
+    private let clientSecret = "" // Instagram not configured
+    private let redirectURI = "" // Instagram not configured
     
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -57,7 +57,7 @@ class InstagramAuthService: NSObject, ObservableObject {
     }
     
     private func startAuthFlow() {
-        guard !clientId.contains("YOUR_") else {
+        guard !clientId.contains("YOUR_") && !clientId.isEmpty else {
             completion?(.failure(InstagramAuthError.invalidConfiguration))
             return
         }

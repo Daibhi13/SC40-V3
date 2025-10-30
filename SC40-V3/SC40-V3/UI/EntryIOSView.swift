@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EntryIOSView: View {
+    @StateObject private var startupManager = AppStartupManager.shared
     @State private var isActive = false
     @State private var animateSprinter = false
     @State private var showWelcome = false
@@ -13,18 +14,29 @@ struct EntryIOSView: View {
     var body: some View {
         if showContentView {
             ContentView()
-        } else if showWelcome {
+        } else if startupManager.canProceedToMainView && !showWelcome {
+            // Startup complete, check if user needs onboarding
+            ContentView()
+        } else if startupManager.isConnectivityCheckComplete && showWelcome {
             WelcomeView(onContinue: { name, email in
-                // Store user data and transition to ContentView (onboarding flow)
+                // Store user data safely with error handling
                 UserDefaults.standard.set(name, forKey: "welcomeUserName")
                 if let email = email {
                     UserDefaults.standard.set(email, forKey: "welcomeUserEmail")
                 }
-                withAnimation {
-                    showContentView = true
+                
+                // Add small delay to ensure UserDefaults write completes
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showContentView = true
+                    }
                 }
             })
+        } else if !startupManager.isConnectivityCheckComplete {
+            // Show startup sync view during connectivity check and sync
+            StartupSyncView(startupManager: startupManager)
         } else {
+            // Original splash screen (fallback)
             ZStack {
                 // Enhanced premium gradient background
                 LinearGradient(
@@ -185,6 +197,9 @@ struct EntryIOSView: View {
                 }
             }
             .onAppear {
+                // Initialize startup flow
+                startupManager.onAppLaunch()
+                
                 // Staggered animation sequence for premium reveal
                 withAnimation(.easeInOut(duration: 1.2).delay(0.2)) {
                     animateLogo = true
@@ -209,7 +224,7 @@ struct EntryIOSView: View {
                 // Auto-advance after premium display time
                 Task { @MainActor in
                     try? await Task.sleep(nanoseconds: 4_000_000_000) // 4 seconds for premium experience
-                    if !showWelcome {
+                    if !showWelcome && startupManager.isConnectivityCheckComplete {
                         withAnimation(.easeInOut(duration: 0.8)) {
                             showWelcome = true
                         }

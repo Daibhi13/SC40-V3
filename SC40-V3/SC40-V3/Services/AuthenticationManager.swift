@@ -149,8 +149,8 @@ class AuthenticationManager: NSObject, ObservableObject {
         #if canImport(GoogleSignIn)
         // Check if Google Sign-In is properly configured
         guard let clientId = GIDSignIn.sharedInstance.configuration?.clientID,
-              !clientId.contains("your-client-id") else {
-            throw AuthError.socialLoginNotConfigured("Google Sign-In is not properly configured. Please update GoogleService-Info.plist with your actual client ID.")
+              !clientId.contains("your-client-id") && !clientId.contains("placeholder-client-id") else {
+            throw AuthError.socialLoginNotConfigured("Google Sign-In is not properly configured. Please update GoogleService-Info.plist with your actual client ID from Firebase Console.")
         }
         
         return try await withCheckedThrowingContinuation { continuation in
@@ -324,34 +324,7 @@ class AuthenticationManager: NSObject, ObservableObject {
 }
 
 // MARK: - Auth Errors
-enum AuthError: LocalizedError {
-    case invalidName
-    case invalidEmail
-    case missingCredentials
-    case authenticationFailed
-    case cancelled
-    case socialLoginNotConfigured(String)
-    case unknown
-    
-    var errorDescription: String? {
-        switch self {
-        case .invalidName:
-            return "Please enter a valid name"
-        case .invalidEmail:
-            return "Please enter a valid email address"
-        case .missingCredentials:
-            return "Missing required information"
-        case .authenticationFailed:
-            return "Authentication failed. Please try again."
-        case .cancelled:
-            return "Authentication was cancelled"
-        case .socialLoginNotConfigured(let message):
-            return message
-        case .unknown:
-            return "An unknown error occurred"
-        }
-    }
-}
+// AuthError is now defined in ConnectivityError.swift
 
 // MARK: - Apple Sign-In Delegates
 class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate {

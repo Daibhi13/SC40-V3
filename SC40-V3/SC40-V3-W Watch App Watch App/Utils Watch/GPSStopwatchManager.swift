@@ -33,9 +33,9 @@ class GPSStopwatchManager: NSObject, ObservableObject, CLLocationManagerDelegate
         didReachTargetDistance = false
         locationManager.startUpdatingLocation()
         
-        // Capture the start time locally to avoid actor isolation issues
+        // Capture the start time and weak self to avoid retain cycles and Swift 6 concurrency warnings
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            Task { @MainActor in
+            Task { @MainActor [weak self] in
                 guard let self = self else { return }
                 let elapsed = Date().timeIntervalSince(currentTime)
                 self.elapsedTime = elapsed

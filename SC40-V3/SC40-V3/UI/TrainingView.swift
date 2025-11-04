@@ -628,191 +628,158 @@ struct TrainingView: View {
         print("✅ Auto-sync to watch completed")
     }
 }
-
-// MARK: - Helper Methods
-
-// Use UnifiedSessionGenerator for consistent iPhone/Watch synchronization
-func generateDynamicSessions() -> [TrainingSession] {
-    let userLevel = userProfileVM.profile.level
-    let currentWeek = userProfileVM.profile.currentWeek
-    let frequency = userProfileVM.profile.frequency
+    // MARK: - Session Generation
     
-    // Debug: Log the actual level being used
-    print("🔍 TrainingView: Current user level = '\(userLevel)'")
-    print("🔍 TrainingView: Current frequency = \(frequency)")
-    print("🔍 TrainingView: Current week = \(currentWeek)")
+    static var sessionCache: [String: TrainingSession] = [:]
     
-    // Also check UserDefaults to see if there's a mismatch
-    let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Not Set"
-    print("🔍 TrainingView: UserDefaults level = '\(savedLevel)'")
+    func generateDynamicSessions() -> [TrainingSession] {
+        let userLevel = userProfileVM.profile.level
+        let currentWeek = userProfileVM.profile.currentWeek
+        let frequency = userProfileVM.profile.frequency
     
-    if userLevel != savedLevel {
-        print("⚠️ TrainingView: MISMATCH! Profile level (\(userLevel)) != UserDefaults level (\(savedLevel))")
-    }
+        // Debug: Log the actual level being used
+        print("🔍 TrainingView: Current user level = '\(userLevel)'")
+        print("🔍 TrainingView: Current frequency = \(frequency)")
+        print("🔍 TrainingView: Current week = \(currentWeek)")
     
-    // Use UnifiedSessionGenerator to ensure iPhone/Watch synchronization
-    print("🔄 TrainingView: Using UnifiedSessionGenerator for session consistency")
-    let unifiedGenerator = UnifiedSessionGenerator.shared
-    let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
-        userLevel: userLevel,
-        frequency: frequency
-    )
+        // Also check UserDefaults to see if there's a mismatch
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Not Set"
+        print("🔍 TrainingView: UserDefaults level = '\(savedLevel)'")
     
-    print("📱 TrainingView: Generated \(unifiedSessions.count) unified sessions")
-    print("📱 TrainingView: Sessions will match Watch exactly for W1/D1 through W12/D\(frequency)")
-    
-    return unifiedSessions
-}
-
-// Get sessions appropriate for user level with proper progression and recovery sessions
-// RULE: ALL LEVELS (Beginner, Intermediate, Advanced, Elite) support ALL FREQUENCIES (1-7 days)
-func getSessionsForUserLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
-    let frequency = userProfileVM.profile.frequency
-    
-    print("🎯 Session Generation: Level=\(userLevel), Frequency=\(frequency) days")
-    print("📋 RULE: \(userLevel) supports frequencies 1,2,3,4,5,6,7 days")
-    
-    // Get sprint sessions based on level - ALL LEVELS GET FULL SESSION VARIETY
-    var sprintSessions: [ComprehensiveSprintSession] = []
-    
-    switch userLevel.lowercased() {
-    case "beginner":
-        // BEGINNER: Supports 1,2,3,4,5,6,7 days with appropriate difficulty
-        let beginnerSessions = sessionLibrary.filter { 
-            $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        let earlyIntermediate = sessionLibrary.filter { 
-            $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance <= 60 
-        }.prefix(5).map { convertSessionLibraryToComprehensive($0) }
-        sprintSessions = beginnerSessions + Array(earlyIntermediate)
-        print("✅ BEGINNER: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
-        
-    case "intermediate":
-        // INTERMEDIATE: Supports 1,2,3,4,5,6,7 days with moderate difficulty
-        let intermediateSessions = sessionLibrary.filter { 
-            $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        let earlyAdvanced = sessionLibrary.filter { 
-            $0.level.lowercased() == "advanced" && $0.sessionType == .sprint && $0.distance <= 80 
-        }.prefix(8).map { convertSessionLibraryToComprehensive($0) }
-        sprintSessions = intermediateSessions + Array(earlyAdvanced)
-        print("✅ INTERMEDIATE: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
-        
-    case "advanced":
-        // ADVANCED: Supports 1,2,3,4,5,6,7 days with high difficulty
-        let advancedSessions = sessionLibrary.filter { 
-            $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        let lateIntermediate = sessionLibrary.filter { 
-            $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 50 
-        }.suffix(5).map { convertSessionLibraryToComprehensive($0) }
-        sprintSessions = Array(lateIntermediate) + advancedSessions
-        print("✅ ADVANCED: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
-        
-    case "elite":
-        // ELITE: Supports 1,2,3,4,5,6,7 days with maximum difficulty
-        let allAdvanced = sessionLibrary.filter { 
-            $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        let eliteIntermediate = sessionLibrary.filter { 
-            $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 60 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        // Get actual Elite sessions from the new library
-        let eliteSessions = sessionLibrary.filter { 
-            $0.level.lowercased() == "elite" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        sprintSessions = eliteIntermediate + allAdvanced + eliteSessions
-        print("✅ ELITE: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
-        
-    default:
-        // FALLBACK: Still supports 1,2,3,4,5,6,7 days
-        sprintSessions = sessionLibrary.filter { 
-            $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
-        }.map { convertSessionLibraryToComprehensive($0) }
-        print("⚠️ FALLBACK: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
-    }
-    
-    // CRITICAL: Add recovery sessions for ALL levels and ALL frequencies (1-7 days)
-    // This ensures every level can handle any frequency with proper recovery
-    let recoverySessions = getRecoverySessionsForLevel(userLevel)
-    let activeRecoverySessions = getActiveRecoverySessionsForLevel(userLevel)
-    
-    print("🔄 Recovery sessions: \(recoverySessions.count) full recovery, \(activeRecoverySessions.count) active recovery")
-    
-    // Create weekly program structure - SUPPORTS ALL FREQUENCIES FOR ALL LEVELS
-    return createWeeklyProgram(
-        sprintSessions: sprintSessions,
-        recoverySessions: recoverySessions,
-        activeRecoverySessions: activeRecoverySessions,
-        frequency: frequency,
-        userLevel: userLevel
-    )
-}
-
-// UNIVERSAL FREQUENCY SUPPORT: Create proper weekly program structure for ANY level with ANY frequency (1-7 days)
-// RULE IMPLEMENTATION: Beginner(1-7), Intermediate(1-7), Advanced(1-7), Elite(1-7)
-func createWeeklyProgram(
-    sprintSessions: [ComprehensiveSprintSession],
-    recoverySessions: [ComprehensiveSprintSession],
-    activeRecoverySessions: [ComprehensiveSprintSession],
-    frequency: Int,
-    userLevel: String
-) -> [ComprehensiveSprintSession] {
-    // ...
-}
-
-// COMPREHENSIVE SESSION VALIDATION: Ensure correct generation for ALL levels and frequencies
-func validateSessionGeneration(sessions: [TrainingSession], userLevel: String, frequency: Int) {
-    // Implementation
-}
-
-// RULE VALIDATION: Ensure ALL levels support ALL frequencies (1-7 days)
-func validateUniversalFrequencySupport(level: String, frequency: Int, programSize: Int) {
-    // Implementation
-}
-
-// Get recovery sessions for user level from SessionLibrary
-func getRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
-    // Implementation
-}
-
-// Get active recovery sessions for user level from SessionLibrary  
-func getActiveRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
-    // Implementation
-    return []
-}
-
-// MARK: - TrainingView Implementation
-
-// MARK: - TrainingView Extensions
-
-// Session cache implementation will be moved to the extension at the bottom
-                // Create a new session with stable ID and cache it
-                let stableSession = TrainingSession(
-                    id: TrainingView.stableSessionID(week: session.week, day: session.day),
-                    week: session.week,
-                    day: session.day,
-                    type: session.type,
-                    focus: session.focus,
-                    sprints: session.sprints,
-                    accessoryWork: session.accessoryWork,
-                    notes: session.notes
-                )
-                TrainingView.sessionCache[cacheKey] = stableSession
-                cachedSessions.append(stableSession)
-            }
+        if userLevel != savedLevel {
+            print("⚠️ TrainingView: MISMATCH! Profile level (\(userLevel)) != UserDefaults level (\(savedLevel))")
         }
         
-        return cachedSessions
+        // Use UnifiedSessionGenerator to ensure iPhone/Watch synchronization
+        print("🔄 TrainingView: Using UnifiedSessionGenerator for session consistency")
+        let unifiedGenerator = UnifiedSessionGenerator.shared
+        let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
+            userLevel: userLevel,
+            frequency: frequency
+        )
+        
+        print("📱 TrainingView: Generated \(unifiedSessions.count) unified sessions")
+        print("📱 TrainingView: Sessions will match Watch exactly for W1/D1 through W12/D\(frequency)")
+        
+        return unifiedSessions
+    }
+
+    // Get sessions appropriate for user level with proper progression and recovery sessions
+    func getSessionsForUserLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        let frequency = userProfileVM.profile.frequency
+    
+        print("🎯 Session Generation: Level=\(userLevel), Frequency=\(frequency) days")
+        print("📋 RULE: \(userLevel) supports frequencies 1,2,3,4,5,6,7 days")
+        
+        // Get sprint sessions based on level - ALL LEVELS GET FULL SESSION VARIETY
+        var sprintSessions: [ComprehensiveSprintSession] = []
+        
+        switch userLevel.lowercased() {
+            case "beginner":
+                // BEGINNER: Supports 1,2,3,4,5,6,7 days with appropriate difficulty
+                let beginnerSessions = sessionLibrary.filter { 
+                    $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                let earlyIntermediate = sessionLibrary.filter { 
+                    $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance <= 60 
+                }.prefix(5).map { convertSessionLibraryToComprehensive($0) }
+                sprintSessions = beginnerSessions + Array(earlyIntermediate)
+                print("✅ BEGINNER: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
+        
+            case "intermediate":
+                // INTERMEDIATE: Supports 1,2,3,4,5,6,7 days with moderate difficulty
+                let intermediateSessions = sessionLibrary.filter { 
+                    $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                let earlyAdvanced = sessionLibrary.filter { 
+                    $0.level.lowercased() == "advanced" && $0.sessionType == .sprint && $0.distance <= 80 
+                }.prefix(8).map { convertSessionLibraryToComprehensive($0) }
+                sprintSessions = intermediateSessions + Array(earlyAdvanced)
+                print("✅ INTERMEDIATE: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
+                
+            case "advanced":
+                // ADVANCED: Supports 1,2,3,4,5,6,7 days with high difficulty
+                let advancedSessions = sessionLibrary.filter { 
+                    $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                let lateIntermediate = sessionLibrary.filter { 
+                    $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 50 
+                }.suffix(5).map { convertSessionLibraryToComprehensive($0) }
+                sprintSessions = Array(lateIntermediate) + advancedSessions
+                print("✅ ADVANCED: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
+        
+            case "elite":
+                // ELITE: Supports 1,2,3,4,5,6,7 days with maximum difficulty
+                let allAdvanced = sessionLibrary.filter { 
+                    $0.level.lowercased() == "advanced" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                let eliteIntermediate = sessionLibrary.filter { 
+                    $0.level.lowercased() == "intermediate" && $0.sessionType == .sprint && $0.distance >= 60 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                // Get actual Elite sessions from the new library
+                let eliteSessions = sessionLibrary.filter { 
+                    $0.level.lowercased() == "elite" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                sprintSessions = eliteIntermediate + allAdvanced + eliteSessions
+                print("✅ ELITE: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
+                
+            default:
+                // FALLBACK: Still supports 1,2,3,4,5,6,7 days
+                sprintSessions = sessionLibrary.filter { 
+                    $0.level.lowercased() == "beginner" && $0.sessionType == .sprint 
+                }.map { convertSessionLibraryToComprehensive($0) }
+                print("⚠️ FALLBACK: Generated \(sprintSessions.count) sessions for \(frequency) days/week")
+        }
+    
+        // CRITICAL: Add recovery sessions for ALL levels and ALL frequencies (1-7 days)
+        // This ensures every level can handle any frequency with proper recovery
+        let recoverySessions = getRecoverySessionsForLevel(userLevel)
+        let activeRecoverySessions = getActiveRecoverySessionsForLevel(userLevel)
+        
+        print("🔄 Recovery sessions: \(recoverySessions.count) full recovery, \(activeRecoverySessions.count) active recovery")
+        
+        // Create weekly program structure - SUPPORTS ALL FREQUENCIES FOR ALL LEVELS
+        return createWeeklyProgram(
+            sprintSessions: sprintSessions,
+            recoverySessions: recoverySessions,
+            activeRecoverySessions: activeRecoverySessions,
+            frequency: frequency,
+            userLevel: userLevel
+        )
+}
+
+    // Create weekly program structure for any level with any frequency (1-7 days)
+    func createWeeklyProgram(
+        sprintSessions: [ComprehensiveSprintSession],
+        recoverySessions: [ComprehensiveSprintSession],
+        activeRecoverySessions: [ComprehensiveSprintSession],
+        frequency: Int,
+        userLevel: String
+    ) -> [ComprehensiveSprintSession] {
+        // Implementation here
+        return []
+    }
+
+    // Validate session generation for all levels and frequencies
+    func validateSessionGeneration(sessions: [TrainingSession], userLevel: String, frequency: Int) {
+        // Implementation
     }
     
-    static func stableSessionID(week: Int, day: Int) -> UUID {
-        // Create a deterministic UUID string based on week and day, padded to fixed length
-        // Format: "0001-0002-000000000000"
-        let weekString = String(format: "%04d", week)
-        let dayString = String(format: "%04d", day)
-        let baseString = "00000000-0000-\(weekString)-\(dayString)-000000000000"
-        return UUID(uuidString: baseString) ?? UUID()
+    // Validate that all levels support all frequencies (1-7 days)
+    func validateUniversalFrequencySupport(level: String, frequency: Int, programSize: Int) {
+        // Implementation
+    }
+
+    // Get recovery sessions for user level from SessionLibrary
+    func getRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        // Implementation
+        return []
+    }
+    
+    // Get active recovery sessions for user level from SessionLibrary  
+    func getActiveRecoverySessionsForLevel(_ userLevel: String) -> [ComprehensiveSprintSession] {
+        // Implementation
+        return []
     }
 }
 
@@ -987,109 +954,8 @@ struct SessionCardDashboardView: View {
     }
 }
 
-// MARK: - HamburgerSideMenuWithProfile
-struct HamburgerSideMenuWithProfile: View {
-    @Binding var showMenu: Bool
-    var profile: UserProfile
-    var onSelect: (MenuSelection) -> Void
-    
-    var body: some View {
-        ZStack(alignment: .leading) {
-            Color.brandBackground.opacity(0.4)
-                .ignoresSafeArea()
-                .onTapGesture { withAnimation { showMenu = false } }
-            VStack(alignment: .leading, spacing: 0) {
-                Spacer().frame(height: 60)
-                Group {
-                    Button(action: { onSelect(.main) }) {
-                        SideMenuRow(icon: "bolt.fill", label: "Sprint 40 yards")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(.history) }) {
-                        SideMenuRow(icon: "clock.arrow.circlepath", label: "History")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(.leaderboard) }) {
-                        SideMenuRow(icon: "chart.bar.xaxis", label: "Leaderboard")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(.smartHub) }) {
-                        SideMenuRow(icon: "lightbulb", label: "40 Yard Smart")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(.settings) }) {
-                        SideMenuRow(icon: "gearshape", label: "Settings")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    Button(action: { onSelect(.helpInfo) }) {
-                        SideMenuRow(icon: "questionmark.circle", label: "Help & info")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                Divider().background(Color.white.opacity(0.2))
-                if let _ = MenuSelection.self as? MenuSelection.Type {
-                    Button(action: { onSelect(.shareWithTeammates) }) {
-                        SideMenuRow(icon: "person.3.fill", label: "Share with Team Mates")
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                    // Pro Features button dead centre between Share With Team Mates and Accelerate
-                    Spacer(minLength: 24)
-                    HStack {
-                        Spacer()
-                        Button(action: { onSelect(.proFeatures) }) {
-                            SideMenuRow(icon: "lock.shield", label: "Pro Features", color: .yellow)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                        Spacer()
-                    }
-                    .padding(.vertical, 8)
-                }
-                }
-                Spacer()
-                // Accelerate row
-                HStack {
-                    SideMenuRow(icon: "hare.fill", label: "Accelerate")
-                }
-                .padding(.horizontal, 24)
-                // Social icons centered below Accelerate
-                HStack(spacing: 24) {
-                    Image(systemName: "f.circle.fill").foregroundColor(.white)
-                    Image(systemName: "camera.circle.fill").foregroundColor(.white)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.bottom, 32)
-                .padding(.top, 4)
-                .alignmentGuide(.leading) { d in d[.leading] }
-            }
-            .frame(width: 280)
-            .background(
-                LinearGradient(gradient: Gradient(colors: [Color.brandAccent, Color.brandTertiary]), startPoint: .top, endPoint: .bottom)
-                    .opacity(0.98)
-            )
-            .edgesIgnoringSafeArea(.vertical)
-        }
-    }
-}
-
 // MARK: - SideMenuRow
-struct SideMenuRow: View {
-    let icon: String
-    let label: String
-    let color: Color?
-    
-    var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(color ?? .white)
-            
-            Text(label)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.white)
-        }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 16)
-    }
-}
+// Moved to SideMenuRow.swift
 
 // MARK: - TrainingProgramCarousel
 struct TrainingProgramCarousel: View {
@@ -1430,5 +1296,3 @@ struct FeatureTag: View {
         objectWillChange.send()
     }
 }
-
-// MARK: - TrainingView Extensions

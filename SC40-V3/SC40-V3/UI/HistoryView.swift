@@ -1,0 +1,928 @@
+import SwiftUI
+
+struct HistoryView: View {
+    @ObservedObject private var historyManager = HistoryManager.shared
+    @State private var selectedFilter: HistoryFilter = .all
+    @State private var showingExportSheet = false
+    
+    private var filteredSessions: [CompletedSession] {
+        historyManager.getSessionsForFilter(selectedFilter)
+    }
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                // Background
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color.black.opacity(0.95),
+                        Color.blue.opacity(0.3),
+                        Color.purple.opacity(0.2)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    // Progress Summary Header
+                    ProgressSummaryHeaderView(analytics: historyManager.analytics)
+                        .padding(.top, 8)
+                    
+                    // Filter Picker
+                    FilterPickerView(selectedFilter: $selectedFilter)
+                        .padding(.horizontal)
+                        .padding(.top, 16)
+                    
+                    // Session History List
+                    if filteredSessions.isEmpty {
+                        EmptyHistoryView()
+                    } else {
+                        ScrollView {
+                            LazyVStack(spacing: 12) {
+                                ForEach(filteredSessions) { session in
+                                    CompletedSessionCardNew(session: session)
+                                }
+                            }
+                            .padding(.horizontal)
+                            .padding(.top, 16)
+                        }
+                    }
+                    
+                    Spacer()
+                }
+            }
+            .navigationTitle("Training History")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: { showingExportSheet = true }) {
+                        Image(systemName: "square.and.arrow.up")
+                            .foregroundColor(.white)
+                    }
+                }
+            }
+            #endif
+        }
+        .sheet(isPresented: $showingExportSheet) {
+            ExportHistoryView(sessions: filteredSessions.map { session in
+                [
+                    "id": session.id.uuidString,
+                    "date": session.completionDate,
+                    "type": session.sessionType,
+                    "focus": session.focus,
+                    "sprintTimes": session.sprintTimes,
+                    "notes": session.notes ?? "",
+                    "location": session.location ?? "",
+                    "weather": session.weather ?? ""
+                ]
+            })
+        }
+    }
+    
+}
+
+// MARK: - Progress Summary Header View
+
+struct ProgressSummaryHeaderView: View {
+    let analytics: SessionAnalytics
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            Text("Training Progress")
+                .font(.title2.bold())
+                .foregroundColor(.white)
+            
+            HStack(spacing: 20) {
+                ProgressStat(
+                    title: "Sessions",
+                    value: "\(analytics.totalSessions)",
+                    icon: "figure.run",
+                    color: .blue
+                )
+                
+                ProgressStat(
+                    title: "Personal Best",
+                    value: analytics.personalBest != nil ? String(format: "%.2fs", analytics.personalBest!) : "N/A",
+                    icon: "stopwatch",
+                    color: .green
+                )
+                
+                ProgressStat(
+                    title: "This Week",
+                    value: "\(analytics.thisWeekSessions)",
+                    icon: "calendar",
+                    color: .orange
+                )
+                
+                ProgressStat(
+                    title: "Distance",
+                    value: "\(Int(analytics.totalDistance))yd",
+                    icon: "ruler",
+                    color: .purple
+                )
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal)
+    }
+}
+
+// MARK: - Filter Picker View
+
+struct FilterPickerView: View {
+    @Binding var selectedFilter: HistoryFilter
+    
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(HistoryFilter.allCases, id: \.self) { filter in
+                    Button(action: {
+                        selectedFilter = filter
+                    }) {
+                        Text(filter.rawValue)
+                            .font(.subheadline.weight(.medium))
+                            .foregroundColor(selectedFilter == filter ? .black : .white)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(selectedFilter == filter ? Color.yellow : Color.white.opacity(0.2))
+                            )
+                    }
+                }
+            }
+            .padding(.horizontal, 20)
+        }
+    }
+}
+
+struct ProgressStat: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.title2)
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.headline.bold())
+                .foregroundColor(.white)
+            
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.white.opacity(0.7))
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Completed Session Card (New)
+
+struct CompletedSessionCardNew: View {
+    let session: CompletedSession
+    
+    private var sessionTitle: String {
+        if session.sessionType == "Time Trial" {
+            return "Time Trial"
+        } else if session.week == 0 && session.day == 0 {
+            return "Watch Session"
+        } else {
+            return "Week \(session.week), Day \(session.day)"
+        }
+    }
+    
+    private var sessionDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d, yyyy"
+        return formatter.string(from: session.completionDate)
+    }
+    
+    private var sessionTime: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: session.completionDate)
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Header with session info
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(sessionTitle)
+                            .font(.headline.bold())
+                            .foregroundColor(.white)
+                        
+                        // Session type indicator
+                        if session.sessionType == "Time Trial" {
+                            Image(systemName: "stopwatch.fill")
+                                .foregroundColor(.purple)
+                        } else {
+                            Image(systemName: "figure.run")
+                                .foregroundColor(.blue)
+                        }
+                        
+                        // Completion status indicator
+                        if session.completionType == .stoppedPartway {
+                            Image(systemName: "pause.circle.fill")
+                                .foregroundColor(.orange)
+                        } else {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundColor(.green)
+                        }
+                        
+                        // Watch indicator for Session 0
+                        if session.week == 0 && session.day == 0 {
+                            Image(systemName: "applewatch")
+                                .foregroundColor(.green)
+                        }
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(session.sessionType)
+                            .font(.subheadline)
+                            .foregroundColor(.blue.opacity(0.8))
+                        
+                        Text(session.completionType.rawValue)
+                            .font(.caption)
+                            .foregroundColor(session.completionType == .completed ? .green : .orange)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 2) {
+                    Text(sessionDate)
+                        .font(.caption.weight(.medium))
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    if !sessionTime.isEmpty {
+                        Text(sessionTime)
+                            .font(.caption2)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                }
+            }
+            
+            // Performance Summary
+            PerformanceSummaryViewNew(session: session)
+            
+            // Training Times Display
+            if !session.sprintTimes.isEmpty {
+                TrainingTimesViewNew(session: session)
+            }
+            
+            // Session Conditions (Weather, Location, etc.)
+            SessionEnvironmentViewNew(session: session)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                )
+        )
+    }
+}
+
+// MARK: - Performance Summary View
+
+struct PerformanceSummaryView: View {
+    let session: [String: Any]
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Best Time
+            if let bestTime = session["bestTime"] as? Double, bestTime > 0 {
+                StatBadge(
+                    title: "Best Time",
+                    value: String(format: "%.2fs", bestTime),
+                    icon: "stopwatch.fill",
+                    color: .green
+                )
+            }
+            
+            // Average Time
+            if let averageTime = session["averageTime"] as? Double, averageTime > 0 {
+                StatBadge(
+                    title: "Average",
+                    value: String(format: "%.2fs", averageTime),
+                    icon: "chart.bar.fill",
+                    color: .blue
+                )
+            }
+            
+            // Total Reps
+            if let totalReps = session["totalReps"] as? Int {
+                StatBadge(
+                    title: "Total Reps",
+                    value: "\(totalReps)",
+                    icon: "number",
+                    color: .orange
+                )
+            }
+            
+            Spacer()
+        }
+    }
+}
+
+// MARK: - Training Times View
+
+struct TrainingTimesView: View {
+    let drillTimes: [Double]
+    let strideTimes: [Double]
+    let sprintTimes: [Double]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "stopwatch")
+                    .foregroundColor(.yellow)
+                Text("Training Times")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+            }
+            
+            VStack(spacing: 8) {
+                // Drill Times
+                if !drillTimes.isEmpty {
+                    TimePhaseRow(
+                        title: "Drills",
+                        times: drillTimes,
+                        color: .indigo
+                    )
+                }
+                
+                // Stride Times
+                if !strideTimes.isEmpty {
+                    TimePhaseRow(
+                        title: "Strides",
+                        times: strideTimes,
+                        color: .purple
+                    )
+                }
+                
+                // Sprint Times
+                if !sprintTimes.isEmpty {
+                    TimePhaseRow(
+                        title: "Sprints",
+                        times: sprintTimes,
+                        color: .green
+                    )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+// MARK: - Time Phase Row
+
+struct TimePhaseRow: View {
+    let title: String
+    let times: [Double]
+    let color: Color
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundColor(color)
+                
+                Spacer()
+                
+                if let bestTime = times.min() {
+                    Text("Best: \(String(format: "%.2fs", bestTime))")
+                        .font(.caption2)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: min(times.count, 4)), spacing: 6) {
+                ForEach(Array(times.enumerated()), id: \.offset) { index, time in
+                    Text(String(format: "%.2f", time))
+                        .font(.caption2.monospacedDigit())
+                        .foregroundColor(time == times.min() ? .yellow : .white.opacity(0.8))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.white.opacity(0.1))
+                        )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Session Environment View
+
+struct SessionEnvironmentView: View {
+    let session: [String: Any]
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "location.circle")
+                    .foregroundColor(.cyan)
+                Text("Session Environment")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                // Weather
+                if let weather = getWeatherInfo() {
+                    EnvironmentBadge(
+                        icon: weather.icon,
+                        title: "Weather",
+                        value: weather.condition,
+                        color: .cyan
+                    )
+                }
+                
+                // Temperature
+                if let temperature = getTemperature() {
+                    EnvironmentBadge(
+                        icon: "thermometer",
+                        title: "Temperature",
+                        value: temperature,
+                        color: .orange
+                    )
+                }
+                
+                // Location
+                if let location = getLocation() {
+                    EnvironmentBadge(
+                        icon: "location",
+                        title: "Location",
+                        value: location,
+                        color: .purple
+                    )
+                }
+                
+                // Time of Day
+                if let timeOfDay = getTimeOfDay() {
+                    EnvironmentBadge(
+                        icon: "clock",
+                        title: "Time",
+                        value: timeOfDay,
+                        color: .yellow
+                    )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+    
+    private func getWeatherInfo() -> (condition: String, icon: String)? {
+        // Simulate weather data - in production this would come from session data
+        let conditions = [
+            ("Clear", "sun.max"),
+            ("Cloudy", "cloud"),
+            ("Partly Cloudy", "cloud.sun"),
+            ("Windy", "wind")
+        ]
+        return conditions.randomElement()
+    }
+    
+    private func getTemperature() -> String? {
+        // Simulate temperature - in production this would come from session data
+        return "\(Int.random(in: 60...85))°F"
+    }
+    
+    private func getLocation() -> String? {
+        // Simulate location - in production this would come from session data
+        let locations = ["Track", "Field", "Park", "Gym", "Stadium"]
+        return locations.randomElement()
+    }
+    
+    private func getTimeOfDay() -> String? {
+        if let dateString = session["date"] as? String,
+           let date = ISO8601DateFormatter().date(from: dateString) {
+            let hour = Calendar.current.component(.hour, from: date)
+            switch hour {
+            case 5..<12: return "Morning"
+            case 12..<17: return "Afternoon"
+            case 17..<21: return "Evening"
+            default: return "Night"
+            }
+        }
+        return nil
+    }
+}
+
+// MARK: - Supporting Components
+
+struct StatBadge: View {
+    let title: String
+    let value: String
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(color)
+            
+            Text(value)
+                .font(.caption.bold().monospacedDigit())
+                .foregroundColor(.white)
+            
+            Text(title)
+                .font(.caption2)
+                .foregroundColor(.white.opacity(0.7))
+        }
+        .frame(minWidth: 60)
+        .padding(.vertical, 8)
+        .padding(.horizontal, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white.opacity(0.1))
+        )
+    }
+}
+
+struct EnvironmentBadge: View {
+    let icon: String
+    let title: String
+    let value: String
+    let color: Color
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(color)
+                .frame(width: 16)
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.6))
+                
+                Text(value)
+                    .font(.caption.weight(.medium))
+                    .foregroundColor(.white)
+            }
+            
+            Spacer()
+        }
+        .padding(8)
+        .background(
+            RoundedRectangle(cornerRadius: 6)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+// MARK: - Export History View
+
+struct ExportHistoryView: View {
+    let sessions: [[String: Any]]
+    @Environment(\.presentationMode) var presentationMode
+    
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Image(systemName: "square.and.arrow.up.circle.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(.blue)
+                
+                VStack(spacing: 8) {
+                    Text("Export Training History")
+                        .font(.title2.bold())
+                        .foregroundColor(.white)
+                    
+                    Text("Export your training data to share with coaches or for analysis")
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                }
+                
+                VStack(spacing: 12) {
+                    Button("Export as CSV") {
+                        exportAsCSV()
+                    }
+                    .buttonStyle(ExportButtonStyle())
+                    
+                    Button("Share Summary") {
+                        shareSummary()
+                    }
+                    .buttonStyle(ExportButtonStyle())
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .background(
+                LinearGradient(
+                    colors: [Color.black, Color.blue.opacity(0.3)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .navigationTitle("Export Data")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
+            }
+            #endif
+        }
+    }
+    
+    private func exportAsCSV() {
+        // Implementation for CSV export
+        presentationMode.wrappedValue.dismiss()
+    }
+    
+    private func shareSummary() {
+        // Implementation for sharing summary
+        presentationMode.wrappedValue.dismiss()
+    }
+}
+
+struct ExportButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.headline)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .frame(height: 50)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.blue.opacity(configuration.isPressed ? 0.7 : 1.0))
+            )
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+    }
+}
+
+
+// MARK: - Empty History View
+
+struct EmptyHistoryView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "clock.arrow.circlepath")
+                .font(.system(size: 60))
+                .foregroundColor(.white.opacity(0.6))
+            
+            VStack(spacing: 8) {
+                Text("No Training History Yet")
+                    .font(.title2.bold())
+                    .foregroundColor(.white)
+                
+                Text("Complete your first training session to see your progress here!")
+                    .font(.body)
+                    .foregroundColor(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+            
+            VStack(spacing: 12) {
+                Text("After each session, you'll see:")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white.opacity(0.9))
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    HistoryFeatureRow(icon: "stopwatch", text: "Sprint times and personal bests")
+                    HistoryFeatureRow(icon: "cloud.sun", text: "Weather conditions")
+                    HistoryFeatureRow(icon: "location", text: "Training location")
+                    HistoryFeatureRow(icon: "note.text", text: "Session notes and insights")
+                }
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.white.opacity(0.1))
+            )
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+    }
+}
+
+struct HistoryFeatureRow: View {
+    let icon: String
+    let text: String
+    
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+                .foregroundColor(.blue)
+                .frame(width: 20)
+            
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.8))
+        }
+    }
+}
+
+// MARK: - Date Formatter Extension
+
+// MARK: - New Performance Components
+
+struct PerformanceSummaryViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Best Time
+            if let bestTime = session.bestTime {
+                StatBadge(
+                    title: "Best Time",
+                    value: String(format: "%.2fs", bestTime),
+                    icon: "stopwatch.fill",
+                    color: .green
+                )
+            }
+            
+            // Average Time
+            if let averageTime = session.averageTime {
+                StatBadge(
+                    title: "Average",
+                    value: String(format: "%.2fs", averageTime),
+                    icon: "chart.bar.fill",
+                    color: .blue
+                )
+            }
+            
+            // Completion Status
+            StatBadge(
+                title: "Completed",
+                value: "\(session.completedSprints)/\(session.totalSprints)",
+                icon: session.completionType == .completed ? "checkmark.circle" : "pause.circle",
+                color: session.completionType == .completed ? .green : .orange
+            )
+            
+            Spacer()
+        }
+    }
+}
+
+struct TrainingTimesViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: "stopwatch")
+                    .foregroundColor(.yellow)
+                Text("Sprint Times")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                if session.completionType == .stoppedPartway {
+                    Text("Partial Session")
+                        .font(.caption)
+                        .foregroundColor(.orange)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 2)
+                        .background(Color.orange.opacity(0.2))
+                        .cornerRadius(4)
+                }
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: min(session.sprintTimes.count, 4)), spacing: 6) {
+                ForEach(Array(session.sprintTimes.enumerated()), id: \.offset) { index, time in
+                    Text(String(format: "%.2f", time))
+                        .font(.caption2.monospacedDigit())
+                        .foregroundColor(time == session.sprintTimes.min() ? .yellow : .white.opacity(0.8))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(Color.white.opacity(0.1))
+                        )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+struct SessionEnvironmentViewNew: View {
+    let session: CompletedSession
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "location.circle")
+                    .foregroundColor(.cyan)
+                Text("Session Details")
+                    .font(.subheadline.bold())
+                    .foregroundColor(.white)
+            }
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 8) {
+                // Location
+                if let location = session.location {
+                    EnvironmentBadge(
+                        icon: "location",
+                        title: "Location",
+                        value: location,
+                        color: .purple
+                    )
+                }
+                
+                // Weather
+                if let weather = session.weather {
+                    EnvironmentBadge(
+                        icon: "cloud.sun",
+                        title: "Weather",
+                        value: weather,
+                        color: .cyan
+                    )
+                }
+                
+                // Temperature
+                if let temperature = session.temperature {
+                    EnvironmentBadge(
+                        icon: "thermometer",
+                        title: "Temperature",
+                        value: "\(Int(temperature))°F",
+                        color: .orange
+                    )
+                }
+                
+                // Focus Area
+                EnvironmentBadge(
+                    icon: "target",
+                    title: "Focus",
+                    value: session.focus,
+                    color: .yellow
+                )
+            }
+            
+            // Notes
+            if let notes = session.notes, !notes.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Notes")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(.white.opacity(0.8))
+                    
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                        .padding(8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(Color.white.opacity(0.05))
+                        )
+                }
+            }
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.white.opacity(0.05))
+        )
+    }
+}
+
+extension DateFormatter {
+    static let sessionDate: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter
+    }()
+}

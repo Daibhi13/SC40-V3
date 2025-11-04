@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Sprint Coach 40</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>CFBundleName</key>
+	<string>Sprint Coach 40</string>
+	<key>CFBundlePackageType</key>
+	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fbYOUR_FACEBOOK_APP_ID</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.YOUR_GOOGLE_CLIENT_ID</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sprintcoach40</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>YOUR_FACEBOOK_APP_ID</string>
+	<key>FacebookClientToken</key>
+	<string>YOUR_FACEBOOK_CLIENT_TOKEN</string>
+	<key>FacebookDisplayName</key>
+	<string>Sprint Coach 40</string>
+	<key>GIDClientID</key>
+	<string>YOUR_GOOGLE_CLIENT_ID</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+		<string>instagram</string>
+		<string>instagram-stories</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<false/>
+	</dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Sprint Coach reads your workout data to track progress and sync with your Apple Watch.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Sprint Coach saves your sprint workouts and heart rate data to the Health app.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Sprint Coach uses GPS to accurately track your sprint times and distances during workouts.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Sprint Coach needs access to your location in the background to accurately track sprint times and distances during workouts without interruption.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Sprint Coach can use the microphone for voice commands during outdoor workouts.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Sprint Coach uses motion data to enhance workout tracking accuracy.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Sprint Coach can recognize voice commands for hands-free workout control.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app tracks usage to improve your experience.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+		<string>location</string>
+		<string>processing</string>
+		<string>fetch</string>
+		<string>workout-processing</string>
+		<string>background-audio</string>
+	</array>
+	<key>UIFileSharingEnabled</key>
+	<false/>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchScreenBackground</string>
+		<key>UIImageName</key>
+		<string>LaunchImage</string>
+	</dict>
+	<key>UIPrerenderedIcon</key>
+	<false/>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER).watchkitapp</string>
+	<key>WKWatchConnectivityEnabled</key>
+	<true/>
+</dict>
+</plist>

@@ -6,20 +6,61 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		068261AE2EBA3018003AE48B /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		068261AC2EBA3018003AE48B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0682618A2EBA3007003AE48B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 068261A32EBA3017003AE48B;
+			remoteInfo = "SC40-V3-W Watch App Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		068261B22EBA3018003AE48B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				068261AE2EBA3018003AE48B /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		06825EF02EBA2752003AE48B /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		068261922EBA3007003AE48B /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		06825EF22EBA2752003AE48B /* SC40-V3 */ = {
+		068261942EBA3007003AE48B /* SC40-V3 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "SC40-V3";
+			sourceTree = "<group>";
+		};
+		068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "SC40-V3-W Watch App Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		06825EED2EBA2752003AE48B /* Frameworks */ = {
+		0682618F2EBA3007003AE48B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		068261A12EBA3017003AE48B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,18 +70,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		06825EE72EBA2752003AE48B = {
+		068261892EBA3007003AE48B = {
 			isa = PBXGroup;
 			children = (
-				06825EF22EBA2752003AE48B /* SC40-V3 */,
-				06825EF12EBA2752003AE48B /* Products */,
+				068261942EBA3007003AE48B /* SC40-V3 */,
+				068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
+				068261932EBA3007003AE48B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		06825EF12EBA2752003AE48B /* Products */ = {
+		068261932EBA3007003AE48B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				06825EF02EBA2752003AE48B /* SC40-V3.app */,
+				068261922EBA3007003AE48B /* SC40-V3.app */,
+				068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,64 +91,99 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		06825EEF2EBA2752003AE48B /* SC40-V3 */ = {
+		068261912EBA3007003AE48B /* SC40-V3 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 06825EFB2EBA2752003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */;
+			buildConfigurationList = 0682619D2EBA3008003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */;
 			buildPhases = (
-				06825EEC2EBA2752003AE48B /* Sources */,
-				06825EED2EBA2752003AE48B /* Frameworks */,
-				06825EEE2EBA2752003AE48B /* Resources */,
+				0682618E2EBA3007003AE48B /* Sources */,
+				0682618F2EBA3007003AE48B /* Frameworks */,
+				068261902EBA3007003AE48B /* Resources */,
+				068261B22EBA3018003AE48B /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				068261AD2EBA3018003AE48B /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				068261942EBA3007003AE48B /* SC40-V3 */,
+			);
+			name = "SC40-V3";
+			packageProductDependencies = (
+			);
+			productName = "SC40-V3";
+			productReference = 068261922EBA3007003AE48B /* SC40-V3.app */;
+			productType = "com.apple.product-type.application";
+		};
+		068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 068261AF2EBA3018003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */;
+			buildPhases = (
+				068261A02EBA3017003AE48B /* Sources */,
+				068261A12EBA3017003AE48B /* Frameworks */,
+				068261A22EBA3017003AE48B /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				06825EF22EBA2752003AE48B /* SC40-V3 */,
+				068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
 			);
-			name = "SC40-V3";
+			name = "SC40-V3-W Watch App Watch App";
 			packageProductDependencies = (
 			);
-			productName = "SC40-V3";
-			productReference = 06825EF02EBA2752003AE48B /* SC40-V3.app */;
+			productName = "SC40-V3-W Watch App Watch App";
+			productReference = 068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		06825EE82EBA2752003AE48B /* Project object */ = {
+		0682618A2EBA3007003AE48B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					06825EEF2EBA2752003AE48B = {
+					068261912EBA3007003AE48B = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					068261A32EBA3017003AE48B = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
 			};
-			buildConfigurationList = 06825EEB2EBA2752003AE48B /* Build configuration list for PBXProject "SC40-V3" */;
+			buildConfigurationList = 0682618D2EBA3007003AE48B /* Build configuration list for PBXProject "SC40-V3" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 06825EE72EBA2752003AE48B;
+			mainGroup = 068261892EBA3007003AE48B;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 06825EF12EBA2752003AE48B /* Products */;
+			productRefGroup = 068261932EBA3007003AE48B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				06825EEF2EBA2752003AE48B /* SC40-V3 */,
+				068261912EBA3007003AE48B /* SC40-V3 */,
+				068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		06825EEE2EBA2752003AE48B /* Resources */ = {
+		068261902EBA3007003AE48B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		068261A22EBA3017003AE48B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,7 +193,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		06825EEC2EBA2752003AE48B /* Sources */ = {
+		0682618E2EBA3007003AE48B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		068261A02EBA3017003AE48B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -124,8 +209,16 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		068261AD2EBA3018003AE48B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */;
+			targetProxy = 068261AC2EBA3018003AE48B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		06825EF92EBA2752003AE48B /* Debug */ = {
+		0682619B2EBA3008003AE48B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -189,7 +282,7 @@
 			};
 			name = Debug;
 		};
-		06825EFA2EBA2752003AE48B /* Release */ = {
+		0682619C2EBA3008003AE48B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -246,7 +339,7 @@
 			};
 			name = Release;
 		};
-		06825EFC2EBA2752003AE48B /* Debug */ = {
+		0682619E2EBA3008003AE48B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -278,7 +371,7 @@
 			};
 			name = Debug;
 		};
-		06825EFD2EBA2752003AE48B /* Release */ = {
+		0682619F2EBA3008003AE48B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -310,28 +403,103 @@
 			};
 			name = Release;
 		};
+		068261B02EBA3018003AE48B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H65MV3U65H;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SC40-V3-W Watch App";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		068261B12EBA3018003AE48B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H65MV3U65H;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "SC40-V3-W Watch App";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3.watchkitapp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		06825EEB2EBA2752003AE48B /* Build configuration list for PBXProject "SC40-V3" */ = {
+		0682618D2EBA3007003AE48B /* Build configuration list for PBXProject "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06825EF92EBA2752003AE48B /* Debug */,
-				06825EFA2EBA2752003AE48B /* Release */,
+				0682619B2EBA3008003AE48B /* Debug */,
+				0682619C2EBA3008003AE48B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		06825EFB2EBA2752003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
+		0682619D2EBA3008003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06825EFC2EBA2752003AE48B /* Debug */,
-				06825EFD2EBA2752003AE48B /* Release */,
+				0682619E2EBA3008003AE48B /* Debug */,
+				0682619F2EBA3008003AE48B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		068261AF2EBA3018003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				068261B02EBA3018003AE48B /* Debug */,
+				068261B12EBA3018003AE48B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 06825EE82EBA2752003AE48B /* Project object */;
+	rootObject = 0682618A2EBA3007003AE48B /* Project object */;
 }

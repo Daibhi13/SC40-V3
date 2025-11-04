@@ -6,241 +6,41 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		06656B2B2EAF9EA300A52299 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */; };
-		06656B2C2EAF9EA400A52299 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B2D2EAF9EA400A52299 /* CoreLocation.framework */; };
-		06656B2E2EAF9EA500A52299 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B2F2EAF9EA500A52299 /* HealthKit.framework */; };
-		06656B302EAF9EA600A52299 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06656B312EAF9EA600A52299 /* CoreLocation.framework */; };
-		066584322EAFA73400A52299 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 066584312EAFA73400A52299 /* Algorithms */; };
-		066584392EAFA8D200A52299 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 066584382EAFA8D200A52299 /* GoogleSignIn */; };
-		0665843B2EAFA8D200A52299 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0665843A2EAFA8D200A52299 /* GoogleSignInSwift */; };
-		0665843D2EAFA8E900A52299 /* FacebookAEM in Frameworks */ = {isa = PBXBuildFile; productRef = 0665843C2EAFA8E900A52299 /* FacebookAEM */; };
-		0665843F2EAFA8E900A52299 /* FacebookBasics in Frameworks */ = {isa = PBXBuildFile; productRef = 0665843E2EAFA8E900A52299 /* FacebookBasics */; };
-		066584412EAFA8E900A52299 /* FacebookCore in Frameworks */ = {isa = PBXBuildFile; productRef = 066584402EAFA8E900A52299 /* FacebookCore */; };
-		066584432EAFA8E900A52299 /* FacebookGamingServices in Frameworks */ = {isa = PBXBuildFile; productRef = 066584422EAFA8E900A52299 /* FacebookGamingServices */; };
-		066584452EAFA8E900A52299 /* FacebookLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 066584442EAFA8E900A52299 /* FacebookLogin */; };
-		066584472EAFA8E900A52299 /* FacebookShare in Frameworks */ = {isa = PBXBuildFile; productRef = 066584462EAFA8E900A52299 /* FacebookShare */; };
-		0665844B2EAFA93400A52299 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 0665844A2EAFA93400A52299 /* FirebaseAI */; };
-		0665844D2EAFA93400A52299 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0665844C2EAFA93400A52299 /* FirebaseAnalytics */; };
-		0665844F2EAFA93400A52299 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0665844E2EAFA93400A52299 /* FirebaseAnalyticsCore */; };
-		066584512EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 066584502EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport */; };
-		066584532EAFA93400A52299 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = 066584522EAFA93400A52299 /* FirebaseAppCheck */; };
-		066584552EAFA93400A52299 /* FirebaseAppDistribution-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 066584542EAFA93400A52299 /* FirebaseAppDistribution-Beta */; };
-		066584572EAFA93400A52299 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 066584562EAFA93400A52299 /* FirebaseAuth */; };
-		066584592EAFA93400A52299 /* FirebaseAuthCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 066584582EAFA93400A52299 /* FirebaseAuthCombine-Community */; };
-		0665845B2EAFA93400A52299 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0665845A2EAFA93400A52299 /* FirebaseCore */; };
-		0665845D2EAFA93400A52299 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 0665845C2EAFA93400A52299 /* FirebaseCrashlytics */; };
-		0665845F2EAFA93400A52299 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 0665845E2EAFA93400A52299 /* FirebaseDatabase */; };
-		066584612EAFA93400A52299 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 066584602EAFA93400A52299 /* FirebaseFirestore */; };
-		066584632EAFA93400A52299 /* FirebaseFirestoreCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 066584622EAFA93400A52299 /* FirebaseFirestoreCombine-Community */; };
-		066584652EAFA93400A52299 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = 066584642EAFA93400A52299 /* FirebaseFunctions */; };
-		066584672EAFA93400A52299 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 066584662EAFA93400A52299 /* FirebaseFunctionsCombine-Community */; };
-		066584692EAFA93400A52299 /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = 066584682EAFA93400A52299 /* FirebaseInAppMessaging-Beta */; };
-		0665846B2EAFA93400A52299 /* FirebaseInstallations in Frameworks */ = {isa = PBXBuildFile; productRef = 0665846A2EAFA93400A52299 /* FirebaseInstallations */; };
-		0665846D2EAFA93400A52299 /* FirebaseMLModelDownloader in Frameworks */ = {isa = PBXBuildFile; productRef = 0665846C2EAFA93400A52299 /* FirebaseMLModelDownloader */; };
-		0665846F2EAFA93400A52299 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 0665846E2EAFA93400A52299 /* FirebaseMessaging */; };
-		066584712EAFA93400A52299 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = 066584702EAFA93400A52299 /* FirebasePerformance */; };
-		066584732EAFA93400A52299 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 066584722EAFA93400A52299 /* FirebaseRemoteConfig */; };
-		066584752EAFA93400A52299 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 066584742EAFA93400A52299 /* FirebaseStorage */; };
-		066584772EAFA93400A52299 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 066584762EAFA93400A52299 /* FirebaseStorageCombine-Community */; };
-		066584792EAFC19500A52299 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584782EAFC19500A52299 /* GameKit.framework */; };
-		0665847B2EAFC1A400A52299 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847A2EAFC1A400A52299 /* MusicKit.framework */; };
-		0665847D2EAFC1AE00A52299 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847C2EAFC1AE00A52299 /* Messages.framework */; };
-		0665847F2EAFC1D500A52299 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665847E2EAFC1D500A52299 /* UserNotifications.framework */; };
-		066584812EAFC1E500A52299 /* WorkoutKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584802EAFC1E500A52299 /* WorkoutKit.framework */; };
-		066584832EAFC1F000A52299 /* ClockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584822EAFC1F000A52299 /* ClockKit.framework */; };
-		066584852EAFC22800A52299 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584842EAFC22800A52299 /* DeviceActivity.framework */; };
-		066584862EAFC23900A52299 /* ClockKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584822EAFC1F000A52299 /* ClockKit.framework */; };
-		066584882EAFC25300A52299 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584872EAFC25300A52299 /* Intents.framework */; };
-		0665848A2EAFC2A200A52299 /* ActivityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 066584892EAFC2A200A52299 /* ActivityKit.framework */; };
-		0665848C2EAFC2AE00A52299 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665848B2EAFC2AE00A52299 /* Intents.framework */; };
-		0665848E2EAFC2C200A52299 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0665848D2EAFC2C200A52299 /* ARKit.framework */; };
-		06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */; };
-		06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 06D312D12EA6374A001A07D7 /* WatchKit.framework */; };
-		06F6B2D32EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-/* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		06F6B2D12EA6326700B4AE7A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 06F6B2AF2EA6324D00B4AE7A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 06F6B2C82EA6326700B4AE7A;
-			remoteInfo = "SC40-V3-W Watch App Watch App";
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		06F6B2D72EA6326700B4AE7A /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				06F6B2D32EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
-		0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/HealthKitUI.framework; sourceTree = DEVELOPER_DIR; };
-		06656B2D2EAF9EA400A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/CoreLocation.framework; sourceTree = DEVELOPER_DIR; };
-		06656B2F2EAF9EA500A52299 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		06656B312EAF9EA600A52299 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		066584782EAFC19500A52299 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
-		0665847A2EAFC1A400A52299 /* MusicKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MusicKit.framework; path = System/Library/Frameworks/MusicKit.framework; sourceTree = SDKROOT; };
-		0665847C2EAFC1AE00A52299 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
-		0665847E2EAFC1D500A52299 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
-		066584802EAFC1E500A52299 /* WorkoutKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WorkoutKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WorkoutKit.framework; sourceTree = DEVELOPER_DIR; };
-		066584822EAFC1F000A52299 /* ClockKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ClockKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/ClockKit.framework; sourceTree = DEVELOPER_DIR; };
-		066584842EAFC22800A52299 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/DeviceActivity.framework; sourceTree = DEVELOPER_DIR; };
-		066584872EAFC25300A52299 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/Intents.framework; sourceTree = DEVELOPER_DIR; };
-		066584892EAFC2A200A52299 /* ActivityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ActivityKit.framework; path = System/Library/Frameworks/ActivityKit.framework; sourceTree = SDKROOT; };
-		0665848B2EAFC2AE00A52299 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		0665848D2EAFC2C200A52299 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
-		06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchConnectivity.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchConnectivity.framework; sourceTree = DEVELOPER_DIR; };
-		06D312D12EA6374A001A07D7 /* WatchKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WatchKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS26.0.sdk/System/Library/Frameworks/WatchKit.framework; sourceTree = DEVELOPER_DIR; };
-		06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		06825EF02EBA2752003AE48B /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		06D9C5982EA95BFD007A315F /* Exceptions for "SC40-V3" folder in "SC40-V3" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 06F6B2B62EA6324D00B4AE7A /* SC40-V3 */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		06F6B2B92EA6324D00B4AE7A /* SC40-V3 */ = {
+		06825EF22EBA2752003AE48B /* SC40-V3 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				06D9C5982EA95BFD007A315F /* Exceptions for "SC40-V3" folder in "SC40-V3" target */,
-			);
 			path = "SC40-V3";
-			sourceTree = "<group>";
-		};
-		06F6B2CA2EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "SC40-V3-W Watch App Watch App";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		06F6B2B42EA6324D00B4AE7A /* Frameworks */ = {
+		06825EED2EBA2752003AE48B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0665848E2EAFC2C200A52299 /* ARKit.framework in Frameworks */,
-				066584732EAFA93400A52299 /* FirebaseRemoteConfig in Frameworks */,
-				0665846F2EAFA93400A52299 /* FirebaseMessaging in Frameworks */,
-				066584512EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
-				066584532EAFA93400A52299 /* FirebaseAppCheck in Frameworks */,
-				0665844D2EAFA93400A52299 /* FirebaseAnalytics in Frameworks */,
-				0665844B2EAFA93400A52299 /* FirebaseAI in Frameworks */,
-				0665845B2EAFA93400A52299 /* FirebaseCore in Frameworks */,
-				066584712EAFA93400A52299 /* FirebasePerformance in Frameworks */,
-				066584612EAFA93400A52299 /* FirebaseFirestore in Frameworks */,
-				066584792EAFC19500A52299 /* GameKit.framework in Frameworks */,
-				0665847D2EAFC1AE00A52299 /* Messages.framework in Frameworks */,
-				0665845D2EAFA93400A52299 /* FirebaseCrashlytics in Frameworks */,
-				066584452EAFA8E900A52299 /* FacebookLogin in Frameworks */,
-				066584632EAFA93400A52299 /* FirebaseFirestoreCombine-Community in Frameworks */,
-				066584652EAFA93400A52299 /* FirebaseFunctions in Frameworks */,
-				066584432EAFA8E900A52299 /* FacebookGamingServices in Frameworks */,
-				0665846B2EAFA93400A52299 /* FirebaseInstallations in Frameworks */,
-				0665843F2EAFA8E900A52299 /* FacebookBasics in Frameworks */,
-				0665843D2EAFA8E900A52299 /* FacebookAEM in Frameworks */,
-				0665844F2EAFA93400A52299 /* FirebaseAnalyticsCore in Frameworks */,
-				066584692EAFA93400A52299 /* FirebaseInAppMessaging-Beta in Frameworks */,
-				0665843B2EAFA8D200A52299 /* GoogleSignInSwift in Frameworks */,
-				0665845F2EAFA93400A52299 /* FirebaseDatabase in Frameworks */,
-				066584772EAFA93400A52299 /* FirebaseStorageCombine-Community in Frameworks */,
-				0665847B2EAFC1A400A52299 /* MusicKit.framework in Frameworks */,
-				066584322EAFA73400A52299 /* Algorithms in Frameworks */,
-				0665848C2EAFC2AE00A52299 /* Intents.framework in Frameworks */,
-				066584392EAFA8D200A52299 /* GoogleSignIn in Frameworks */,
-				066584572EAFA93400A52299 /* FirebaseAuth in Frameworks */,
-				066584672EAFA93400A52299 /* FirebaseFunctionsCombine-Community in Frameworks */,
-				066584472EAFA8E900A52299 /* FacebookShare in Frameworks */,
-				0665848A2EAFC2A200A52299 /* ActivityKit.framework in Frameworks */,
-				06656B2E2EAF9EA500A52299 /* HealthKit.framework in Frameworks */,
-				06656B302EAF9EA600A52299 /* CoreLocation.framework in Frameworks */,
-				066584752EAFA93400A52299 /* FirebaseStorage in Frameworks */,
-				066584412EAFA8E900A52299 /* FacebookCore in Frameworks */,
-				0665847F2EAFC1D500A52299 /* UserNotifications.framework in Frameworks */,
-				0665846D2EAFA93400A52299 /* FirebaseMLModelDownloader in Frameworks */,
-				066584552EAFA93400A52299 /* FirebaseAppDistribution-Beta in Frameworks */,
-				066584592EAFA93400A52299 /* FirebaseAuthCombine-Community in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		06F6B2C62EA6326700B4AE7A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				06656B2B2EAF9EA300A52299 /* HealthKit.framework in Frameworks */,
-				06656B2C2EAF9EA400A52299 /* CoreLocation.framework in Frameworks */,
-				066584862EAFC23900A52299 /* ClockKit.framework in Frameworks */,
-				06D312D22EA6374A001A07D7 /* WatchKit.framework in Frameworks */,
-				066584852EAFC22800A52299 /* DeviceActivity.framework in Frameworks */,
-				06D312D02EA63741001A07D7 /* WatchConnectivity.framework in Frameworks */,
-				066584882EAFC25300A52299 /* Intents.framework in Frameworks */,
-				066584832EAFC1F000A52299 /* ClockKit.framework in Frameworks */,
-				066584812EAFC1E500A52299 /* WorkoutKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		06D312CE2EA63741001A07D7 /* Frameworks */ = {
+		06825EE72EBA2752003AE48B = {
 			isa = PBXGroup;
 			children = (
-				0665848D2EAFC2C200A52299 /* ARKit.framework */,
-				0665848B2EAFC2AE00A52299 /* Intents.framework */,
-				066584892EAFC2A200A52299 /* ActivityKit.framework */,
-				066584872EAFC25300A52299 /* Intents.framework */,
-				066584842EAFC22800A52299 /* DeviceActivity.framework */,
-				066584822EAFC1F000A52299 /* ClockKit.framework */,
-				066584802EAFC1E500A52299 /* WorkoutKit.framework */,
-				0665847E2EAFC1D500A52299 /* UserNotifications.framework */,
-				0665847C2EAFC1AE00A52299 /* Messages.framework */,
-				0665847A2EAFC1A400A52299 /* MusicKit.framework */,
-				066584782EAFC19500A52299 /* GameKit.framework */,
-				0607AF1E2EAEA7A600FCD5D8 /* HealthKitUI.framework */,
-				0607AF1C2EAEA79E00FCD5D8 /* HealthKit.framework */,
-				06656B2D2EAF9EA400A52299 /* CoreLocation.framework */,
-				06656B2F2EAF9EA500A52299 /* HealthKit.framework */,
-				06656B312EAF9EA600A52299 /* CoreLocation.framework */,
-				06D312D12EA6374A001A07D7 /* WatchKit.framework */,
-				06D312CF2EA63741001A07D7 /* WatchConnectivity.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		06F6B2AE2EA6324D00B4AE7A = {
-			isa = PBXGroup;
-			children = (
-				06F6B2B92EA6324D00B4AE7A /* SC40-V3 */,
-				06F6B2CA2EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */,
-				06D312CE2EA63741001A07D7 /* Frameworks */,
-				06F6B2B82EA6324D00B4AE7A /* Products */,
+				06825EF22EBA2752003AE48B /* SC40-V3 */,
+				06825EF12EBA2752003AE48B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		06F6B2B82EA6324D00B4AE7A /* Products */ = {
+		06825EF12EBA2752003AE48B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */,
-				06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */,
+				06825EF02EBA2752003AE48B /* SC40-V3.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -248,137 +48,64 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		06F6B2B62EA6324D00B4AE7A /* SC40-V3 */ = {
+		06825EEF2EBA2752003AE48B /* SC40-V3 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 06F6B2C22EA6324F00B4AE7A /* Build configuration list for PBXNativeTarget "SC40-V3" */;
+			buildConfigurationList = 06825EFB2EBA2752003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */;
 			buildPhases = (
-				06F6B2B32EA6324D00B4AE7A /* Sources */,
-				06F6B2B42EA6324D00B4AE7A /* Frameworks */,
-				06F6B2B52EA6324D00B4AE7A /* Resources */,
-				06F6B2D72EA6326700B4AE7A /* Embed Watch Content */,
+				06825EEC2EBA2752003AE48B /* Sources */,
+				06825EED2EBA2752003AE48B /* Frameworks */,
+				06825EEE2EBA2752003AE48B /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				06F6B2D22EA6326700B4AE7A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				06F6B2B92EA6324D00B4AE7A /* SC40-V3 */,
+				06825EF22EBA2752003AE48B /* SC40-V3 */,
 			);
 			name = "SC40-V3";
 			packageProductDependencies = (
-				066584312EAFA73400A52299 /* Algorithms */,
-				066584382EAFA8D200A52299 /* GoogleSignIn */,
-				0665843A2EAFA8D200A52299 /* GoogleSignInSwift */,
-				0665843C2EAFA8E900A52299 /* FacebookAEM */,
-				0665843E2EAFA8E900A52299 /* FacebookBasics */,
-				066584402EAFA8E900A52299 /* FacebookCore */,
-				066584422EAFA8E900A52299 /* FacebookGamingServices */,
-				066584442EAFA8E900A52299 /* FacebookLogin */,
-				066584462EAFA8E900A52299 /* FacebookShare */,
-				0665844A2EAFA93400A52299 /* FirebaseAI */,
-				0665844C2EAFA93400A52299 /* FirebaseAnalytics */,
-				0665844E2EAFA93400A52299 /* FirebaseAnalyticsCore */,
-				066584502EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport */,
-				066584522EAFA93400A52299 /* FirebaseAppCheck */,
-				066584542EAFA93400A52299 /* FirebaseAppDistribution-Beta */,
-				066584562EAFA93400A52299 /* FirebaseAuth */,
-				066584582EAFA93400A52299 /* FirebaseAuthCombine-Community */,
-				0665845A2EAFA93400A52299 /* FirebaseCore */,
-				0665845C2EAFA93400A52299 /* FirebaseCrashlytics */,
-				0665845E2EAFA93400A52299 /* FirebaseDatabase */,
-				066584602EAFA93400A52299 /* FirebaseFirestore */,
-				066584622EAFA93400A52299 /* FirebaseFirestoreCombine-Community */,
-				066584642EAFA93400A52299 /* FirebaseFunctions */,
-				066584662EAFA93400A52299 /* FirebaseFunctionsCombine-Community */,
-				066584682EAFA93400A52299 /* FirebaseInAppMessaging-Beta */,
-				0665846A2EAFA93400A52299 /* FirebaseInstallations */,
-				0665846C2EAFA93400A52299 /* FirebaseMLModelDownloader */,
-				0665846E2EAFA93400A52299 /* FirebaseMessaging */,
-				066584702EAFA93400A52299 /* FirebasePerformance */,
-				066584722EAFA93400A52299 /* FirebaseRemoteConfig */,
-				066584742EAFA93400A52299 /* FirebaseStorage */,
-				066584762EAFA93400A52299 /* FirebaseStorageCombine-Community */,
 			);
 			productName = "SC40-V3";
-			productReference = 06F6B2B72EA6324D00B4AE7A /* SC40-V3.app */;
-			productType = "com.apple.product-type.application";
-		};
-		06F6B2C82EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 06F6B2D42EA6326700B4AE7A /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */;
-			buildPhases = (
-				06F6B2C52EA6326700B4AE7A /* Sources */,
-				06F6B2C62EA6326700B4AE7A /* Frameworks */,
-				06F6B2C72EA6326700B4AE7A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				06F6B2CA2EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */,
-			);
-			name = "SC40-V3-W Watch App Watch App";
-			packageProductDependencies = (
-			);
-			productName = "SC40-V3-W Watch App Watch App";
-			productReference = 06F6B2C92EA6326700B4AE7A /* SC40-V3-W Watch App Watch App.app */;
+			productReference = 06825EF02EBA2752003AE48B /* SC40-V3.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		06F6B2AF2EA6324D00B4AE7A /* Project object */ = {
+		06825EE82EBA2752003AE48B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = NO;
+				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					06F6B2B62EA6324D00B4AE7A = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
-					06F6B2C82EA6326700B4AE7A = {
+					06825EEF2EBA2752003AE48B = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
 				};
 			};
-			buildConfigurationList = 06F6B2B22EA6324D00B4AE7A /* Build configuration list for PBXProject "SC40-V3" */;
+			buildConfigurationList = 06825EEB2EBA2752003AE48B /* Build configuration list for PBXProject "SC40-V3" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 06F6B2AE2EA6324D00B4AE7A;
+			mainGroup = 06825EE72EBA2752003AE48B;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				066584302EAFA2F200A52299 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
-				066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */,
-				066584372EAFA88700A52299 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
-			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 06F6B2B82EA6324D00B4AE7A /* Products */;
+			productRefGroup = 06825EF12EBA2752003AE48B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				06F6B2B62EA6324D00B4AE7A /* SC40-V3 */,
-				06F6B2C82EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */,
+				06825EEF2EBA2752003AE48B /* SC40-V3 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		06F6B2B52EA6324D00B4AE7A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		06F6B2C72EA6326700B4AE7A /* Resources */ = {
+		06825EEE2EBA2752003AE48B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -388,14 +115,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		06F6B2B32EA6324D00B4AE7A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		06F6B2C52EA6326700B4AE7A /* Sources */ = {
+		06825EEC2EBA2752003AE48B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -404,16 +124,8 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		06F6B2D22EA6326700B4AE7A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 06F6B2C82EA6326700B4AE7A /* SC40-V3-W Watch App Watch App */;
-			targetProxy = 06F6B2D12EA6326700B4AE7A /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		06F6B2C02EA6324F00B4AE7A /* Debug */ = {
+		06825EF92EBA2752003AE48B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -477,7 +189,7 @@
 			};
 			name = Debug;
 		};
-		06F6B2C12EA6324F00B4AE7A /* Release */ = {
+		06825EFA2EBA2752003AE48B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -534,20 +246,16 @@
 			};
 			name = Release;
 		};
-		06F6B2C32EA6324F00B4AE7A /* Debug */ = {
+		06825EFC2EBA2752003AE48B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "SC40-V3/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -561,33 +269,25 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		06F6B2C42EA6324F00B4AE7A /* Release */ = {
+		06825EFD2EBA2752003AE48B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = H65MV3U65H;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "SC40-V3/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -601,320 +301,37 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
-			};
-			name = Release;
-		};
-		06F6B2D52EA6326700B4AE7A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = H65MV3U65H;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3.watchkitapp";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
-			};
-			name = Debug;
-		};
-		06F6B2D62EA6326700B4AE7A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = H65MV3U65H;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Acclerate.SC40-V3.watchkitapp";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		06F6B2B22EA6324D00B4AE7A /* Build configuration list for PBXProject "SC40-V3" */ = {
+		06825EEB2EBA2752003AE48B /* Build configuration list for PBXProject "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06F6B2C02EA6324F00B4AE7A /* Debug */,
-				06F6B2C12EA6324F00B4AE7A /* Release */,
+				06825EF92EBA2752003AE48B /* Debug */,
+				06825EFA2EBA2752003AE48B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
-		06F6B2C22EA6324F00B4AE7A /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
+		06825EFB2EBA2752003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06F6B2C32EA6324F00B4AE7A /* Debug */,
-				06F6B2C42EA6324F00B4AE7A /* Release */,
+				06825EFC2EBA2752003AE48B /* Debug */,
+				06825EFD2EBA2752003AE48B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		06F6B2D42EA6326700B4AE7A /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				06F6B2D52EA6326700B4AE7A /* Debug */,
-				06F6B2D62EA6326700B4AE7A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		066584302EAFA2F200A52299 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-algorithms.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.1;
-			};
-		};
-		066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 12.4.0;
-			};
-		};
-		066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/facebook/facebook-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 14.1.0;
-			};
-		};
-		066584372EAFA88700A52299 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		066584312EAFA73400A52299 /* Algorithms */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584302EAFA2F200A52299 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
-			productName = Algorithms;
-		};
-		066584382EAFA8D200A52299 /* GoogleSignIn */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584372EAFA88700A52299 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignIn;
-		};
-		0665843A2EAFA8D200A52299 /* GoogleSignInSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584372EAFA88700A52299 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
-			productName = GoogleSignInSwift;
-		};
-		0665843C2EAFA8E900A52299 /* FacebookAEM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookAEM;
-		};
-		0665843E2EAFA8E900A52299 /* FacebookBasics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookBasics;
-		};
-		066584402EAFA8E900A52299 /* FacebookCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookCore;
-		};
-		066584422EAFA8E900A52299 /* FacebookGamingServices */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookGamingServices;
-		};
-		066584442EAFA8E900A52299 /* FacebookLogin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookLogin;
-		};
-		066584462EAFA8E900A52299 /* FacebookShare */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584362EAFA86600A52299 /* XCRemoteSwiftPackageReference "facebook-ios-sdk" */;
-			productName = FacebookShare;
-		};
-		0665844A2EAFA93400A52299 /* FirebaseAI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAI;
-		};
-		0665844C2EAFA93400A52299 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-		0665844E2EAFA93400A52299 /* FirebaseAnalyticsCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsCore;
-		};
-		066584502EAFA93400A52299 /* FirebaseAnalyticsIdentitySupport */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalyticsIdentitySupport;
-		};
-		066584522EAFA93400A52299 /* FirebaseAppCheck */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAppCheck;
-		};
-		066584542EAFA93400A52299 /* FirebaseAppDistribution-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAppDistribution-Beta";
-		};
-		066584562EAFA93400A52299 /* FirebaseAuth */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAuth;
-		};
-		066584582EAFA93400A52299 /* FirebaseAuthCombine-Community */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseAuthCombine-Community";
-		};
-		0665845A2EAFA93400A52299 /* FirebaseCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCore;
-		};
-		0665845C2EAFA93400A52299 /* FirebaseCrashlytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseCrashlytics;
-		};
-		0665845E2EAFA93400A52299 /* FirebaseDatabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseDatabase;
-		};
-		066584602EAFA93400A52299 /* FirebaseFirestore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFirestore;
-		};
-		066584622EAFA93400A52299 /* FirebaseFirestoreCombine-Community */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseFirestoreCombine-Community";
-		};
-		066584642EAFA93400A52299 /* FirebaseFunctions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseFunctions;
-		};
-		066584662EAFA93400A52299 /* FirebaseFunctionsCombine-Community */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseFunctionsCombine-Community";
-		};
-		066584682EAFA93400A52299 /* FirebaseInAppMessaging-Beta */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseInAppMessaging-Beta";
-		};
-		0665846A2EAFA93400A52299 /* FirebaseInstallations */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseInstallations;
-		};
-		0665846C2EAFA93400A52299 /* FirebaseMLModelDownloader */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseMLModelDownloader;
-		};
-		0665846E2EAFA93400A52299 /* FirebaseMessaging */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseMessaging;
-		};
-		066584702EAFA93400A52299 /* FirebasePerformance */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebasePerformance;
-		};
-		066584722EAFA93400A52299 /* FirebaseRemoteConfig */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseRemoteConfig;
-		};
-		066584742EAFA93400A52299 /* FirebaseStorage */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseStorage;
-		};
-		066584762EAFA93400A52299 /* FirebaseStorageCombine-Community */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 066584352EAFA7D200A52299 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = "FirebaseStorageCombine-Community";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 06F6B2AF2EA6324D00B4AE7A /* Project object */;
+	rootObject = 06825EE82EBA2752003AE48B /* Project object */;
 }

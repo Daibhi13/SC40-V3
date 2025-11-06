@@ -57,6 +57,8 @@ struct OnboardingView: View {
     @State private var isCompleting = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var showDebugAlert = false
+    @State private var debugMessage = ""
     
     // Computed property to convert wheel selections to Double
     private var pb: Double {
@@ -190,6 +192,11 @@ struct OnboardingView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .alert("Debug Info", isPresented: $showDebugAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(debugMessage)
         }
         .onAppear {
             // Clear stale state before onboarding starts to prevent old state carryover
@@ -664,17 +671,14 @@ struct OnboardingView: View {
                 
                 // Simple Continue Button
                 Button(action: {
-                    print("🔘 Continue button tapped!")
-                    print("   isCompleting: \(isCompleting)")
-                    print("   fitnessLevel: '\(fitnessLevel)'")
-                    print("   daysAvailable: \(daysAvailable)")
-                    print("   pb: \(pb)")
+                    debugMessage = "Button tapped!\nLevel: \(fitnessLevel)\nDays: \(daysAvailable)\nPB: \(pb)s"
+                    showDebugAlert = true
                     
-                    if !isCompleting {
-                        print("✅ Button enabled - calling saveAndNavigate()")
-                        saveAndNavigate()
-                    } else {
-                        print("⚠️ Button disabled - already processing")
+                    // Delay to show alert first
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        if !isCompleting {
+                            saveAndNavigate()
+                        }
                     }
                 }) {
                     HStack {

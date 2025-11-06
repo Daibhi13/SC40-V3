@@ -36,76 +36,25 @@ import SwiftUI
 import AuthenticationServices
 
 struct WelcomeView: View {
-    @StateObject private var authManager = AuthenticationManager.shared
     @State private var showEmailSheet = false
-    @State private var showErrorAlert = false
-    @State private var errorMessage = ""
-    @State private var showSkipButton = false
-    @State private var firstName = ""
-    @State private var email = ""
+    @State private var isNavigating = false
     
     var onContinue: (_ name: String, _ email: String?) -> Void
 
-    // MARK: - Authentication Methods
-    private func performSocialLogin(with provider: AuthenticationManager.AuthProvider) {
-        // Prevent concurrent authentication attempts
-        guard !authManager.isLoading else {
-            print("⚠️ Authentication already in progress, ignoring duplicate request")
+    // MARK: - Simple Continue Method (No Authentication)
+    private func continueToOnboarding(name: String) {
+        guard !isNavigating else {
+            print("⚠️ Already navigating, ignoring duplicate request")
             return
         }
         
-        print("🔐 WelcomeView: Starting authentication with \(provider)")
+        isNavigating = true
+        print("✅ WelcomeView: Continuing to onboarding with name: \(name)")
         
-        Task { @MainActor in
-            do {
-                // Add timeout protection to prevent infinite loading
-                try await withTimeout(seconds: 15) {
-                    await authManager.authenticate(with: provider)
-                }
-                
-                if authManager.isAuthenticated, let user = authManager.currentUser {
-                    print("✅ WelcomeView: Authentication successful for user: \(user.name)")
-                    onContinue(user.name, user.email)
-                } else if let error = authManager.errorMessage {
-                    print("❌ WelcomeView: Authentication failed with error: \(error)")
-                    errorMessage = error
-                    showErrorAlert = true
-                }
-            } catch {
-                // Handle any authentication errors gracefully
-                print("❌ WelcomeView: Authentication exception: \(error.localizedDescription)")
-                errorMessage = "Authentication failed: \(error.localizedDescription)"
-                showErrorAlert = true
-                // Ensure loading state is reset
-                authManager.isLoading = false
-            }
-        }
-    }
-    
-    // Timeout helper function
-    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
-        return try await withThrowingTaskGroup(of: T.self) { group in
-            group.addTask {
-                try await operation()
-            }
-            
-            group.addTask {
-                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                throw TimeoutError()
-            }
-            
-            guard let result = try await group.next() else {
-                throw TimeoutError()
-            }
-            
-            group.cancelAll()
-            return result
-        }
-    }
-    
-    private struct TimeoutError: Error {
-        var localizedDescription: String {
-            return "Authentication timed out. Please try again or skip to continue."
+        // Simple direct navigation without authentication
+        DispatchQueue.main.async {
+            onContinue(name, nil)
+            isNavigating = false
         }
     }
     var body: some View {
@@ -157,84 +106,39 @@ struct WelcomeView: View {
                 
                 Spacer()
             }
+            
+            // Simple "Get Started" button at bottom
             VStack {
                 Spacer()
-                if authManager.isLoading {
-                    VStack(spacing: 20) {
-                        ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            .scaleEffect(1.5)
-                        
-                        if showSkipButton {
-                            Button(action: {
-                                // Skip authentication and continue with guest mode
-                                authManager.isLoading = false
-                                onContinue("Guest User", nil)
-                            }) {
-                                Text("Skip & Continue as Guest")
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 10)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .fill(Color.white.opacity(0.2))
-                                            .overlay(
-                                                RoundedRectangle(cornerRadius: 20)
-                                                    .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                            )
-                                    )
-                            }
-                        }
-                    }
-                    .padding(.bottom, 80)
-                    .onAppear {
-                        // Show skip button after 8 seconds of loading
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 8) {
-                            if authManager.isLoading {
-                                withAnimation(.easeInOut(duration: 0.3)) {
-                                    showSkipButton = true
-                                }
-                            }
-                        }
-                    }
-                    .onDisappear {
-                        showSkipButton = false
-                    }
+                
+                if isNavigating {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.5)
+                        .padding(.bottom, 80)
                 } else {
-                    HStack(spacing: 20) {
-                        SocialIconButton(color: Color(red: 0.2, green: 0.6, blue: 1.0), icon: "f.circle.fill") {
-                            performSocialLogin(with: .facebook)
-                        }
-                        SocialIconButton(color: .black, icon: "apple.logo") {
-                            performSocialLogin(with: .apple)
-                        }
-                        SocialIconButton(color: Color(red: 0.8, green: 0.3, blue: 0.8), icon: "camera.circle.fill") {
-                            performSocialLogin(with: .instagram)
-                        }
-                        SocialIconButton(color: Color(red: 1.0, green: 0.3, blue: 0.3), icon: "g.circle.fill") {
-                            performSocialLogin(with: .google)
-                        }
-                        SocialIconButton(color: Color(red: 0.3, green: 0.8, blue: 0.3), icon: "envelope.circle.fill") {
-                            // Safe sheet presentation
-                            DispatchQueue.main.async {
-                                showEmailSheet = true
-                            }
-                        }
+                    Button(action: {
+                        continueToOnboarding(name: "User")
+                    }) {
+                        Text("Get Started")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 56)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.yellow, Color.orange]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(28)
+                            .shadow(color: Color.yellow.opacity(0.5), radius: 15, x: 0, y: 5)
                     }
+                    .padding(.horizontal, 40)
                     .padding(.bottom, 80)
                 }
             }
-        }
-        .sheet(isPresented: $showEmailSheet) {
-            EmailSignupView { name, email in
-                onContinue(name, email)
-            }
-        }
-        .alert("Authentication Error", isPresented: $showErrorAlert) {
-            Button("OK") { }
-        } message: {
-            Text(errorMessage)
         }
         .sanitizeLayout()
     }

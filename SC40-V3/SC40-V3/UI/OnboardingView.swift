@@ -604,7 +604,7 @@ struct OnboardingView: View {
         }
     }
     
-    // MARK: - Enhanced Finish Button
+    // MARK: - Enhanced Finish Button (REMOVED - Auto-navigation after form completion)
     private var finishButton: some View {
         VStack(spacing: 16) {
             // Enhanced summary card with program details
@@ -623,6 +623,11 @@ struct OnboardingView: View {
                             .foregroundColor(.white.opacity(0.7))
                             .onAppear {
                                 print("📊 Program Ready display - Level: '\(fitnessLevel)', Days: \(daysAvailable), PB: \(pb)")
+                                
+                                // Auto-save and navigate after showing summary
+                                if !isCompleting {
+                                    saveAndNavigate()
+                                }
                             }
                     }
                     
@@ -638,67 +643,53 @@ struct OnboardingView: View {
                         FeaturePreview(icon: "leaf", text: "Recovery", color: .mint)
                     }
                 }
-            }
-            .padding()
-            .background(Color.white.opacity(0.1))
-            .cornerRadius(12)
-            
-            Button(action: {
-            // 🚨 V2 ULTRA-MINIMAL CRASH-PROOF BUTTON
-            print("🚀🚀🚀 NEW BUTTON V2 PRESSED 🚀🚀🚀")
-            print("Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
-            
-            // Guard against duplicate presses
-            guard !isCompleting else { 
-                print("⚠️ Already processing")
-                return 
-            }
-            isCompleting = true
-            
-            // Minimal save - just the essentials
-            UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
-            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
-            UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
-            UserDefaults.standard.set(pb, forKey: "personalBest40yd")
-            UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-            UserDefaults.standard.synchronize()
-            
-            print("✅ Data saved successfully")
-            
-            // Navigate immediately
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                print("🚀 Calling onComplete() now...")
-                onComplete()
-                isCompleting = false
-                print("✅ Navigation complete")
-            }
-        }) {
-                HStack {
-                    if isCompleting {
+                
+                // Progress indicator (no button needed)
+                if isCompleting {
+                    HStack {
                         ProgressView()
                             .scaleEffect(0.8)
                         Text("Setting up your program...")
                             .font(.headline.bold())
-                    } else {
-                        Text("Generate My Training Program")
-                            .font(.headline.bold())
-                        Image(systemName: "arrow.right")
-                            .font(.headline)
+                            .foregroundColor(.white)
                     }
+                    .padding(.top, 8)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 18)
-                .background(
-                    LinearGradient(
-                        gradient: Gradient(colors: [Color.yellow, Color.orange]),
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .foregroundColor(.black)
-                .cornerRadius(16)
-                .shadow(color: .yellow.opacity(0.5), radius: 10, x: 0, y: 5)
             }
+            .padding()
+            .background(Color.white.opacity(0.1))
+            .cornerRadius(12)
+        }
+    }
+    
+    // MARK: - Save and Navigate Helper
+    private func saveAndNavigate() {
+        print("🚀 Auto-saving and navigating...")
+        print("Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
+        
+        // Guard against duplicate calls
+        guard !isCompleting else { 
+            print("⚠️ Already processing")
+            return 
+        }
+        isCompleting = true
+        
+        // Minimal save - just the essentials
+        UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
+        UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+        UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+        UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+        UserDefaults.standard.set(true, forKey: "onboardingCompleted")
+        UserDefaults.standard.synchronize()
+        
+        print("✅ Data saved successfully")
+        
+        // Navigate after brief delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            print("🚀 Calling onComplete() now...")
+            onComplete()
+            isCompleting = false
+            print("✅ Navigation complete")
         }
     }
     

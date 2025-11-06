@@ -9,12 +9,30 @@ import SwiftUI
 
 // CLEAN ContentView - Direct to onboarding for testing
 struct ContentView: View {
-    @StateObject private var userProfileVM = UserProfileViewModel()
-    @StateObject private var syncManager = TrainingSynchronizationManager.shared
+    @StateObject private var userProfileVM: UserProfileViewModel = {
+        print("📱 ContentView: Creating UserProfileViewModel...")
+        let vm = UserProfileViewModel()
+        print("✅ ContentView: UserProfileViewModel created")
+        return vm
+    }()
+    
+    @StateObject private var syncManager: TrainingSynchronizationManager = {
+        print("📱 ContentView: Getting TrainingSynchronizationManager.shared...")
+        let manager = TrainingSynchronizationManager.shared
+        print("✅ ContentView: TrainingSynchronizationManager.shared obtained")
+        return manager
+    }()
+    
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
     
+    init() {
+        print("🎬 ContentView: INIT CALLED")
+    }
+    
     var body: some View {
-        Group {
+        let _ = print("📱 ContentView: body EVALUATING")
+        let _ = print("   onboardingCompleted: \(onboardingCompleted)")
+        return Group {
             if !onboardingCompleted {
                 // Skip WelcomeView - go straight to onboarding for testing
                 OnboardingView(

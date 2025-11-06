@@ -9,6 +9,10 @@ import SwiftUI
 
 @main
 struct SC40_V3App: App {
+    init() {
+        print("🚀🚀🚀 SC40_V3App INITIALIZING 🚀🚀🚀")
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

@@ -149,10 +149,10 @@ struct OnboardingView: View {
                         }
                         
                         // Extra bottom padding for sticky button - increased to prevent overlap
-                        Spacer(minLength: 200)
+                        Spacer(minLength: 400)
                     }
                     .padding(.horizontal)
-                    .padding(.bottom, 20)
+                    .padding(.bottom, 40)
                 }
                 
                 // Enhanced Sticky Finish Button
@@ -163,20 +163,21 @@ struct OnboardingView: View {
                     LinearGradient(
                         colors: [
                             Color.clear,
-                            Color.black.opacity(0.3),
+                            Color.black.opacity(0.2),
+                            Color.black.opacity(0.5),
                             Color.black.opacity(0.8)
                         ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
-                    .frame(height: 60)
+                    .frame(height: 120)
                     .allowsHitTesting(false)
                     
                     finishButton
                         .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
+                        .padding(.vertical, 12)
                         .background(
-                            Color.black.opacity(0.8)
+                            Color.black.opacity(0.9)
                                 .ignoresSafeArea(edges: .bottom)
                         )
                 }
@@ -194,6 +195,12 @@ struct OnboardingView: View {
             // Clear stale state before onboarding starts to prevent old state carryover
             userProfileVM.resetUserState()
             print("🧹 OnboardingView: Cleared stale user state before starting onboarding")
+            
+            // Initialize level from PB if not already set
+            if pb > 0 && fitnessLevel == "Beginner" {
+                updateLevelFromPB()
+                print("🎯 OnboardingView: Initial level set to '\(fitnessLevel)' based on PB: \(pb)s")
+            }
         }
         .onDisappear {
             print("🧹 OnboardingView: OnboardingView disappeared")
@@ -245,6 +252,9 @@ struct OnboardingView: View {
                                     .tag(second)
                             }
                         }
+                        .onChange(of: pbSeconds) { _, _ in
+                            updateLevelFromPB()
+                        }
                         #if os(iOS)
                         .pickerStyle(WheelPickerStyle())
                         #else
@@ -281,6 +291,9 @@ struct OnboardingView: View {
                                     .font(.title2.bold())
                                     .tag(hundredths)
                             }
+                        }
+                        .onChange(of: pbTenthsHundredths) { _, _ in
+                            updateLevelFromPB()
                         }
                         #if os(iOS)
                         .pickerStyle(WheelPickerStyle())
@@ -354,6 +367,15 @@ struct OnboardingView: View {
         }
     }
     
+    // Auto-update level based on PB time
+    private func updateLevelFromPB() {
+        let newLevel = classify_40yd_time(time: Float(pb), gender: gender)
+        if newLevel != fitnessLevel {
+            print("🎯 Auto-updating level from '\(fitnessLevel)' to '\(newLevel)' based on PB: \(pb)s")
+            fitnessLevel = newLevel
+        }
+    }
+    
     // MARK: - Profile Section
     private var profileSection: some View {
         sectionCard {
@@ -387,55 +409,8 @@ struct OnboardingView: View {
                     }
                 }
                 .pickerStyle(SegmentedPickerStyle())
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Level")
-                        .foregroundColor(.yellow)
-                        .bold()
-                    
-                    if pb > 0 {
-                        let autoLevel = classify_40yd_time(time: Float(pb), gender: gender)
-                        HStack {
-                            Text("Suggested: \(autoLevel)")
-                                .foregroundColor(.green)
-                                .font(.subheadline)
-                            Spacer()
-                            Text("(You can override)")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                        .onAppear {
-                            // DISABLED: Auto-level suggestion disabled to respect user choice
-                            // Users can see the suggestion text but level won't auto-change
-                            print("🎯 Auto-level suggestion available: \(autoLevel) for PB: \(pb)s")
-                            print("🎯 Current user selection: \(fitnessLevel) (manual: \(hasUserManuallySelectedLevel))")
-                        }
-                    } else {
-                        Text("Select your 40-yard time above for automatic level suggestion")
-                            .foregroundColor(.gray)
-                            .font(.caption)
-                    }
-                    
-                    Picker("Level", selection: $fitnessLevel) {
-                        ForEach(["Beginner", "Intermediate", "Advanced", "Elite"], id: \.self) { lvl in
-                            Text(lvl).tag(lvl)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .onChange(of: fitnessLevel) { oldValue, newValue in
-                        print("🔄 Level changed from '\(oldValue)' to '\(newValue)'")
-                        print("🔄 isAutoSettingLevel: \(isAutoSettingLevel)")
-                        print("🔄 hasUserManuallySelectedLevel: \(hasUserManuallySelectedLevel)")
-                        
-                        // Only mark as manually selected if not auto-setting
-                        if !isAutoSettingLevel {
-                            hasUserManuallySelectedLevel = true
-                            print("🎯 User manually selected level: \(newValue)")
-                        } else {
-                            print("🤖 Auto-setting level to: \(newValue)")
-                        }
-                    }
-                    // Always allow manual selection - user choice is paramount
+                .onChange(of: gender) { _, _ in
+                    updateLevelFromPB()
                 }
             }
         }
@@ -604,11 +579,12 @@ struct OnboardingView: View {
         }
     }
     
-    // MARK: - Enhanced Finish Button (REMOVED - Auto-navigation after form completion)
+    // MARK: - Live Program Ready Summary (Updates with all onboarding choices)
     private var finishButton: some View {
         VStack(spacing: 16) {
-            // Enhanced summary card with program details
-            VStack(spacing: 12) {
+            // Live summary card - updates as user makes selections
+            VStack(spacing: 16) {
+                // Header with live level indicator
                 HStack(spacing: 12) {
                     Image(systemName: "bolt.circle.fill")
                         .font(.title2)
@@ -618,28 +594,87 @@ struct OnboardingView: View {
                         Text("Program Ready")
                             .font(.headline)
                             .foregroundColor(.white)
-                        Text("\(fitnessLevel) • \(daysAvailable) days/week • \(String(format: "%.2f", pb))s baseline")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
+                        
+                        // Live summary - updates with every selection
+                        HStack(spacing: 8) {
+                            // Level badge - LIVE UPDATES
+                            Text(fitnessLevel)
+                                .font(.caption.bold())
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(levelColor(fitnessLevel))
+                                .cornerRadius(6)
+                                .id("level-\(fitnessLevel)") // Force refresh on level change
+                            
+                            Text("•")
+                                .foregroundColor(.white.opacity(0.5))
+                            
+                            // Frequency - LIVE UPDATES
+                            Text("\(daysAvailable) days/week")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.9))
+                                .id("freq-\(daysAvailable)") // Force refresh on frequency change
+                            
+                            Text("•")
+                                .foregroundColor(.white.opacity(0.5))
+                            
+                            // PB Time - LIVE UPDATES
+                            Text("\(String(format: "%.2f", pb))s PB")
+                                .font(.caption)
+                                .foregroundColor(.yellow)
+                                .id("pb-\(pb)") // Force refresh on PB change
+                        }
+                        .id("summary-\(fitnessLevel)-\(daysAvailable)-\(pb)") // Force entire row refresh
                     }
                     
                     Spacer()
                 }
                 
-                // Program features preview
-                HStack(spacing: 16) {
-                    FeaturePreview(icon: "calendar", text: "12 Weeks", color: .blue)
-                    FeaturePreview(icon: "figure.run", text: "\(estimatedSessions) Sessions", color: .green)
-                    FeaturePreview(icon: "target", text: "Time Trials", color: .orange)
-                    if daysAvailable >= 6 {
-                        FeaturePreview(icon: "leaf", text: "Recovery", color: .mint)
+                // Detailed program breakdown
+                VStack(spacing: 12) {
+                    // Week 1 start info
+                    HStack {
+                        Image(systemName: "calendar.badge.clock")
+                            .foregroundColor(.cyan)
+                        Text("Starting Week 1")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        Spacer()
+                        Text("Day 1")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.7))
                     }
+                    
+                    Divider()
+                        .background(Color.white.opacity(0.2))
+                    
+                    // Program features preview - LIVE UPDATES
+                    HStack(spacing: 16) {
+                        FeaturePreview(icon: "calendar", text: "12 Weeks", color: .blue)
+                        FeaturePreview(icon: "figure.run", text: "\(estimatedSessions) Sessions", color: .green)
+                            .id("sessions-\(estimatedSessions)") // Force refresh when session count changes
+                        FeaturePreview(icon: "target", text: "Time Trials", color: .orange)
+                        if daysAvailable >= 6 {
+                            FeaturePreview(icon: "leaf", text: "Recovery", color: .mint)
+                        }
+                    }
+                    .id("features-\(daysAvailable)") // Force refresh when frequency changes
                 }
                 
                 // Simple Continue Button
                 Button(action: {
+                    print("🔘 Continue button tapped!")
+                    print("   isCompleting: \(isCompleting)")
+                    print("   fitnessLevel: '\(fitnessLevel)'")
+                    print("   daysAvailable: \(daysAvailable)")
+                    print("   pb: \(pb)")
+                    
                     if !isCompleting {
+                        print("✅ Button enabled - calling saveAndNavigate()")
                         saveAndNavigate()
+                    } else {
+                        print("⚠️ Button disabled - already processing")
                     }
                 }) {
                     HStack {
@@ -659,13 +694,15 @@ struct OnboardingView: View {
                     .padding(.vertical, 16)
                     .background(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color.yellow, Color.orange]),
+                            gradient: Gradient(colors: isCompleting ? [Color.gray, Color.gray.opacity(0.8)] : [Color.yellow, Color.orange]),
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .foregroundColor(.black)
+                    .foregroundColor(isCompleting ? .white.opacity(0.6) : .black)
                     .cornerRadius(12)
+                    .shadow(color: isCompleting ? Color.clear : Color.yellow.opacity(0.5), radius: 10, x: 0, y: 5)
+                    .opacity(isCompleting ? 0.6 : 1.0)
                 }
                 .disabled(isCompleting)
                 .padding(.top, 8)
@@ -678,30 +715,131 @@ struct OnboardingView: View {
     
     // MARK: - Save and Navigate Helper
     private func saveAndNavigate() {
-        print("🚀 Saving and navigating...")
+        print("\n" + String(repeating: "=", count: 60))
+        print("🚀 SAVING ONBOARDING DATA")
+        print(String(repeating: "=", count: 60))
+        print("📝 Current State Values:")
+        print("   userName: '\(userName)'")
+        print("   fitnessLevel: '\(fitnessLevel)'")
+        print("   daysAvailable: \(daysAvailable)")
+        print("   pbSeconds: \(pbSeconds)")
+        print("   pbTenthsHundredths: \(pbTenthsHundredths)")
+        print("   pb (computed): \(pb)")
+        print("   gender: '\(gender)'")
+        print(String(repeating: "=", count: 60))
         
         // Guard against duplicate calls
         guard !isCompleting else { 
-            print("⚠️ Already processing")
+            print("⚠️ Already processing - ignoring duplicate call")
             return 
         }
         
-        isCompleting = true
+        // Validate data before saving - fix empty level if needed
+        if fitnessLevel.isEmpty {
+            print("❌ ERROR: fitnessLevel is empty!")
+            print("   This should never happen - level should be auto-set from PB")
+            print("   Attempting to fix by calling updateLevelFromPB()...")
+            updateLevelFromPB()
+            if fitnessLevel.isEmpty {
+                print("❌ CRITICAL: Still empty after update - aborting save")
+                isCompleting = false
+                return
+            }
+            print("✅ Level fixed: '\(fitnessLevel)'")
+        }
         
-        // Save to UserDefaults
+        guard daysAvailable > 0 else {
+            print("❌ ERROR: daysAvailable is 0 - aborting save")
+            isCompleting = false
+            return
+        }
+        
+        guard pb > 0 else {
+            print("❌ ERROR: pb is 0 - aborting save")
+            isCompleting = false
+            return
+        }
+        
+        isCompleting = true
+        print("✅ Validation passed - proceeding with save")
+        
+        // Save to UserDefaults with explicit synchronization
         UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
         UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
         UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
         UserDefaults.standard.set(pb, forKey: "personalBest40yd")
-        UserDefaults.standard.set(true, forKey: "onboardingCompleted")
+        UserDefaults.standard.set(1, forKey: "currentWeek")
+        UserDefaults.standard.set(1, forKey: "currentDay")
         
-        print("✅ Data saved - Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
+        // Force synchronize to disk
+        UserDefaults.standard.synchronize()
         
-        // Navigate immediately on main thread
-        DispatchQueue.main.async {
-            print("🚀 Navigating to TrainingView...")
+        print("✅ Data saved to UserDefaults and synchronized to disk")
+        
+        // Update UserProfileViewModel with ALL onboarding data
+        userProfileVM.profile.name = userName.isEmpty ? "User" : userName
+        userProfileVM.profile.level = fitnessLevel
+        userProfileVM.profile.frequency = daysAvailable
+        userProfileVM.profile.baselineTime = pb
+        userProfileVM.profile.currentWeek = 1  // Start at Week 1
+        userProfileVM.profile.currentDay = 1   // Start at Day 1
+        userProfileVM.profile.personalBests["40yd"] = pb // Set initial 40yd PR
+        
+        print("✅ UserProfileViewModel updated with complete profile:")
+        print("   - Name: \(userProfileVM.profile.name)")
+        print("   - Level: \(userProfileVM.profile.level)")
+        print("   - Frequency: \(userProfileVM.profile.frequency) days/week")
+        print("   - Baseline: \(userProfileVM.profile.baselineTime)s")
+        print("   - Starting: Week \(userProfileVM.profile.currentWeek), Day \(userProfileVM.profile.currentDay)")
+        print("   - Personal Best (40yd): \(userProfileVM.profile.personalBests["40yd"] ?? 0.0)s")
+        
+        // DON'T refresh adaptive program here - it can crash
+        // TrainingView will do it on load instead
+        print("⏭️ Skipping refreshAdaptiveProgram() - will be done in TrainingView")
+        print("   Estimated sessions: \(estimatedSessions) sessions over 12 weeks")
+        
+        // Final verification before navigation
+        print("\n🔍 FINAL VERIFICATION BEFORE NAVIGATION:")
+        print("   UserDefaults.userLevel: '\(UserDefaults.standard.string(forKey: "userLevel") ?? "NOT SET")'")
+        print("   UserDefaults.trainingFrequency: \(UserDefaults.standard.integer(forKey: "trainingFrequency"))")
+        print("   UserDefaults.personalBest40yd: \(UserDefaults.standard.double(forKey: "personalBest40yd"))")
+        print("   UserProfileVM.level: '\(userProfileVM.profile.level)'")
+        print("   UserProfileVM.frequency: \(userProfileVM.profile.frequency)")
+        print("   UserProfileVM.baselineTime: \(userProfileVM.profile.baselineTime)")
+        
+        // Navigate after brief delay to ensure data is saved
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            print("\n🚀 NAVIGATION TRIGGERED")
+            print("   Calling onComplete() closure...")
+            
+            // Final safety check before navigation
+            let finalLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "NOT SET"
+            let finalFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            let finalPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+            
+            print("   Final UserDefaults check:")
+            print("     userLevel: '\(finalLevel)'")
+            print("     trainingFrequency: \(finalFreq)")
+            print("     personalBest40yd: \(finalPB)")
+            
+            if finalLevel == "NOT SET" || finalFreq == 0 || finalPB == 0 {
+                print("❌ CRITICAL ERROR: Data not saved properly!")
+                print("   Aborting navigation to prevent crash")
+                self.isCompleting = false
+                return
+            }
+            
+            print("✅ All data verified - safe to navigate")
+            
+            // Mark onboarding as complete LAST
+            UserDefaults.standard.set(true, forKey: "onboardingCompleted")
+            UserDefaults.standard.synchronize()
+            
             self.onComplete()
+            print("✅ onComplete() executed successfully")
+            
             self.isCompleting = false
+            print("✅ Navigation complete - isCompleting reset to false")
         }
     }
     

@@ -51,7 +51,7 @@ struct SC40SplashView: View {
                     }
                 }
                 
-                // Lightning bolt trails (adaptive)
+                // Runner motion trails (adaptive)
                 if showContent {
                     let centerX = size.width / 2
                     let centerY = size.height / 2
@@ -116,8 +116,8 @@ struct SC40SplashView: View {
                         .scaleEffect(logoScale)
                         .opacity(logoOpacity)
                     
-                    // Lightning bolt icon (adaptive)
-                    Image(systemName: "bolt.fill")
+                    // Runner icon (adaptive)
+                    Image(systemName: "figure.run")
                         .font(.system(size: WatchAdaptiveSizing.spacing * 4, weight: .bold))
                         .foregroundColor(Color.brandBackground)
                         .scaleEffect(logoScale)

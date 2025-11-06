@@ -59,6 +59,8 @@ func generate12WeekProgram(options: ProgramOptions) -> [WeeklyProgram] {
 }
 
 // Example usage integrating AI update and next week generation
+// Commented out - AI functions not yet implemented
+/*
 func simulateAIWorkflow() {
     let userOptions = ProgramOptions(level: .advanced, daysPerWeek: 5, pb40yd: 4.8)
     var trainingProgram12Weeks = generate12WeekProgramWithAI(options: userOptions)
@@ -72,4 +74,5 @@ func simulateAIWorkflow() {
     trainingProgram12Weeks[1] = week2AI
     print("Week 2 AI-Adjusted Program:", week2AI)
 }
+*/
 

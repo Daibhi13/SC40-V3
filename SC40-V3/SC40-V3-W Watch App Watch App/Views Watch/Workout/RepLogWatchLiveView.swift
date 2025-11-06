@@ -62,11 +62,21 @@ import BrandColors
 // MARK: - Preview
 struct RepLogWatchLiveView_Previews: PreviewProvider {
     static var previews: some View {
-        RepLogWatchLiveView(workoutVM: WorkoutWatchViewModel.mock,
-                            horizontalTab: .constant(0), 
-                            isModal: false, 
-                            showNext: false, 
-                            onNext: {})
+        RepLogWatchLiveView(
+            workoutVM: WorkoutWatchViewModel.mock,
+            horizontalTab: .constant(0), 
+            isModal: false, 
+            showNext: false, 
+            onNext: {},
+            session: TrainingSession(
+                week: 1,
+                day: 1,
+                type: "Preview",
+                focus: "Test Session",
+                sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+                accessoryWork: []
+            )
+        )
     }
 }
 
@@ -93,6 +103,13 @@ struct RepLogWatchLiveView: View {
     var showNext: Bool = false
     var onNext: (() -> Void)? = nil
     var onDone: (() -> Void)? = nil
+    let session: TrainingSession
+    
+    // Data manager for workout history
+    @StateObject private var dataManager = WorkoutDataManager.shared
+    
+    // State for live updates
+    @State private var refreshTimer: Timer?
     // Dynamic rep data based on WorkoutWatchViewModel
     private var reps: [(rep: Int, dist: String, time: String?, isLive: Bool, isResting: Bool)] {
         let totalReps = workoutVM.totalReps
@@ -110,8 +127,27 @@ struct RepLogWatchLiveView: View {
             let isResting: Bool
             
             if repNumber < currentRep {
-                // Completed rep - could use actual recorded times from workoutVM if available
-                time = String(format: "%.2f", Double.random(in: 4.5...6.0)) // Placeholder
+                // Completed rep - use actual recorded times from workout history
+                if let recentWorkout = dataManager.workoutHistory.last,
+                   repNumber <= recentWorkout.completedReps.count {
+                    let completedRep = recentWorkout.completedReps[repNumber - 1]
+                    time = String(format: "%.2f", completedRep.time)
+                } else {
+                    // Fallback to workoutVM with GPS data or estimated time
+                    if workoutVM.lastRepTime > 0 {
+                        time = String(format: "%.2f", workoutVM.lastRepTime)
+                    } else {
+                        // Use GPS manager data if available, otherwise reasonable estimate
+                        let gpsManager = WatchGPSManager.shared
+                        if let sprintResult = gpsManager.endSprint(), sprintResult.time > 0 {
+                            time = String(format: "%.2f", sprintResult.time)
+                        } else {
+                            // Reasonable estimate based on distance and fitness level
+                            let estimatedTime = estimateSprintTime(distance: 40) // Default 40yd
+                            time = String(format: "%.2f", estimatedTime)
+                        }
+                    }
+                }
                 isLive = false
                 isResting = false
             } else if repNumber == currentRep {
@@ -231,14 +267,62 @@ struct RepLogWatchLiveView: View {
                                 print("🔽 RepLogView SWIPE DOWN - dismissing modal")
                                 onDone?()
                             }
-                        } else if value.translation.height < -8 {
-                            // Non-modal: only swipe up to go back to main tab
-                            print("🔼 RepLogView SWIPE UP - returning to main tab")
-                            horizontalTab = 1
+                        } else {
+                            // Enhanced7StageWorkoutView navigation - swipe down to return
+                            if value.translation.height > 30 {
+                                print("📊 RepLogView - Swipe Down to return to workout")
+                                // This will be handled by the fullScreenCover dismissal
+                                // We can't directly dismiss here, but the parent view will handle it
+                            } else if value.translation.height < -8 {
+                                // Non-modal: swipe up to go back to main tab (legacy behavior)
+                                print("🔼 RepLogView SWIPE UP - returning to main tab")
+                                horizontalTab = 1
+                            }
                         }
                     }
             )
         }
+        .onAppear {
+            startLiveUpdates()
+        }
+        .onDisappear {
+            stopLiveUpdates()
+        }
+    }
+    
+    // MARK: - Live Update Methods
+    
+    private func startLiveUpdates() {
+        // Start refresh timer for live data updates
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            // Force UI refresh for live data by updating workoutVM
+            DispatchQueue.main.async {
+                self.workoutVM.objectWillChange.send()
+            }
+        }
+        
+        print("📊 RepLog live updates started")
+    }
+    
+    private func stopLiveUpdates() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+        
+        print("📊 RepLog live updates stopped")
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func estimateSprintTime(distance: Int) -> Double {
+        // Intelligent sprint time estimation based on distance and typical performance
+        // These are realistic estimates for different fitness levels
+        let baseTimeFor40yd = 5.5 // Average time for 40 yards
+        let timePerYard = baseTimeFor40yd / 40.0
+        
+        // Adjust for distance with slight non-linearity (shorter distances are proportionally faster)
+        let distanceMultiplier = distance <= 20 ? 0.9 : (distance >= 60 ? 1.1 : 1.0)
+        
+        return Double(distance) * timePerYard * distanceMultiplier
     }
 }
 
@@ -311,9 +395,19 @@ struct RepLogWatchLiveView: View {
  */
 
 #Preview {
-    RepLogWatchLiveView(workoutVM: WorkoutWatchViewModel.mock,
-                        horizontalTab: .constant(0), 
-                        isModal: true, 
-                        showNext: true)
+    RepLogWatchLiveView(
+        workoutVM: WorkoutWatchViewModel.mock,
+        horizontalTab: .constant(0), 
+        isModal: true, 
+        showNext: true,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }
 

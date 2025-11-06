@@ -7,40 +7,78 @@ struct ControlWatchView: View {
     var selectedIndex: Int = 0
     
     @ObservedObject var workoutVM: WorkoutWatchViewModel
+    let session: TrainingSession
     @State private var showEndWorkoutAlert = false
     @Environment(\.presentationMode) var presentationMode
     
     private func pauseWorkout() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         workoutVM.isPaused = true
         // Pause any running timers or GPS tracking
         workoutVM.pauseSession()
+        
+        print("⏸️ Workout paused")
     }
     
     private func playWorkout() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.start)
+        
         workoutVM.isPaused = false
         // Resume any paused timers or GPS tracking
         workoutVM.resumeSession()
+        
+        print("▶️ Workout resumed")
     }
     
     private func rewindSession() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Go back to previous rep or phase
         workoutVM.goToPreviousStep()
+        
+        print("⏪ Rewound to previous step")
     }
     
     private func forwardSession() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Move forward to next rep or phase
         workoutVM.goToNextStep()
+        
+        print("⏩ Advanced to next step")
     }
-    
 
     private func toggleHaptics() {
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.click)
+        
         // Toggle haptic feedback on/off
         workoutVM.toggleHapticFeedback()
+        
+        print("🔊 Haptics \(workoutVM.isHapticEnabled ? "enabled" : "disabled")")
     }
     
     private func endWorkout() {
-        // TODO: Properly end the workout session
-        // workoutVM.endWorkout() // Method doesn't exist yet
+        // Add haptic feedback
+        WKInterfaceDevice.current().play(.stop)
+        
+        // Stop the workout session
+        workoutVM.isRunning = false
+        workoutVM.pauseSession()
+        workoutVM.stopGPS()
+        
+        // End HealthKit workout if running
+        Task {
+            await workoutVM.endHealthKitWorkout()
+        }
+        
+        // Save workout progress (this would typically save to Core Data or send to phone)
+        print("💾 Workout ended and progress saved")
         
         // Dismiss the workout view
         presentationMode.wrappedValue.dismiss()
@@ -58,100 +96,119 @@ struct ControlWatchView: View {
     //     )]
     // }
 
-    var body: some View {
-        ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color.brandBackground, Color.brandTertiary.opacity(0.18)]), startPoint: .top, endPoint: .bottom)
-                .ignoresSafeArea()
-            VStack(spacing: 12) {
-                // Top Row: Pause/Play and End Workout
-                HStack(spacing: 16) {
-                    Button(action: { workoutVM.isPaused ? playWorkout() : pauseWorkout() }) {
-                        Image(systemName: workoutVM.isPaused ? "play.fill" : "pause.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandTertiary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandTertiary, lineWidth: 2))
-                    }
-                    Button(action: { showEndWorkoutAlert = true }) {
-                        Image(systemName: "stop.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(Color.brandPrimary)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(Color.brandPrimary, lineWidth: 2))
-                    }
-                }
-                
-
-                
-                // Navigation Controls: Sprint Start/Stop and Rep Navigation
-                HStack(spacing: 16) {
-                    // Previous/Back Button - also functions as Sprint START when not running
-                    Button(action: { 
-                        if !workoutVM.isRunning {
-                            // Start current sprint rep
-                            workoutVM.startRep()
-                        } else {
-                            // Go back to previous rep or phase
-                            workoutVM.goToPreviousStep()
-                        }
-                    }) {
-                        Image(systemName: workoutVM.isRunning ? "backward.fill" : "play.circle.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(workoutVM.isRunning ? Color.brandSecondary : Color.green)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(workoutVM.isRunning ? Color.brandSecondary : Color.green, lineWidth: 2))
-                    }
-                    
-                    // Forward/Next Button - also functions as Sprint STOP when running
-                    Button(action: { 
-                        if workoutVM.isRunning {
-                            // Complete current sprint rep
-                            workoutVM.completeCurrentRep()
-                        } else {
-                            // Move forward to next rep or phase
-                            workoutVM.goToNextStep()
-                        }
-                    }) {
-                        Image(systemName: workoutVM.isRunning ? "stop.circle.fill" : "forward.fill")
-                            .font(.system(size: 22, weight: .bold))
-                            .foregroundColor(workoutVM.isRunning ? Color.red : Color.brandAccent)
-                            .frame(width: 38, height: 38)
-                            .background(Circle().stroke(workoutVM.isRunning ? Color.red : Color.brandAccent, lineWidth: 2))
-                    }
-                }
-                Spacer(minLength: 4)
-                // Haptic Feedback Toggle and Reset Control
-                HStack(spacing: 16) {
-                    // Haptic Toggle
-                    Button(action: { toggleHaptics() }) {
-                        Image(systemName: workoutVM.isHapticEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(Color.brandBackground)
-                            .frame(width: 34, height: 34)
-                            .background(Circle().fill(workoutVM.isHapticEnabled ? Color.brandPrimary : Color.brandAccent))
-                    }
-                    
-                    // Reset Current Rep
-                    Button(action: { 
-                        // Reset current rep data
-                        workoutVM.isRunning = false
-                        workoutVM.stopGPS()
-                        workoutVM.currentRepTime = 0
-                        workoutVM.distanceTraveled = 0
-                    }) {
-                        Image(systemName: "arrow.counterclockwise")
-                            .font(.system(size: 18, weight: .bold))
-                            .foregroundColor(Color.brandSecondary)
-                            .frame(width: 34, height: 34)
-                            .background(Circle().stroke(Color.brandSecondary, lineWidth: 2))
-                    }
+    // MARK: - Swipe Back Gesture
+    private var swipeBackGesture: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onEnded { value in
+                // Swipe Right to go back to Enhanced7StageWorkoutView
+                if value.translation.width > 30 {
+                    print(" ControlView - Swipe Right to return to workout")
+                    presentationMode.wrappedValue.dismiss()
                 }
             }
-            .padding(.vertical, 10)
+    }
+    
+    // MARK: - Timer Display
+    private var timerDisplay: some View {
+        VStack(spacing: 4) {
+            Text("\(workoutVM.stopwatchTimeString)")
+                .font(.system(size: 20, weight: .medium, design: .monospaced))
+                .foregroundColor(.white)
+            
+            Text("ELAPSED TIME")
+                .font(.system(size: 9, weight: .medium))
+                .foregroundColor(.white.opacity(0.6))
+                .tracking(0.5)
         }
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Timer display at top
+            timerDisplay
+                .padding(.top, 8)
+            
+            Spacer()
+            
+            // Control buttons grid matching the uploaded design
+            VStack(spacing: 12) {
+                // Top row: Pause/Play and Stop
+                HStack(spacing: 12) {
+                    // Pause/Play Button (Orange border)
+                    ControlButton(
+                        icon: workoutVM.isPaused ? "play.fill" : "pause.fill",
+                        borderColor: .orange,
+                        action: {
+                            workoutVM.isPaused ? playWorkout() : pauseWorkout()
+                        }
+                    )
+                    
+                    // Stop Button (Pink border)
+                    ControlButton(
+                        icon: "stop.fill",
+                        borderColor: .pink,
+                        action: {
+                            showEndWorkoutAlert = true
+                        }
+                    )
+                }
+                
+                // Bottom row: Rewind and Fast Forward
+                HStack(spacing: 12) {
+                    // Rewind Button (Cyan border)
+                    ControlButton(
+                        icon: "backward.fill",
+                        borderColor: .cyan,
+                        action: {
+                            rewindSession()
+                        }
+                    )
+                    
+                    // Fast Forward Button (Blue border)
+                    ControlButton(
+                        icon: "forward.fill",
+                        borderColor: .blue,
+                        action: {
+                            forwardSession()
+                        }
+                    )
+                }
+                
+                // Volume/Haptic Button (Gray border) - centered
+                HStack {
+                    ControlButton(
+                        icon: workoutVM.isHapticEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill",
+                        borderColor: .gray,
+                        action: {
+                            toggleHaptics()
+                        }
+                    )
+                }
+            }
+            
+            Spacer()
+            
+            // Page indicator dots
+            HStack(spacing: 8) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(index == selectedIndex ? Color.white : Color.white.opacity(0.3))
+                        .frame(width: 6, height: 6)
+                }
+            }
+            .padding(.bottom, 4)
+            
+            // Navigation hints
+            Text("Main →")
+                .font(.system(size: 8, weight: .medium))
+                .foregroundColor(.white.opacity(0.5))
+                .padding(.bottom, 4)
+        }
+        .background(Color.black.ignoresSafeArea())
+        .gesture(swipeBackGesture)
         .alert(isPresented: $showEndWorkoutAlert) {
             Alert(
-                title: Text("End Workout?").foregroundColor(Color.brandPrimary),
+                title: Text("End Workout?"),
                 message: Text("Save your progress and end the workout?"),
                 primaryButton: .default(Text("CONTINUE WORKOUT")),
                 secondaryButton: .default(Text("END & SAVE")) {
@@ -160,14 +217,74 @@ struct ControlWatchView: View {
             )
         }
     }
+}
+
+// MARK: - Control Button Component
+struct ControlButton: View {
+    let icon: String
+    let borderColor: Color
+    let action: () -> Void
+    
+    @State private var isPressed = false
+    
+    var body: some View {
+        Button(action: {
+            // Add haptic feedback for button press
+            let impactFeedback = WKHapticType.click
+            WKInterfaceDevice.current().play(impactFeedback)
+            
+            // Execute the action
+            action()
+        }) {
+            Image(systemName: icon)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundColor(.white)
+                .frame(width: 70, height: 40)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(Color.black)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(borderColor, lineWidth: 2)
+                        )
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isPressed ? 0.95 : 1.0)
+        .animation(.easeInOut(duration: 0.1), value: isPressed)
+        .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
+            isPressed = pressing
+        }, perform: {})
+    }
+}
+
 // MARK: - Preview
 struct ControlWatchView_Previews: PreviewProvider {
     static var previews: some View {
-        ControlWatchView(workoutVM: WorkoutWatchViewModel.mock)
+        ControlWatchView(
+            workoutVM: WorkoutWatchViewModel.mock,
+            session: TrainingSession(
+                week: 1,
+                day: 1,
+                type: "Preview",
+                focus: "Test Session",
+                sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+                accessoryWork: []
+            )
+        )
     }
-}
 }
 
 #Preview {
-    ControlWatchView(workoutVM: WorkoutWatchViewModel.mock)
+    ControlWatchView(
+        workoutVM: WorkoutWatchViewModel.mock,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }

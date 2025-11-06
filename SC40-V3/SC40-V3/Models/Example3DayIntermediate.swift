@@ -18,12 +18,14 @@ func runExample3DayIntermediate() {
         currentDay: 1,
         leaderboardOptIn: true
     )
-    let program = generateVariedAdaptiveProgram(user: &userProfile)
-    for session in program.prefix(9) {
-        print("Week \(session.week), Day \(session.day):")
-        print("  Type: \(session.level)")
-        print("  Sprints: \(session.sprints.map { "\($0.reps)x\($0.distanceYards)yd [\($0.intensity)]" }.joined(separator: ", "))")
-        print("  Accessory: \(session.accessoryWork.joined(separator: ", "))")
-        print()
-    }
+    // TODO: Implement generateVariedAdaptiveProgram
+    // let program = generateVariedAdaptiveProgram(user: &userProfile)
+    // for session in program.prefix(9) {
+    //     print("Week \(session.week), Day \(session.day):")
+    //     print("  Type: \(session.level)")
+    //     print("  Sprints: \(session.sprints.map { "\($0.reps)x\($0.distanceYards)yd [\($0.intensity)]" }.joined(separator: ", "))")
+    //     print("  Accessory: \(session.accessoryWork.joined(separator: ", "))")
+    //     print()
+    // }
+    print("Example program generation - not yet implemented")
 }

@@ -2,143 +2,213 @@ import SwiftUI
 
 struct QuickWinWorkoutView: View {
     let onComplete: () -> Void
-    
-    @State private var currentStep = 0
-    @State private var isActive = false
-    @State private var timeRemaining = 30
-    @State private var timer: Timer?
-    
-    private let workoutSteps = [
-        "Get ready to start!",
-        "High knees - 30 seconds",
-        "Butt kicks - 30 seconds", 
-        "Arm circles - 30 seconds",
-        "Light jog in place - 30 seconds",
-        "Great job! You're done!"
-    ]
+    @State private var showWorkout = false
     
     var body: some View {
-        VStack(spacing: 30) {
-            // Progress indicator
-            ProgressView(value: Double(currentStep), total: Double(workoutSteps.count - 1))
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
-                .scaleEffect(x: 1, y: 2, anchor: .center)
-            
-            // Current step
-            VStack(spacing: 16) {
-                Text("Step \(currentStep + 1) of \(workoutSteps.count)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+        NavigationView {
+            ZStack {
+                // Premium gradient background
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.1, green: 0.2, blue: 0.4),
+                        Color(red: 0.2, green: 0.1, blue: 0.3),
+                        Color(red: 0.1, green: 0.05, blue: 0.2)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
                 
-                Text(workoutSteps[currentStep])
-                    .font(.title2.bold())
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-            }
-            
-            // Timer (only show during active steps)
-            if currentStep > 0 && currentStep < workoutSteps.count - 1 {
-                VStack(spacing: 8) {
-                    Text("\(timeRemaining)")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
-                    
-                    Text("seconds remaining")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                if showWorkout {
+                    // Quick Win completion screen
+                    VStack(spacing: 30) {
+                        Spacer()
+                        
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 80, weight: .bold))
+                            .foregroundColor(.green)
+                        
+                        VStack(spacing: 16) {
+                            Text("Quick Win Complete!")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            Text("Great job! You've completed your first sprint training session.")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 20)
+                        }
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            print("🏆 Quick Win session completed")
+                            onComplete()
+                        }) {
+                            Text("Continue to Training")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 56)
+                                .background(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .cornerRadius(16)
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 40)
+                    }
+                } else {
+                    // Quick Win introduction screen
+                    VStack(spacing: 30) {
+                        Spacer()
+                        
+                        // Header
+                        VStack(spacing: 16) {
+                            Image(systemName: "trophy.fill")
+                                .font(.system(size: 50, weight: .bold))
+                                .foregroundColor(.yellow)
+                            
+                            Text("Quick Win Session")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            Text("Your First Sprint Training")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                        
+                        // Session details card
+                        VStack(spacing: 20) {
+                            VStack(spacing: 12) {
+                                Text("10–20–30 yd Pyramid")
+                                    .font(.system(size: 22, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                Text("Accel progression")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.yellow)
+                            }
+                            
+                            // Session breakdown
+                            VStack(spacing: 12) {
+                                SessionDetailRow(icon: "figure.run", label: "Sprint Pattern", value: "10→20→30 yards")
+                                SessionDetailRow(icon: "repeat", label: "Total Reps", value: "3 sprints")
+                                SessionDetailRow(icon: "clock", label: "Rest Between", value: "2 min")
+                                SessionDetailRow(icon: "target", label: "Focus", value: "Accel progression")
+                            }
+                            
+                            // Encouragement
+                            VStack(spacing: 8) {
+                                Text("Perfect for beginners!")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.green)
+                                
+                                Text("This progressive pyramid builds speed gradually")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .multilineTextAlignment(.center)
+                            }
+                        }
+                        .padding(24)
+                        .background(
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.white.opacity(0.1))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 20)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                        .padding(.horizontal, 20)
+                        
+                        Spacer()
+                        
+                        // Action buttons
+                        VStack(spacing: 16) {
+                            Button(action: {
+                                withAnimation {
+                                    showWorkout = true
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "play.fill")
+                                        .font(.system(size: 16, weight: .bold))
+                                    Text("Start My First Sprint!")
+                                        .font(.system(size: 18, weight: .semibold))
+                                }
+                                .foregroundColor(.black)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 56)
+                                .background(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .cornerRadius(16)
+                            }
+                            
+                            Button(action: {
+                                // Skip Quick Win and go directly to TrainingView
+                                onComplete()
+                            }) {
+                                Text("Maybe Later")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 40)
+                    }
                 }
             }
-            
-            // Action button
-            Button(action: handleButtonTap) {
-                Text(buttonText)
-                    .font(.headline)
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        onComplete()
+                    }
                     .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(buttonColor)
-                    .cornerRadius(12)
+                }
             }
-            .padding(.horizontal)
+            #endif
+        }
+    }
+}
+
+// MARK: - Session Detail Row Component
+struct SessionDetailRow: View {
+    let icon: String
+    let label: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: icon)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.cyan)
+                .frame(width: 24)
+            
+            Text(label)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.white.opacity(0.8))
             
             Spacer()
-        }
-        .padding()
-        .navigationTitle("Quick Win Workout")
-        .navigationBarTitleDisplayMode(.inline)
-        .onDisappear {
-            timer?.invalidate()
-        }
-    }
-    
-    private var buttonText: String {
-        switch currentStep {
-        case 0:
-            return "Start Workout"
-        case workoutSteps.count - 1:
-            return "Complete"
-        default:
-            return isActive ? "Skip" : "Next"
-        }
-    }
-    
-    private var buttonColor: Color {
-        switch currentStep {
-        case 0:
-            return .blue
-        case workoutSteps.count - 1:
-            return .green
-        default:
-            return isActive ? .orange : .blue
-        }
-    }
-    
-    private func handleButtonTap() {
-        if currentStep == 0 {
-            // Start workout
-            nextStep()
-        } else if currentStep == workoutSteps.count - 1 {
-            // Complete workout
-            onComplete()
-        } else {
-            // Skip or next
-            nextStep()
-        }
-    }
-    
-    private func nextStep() {
-        timer?.invalidate()
-        
-        if currentStep < workoutSteps.count - 1 {
-            currentStep += 1
             
-            // Start timer for exercise steps (not first or last)
-            if currentStep > 0 && currentStep < workoutSteps.count - 1 {
-                startTimer()
-            }
-        }
-    }
-    
-    private func startTimer() {
-        timeRemaining = 30
-        isActive = true
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if timeRemaining > 0 {
-                timeRemaining -= 1
-            } else {
-                timer?.invalidate()
-                isActive = false
-                nextStep()
-            }
+            Text(value)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
         }
     }
 }
 
 #Preview {
-    NavigationView {
-        QuickWinWorkoutView {
-            print("Workout completed!")
-        }
-    }
+    QuickWinWorkoutView(onComplete: {})
 }

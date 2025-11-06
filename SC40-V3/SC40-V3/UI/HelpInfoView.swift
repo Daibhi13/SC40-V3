@@ -1,144 +1,219 @@
 import SwiftUI
 
 struct HelpInfoView: View {
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
+    @State private var showContent = false
     @State private var showMessageSheet = false
-    @State private var helpTopics = [
-        // Feedback & Support (Sprint Coach 40)
-        "Cancel Membership/Subscription",
-        "Refund",
-        "Restore a Membership/Subscription",
-        "Change Membership to Lifetime",
-        "Reset Plan",
-        "What Does Lifetime Membership Mean?",
-        "Lost History or Progress",
-        "Apple Watch Sync",
-        "Apple Watch: Spotify & Bluetooth Headphones",
-        "Apple Watch: Apple Music & Bluetooth Headphones"
-    ]
+    @State private var showFAQ = false
+    @State private var showGettingStarted = false
+    @State private var showSubscriptionBilling = false
+    @State private var showAccountManagement = false
+    @State private var showTrainingWorkouts = false
+    @State private var showTechnicalSupport = false
+    @State private var showAboutApp = false
+    @State private var showLegalPrivacy = false
     var body: some View {
         NavigationView {
             ZStack {
-                // Help & Support Canvas liquid glass background
-                Canvas { context, size in
-                    // Support theme gradient
-                    let helpGradient = Gradient(colors: [
-                        Color.brandBackground.opacity(0.95),
-                        Color.blue.opacity(0.4),
-                        Color.purple.opacity(0.3),
-                        Color.indigo.opacity(0.25)
-                    ])
-                    context.fill(
-                        Path(CGRect(origin: .zero, size: size)),
-                        with: .linearGradient(helpGradient,
-                                            startPoint: CGPoint(x: 0, y: 0),
-                                            endPoint: CGPoint(x: size.width, y: size.height))
-                    )
-                    
-                    // Support icon elements
-                    let supportElements = 8
-                    for i in 0..<supportElements {
-                        let x = size.width * (0.15 + CGFloat(i % 3) * 0.35)
-                        let y = size.height * (0.2 + CGFloat(i / 3) * 0.3)
-                        let radius: CGFloat = 18 + CGFloat(i % 4) * 6
-                        
-                        // Help bubbles
-                        context.addFilter(.blur(radius: 14))
-                        context.fill(Path(ellipseIn: CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2)),
-                                   with: .color(Color.blue.opacity(0.16)))
-                        
-                        // Question mark visualization
-                        if i % 3 == 0 {
-                            context.fill(Path(ellipseIn: CGRect(x: x - 2, y: y - 2, width: 4, height: 4)),
-                                       with: .color(Color.white.opacity(0.8)))
-                        }
-                    }
-                    
-                    // Support wave patterns
-                    let waveHeight: CGFloat = 12
-                    let waveLength = size.width / 4
-                    var wavePath = Path()
-                    wavePath.move(to: CGPoint(x: 0, y: size.height * 0.75))
-                    for x in stride(from: 0, through: size.width, by: 2) {
-                        let y = size.height * 0.75 + waveHeight * sin((x / waveLength) * 2 * .pi)
-                        wavePath.addLine(to: CGPoint(x: x, y: y))
-                    }
-                    wavePath.addLine(to: CGPoint(x: size.width, y: size.height))
-                    wavePath.addLine(to: CGPoint(x: 0, y: size.height))
-                    
-                    context.fill(wavePath, with: .color(Color.purple.opacity(0.12)))
-                    
-                    // Glass overlay
-                    context.fill(
-                        Path(CGRect(origin: .zero, size: size)),
-                        with: .color(Color.white.opacity(0.03))
-                    )
-                }
-                .edgesIgnoringSafeArea(.all)
+                // Premium gradient background matching Settings
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
+                        .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
+                        .init(color: Color(red: 0.15, green: 0.25, blue: 0.45), location: 0.5),
+                        .init(color: Color(red: 0.2, green: 0.15, blue: 0.35), location: 0.7),
+                        .init(color: Color(red: 0.1, green: 0.05, blue: 0.25), location: 1.0)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
                 
-                VStack(spacing: 0) {
-                    // Header
-                    HStack {
-                        Button("Close") { presentationMode.wrappedValue.dismiss() }
-                            .foregroundColor(.brandPrimary)
-                        Spacer()
-                        Text("Feedback & Support")
-                            .font(.headline)
-                            .foregroundColor(.brandAccent)
-                        Spacer()
-                        Spacer().frame(width: 60)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                    Divider()
-                    Button(action: { showMessageSheet = true }) {
-                        Text("Send us a message")
-                            .foregroundColor(.brandTertiary)
-                            .font(.system(size: 17, weight: .semibold))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 12)
-                            .padding(.horizontal)
-                    }
-                    Divider()
-                    HStack {
-                        Text("40 Yard Sprinter (IOS)")
-                            .font(.subheadline)
-                            .foregroundColor(.brandAccent)
-                            .padding(.leading)
-                        Spacer()
-                    }
-                    .padding(.top, 8)
-                    List {
-                        ForEach(helpTopics, id: \.self) { topic in
-                            NavigationLink(destination: HelpTopicDetailView(topic: topic)) {
-                                HStack {
-                                    Image(systemName: "doc.text")
-                                        .foregroundColor(.brandTertiary)
-                                    Text(topic)
-                                        .foregroundColor(.brandSecondary)
-                                }
-                                .padding(.vertical, 4)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // Header Section
+                        VStack(spacing: 16) {
+                            // Help Icon
+                            ZStack {
+                                Circle()
+                                    .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: "questionmark.circle.fill")
+                                    .font(.system(size: 40, weight: .medium))
+                                    .foregroundColor(.black)
+                            }
+                            .padding(.top, 20)
+                            
+                            VStack(spacing: 8) {
+                                Text("Help & Info")
+                                    .font(.system(size: 32, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                Text("Get support and learn more about Sprint Coach 40")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                                    .multilineTextAlignment(.center)
                             }
                         }
-                        Button("Load more") {}
-                            .foregroundColor(.brandTertiary)
-                            .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.bottom, 40)
+                        
+                        // Quick Actions Section
+                        HelpSection(
+                            icon: "envelope.fill",
+                            title: "Quick Actions",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0)
+                        ) {
+                            VStack(spacing: 12) {
+                                HelpActionButton(
+                                    icon: "paperplane.fill",
+                                    title: "Send us a message",
+                                    subtitle: "Get direct support from our team",
+                                    action: { showMessageSheet = true }
+                                )
+                                
+                                HelpActionButton(
+                                    icon: "questionmark.circle.fill",
+                                    title: "Frequently Asked Questions",
+                                    subtitle: "Find quick answers to common questions",
+                                    action: { showFAQ = true }
+                                )
+                            }
+                        }
+                        
+                        // Getting Started Section
+                        HelpSection(
+                            icon: "play.circle.fill",
+                            title: "Getting Started",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0)
+                        ) {
+                            VStack(spacing: 12) {
+                                HelpNavigationButton(
+                                    icon: "figure.run",
+                                    title: "Getting Started Guide",
+                                    subtitle: "Learn the basics of Sprint Coach 40",
+                                    action: { showGettingStarted = true }
+                                )
+                                
+                                HelpNavigationButton(
+                                    icon: "dumbbell.fill",
+                                    title: "Training & Workouts",
+                                    subtitle: "Master your sprint training",
+                                    action: { showTrainingWorkouts = true }
+                                )
+                            }
+                        }
+                        
+                        // Account & Billing Section
+                        HelpSection(
+                            icon: "person.circle.fill",
+                            title: "Account & Billing",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0)
+                        ) {
+                            VStack(spacing: 12) {
+                                HelpNavigationButton(
+                                    icon: "creditcard.fill",
+                                    title: "Subscription & Billing",
+                                    subtitle: "Manage your subscription",
+                                    action: { showSubscriptionBilling = true }
+                                )
+                                
+                                HelpNavigationButton(
+                                    icon: "person.crop.circle.fill",
+                                    title: "Account Management",
+                                    subtitle: "Profile and account settings",
+                                    action: { showAccountManagement = true }
+                                )
+                            }
+                        }
+                        
+                        // Support & Information Section
+                        HelpSection(
+                            icon: "gear.circle.fill",
+                            title: "Support & Information",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0)
+                        ) {
+                            VStack(spacing: 12) {
+                                HelpNavigationButton(
+                                    icon: "wrench.and.screwdriver.fill",
+                                    title: "Technical Support",
+                                    subtitle: "Troubleshooting and technical help",
+                                    action: { showTechnicalSupport = true }
+                                )
+                                
+                                HelpNavigationButton(
+                                    icon: "info.circle.fill",
+                                    title: "About Sprint Coach 40",
+                                    subtitle: "Learn about our app and mission",
+                                    action: { showAboutApp = true }
+                                )
+                                
+                                HelpNavigationButton(
+                                    icon: "doc.text.fill",
+                                    title: "Legal & Privacy",
+                                    subtitle: "Terms, privacy policy, and legal info",
+                                    action: { showLegalPrivacy = true }
+                                )
+                            }
+                        }
+                        
+                        // Contact Information
+                        VStack(spacing: 12) {
+                            Text("Sprint Coach 40")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundColor(.white)
+                            
+                            Text("support@sprintcoach40.com")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                            
+                            Text("Version 1.0.0")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.white.opacity(0.6))
+                        }
+                        .padding(.top, 40)
+                        .padding(.bottom, 40)
+                        
+                        Spacer(minLength: 40)
                     }
-                    .listStyle(PlainListStyle())
-                    VStack(spacing: 2) {
-                        Text("Sprint Coach 40")
-                            .font(.footnote)
-                            .foregroundColor(.brandAccent)
-                        Text("support@sprintcoach40.com")
-                            .font(.footnote)
-                            .foregroundColor(.brandAccent)
-                    }
-                    .padding(.bottom, 8)
+                    .padding(.horizontal, 20)
                 }
             }
-            .sheet(isPresented: $showMessageSheet) {
-                MessageSheet()
+            .navigationTitle("")
+            .navigationBarHidden(true)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    showContent = true
+                }
             }
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(isPresented: $showMessageSheet) {
+            MessageSheet()
+        }
+        .sheet(isPresented: $showFAQ) {
+            FAQView()
+        }
+        .sheet(isPresented: $showGettingStarted) {
+            GettingStartedView()
+        }
+        .sheet(isPresented: $showSubscriptionBilling) {
+            SubscriptionBillingView()
+        }
+        .sheet(isPresented: $showAccountManagement) {
+            AccountManagementView()
+        }
+        .sheet(isPresented: $showTrainingWorkouts) {
+            TrainingWorkoutsView()
+        }
+        .sheet(isPresented: $showTechnicalSupport) {
+            TechnicalSupportView()
+        }
+        .sheet(isPresented: $showAboutApp) {
+            AboutAppView()
+        }
+        .sheet(isPresented: $showLegalPrivacy) {
+            LegalPrivacyView()
         }
     }
 }
@@ -217,38 +292,235 @@ struct HelpTopicDetailView: View {
     }
 }
 
-struct MessageSheet: View {
-    @Environment(\.presentationMode) var presentationMode
-    @State private var message = ""
+// MARK: - Help Components
+
+struct HelpSection<Content: View>: View {
+    let icon: String
+    let title: String
+    let iconColor: Color
+    let content: Content
+    
+    init(icon: String, title: String, iconColor: Color, @ViewBuilder content: () -> Content) {
+        self.icon = icon
+        self.title = title
+        self.iconColor = iconColor
+        self.content = content()
+    }
+    
     var body: some View {
-        NavigationView {
-            VStack {
-                Text("Send us a message to Accelerate Support")
-                    .font(.headline)
-                    .padding(.top)
-                TextEditor(text: $message)
-                    .frame(height: 180)
-                    .padding()
-                    .background(Color.brandAccent.opacity(0.1))
-                    .cornerRadius(12)
-                Button(action: { 
-                    // Here you would send the message to Accelerate's backend or support email
-                    presentationMode.wrappedValue.dismiss() 
-                }) {
-                    Text("Send")
-                        .font(.headline)
-                        .foregroundColor(.brandBackground)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.brandPrimary)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal)
+        VStack(spacing: 16) {
+            // Section Header
+            HStack(spacing: 12) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
+                    .foregroundColor(iconColor)
+                    .frame(width: 24, height: 24)
+                
+                Text(title)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundColor(.white)
+                
                 Spacer()
             }
-            .padding()
-            .background(Color.brandBackground.edgesIgnoringSafeArea(.all))
-            .navigationBarHidden(true)
+            .padding(.horizontal, 20)
+            
+            // Section Content
+            VStack(spacing: 0) {
+                content
+            }
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.white.opacity(0.1))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+            )
+            .padding(.horizontal, 20)
         }
+        .padding(.bottom, 24)
+    }
+}
+
+struct HelpActionButton: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .frame(width: 24, height: 24)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Text(subtitle)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                
+                Spacer()
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+        }
+    }
+}
+
+struct HelpNavigationButton: View {
+    let icon: String
+    let title: String
+    let subtitle: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: icon)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    .frame(width: 24, height: 24)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Text(subtitle)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.white.opacity(0.5))
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+        }
+    }
+}
+
+struct MessageSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var message = ""
+    @State private var email = ""
+    @State private var subject = ""
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                // Premium gradient background
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
+                        .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
+                        .init(color: Color(red: 0.15, green: 0.25, blue: 0.45), location: 0.5),
+                        .init(color: Color(red: 0.2, green: 0.15, blue: 0.35), location: 0.7),
+                        .init(color: Color(red: 0.1, green: 0.05, blue: 0.25), location: 1.0)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
+                
+                ScrollView {
+                    VStack(spacing: 24) {
+                        VStack(spacing: 16) {
+                            Text("📧 Contact Support")
+                                .font(.system(size: 28, weight: .bold))
+                                .foregroundColor(.white)
+                            
+                            Text("Send us a message and we'll get back to you")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(.top, 20)
+                        
+                        VStack(spacing: 16) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Email")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.white)
+                                
+                                TextField("your.email@example.com", text: $email)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Subject")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.white)
+                                
+                                TextField("Brief description of your issue", text: $subject)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Message")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(.white)
+                                
+                                TextEditor(text: $message)
+                                    .frame(height: 120)
+                                    .padding(8)
+                                    .background(Color.white)
+                                    .cornerRadius(8)
+                            }
+                        }
+                        
+                        Button(action: {
+                            // Send message logic here
+                            HapticManager.shared.success()
+                            dismiss()
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "paperplane.fill")
+                                    .font(.system(size: 16, weight: .medium))
+                                Text("Send Message")
+                                    .font(.system(size: 18, weight: .semibold))
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 50)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(red: 1.0, green: 0.8, blue: 0.0), Color(red: 1.0, green: 0.6, blue: 0.0)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .cornerRadius(12)
+                            .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .disabled(message.isEmpty || email.isEmpty || subject.isEmpty)
+                        .opacity(message.isEmpty || email.isEmpty || subject.isEmpty ? 0.6 : 1.0)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 40)
+                }
+            }
+            .navigationTitle("Contact Support")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.white)
+                }
+            }
+        }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }

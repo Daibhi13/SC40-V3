@@ -69,7 +69,7 @@ struct ContentViewWatch: View {
         .ignoresSafeArea()
         
         VStack(spacing: WatchAdaptiveSizing.spacing) {
-            Image(systemName: "bolt.fill")
+            Image(systemName: "figure.run")
                 .font(.system(size: 32, weight: .bold))
                 .foregroundColor(.brandPrimary)
             
@@ -128,7 +128,7 @@ struct ContentViewWatch: View {
             path.addLine(to: CGPoint(x: size.width, y: centerY + 20))
         }, with: .color(Color.brandPrimary.opacity(0.3)), lineWidth: 2)
         
-        // Lightning bolt effect
+        // Runner motion effect
         context.fill(Path(ellipseIn: CGRect(x: centerX - 15, y: centerY - 15, width: 30, height: 30)),
                    with: .color(Color.brandPrimary.opacity(0.6)))
     }

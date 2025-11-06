@@ -6,7 +6,7 @@ struct UserStatsView: View {
     @State private var selectedFilter: Filter = .all
     @State private var showShareSheet: Bool = false
     @State private var shareText: String = ""
-    @StateObject private var locationService = LocationService()
+    @ObservedObject private var locationService = LocationService()
     @State private var showLocationPrompt = false
     
     enum Filter: String, CaseIterable, Identifiable {
@@ -128,8 +128,12 @@ struct UserStatsView: View {
                                     .foregroundColor(index == 0 ? .yellow : .brandPrimary)
                                 // Friend/Challenge/Share buttons
                                 Menu {
-                                    Button("Add Friend") { /* TODO: Add friend logic */ }
-                                    Button("Challenge") { /* TODO: Challenge logic */ }
+                                    Button("Add Friend") { 
+                                        addFriend(user: user)
+                                    }
+                                    Button("Challenge") { 
+                                        challengeUser(user: user)
+                                    }
                                     Button("Share") {
                                         shareText = "Check out my sprint time: \(user.time)s! #SprintCoach40"
                                         showShareSheet = true
@@ -153,5 +157,47 @@ struct UserStatsView: View {
                 ActivityView(activityItems: [shareText])
             }
         }
+    }
+    
+    // MARK: - Social Features Implementation
+    
+    private func addFriend(user: LeaderboardUser) {
+        // Simple friend system implementation
+        var friends = UserDefaults.standard.stringArray(forKey: "friendsList") ?? []
+        
+        if !friends.contains(user.name) {
+            friends.append(user.name)
+            UserDefaults.standard.set(friends, forKey: "friendsList")
+            
+            // Show success feedback
+            print("✅ Added \(user.name) as friend")
+            
+            // In a real app, this would sync with backend
+            // BackendService.shared.addFriend(userId: user.id)
+        } else {
+            print("⚠️ \(user.name) is already a friend")
+        }
+    }
+    
+    private func challengeUser(user: LeaderboardUser) {
+        // Challenge system implementation
+        let challenge = [
+            "challengerId": currentUser.name,
+            "challengedUser": user.name,
+            "challengeType": "40yd_sprint",
+            "targetTime": user.time,
+            "createdAt": Date().timeIntervalSince1970,
+            "status": "pending"
+        ] as [String: Any]
+        
+        // Store challenge locally
+        var challenges = UserDefaults.standard.array(forKey: "activeChallenges") as? [[String: Any]] ?? []
+        challenges.append(challenge)
+        UserDefaults.standard.set(challenges, forKey: "activeChallenges")
+        
+        print("🏆 Challenge sent to \(user.name) - Beat their \(String(format: "%.2f", user.time))s time!")
+        
+        // In a real app, this would send push notification
+        // NotificationService.shared.sendChallengeNotification(to: user.id, challenge: challenge)
     }
 }

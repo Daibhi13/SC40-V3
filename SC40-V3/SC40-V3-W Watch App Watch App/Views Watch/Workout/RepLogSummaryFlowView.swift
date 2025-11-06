@@ -11,11 +11,21 @@ struct RepLogSummaryFlowView: View {
                 .ignoresSafeArea()
             VStack(spacing: 0) {
                 if !showSummary {
-                    RepLogWatchLiveView(workoutVM: workoutVM,
-                                        horizontalTab: .constant(0),
-                                        isModal: true,
-                                        showNext: true,
-                                        onNext: { showSummary = true })
+                    RepLogWatchLiveView(
+                        workoutVM: workoutVM,
+                        horizontalTab: .constant(0),
+                        isModal: true,
+                        showNext: true,
+                        onNext: { showSummary = true },
+                        session: TrainingSession(
+                            week: 1,
+                            day: 1,
+                            type: "Summary",
+                            focus: "Workout Complete",
+                            sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                            accessoryWork: []
+                        )
+                    )
                 } else {
                     SummaryReportView(onDone: onDone, showClose: true)
                 }

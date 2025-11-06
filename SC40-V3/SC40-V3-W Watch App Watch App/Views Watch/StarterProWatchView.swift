@@ -412,8 +412,7 @@ struct StarterProView: View {
     
     private func speak(_ phrase: String) {
         // Use unified voice manager for consistent voice settings
-        // Voice feedback (simplified)
-        print("🗣️ Voice: \(phrase)")
+        UnifiedVoiceManager.shared.speak(phrase)
     }
     
     private func playOlympicBeep() {

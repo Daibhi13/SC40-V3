@@ -278,8 +278,13 @@ struct MainProgramWorkoutWatchView: View {
         workoutManager.startWorkout()
         gpsManager.startTracking()
         
-        // Initialize RepLog system (simplified)
-        print("📊 RepLog: Starting session - \(session.type), Week \(session.week), Day \(session.day)")
+        // Initialize RepLog system
+        repLogVM.startSession(
+            type: session.type,
+            focus: session.focus,
+            week: session.week,
+            day: session.day
+        )
         
         // Configure interval manager with session data
         if let firstSprint = session.sprints.first {
@@ -359,7 +364,7 @@ struct MainProgramWorkoutWatchView: View {
         
         // Use haptics to indicate weather adaptations
         if weatherAdaptationsApplied {
-            print("🔔 Haptic: Weather adaptations applied")
+            hapticsManager.playHaptic(.notification)
         }
         
         print("🌤️ Weather adaptations applied on Apple Watch")
@@ -460,7 +465,8 @@ struct MainProgramWorkoutWatchView: View {
                     // Control View (Left swipe from Main)
                     ControlWatchView(
                         selectedIndex: 0, // Control is index 0 in the page indicators
-                        workoutVM: workoutVM
+                        workoutVM: workoutVM,
+                        session: session
                     )
                     .tag(WorkoutViewType.control)
                     
@@ -470,7 +476,8 @@ struct MainProgramWorkoutWatchView: View {
                     
                     // Music View (Right swipe from Main) - Watch Compatible
                     MusicWatchView(
-                        selectedIndex: 2
+                        selectedIndex: 2,
+                        session: session
                     )
                     .tag(WorkoutViewType.music)
                     
@@ -480,7 +487,8 @@ struct MainProgramWorkoutWatchView: View {
                         horizontalTab: .constant(0),
                         isModal: false,
                         showNext: false,
-                        onDone: { currentView = .main }
+                        onDone: { currentView = .main },
+                        session: session
                     )
                     .tag(WorkoutViewType.repLog)
                 }
@@ -1094,14 +1102,20 @@ struct MainProgramWorkoutWatchView: View {
                 // Start RepLog tracking for sprints
                 if let firstSprint = session.sprints.first {
                     Task { @MainActor in
-                        print("📊 RepLog: Starting rep - \(firstSprint.distanceYards) yards")
+                        repLogVM.startRep(
+                            distance: Double(firstSprint.distanceYards),
+                            location: nil
+                        )
                     }
                 }
             } else if elapsedTime > 1680 && currentPhase == .sprints { // 10 min sprints
                 // Complete current rep if recording
                 Task { @MainActor in
-                    if let firstSprint = session.sprints.first {
-                        print("📊 RepLog: Completing rep - \(firstSprint.distanceYards) yards")
+                    if repLogVM.isRecording, let firstSprint = session.sprints.first {
+                        repLogVM.completeRep(
+                            finalDistance: Double(firstSprint.distanceYards),
+                            finalLocation: nil
+                        )
                     }
                 }
                 // Complete sprints phase tracking
@@ -1119,8 +1133,10 @@ struct MainProgramWorkoutWatchView: View {
         // Stop GPS phase tracking if still active
         stopGPSPhaseTracking()
         
-        // End RepLog session and sync to phone (simplified)
-        print("📊 RepLog: Ending session and syncing to phone")
+        // End RepLog session and sync to phone
+        if let sessionData = repLogVM.endSession() {
+            syncManager.sendSessionDataToPhone(sessionData)
+        }
         
         // Save workout data when stopping
         let completedReps = (1...currentSet).map { repNumber in
@@ -1676,8 +1692,7 @@ struct MainProgramWorkoutWatchView: View {
     
     private func speak(_ text: String) {
         // Use unified voice manager for consistent voice settings
-        // Voice feedback (simplified)
-        print("🗣️ Voice: \(text)")
+        UnifiedVoiceManager.shared.speak(text)
     }
     
     // MARK: - Sync Methods
@@ -1723,7 +1738,7 @@ struct MainProgramWorkoutWatchView: View {
         case .warmup:
             workoutVM.currentPhase = .warmup
         case .stretch:
-            workoutVM.currentPhase = .warmup // Map stretch to warmup in WorkoutWatchViewModel
+            workoutVM.currentPhase = .stretch
         case .drills:
             workoutVM.currentPhase = .drills
         case .strides:

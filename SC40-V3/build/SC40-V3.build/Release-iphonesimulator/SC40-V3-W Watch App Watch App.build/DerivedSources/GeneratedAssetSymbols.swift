@@ -31,6 +31,12 @@ extension DeveloperToolsSupport.ColorResource {
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension DeveloperToolsSupport.ImageResource {
 
+    /// The "appstore" asset catalog image resource.
+    static let appstore = DeveloperToolsSupport.ImageResource(name: "appstore", bundle: resourceBundle)
+
+    /// The "playstore" asset catalog image resource.
+    static let playstore = DeveloperToolsSupport.ImageResource(name: "playstore", bundle: resourceBundle)
+
 }
 
 // MARK: - Color Symbol Extensions -
@@ -70,6 +76,24 @@ extension SwiftUI.ShapeStyle where Self == SwiftUI.Color {
 @available(macCatalyst, unavailable)
 extension AppKit.NSImage {
 
+    /// The "appstore" asset catalog image.
+    static var appstore: AppKit.NSImage {
+#if !targetEnvironment(macCatalyst)
+        .init(resource: .appstore)
+#else
+        .init()
+#endif
+    }
+
+    /// The "playstore" asset catalog image.
+    static var playstore: AppKit.NSImage {
+#if !targetEnvironment(macCatalyst)
+        .init(resource: .playstore)
+#else
+        .init()
+#endif
+    }
+
 }
 #endif
 
@@ -77,6 +101,24 @@ extension AppKit.NSImage {
 @available(iOS 17.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension UIKit.UIImage {
+
+    /// The "appstore" asset catalog image.
+    static var appstore: UIKit.UIImage {
+#if !os(watchOS)
+        .init(resource: .appstore)
+#else
+        .init()
+#endif
+    }
+
+    /// The "playstore" asset catalog image.
+    static var playstore: UIKit.UIImage {
+#if !os(watchOS)
+        .init(resource: .playstore)
+#else
+        .init()
+#endif
+    }
 
 }
 #endif
@@ -178,6 +220,26 @@ extension DeveloperToolsSupport.ImageResource {
     }
 
 }
+
+#if canImport(AppKit)
+@available(macOS 14.0, *)
+@available(macCatalyst, unavailable)
+extension AppKit.NSImage {
+
+    private convenience init?(thinnableResource: DeveloperToolsSupport.ImageResource?) {
+#if !targetEnvironment(macCatalyst)
+        if let resource = thinnableResource {
+            self.init(resource: resource)
+        } else {
+            return nil
+        }
+#else
+        return nil
+#endif
+    }
+
+}
+#endif
 
 #if canImport(UIKit)
 @available(iOS 17.0, tvOS 17.0, *)

@@ -1,7 +1,5 @@
 import Foundation
-#if os(watchOS)
 import WatchKit
-#endif
 import Combine
 
 /// Advanced haptic feedback system for immersive workout experiences
@@ -29,7 +27,6 @@ class AdvancedHapticsManager: ObservableObject {
         case medium = "Medium"
         case strong = "Strong"
         
-        #if os(watchOS)
         var watchHaptic: WKHapticType {
             switch self {
             case .light: return .notification
@@ -37,7 +34,6 @@ class AdvancedHapticsManager: ObservableObject {
             case .strong: return .retry
             }
         }
-        #endif
     }
     
     enum HapticPattern {
@@ -147,31 +143,9 @@ class AdvancedHapticsManager: ObservableObject {
     
     // MARK: - Basic Haptic Methods
     
-    #if os(watchOS)
     func playHaptic(_ type: WKHapticType) {
         guard isEnabled else { return }
         WKInterfaceDevice.current().play(type)
-    }
-    #endif
-    
-    // Cross-platform haptic helper
-    private func playHapticSafe(_ type: String) {
-        guard isEnabled else { return }
-        #if os(watchOS)
-        switch type {
-        case "click": WKInterfaceDevice.current().play(.click)
-        case "notification": WKInterfaceDevice.current().play(.notification)
-        case "success": WKInterfaceDevice.current().play(.success)
-        case "start": WKInterfaceDevice.current().play(.start)
-        case "stop": WKInterfaceDevice.current().play(.stop)
-        case "retry": WKInterfaceDevice.current().play(.retry)
-        case "directionUp": WKInterfaceDevice.current().play(.directionUp)
-        case "failure": WKInterfaceDevice.current().play(.failure)
-        default: WKInterfaceDevice.current().play(.notification)
-        }
-        #else
-        print("🔔 Haptic: \(type)")
-        #endif
     }
     
     func playPattern(_ pattern: HapticPattern) {
@@ -191,21 +165,16 @@ class AdvancedHapticsManager: ObservableObject {
     
     private func playBasicAlternative(for pattern: HapticPattern) {
         // Provide basic haptic feedback for premium patterns
-        #if os(watchOS)
         switch pattern {
         case .formCorrection, .rhythmGuide, .paceGuide:
-            playHapticSafe("notification")
+            playHaptic(.notification)
         case .heartRateZoneChange, .speedMilestone:
-            playHapticSafe("directionUp")
+            playHaptic(.directionUp)
         case .friendBeat, .newRecord, .challenge:
-            playHapticSafe("success")
+            playHaptic(.success)
         default:
-            playHapticSafe("click")
+            playHaptic(.click)
         }
-        #else
-        // Non-watchOS platforms - use alternative feedback
-        print("🔔 Haptic pattern: \(pattern)")
-        #endif
     }
     
     // MARK: - Workout-Specific Haptics
@@ -216,15 +185,15 @@ class AdvancedHapticsManager: ObservableObject {
         print("🔥 Starting sprint countdown haptics")
         
         // 3... (light tap)
-        playHapticSafe("notification")
+        playHaptic(.notification)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             // 2... (medium tap)
-            self.playHapticSafe("directionUp")
+            self.playHaptic(.directionUp)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 // 1... (strong tap)
-                self.playHapticSafe("retry")
+                self.playHaptic(.retry)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     // GO! (double pulse + long buzz)
@@ -238,14 +207,14 @@ class AdvancedHapticsManager: ObservableObject {
         guard isEnabled else { return }
         
         // Double pulse for "GO!"
-        playHapticSafe("start")
+        playHaptic(.start)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            self.playHapticSafe("start")
+            self.playHaptic(.start)
         }
         
         // Long buzz for motivation
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            self.playHapticSafe("retry")
+            self.playHaptic(.retry)
         }
     }
     
@@ -274,7 +243,7 @@ class AdvancedHapticsManager: ObservableObject {
         
         for i in 1...totalPulses {
             DispatchQueue.main.asyncAfter(deadline: .now() + pulseInterval * Double(i)) {
-                self.playHapticSafe("notification")
+                self.playHaptic(.notification)
             }
         }
     }
@@ -292,7 +261,7 @@ class AdvancedHapticsManager: ObservableObject {
         
         rhythmicTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             guard let self = self, self.rhythmicHapticsActive else { return }
-            self.playHapticSafe("click")
+            self.playHaptic(.click)
         }
         
         print("🥁 Started rhythmic haptics at \(bpm) BPM")
@@ -315,9 +284,9 @@ class AdvancedHapticsManager: ObservableObject {
         case .excellent:
             playPattern(.goodPace)
         case .good:
-            playHapticSafe("success")
+            playHaptic(.success)
         case .average:
-            playHapticSafe("notification")
+            playHaptic(.notification)
         case .needsImprovement:
             playPattern(.slowPace)
         }
@@ -332,7 +301,7 @@ class AdvancedHapticsManager: ObservableObject {
         } else if speed >= 18.0 {
             playPattern(.speedMilestone) // 18+ MPH milestone
         } else if speed >= 15.0 {
-            playHapticSafe("success") // 15+ MPH achievement
+            playHaptic(.success) // 15+ MPH achievement
         }
     }
     
@@ -349,7 +318,7 @@ class AdvancedHapticsManager: ObservableObject {
             // Rapid warning pulses for max effort zone
             for i in 0..<3 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.2) {
-                    self.playHapticSafe("retry")
+                    self.playHaptic(.retry)
                 }
             }
         }
@@ -362,7 +331,7 @@ class AdvancedHapticsManager: ObservableObject {
         if recoveryRate > 0.8 {
             playPattern(.recoveryComplete) // Excellent recovery
         } else if recoveryRate > 0.6 {
-            playHapticSafe("success") // Good recovery
+            playHaptic(.success) // Good recovery
         } else {
             playPattern(.heartRateRecovery) // Slow recovery warning
         }
@@ -394,19 +363,19 @@ class AdvancedHapticsManager: ObservableObject {
     private func playDirectionalHaptic(_ direction: DirectionalHaptic) {
         switch direction {
         case .leftRight:
-            playHapticSafe("click")
+            playHaptic(.click)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.playHapticSafe("notification")
+                self.playHaptic(.notification)
             }
         case .upDown:
-            playHapticSafe("success")
+            playHaptic(.success)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.playHapticSafe("failure")
+                self.playHaptic(.failure)
             }
         case .forward:
-            playHapticSafe("success")
+            playHaptic(.success)
         default:
-            playHapticSafe("notification")
+            playHaptic(.notification)
         }
     }
     
@@ -422,7 +391,7 @@ class AdvancedHapticsManager: ObservableObject {
     
     private func playGroundContactFeedback() {
         // Quick, sharp haptic for minimal ground contact time
-        playHapticSafe("click")
+        playHaptic(.click)
     }
     
     // MARK: - Social & Achievement Haptics
@@ -459,33 +428,33 @@ class AdvancedHapticsManager: ObservableObject {
     private func executeHapticPattern(_ pattern: HapticPattern) {
         switch pattern {
         case .single:
-            playHapticSafe("click")
+            playHaptic(.click)
             
         case .double:
-            playHapticSafe("click")
+            playHaptic(.click)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.playHapticSafe("click")
+                self.playHaptic(.click)
             }
             
         case .triple:
             for i in 0..<3 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) {
-                    self.playHapticSafe("click")
+                    self.playHaptic(.click)
                 }
             }
             
         case .longBuzz:
-            playHapticSafe("retry")
+            playHaptic(.retry)
             
         case .personalRecord:
             // Victory pattern: rapid pulses followed by long celebration
             for i in 0..<5 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) {
-                    self.playHapticSafe("success")
+                    self.playHaptic(.success)
                 }
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                self.playHapticSafe("retry")
+                self.playHaptic(.retry)
             }
             
         case .celebration:
@@ -493,15 +462,15 @@ class AdvancedHapticsManager: ObservableObject {
             let pattern = [0.0, 0.1, 0.2, 0.4, 0.5, 0.6, 1.0, 1.2]
             for (index, delay) in pattern.enumerated() {
                 DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                    self.playHapticSafe(index % 2 == 0 ? "success" : "notification")
+                    self.playHaptic(index % 2 == 0 ? .success : .notification)
                 }
             }
             
         case .formCorrection:
             // Gentle guidance pattern
-            playHapticSafe("notification")
+            playHaptic(.notification)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                self.playHapticSafe("notification")
+                self.playHaptic(.notification)
             }
             
         case .rhythmGuide:
@@ -512,7 +481,7 @@ class AdvancedHapticsManager: ObservableObject {
             }
             
         default:
-            playHapticSafe("notification")
+            playHaptic(.notification)
         }
     }
     
@@ -577,7 +546,7 @@ extension AdvancedHapticsManager {
         case "cooldown":
             playPattern(.cooldownStart)
         default:
-            playHapticSafe("notification")
+            playHaptic(.notification)
         }
     }
     

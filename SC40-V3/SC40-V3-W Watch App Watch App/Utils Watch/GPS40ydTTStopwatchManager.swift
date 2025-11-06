@@ -24,22 +24,21 @@ class GPS40ydTTStopwatchManager: NSObject, ObservableObject, CLLocationManagerDe
         locationManager.requestWhenInUseAuthorization()
     }
 
-    func start() {
+    @MainActor func start() {
         elapsedTime = 0
         distance = 0
-        let currentTime = Date()
-        startTime = currentTime
+        startTime = Date()
         lastLocation = nil
         isRunning = true
         didReachTargetDistance = false
         locationManager.startUpdatingLocation()
-        
-        // Capture the start time and weak self to avoid retain cycles and Swift 6 concurrency warnings
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self = self else { return }
-                let elapsed = Date().timeIntervalSince(currentTime)
-                self.elapsedTime = elapsed
+            // Timer is already on main thread, no need for Task/@MainActor
+            guard let strongSelf = self else { return }
+            Task { @MainActor in
+                guard let start = strongSelf.startTime else { return }
+                // Timer logic here - using weak self properly
+                let elapsed = Date().timeIntervalSince(start)
                 print("Timer tick: \(elapsed)")
             }
         }

@@ -1,3 +1,4 @@
 import Foundation
 
-// Structs moved to ViewModels Watch/SessionWatchViewModel.swift to avoid redeclaration
+// Watch-specific training session models - using WatchModels.swift for main definitions
+// This file is kept for compatibility but models are defined in WatchModels.swift

@@ -1,7 +1,10 @@
 import Foundation
 import Combine
 import os.log
+
+#if canImport(WatchConnectivity) && os(iOS)
 @preconcurrency import WatchConnectivity
+#endif
 
 // MARK: - Test Mode Support
 #if DEBUG
@@ -16,7 +19,7 @@ import os.log
 #endif
 
 @available(iOS 9.0, *)
-@MainActor class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
+class WatchSessionManager: NSObject, ObservableObject, WCSessionDelegate {
     static let shared = WatchSessionManager()
 
     // Required for ObservableObject conformance
@@ -45,11 +48,102 @@ import os.log
     @Published var sessions: [TrainingSession] = []
     @Published var syncStatus: SyncStatus = .idle
     
+    // GPS Integration for Watch
+    @Published var gpsDataForWatch: GPSDataForWatch?
+    private var gpsUpdateTimer: Timer?
+    
     enum SyncStatus {
         case idle
         case syncing
         case success
         case failed(Error)
+    }
+    
+    // MARK: - GPS Data Integration
+    
+    /// GPS data structure for Watch communication
+    struct GPSDataForWatch: Codable {
+        let status: String
+        let accuracy: Double
+        let distance: Double
+        let speed: Double
+        let elapsedTime: TimeInterval
+        let isTracking: Bool
+        let timestamp: Date
+    }
+    
+    /// Start sending GPS data to Watch
+    func startGPSDataSync(with gpsManager: GPSManager) {
+        gpsUpdateTimer?.invalidate()
+        
+        gpsUpdateTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            Task { @MainActor in
+                let gpsData = GPSDataForWatch(
+                    status: gpsManager.gpsStatus.displayText,
+                    accuracy: gpsManager.accuracy,
+                    distance: gpsManager.distanceYards,
+                    speed: gpsManager.currentSpeedMPH,
+                    elapsedTime: gpsManager.elapsedTime,
+                    isTracking: gpsManager.isTracking,
+                    timestamp: Date()
+                )
+                
+                self.sendGPSDataToWatch(gpsData)
+            }
+        }
+    }
+    
+    /// Stop GPS data sync
+    func stopGPSDataSync() {
+        gpsUpdateTimer?.invalidate()
+        gpsUpdateTimer = nil
+    }
+    
+    /// Send GPS data to Watch
+    private func sendGPSDataToWatch(_ gpsData: GPSDataForWatch) {
+        guard WCSession.default.isReachable else { return }
+        
+        do {
+            let data = try JSONEncoder().encode(gpsData)
+            let message = [
+                "type": "gpsData",
+                "data": data
+            ] as [String: Any]
+            
+            WCSession.default.sendMessage(message, replyHandler: nil) { error in
+                self.logger.error("Failed to send GPS data to Watch: \(error.localizedDescription)")
+            }
+        } catch {
+            logger.error("Failed to encode GPS data: \(error.localizedDescription)")
+        }
+    }
+    
+    /// Handle workout commands from Watch
+    func handleWatchWorkoutCommand(_ command: String, sessionId: UUID) {
+        logger.info("Received workout command from Watch: \(command) for session \(sessionId)")
+        
+        switch command {
+        case "start":
+            // Notify MainProgramWorkoutView to start workout
+            NotificationCenter.default.post(
+                name: .watchWorkoutStartRequested,
+                object: sessionId
+            )
+        case "end":
+            // Notify MainProgramWorkoutView to end workout
+            NotificationCenter.default.post(
+                name: .watchWorkoutEndRequested,
+                object: sessionId
+            )
+        case "completeRep":
+            // Notify MainProgramWorkoutView to complete current rep
+            NotificationCenter.default.post(
+                name: .watchRepCompletionRequested,
+                object: sessionId
+            )
+        default:
+            logger.warning("Unknown workout command from Watch: \(command)")
+        }
     }
     
     private override init() {
@@ -88,10 +182,9 @@ import os.log
     }
     
     private func activateSession() {
-        // Skip activation in test mode
-        guard !isTestMode else {
-            logger.info("Test mode active - WatchConnectivity disabled")
-            return
+        // Enable WatchConnectivity even in test mode for live testing
+        if isTestMode {
+            logger.info("Test mode active - WatchConnectivity enabled for testing")
         }
         
         guard WCSession.isSupported() else {
@@ -108,17 +201,22 @@ import os.log
     }
     // MARK: - Connection Monitoring
     
-    @MainActor private func checkConnectionStatus() {
+    private func checkConnectionStatus() {
         let session = WCSession.default
-        self.isWatchConnected = session.isPaired && session.isWatchAppInstalled
-        self.isWatchReachable = session.isReachable
+        let connected = session.isPaired && session.isWatchAppInstalled
+        let reachable = session.isReachable
         
-        if !self.isWatchConnected {
-            self.connectionError = "Apple Watch not paired or app not installed"
-        } else if !self.isWatchReachable {
-            self.connectionError = "Apple Watch not reachable"
-        } else {
-            self.connectionError = nil
+        DispatchQueue.main.async {
+            self.isWatchConnected = connected
+            self.isWatchReachable = reachable
+            
+            if !connected {
+                self.connectionError = "Apple Watch not paired or app not installed"
+            } else if !reachable {
+                self.connectionError = "Apple Watch not reachable"
+            } else {
+                self.connectionError = nil
+            }
         }
     }
     
@@ -432,11 +530,11 @@ import os.log
     private func getOptimalSessionBatch(sessions: [TrainingSession], userWeek: Int, frequency: Int) -> [TrainingSession] {
         let sortedSessions = sessions.sorted { ($0.week, $0.day) < ($1.week, $1.day) }
         
-        // PHASE 1: Always send Week 1 first (immediate access for ALL frequencies 1-7)
+        // PHASE 1: Send first 2 weeks for new users (immediate access + progression)
         if userWeek <= 1 {
-            let week1Sessions = sortedSessions.filter { $0.week == 1 }
-            logger.info("📦 PHASE 1: Sending Week 1 (\(week1Sessions.count) sessions) for \(frequency) days/week")
-            return week1Sessions
+            let firstTwoWeeksSessions = sortedSessions.filter { $0.week <= 2 }
+            logger.info("📦 PHASE 1: Sending Weeks 1-2 (\(firstTwoWeeksSessions.count) sessions) for \(frequency) days/week")
+            return firstTwoWeeksSessions
         }
         
         // PHASE 2: Send optimal batch for Week 2 based on frequency
@@ -769,9 +867,11 @@ import os.log
             if let results = results { safeMessage["results"] = results }
             if let source = source { safeMessage["source"] = source }
             
-            self.receivedData = safeMessage
-            self.lastSyncTime = Date()
-            self.connectionError = nil // Clear any connection errors
+            DispatchQueue.main.async {
+                self.receivedData = safeMessage
+                self.lastSyncTime = Date()
+                self.connectionError = nil // Clear any connection errors
+            }
             
             // Handle requests from watch
             if let action = action {
@@ -875,8 +975,13 @@ import os.log
             // Convert watch workout data to TrainingSession format
             if let trainingSession = convertWatchWorkoutToTrainingSession(workout) {
                 // Save to HistoryManager so it appears in phone's HistoryView
-                // TODO: Add to history when HistoryManager is available
-            // HistoryManager.shared.addCompletedSession(trainingSession)
+                HistoryManager.shared.recordFullSession(
+                    session: trainingSession,
+                    sprintTimes: trainingSession.sprintTimes,
+                    notes: trainingSession.sessionNotes,
+                    location: nil,
+                    weather: nil
+                )
                 logger.info("Saved watch workout to HistoryManager: \(trainingSession.type)")
                 
                 // Post notification for UI updates
@@ -978,23 +1083,33 @@ import os.log
             switch activationState {
             case .activated:
                 self.logger.info("WatchConnectivity session activated successfully")
-                self.isWatchConnected = isPaired && isWatchAppInstalled
-                self.isWatchReachable = isReachable
-                self.connectionError = nil
+                DispatchQueue.main.async {
+                    self.isWatchConnected = isPaired && isWatchAppInstalled
+                    self.isWatchReachable = isReachable
+                    self.connectionError = nil
+                }
             case .notActivated:
                 self.logger.error("WatchConnectivity session failed to activate")
-                self.connectionError = "Failed to connect to Apple Watch"
+                DispatchQueue.main.async {
+                    self.connectionError = "Failed to connect to Apple Watch"
+                }
             case .inactive:
                 self.logger.warning("WatchConnectivity session is inactive")
-                self.connectionError = "Apple Watch connection inactive"
+                DispatchQueue.main.async {
+                    self.connectionError = "Apple Watch connection inactive"
+                }
             @unknown default:
                 self.logger.error("Unknown WatchConnectivity activation state")
-                self.connectionError = "Unknown connection state"
+                DispatchQueue.main.async {
+                    self.connectionError = "Unknown connection state"
+                }
             }
             
             if let error = error {
                 self.logger.error("WatchConnectivity activation error: \(error.localizedDescription)")
-                self.connectionError = error.localizedDescription
+                DispatchQueue.main.async {
+                    self.connectionError = error.localizedDescription
+                }
             }
         }
     }
@@ -1164,6 +1279,5 @@ extension Notification.Name {
     static let didReceiveStarterProResults = Notification.Name("didReceiveStarterProResults")
     static let didReceiveTrainingSession = Notification.Name("didReceiveTrainingSession")
     static let watchRequestedSessions = Notification.Name("watchRequestedSessions")
-    static let phoneWorkoutStateChanged = Notification.Name("phoneWorkoutStateChanged")
 }
 

@@ -1,0 +1,16 @@
+Target dependency graph (7 targets)
+Target 'SC40-V3' in project 'SC40-V3'
+➜ Explicit dependency on target 'SC40-V3-W Watch App Watch App' in project 'SC40-V3'
+➜ Explicit dependency on target 'Algorithms' in project 'swift-algorithms'
+Target 'Algorithms' in project 'swift-algorithms'
+➜ Explicit dependency on target 'Algorithms' in project 'swift-algorithms'
+➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+Target 'Algorithms' in project 'swift-algorithms'
+➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+Target 'RealModule' in project 'swift-numerics'
+➜ Explicit dependency on target 'RealModule' in project 'swift-numerics'
+➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+Target 'RealModule' in project 'swift-numerics'
+➜ Explicit dependency on target '_NumericsShims' in project 'swift-numerics'
+Target '_NumericsShims' in project 'swift-numerics' (no dependencies)
+Target 'SC40-V3-W Watch App Watch App' in project 'SC40-V3' (no dependencies)

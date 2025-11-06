@@ -6,9 +6,15 @@ import CoreLocation
 import WatchConnectivity
 #endif
 
+// Import Watch services for live data access
+#if canImport(WatchKit)
+import WatchKit
+#endif
+
 /// Simplified workout phase enum for Watch
 enum WorkoutPhase: String, CaseIterable {
     case warmup = "Warm Up"
+    case stretch = "Stretch"
     case drills = "Drills"
     case strides20 = "20s Strides"
     case sprint = "Sprint"
@@ -96,6 +102,11 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         locationManager.activityType = .fitness
         locationManager.distanceFilter = 1
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        
+        // Request location permission if not already granted
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        }
 
         #if canImport(WatchConnectivity)
         if WCSession.isSupported() {
@@ -116,17 +127,21 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         print("✅ HealthKit workout started (Watch stub)")
     }
     
-    private func endHealthKitWorkout() async {
+    func endHealthKitWorkout() async {
         print("✅ HealthKit workout ended (Watch stub)")
     }
 
     // MARK: - Phase Logic
     func phaseDuration(for phase: WorkoutPhase) -> TimeInterval {
         switch phase {
-        case .warmup, .drills, .cooldown: return 60
-        case .sprint, .rest: return 0
-        case .strides20: return 30 // Set a default duration for strides20, adjust as needed
-        case .timeTrial: return 40 // Set a default duration for timeTrial, adjust as needed
+        case .warmup: return 300 // 5 minutes
+        case .stretch: return 180 // 3 minutes
+        case .drills: return 360 // 6 minutes
+        case .strides20: return 240 // 4 minutes (20yd x 3 + rest)
+        case .sprint: return 0 // Variable based on session
+        case .rest: return 0 // Variable based on session
+        case .cooldown: return 300 // 5 minutes
+        case .timeTrial: return 40 // 40 seconds for time trial
         }
     }
 
@@ -139,7 +154,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
         }
         
         switch currentPhase {
-        case .warmup, .drills, .cooldown:
+        case .warmup, .stretch, .drills, .cooldown:
             startTimer(duration: phaseDuration(for: currentPhase)) { [weak self] in
                 self?.completeRep()
             }
@@ -236,7 +251,7 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
     }
 
     func nextPhase() {
-        let allPhases: [WorkoutPhase] = [.warmup, .drills, .strides20, .sprint, .rest, .cooldown]
+        let allPhases: [WorkoutPhase] = [.warmup, .stretch, .drills, .strides20, .sprint, .rest, .cooldown]
         if let index = allPhases.firstIndex(of: currentPhase), index + 1 < allPhases.count {
             currentPhase = allPhases[index + 1]
             startPhase()
@@ -252,7 +267,9 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
 
     // MARK: - UI Computed Properties
     var heartRateString: String {
-        return "--" // Placeholder for heart rate
+        // TODO: Connect to real heart rate data from WatchWorkoutManager/HealthKitService
+        // For now, return placeholder until build issues are resolved
+        return "--" // No heart rate data available
     }
     
     // MARK: - Distance Display Logic (Fixed)
@@ -288,7 +305,13 @@ class WorkoutWatchViewModel: NSObject, ObservableObject {
     var currentPhaseLabel: String { currentPhase.displayName }
     
     var avgSplitString: String {
-        return "--" // Placeholder for average split
+        // TODO: Connect to real GPS split data from WatchGPSManager
+        if lastRepTime > 0 {
+            // Use last rep time as reference for now
+            return String(format: "%.2f", lastRepTime)
+        } else {
+            return "--" // No split data available
+        }
     }
     
     var lastSprintString: String { lastRepTimeString }
@@ -426,13 +449,98 @@ extension WorkoutWatchViewModel: CLLocationManagerDelegate {
             }
         }
     }
+    
+    nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        Task { @MainActor in
+            print("❌ GPS error: \(error.localizedDescription)")
+            
+            // Handle specific location errors
+            if let clError = error as? CLError {
+                switch clError.code {
+                case .denied:
+                    print("🚫 Location access denied - check privacy settings")
+                case .locationUnknown:
+                    print("📍 Location unknown - GPS signal weak")
+                case .network:
+                    print("🌐 Network error - check connectivity")
+                default:
+                    print("📍 Location error code: \(clError.code.rawValue)")
+                }
+            }
+        }
+    }
+    
+    nonisolated func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        Task { @MainActor in
+            switch status {
+            case .notDetermined:
+                print("📍 Location authorization not determined")
+                manager.requestWhenInUseAuthorization()
+            case .denied, .restricted:
+                print("🚫 Location access denied or restricted")
+            case .authorizedWhenInUse, .authorizedAlways:
+                print("✅ Location access authorized")
+                if isRunning {
+                    manager.startUpdatingLocation()
+                }
+            @unknown default:
+                print("📍 Unknown location authorization status")
+            }
+        }
+    }
 }
 
 // MARK: - WCSessionDelegate
 #if canImport(WatchConnectivity)
 extension WorkoutWatchViewModel: WCSessionDelegate {
-    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {}
-    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {}
+    nonisolated func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+        Task { @MainActor in
+            if let error = error {
+                print("❌ WCSession activation failed: \(error.localizedDescription)")
+            } else {
+                print("✅ WCSession activated with state: \(activationState.rawValue)")
+            }
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
+        Task { @MainActor in
+            print("📱 Received message from iPhone: \(message)")
+            // Handle incoming messages from iPhone
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveMessage message: [String : Any], replyHandler: @escaping ([String : Any]) -> Void) {
+        Task { @MainActor in
+            print("📱 Received message with reply handler from iPhone: \(message)")
+            
+            // Send immediate acknowledgment to prevent timeout
+            replyHandler([
+                "status": "received",
+                "timestamp": Date().timeIntervalSince1970,
+                "source": "WorkoutWatchViewModel"
+            ])
+            
+            // Handle the message content
+            if let type = message["type"] as? String {
+                switch type {
+                case "workout_start":
+                    print("🏃‍♂️ iPhone requested workout start")
+                case "workout_stop":
+                    print("🛑 iPhone requested workout stop")
+                default:
+                    print("ℹ️ Unknown message type: \(type)")
+                }
+            }
+        }
+    }
+    
+    nonisolated func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
+        Task { @MainActor in
+            print("📦 Received background data from iPhone: \(userInfo)")
+            // Handle background data transfer
+        }
+    }
 }
 #endif
 

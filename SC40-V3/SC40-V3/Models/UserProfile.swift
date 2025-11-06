@@ -36,12 +36,6 @@ public struct UserProfile: Codable {
     public var manualSessionOverrides: [UUID: Int] = [:] // Manual session selection: sessionID -> templateID
     public var allowRepeatingFavorites: Bool = true // Allow users to repeat workouts they enjoy
     
-    // Additional properties for manager compatibility
-    public var id: UUID = UUID()
-    public var goals: [String] = []
-    public var personalBest40Yard: Double?
-    public var joinDate: Date = Date()
-    
     public init(name: String, email: String?, gender: String, age: Int, height: Double, 
                 weight: Double?, personalBests: [String: Double], level: String, 
                 baselineTime: Double, frequency: Int, currentWeek: Int = 1, currentDay: Int = 1,

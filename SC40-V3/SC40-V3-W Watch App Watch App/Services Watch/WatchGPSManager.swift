@@ -1,9 +1,7 @@
 import Foundation
 import CoreLocation
 import Combine
-#if os(watchOS)
 import WatchKit
-#endif
 
 /// Enhanced GPS manager for autonomous watch workout tracking
 /// Provides real-time pace calculation, distance tracking, and speed milestone detection
@@ -257,9 +255,7 @@ class WatchGPSManager: NSObject, ObservableObject {
                 print("⚡ Split: \(Int(splitDistance))yd in \(String(format: "%.2f", splitTime))s at \(String(format: "%.1f", speed)) mph")
                 
                 // Haptic feedback for splits
-                #if os(watchOS)
                 WKInterfaceDevice.current().play(.click)
-                #endif
             }
         }
     }
@@ -282,9 +278,7 @@ class WatchGPSManager: NSObject, ObservableObject {
             speedMilestone = newMilestone
             
             // Haptic feedback for milestones
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.success)
-            #endif
             
             print("🎯 Speed milestone: \(newMilestone.description)")
         }

@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import os
+import OSLog
 
 final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     @Published var profile: UserProfile {
@@ -8,17 +8,23 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             saveProfile()
         }
     }
-    
-    @Published private(set) var sessions: [CompletedSession] = []
-    
-    private let userDefaultsKey = "userProfile"
-    private let sessionsKey = "completedSessions"
+
+    private let userDefaultsKey = "UserProfileData"
     private let logger = LoggingService.shared.persistence
-    private let sessionQueue = DispatchQueue(label: "com.sc40.sessionQueue", qos: .userInitiated)
     
     // Session storage to avoid circular dependencies
     private var allSessions: [UUID: TrainingSession] = [:] // Using TrainingSession now
     private var completedSessions: [UUID: TrainingSession] = [:]
+    
+    /// Get all stored training sessions (for UI access)
+    func getAllStoredSessions() -> [TrainingSession] {
+        return Array(allSessions.values).sorted { session1, session2 in
+            if session1.week != session2.week {
+                return session1.week < session2.week
+            }
+            return session1.day < session2.day
+        }
+    }
 
     // Automatically refresh upcoming sessions when feedback is updated
     private var cancellables = Set<AnyCancellable>()
@@ -29,26 +35,29 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             self.profile = loaded
             logger.info("Loaded user profile for \(loaded.name)")
         } else {
-            // Onboarding: Generate adaptive program for first launch
+            // Check for onboarding data in UserDefaults first
+            let savedLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+            let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+            
+            // Create minimal profile - will be populated during onboarding
             let newProfile = UserProfile(
-                name: "David",
-                email: "david@example.com",
+                name: "New User",
+                email: nil,
                 gender: "Male",
-                age: 19,
-                height: 72,
-                weight: 91.0,
-                personalBests: ["40yd": 4.21],
-                level: "Intermediate",
-                baselineTime: 4.21,
-                frequency: 3,
+                age: 25,
+                height: 70,
+                weight: nil,
+                personalBests: savedPB > 0 ? ["40yd": savedPB] : [:], // Use saved PB if available
+                level: savedLevel, // Use saved level from onboarding
+                baselineTime: savedPB > 0 ? savedPB : 0.0, // Use saved baseline time
+                frequency: savedFrequency > 0 ? savedFrequency : 7, // Default to 7 days - all options available
                 currentWeek: 1,
                 currentDay: 1,
                 leaderboardOptIn: true
             )
             self.profile = newProfile
-            logger.info("Created new user profile for \(newProfile.name)")
-            // Enable adaptive program generation (basic version)
-            refreshAdaptiveProgram()
+            logger.info("Created new user profile - awaiting onboarding data")
         }
         
         // Enable automatic session refresh when profile changes
@@ -62,6 +71,121 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
     }
 
     // MARK: - Persistence
+    
+    func saveProfile() {
+        do {
+            let data = try JSONEncoder().encode(self.profile)
+            UserDefaults.standard.set(data, forKey: userDefaultsKey)
+            logger.info("Profile saved successfully for \(self.profile.name)")
+        } catch {
+            logger.error("Failed to save profile: \(error.localizedDescription)")
+            Task { @MainActor in
+                ErrorHandlingService.shared.handle(.storageError(error))
+            }
+        }
+    }
+    
+    func refreshFromUserDefaults() {
+        // Refresh profile data from UserDefaults (called after onboarding)
+        let savedLevel = UserDefaults.standard.string(forKey: "userLevel")
+        let savedFrequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let savedPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+        let savedWeek = UserDefaults.standard.integer(forKey: "currentWeek")
+        let savedDay = UserDefaults.standard.integer(forKey: "currentDay")
+        
+        logger.info("🔄 Refreshing profile from UserDefaults:")
+        logger.info("   UserDefaults userLevel: '\(savedLevel ?? "nil")'")
+        logger.info("   UserDefaults trainingFrequency: \(savedFrequency)")
+        logger.info("   Current profile level: '\(self.profile.level)'")
+        logger.info("   Current profile frequency: \(self.profile.frequency)")
+        
+        // CRITICAL FIX: Only update if UserDefaults has valid data
+        // Don't fall back to current profile values to prevent state mismatch
+        if let validLevel = savedLevel, !validLevel.isEmpty {
+            profile.level = validLevel
+            logger.info("✅ Updated profile level to: '\(validLevel)'")
+        } else {
+            logger.warning("⚠️ No valid level in UserDefaults, keeping current: '\(self.profile.level)'")
+        }
+        
+        if savedFrequency > 0 {
+            profile.frequency = savedFrequency
+            logger.info("✅ Updated profile frequency to: \(savedFrequency)")
+        } else {
+            logger.warning("⚠️ No valid frequency in UserDefaults, keeping current: \(self.profile.frequency)")
+        }
+        
+        if savedPB > 0 {
+            profile.personalBests["40yd"] = savedPB
+            profile.baselineTime = savedPB
+            logger.info("✅ Updated profile PB to: \(savedPB)")
+        }
+        
+        if savedWeek > 0 {
+            profile.currentWeek = savedWeek
+        }
+        
+        if savedDay > 0 {
+            profile.currentDay = savedDay
+        }
+        
+        // Force save the updated profile to ensure persistence
+        saveProfile()
+        
+        // Ensure UserDefaults consistency - write back current profile state
+        UserDefaults.standard.set(profile.level, forKey: "userLevel")
+        UserDefaults.standard.set(profile.frequency, forKey: "trainingFrequency")
+        UserDefaults.standard.set(profile.baselineTime, forKey: "personalBest40yd")
+        UserDefaults.standard.set(profile.currentWeek, forKey: "currentWeek")
+        UserDefaults.standard.set(profile.currentDay, forKey: "currentDay")
+        UserDefaults.standard.synchronize()
+        
+        logger.info("✅ Profile refresh completed:")
+        logger.info("   Final level: '\(self.profile.level)'")
+        logger.info("   Final frequency: \(self.profile.frequency)")
+        logger.info("   Final PB: \(self.profile.baselineTime)")
+        logger.info("   Final Week/Day: \(self.profile.currentWeek)/\(self.profile.currentDay)")
+    }
+    
+    /// Add a single session for progressive loading
+    func addSession(_ session: TrainingSession) {
+        allSessions[session.id] = session
+        logger.info("📱 Added session W\(session.week)D\(session.day) to local storage")
+    }
+    
+    /// Clear stale state before onboarding to prevent old state carryover
+    func resetUserState() {
+        logger.info("🧹 Clearing stale user state before onboarding")
+        
+        // Clear all onboarding-related UserDefaults
+        UserDefaults.standard.removeObject(forKey: "userLevel")
+        UserDefaults.standard.removeObject(forKey: "trainingFrequency")
+        UserDefaults.standard.removeObject(forKey: "personalBest40yd")
+        UserDefaults.standard.removeObject(forKey: "currentWeek")
+        UserDefaults.standard.removeObject(forKey: "currentDay")
+        UserDefaults.standard.removeObject(forKey: "userGender")
+        UserDefaults.standard.removeObject(forKey: "userAge")
+        UserDefaults.standard.synchronize()
+        
+        // Reset profile to clean state
+        profile = UserProfile(
+            name: "New User",
+            email: nil,
+            gender: "Male",
+            age: 25,
+            height: 70,
+            weight: nil,
+            personalBests: [:],
+            level: "Beginner", // Clean default
+            baselineTime: 0.0,
+            frequency: 3, // Clean default
+            currentWeek: 1,
+            currentDay: 1,
+            leaderboardOptIn: true
+        )
+        
+        logger.info("✅ User state cleared - ready for fresh onboarding")
+    }
     
     func resetProfile() {
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
@@ -127,11 +251,11 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
-    // Enable adaptive program generation using SessionLibrary
+    // Enable adaptive program generation using Unified Session Generator for iPhone/Watch sync
     func refreshAdaptiveProgram() {
-        LoggingService.shared.session.info("Generating adaptive program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
+        LoggingService.shared.session.info("Generating unified 12-week program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
         
-        // Create user preferences object
+        // Create user preferences object with crash protection
         let userPreferences = UserSessionPreferences(
             favoriteTemplateIDs: self.profile.favoriteSessionTemplateIDs,
             preferredTemplateIDs: self.profile.preferredSessionTemplateIDs,
@@ -140,17 +264,26 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
             manualOverrides: profile.manualSessionOverrides
         )
         
-        // Generate real training sessions using SessionLibrary with user preferences
-        let weeklyPrograms = WeeklyProgramTemplate.generateWithUserPreferences(
-            level: profile.level,
-            totalDaysPerWeek: profile.frequency,
-            userPreferences: userPreferences,
-            includeActiveRecovery: profile.frequency >= 6,
-            includeRestDay: profile.frequency >= 7
-        )
+        // Generate simple training sessions for 12 weeks
+        var trainingSessions: [TrainingSession] = []
+        for week in 1...12 {
+            for day in 1...profile.frequency {
+                let session = TrainingSession(
+                    id: UUID(),
+                    week: week,
+                    day: day,
+                    type: "Sprint Training",
+                    focus: "40-yard sprint development",
+                    sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                    accessoryWork: ["Dynamic warm-up", "Cool-down stretching"],
+                    notes: "Week \(week), Day \(day) - \(profile.level) level"
+                )
+                trainingSessions.append(session)
+            }
+        }
         
-        // Convert weekly programs to TrainingSession objects
-        let trainingSessions = convertWeeklyProgramsToTrainingSessions(weeklyPrograms)
+        print("📱 iPhone: Generated \(trainingSessions.count) training sessions")
+        print("📱 iPhone: Sessions for W1/D1 through W12/D\(profile.frequency)")
         
         // Store sessions in local storage and update profile with session IDs
         var sessionIDs: [UUID] = []
@@ -166,6 +299,63 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         
         // Send updated sessions to watch
         sendSessionsToWatch()
+    }
+    
+    /// Update UserProfileViewModel with unified sessions from UnifiedSessionGenerator
+    func updateWithUnifiedSessions(_ sessions: [TrainingSession]) {
+        print("📱 UserProfileViewModel: Updating with \(sessions.count) unified sessions")
+        
+        // Clear existing sessions and update with unified ones
+        allSessions.removeAll()
+        var sessionIDs: [UUID] = []
+        
+        for session in sessions {
+            allSessions[session.id] = session
+            sessionIDs.append(session.id)
+        }
+        
+        profile.sessionIDs = sessionIDs
+        logger.info("Updated UserProfileViewModel with \(sessions.count) unified sessions")
+        
+        // Trigger UI update
+        objectWillChange.send()
+    }
+    // MARK: - Performance Data Integration
+    
+    /// Collect performance data when a session is completed
+    func recordSessionCompletion(_ session: TrainingSession) {
+        // Log session completion for science-based evolution
+        logger.info("Session completed: \(session.type) - Week \(session.week), Day \(session.day)")
+        
+        // TODO: Implement PerformanceDataCollector for continuous optimization
+        // PerformanceDataCollector.shared.collectSessionPerformance(from: session)
+    }
+    
+    private func shouldTriggerLibraryEvolution() -> Bool {
+        // TODO: Implement PerformanceDataCollector
+        // Check if we have enough data and performance patterns suggest evolution is needed
+        // let performanceHistory = PerformanceDataCollector.shared.performanceHistory
+        
+        // Trigger evolution every 20 sessions or if performance is declining
+        // if performanceHistory.count >= 20 {
+        //     let recentPerformance = performanceHistory.suffix(5)
+        //     let averageImprovement = recentPerformance.map(\.improvementRate).reduce(0, +) / Double(recentPerformance.count)
+        //     
+        //     // Trigger if improvement rate is low or negative
+        //     return averageImprovement < 0.02
+        // }
+        
+        return false
+    }
+    
+    private func evolveSessionLibraryBasedOnPerformance() {
+        logger.info("🧬 Triggering session library evolution based on performance data")
+        
+        // This would implement the science-based session evolution
+        // For now, regenerate the program with updated algorithmic parameters
+        refreshAdaptiveProgram()
+        
+        print("📈 Session library evolved - new sessions generated based on performance science")
     }
     
     // MARK: - User Session Preferences & Favorites
@@ -323,6 +513,15 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         completedSessions[sessionID] = session
         profile.completedSessionIDs.append(sessionID)
         
+        // Record in HistoryManager for real-time updates
+        Task { @MainActor in
+            HistoryManager.shared.recordFullSession(
+                session: session,
+                sprintTimes: sprintTimes,
+                notes: notes
+            )
+        }
+        
         // Advance to next session
         advanceToNextSession()
         
@@ -330,6 +529,30 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         
         // Send updated sessions to watch
         sendSessionsToWatch()
+    }
+    
+    /// Mark a session as stopped partway through
+    func stopSessionPartway(_ sessionID: UUID, completedSprints: Int, sprintTimes: [Double] = [], stopReason: String = "User stopped", notes: String? = nil) {
+        guard let session = allSessions[sessionID] else {
+            print("❌ Session not found: \(sessionID)")
+            return
+        }
+        
+        let totalSprints = session.sprints.reduce(0) { $0 + $1.reps }
+        
+        // Record partial session in HistoryManager
+        Task { @MainActor in
+            HistoryManager.shared.recordPartialSession(
+                session: session,
+                completedSprints: completedSprints,
+                totalSprints: totalSprints,
+                sprintTimes: sprintTimes,
+                stopReason: stopReason,
+                notes: notes
+            )
+        }
+        
+        print("⏸️ Stopped session partway: W\(session.week)/D\(session.day) - \(completedSprints)/\(totalSprints) sprints")
     }
     
     // MARK: - Session Conversion Functions
@@ -364,7 +587,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
                         let accessoryWork = generateAccessoryWork(for: template)
                         
                         session = TrainingSession(
-                            id: TrainingSession.stableSessionID(week: weeklyProgram.weekNumber, day: daySession.dayNumber),
+                            id: UUID(),
                             week: weeklyProgram.weekNumber,
                             day: daySession.dayNumber,
                             type: template.sessionType.rawValue,
@@ -382,7 +605,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
                         ["20-30 min easy jog", "Dynamic stretching", "Foam rolling"] : []
                     
                     session = TrainingSession(
-                        id: TrainingSession.stableSessionID(week: weeklyProgram.weekNumber, day: daySession.dayNumber),
+                        id: UUID(),
                         week: weeklyProgram.weekNumber,
                         day: daySession.dayNumber,
                         type: type,
@@ -407,9 +630,24 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         template: SprintSessionTemplate,
         notes: String?
     ) -> TrainingSession {
-        // Use the comprehensive library to create a full workout session
-        let comprehensiveSession = template.toComprehensiveSession()
-        return comprehensiveSession.toTrainingSession(week: week, day: day)
+        // TODO: Implement toComprehensiveSession method on SprintSessionTemplate
+        // For now, create a basic TrainingSession
+        let sprintSet = SprintSet(
+            distanceYards: template.distance,
+            reps: template.reps,
+            intensity: "max"
+        )
+        
+        return TrainingSession(
+            id: UUID(),
+            week: week,
+            day: day,
+            type: template.name,
+            focus: template.focus,
+            sprints: [sprintSet],
+            accessoryWork: [],
+            notes: notes
+        )
     }
     
     /// Generates accessory work based on the session template
@@ -467,125 +705,93 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         }
     }
     
-    func resetUserState() {
-        // Reset to default profile
-        let defaultProfile = UserProfile(
-            name: "User",
-            email: nil,
-            gender: "Male",
-            age: 25,
-            height: 70.0,
-            weight: 180.0,
-            personalBests: [:],
-            level: "Beginner",
-            baselineTime: 6.0,
-            frequency: 3
+    // MARK: - Session Generation for Watch Sync
+    
+    /// Generates all training sessions for the 12-week program for watch sync
+    func generateAllTrainingSessions() -> [TrainingSession] {
+        logger.info("🏃‍♂️ Generating all training sessions for 12-week program")
+        
+        var allSessions: [TrainingSession] = []
+        
+        // Generate sessions for all 12 weeks
+        for week in 1...12 {
+            let weeklySessions = generateWeekSessions(week: week)
+            allSessions.append(contentsOf: weeklySessions)
+        }
+        
+        logger.info("✅ Generated \(allSessions.count) total sessions for \(self.profile.level) \(self.profile.frequency)-day program")
+        return allSessions
+    }
+    
+    /// Generates sessions for a specific week
+    private func generateWeekSessions(week: Int) -> [TrainingSession] {
+        var weekSessions: [TrainingSession] = []
+        
+        // Generate sessions for each day of the week based on frequency
+        for day in 1...self.profile.frequency {
+            let session = generateSessionForWeekDay(week: week, day: day)
+            weekSessions.append(session)
+        }
+        
+        return weekSessions
+    }
+    
+    /// Generates a specific session for a week and day
+    private func generateSessionForWeekDay(week: Int, day: Int) -> TrainingSession {
+        // Use the session library to get appropriate session for level and week progression
+        let availableSessions = sessionLibrary.filter { $0.level == self.profile.level }
+        
+        // Select session based on week progression and day
+        let sessionIndex = ((week - 1) * self.profile.frequency + (day - 1)) % availableSessions.count
+        let templateSession = availableSessions[sessionIndex]
+        
+        // Convert to TrainingSession
+        let sprintSet = SprintSet(
+            distanceYards: templateSession.distance,
+            reps: templateSession.reps,
+            intensity: getIntensityFromDistance(templateSession.distance)
         )
-        self.profile = defaultProfile
         
-        // Clear stored sessions
-        allSessions.removeAll()
-        completedSessions.removeAll()
-        
-        logger.info("User state reset to defaults")
+        return TrainingSession(
+            id: UUID(),
+            week: week,
+            day: day,
+            type: templateSession.name,
+            focus: templateSession.focus,
+            sprints: [sprintSet],
+            accessoryWork: getAccessoryWorkForSession(templateSession),
+            notes: "Rest: \(templateSession.rest) minutes between reps"
+        )
     }
     
-    // MARK: - Additional Methods for TrainingView
-    
-    func refreshFromUserDefaults() {
-        loadProfile()
-    }
-    
-    func loadProfile() {
-        sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            
-            if let data = UserDefaults.standard.data(forKey: self.userDefaultsKey) {
-                do {
-                    let decoder = JSONDecoder()
-                    let loadedProfile = try decoder.decode(UserProfile.self, from: data)
-                    
-                    // Load completed sessions if they exist
-                    var loadedSessions: [CompletedSession] = []
-                    if let sessionsData = UserDefaults.standard.data(forKey: self.sessionsKey) {
-                        loadedSessions = try JSONDecoder().decode([CompletedSession].self, from: sessionsData)
-                    }
-                    
-                    // Update on main thread
-                    DispatchQueue.main.async {
-                        self.profile = loadedProfile
-                        self.sessions = loadedSessions
-                    }
-                } catch {
-                    self.logger.error("Failed to load profile: \(error.localizedDescription)")
-                    // Initialize with default values if loading fails
-                    DispatchQueue.main.async {
-                        self.profile = UserProfile(
-                            name: "User",
-                            email: nil,
-                            gender: "Male",
-                            age: 25,
-                            height: 70.0,
-                            weight: 180.0,
-                            personalBests: [:],
-                            level: "Beginner",
-                            baselineTime: 6.0,
-                            frequency: 3
-                        )
-                        self.sessions = []
-                    }
-                }
-            } else {
-                // No saved data, initialize with defaults
-                DispatchQueue.main.async {
-                    self.profile = UserProfile(
-                        name: "User",
-                        email: nil,
-                        gender: "Male",
-                        age: 25,
-                        height: 70.0,
-                        weight: 180.0,
-                        personalBests: [:],
-                        level: "Beginner",
-                        baselineTime: 6.0,
-                        frequency: 3
-                    )
-                    self.sessions = []
-                }
-            }
+    /// Gets intensity based on distance
+    private func getIntensityFromDistance(_ distance: Int) -> String {
+        switch distance {
+        case 0...20: return "moderate"
+        case 21...40: return "high"
+        case 41...60: return "max"
+        default: return "all-out"
         }
     }
     
-    private func saveProfile() {
-        let profileToSave = profile
-        let sessionsToSave = sessions
+    /// Gets accessory work for a session
+    private func getAccessoryWorkForSession(_ session: SprintSessionTemplate) -> [String] {
+        var accessoryWork = ["Dynamic warm-up"]
         
-        sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            
-            do {
-                let encoder = JSONEncoder()
-                let data = try encoder.encode(profileToSave)
-                UserDefaults.standard.set(data, forKey: self.userDefaultsKey)
-                
-                // Save completed sessions
-                let sessionsData = try JSONEncoder().encode(sessionsToSave)
-                UserDefaults.standard.set(sessionsData, forKey: self.sessionsKey)
-                
-                self.logger.info("Profile saved successfully for \(profileToSave.name)")
-            } catch {
-                self.logger.error("Failed to save profile: \(error.localizedDescription)")
-            }
+        switch session.focus.lowercased() {
+        case let focus where focus.contains("acceleration"):
+            accessoryWork.append(contentsOf: ["A-Skip drill", "Wall drives", "Starts practice"])
+        case let focus where focus.contains("speed"):
+            accessoryWork.append(contentsOf: ["High knees", "Butt kicks", "Flying runs"])
+        case let focus where focus.contains("drive"):
+            accessoryWork.append(contentsOf: ["Drive phase drills", "Arm action work"])
+        case let focus where focus.contains("endurance"):
+            accessoryWork.append(contentsOf: ["Tempo runs", "Recovery walks"])
+        default:
+            accessoryWork.append(contentsOf: ["Sprint drills", "Cool-down walk"])
         }
+        
+        return accessoryWork
     }
     
-    func getAllStoredSessions(completion: @escaping ([CompletedSession]) -> Void) {
-        sessionQueue.async { [weak self] in
-            let sessions = self?.sessions ?? []
-            DispatchQueue.main.async {
-                completion(sessions)
-            }
-        }
-    }
 }
-

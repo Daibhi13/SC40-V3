@@ -7,27 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		068261AE2EBA3018003AE48B /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		063C7EBB2EBB8BD200227064 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063C7EBA2EBB8BD200227064 /* GameKit.framework */; };
+		063C7EBD2EBB8BDB00227064 /* MusicKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063C7EBC2EBB8BDB00227064 /* MusicKit.framework */; };
+		063C7EBF2EBB8BEF00227064 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063C7EBE2EBB8BEF00227064 /* UserNotifications.framework */; };
+		063C7EC12EBB8C0100227064 /* Messages.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063C7EC02EBB8C0100227064 /* Messages.framework */; };
+		063C7EC32EBB8C0B00227064 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 063C7EC22EBB8C0B00227064 /* Intents.framework */; };
+		066B6ACA2EBB808F00C84E55 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 066B6AC92EBB808F00C84E55 /* Algorithms */; };
+		06A66E872EBB6AE7007E8098 /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 06A66E7D2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		068261AC2EBA3018003AE48B /* PBXContainerItemProxy */ = {
+		06A66E852EBB6AE7007E8098 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0682618A2EBA3007003AE48B /* Project object */;
+			containerPortal = 06A66E632EBB6AA1007E8098 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 068261A32EBA3017003AE48B;
+			remoteGlobalIDString = 06A66E7C2EBB6AE6007E8098;
 			remoteInfo = "SC40-V3-W Watch App Watch App";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		068261B22EBA3018003AE48B /* Embed Watch Content */ = {
+		06A66E8B2EBB6AE7007E8098 /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				068261AE2EBA3018003AE48B /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */,
+				06A66E872EBB6AE7007E8098 /* SC40-V3-W Watch App Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,17 +41,35 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		068261922EBA3007003AE48B /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		063C7EBA2EBB8BD200227064 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
+		063C7EBC2EBB8BDB00227064 /* MusicKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MusicKit.framework; path = System/Library/Frameworks/MusicKit.framework; sourceTree = SDKROOT; };
+		063C7EBE2EBB8BEF00227064 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		063C7EC02EBB8C0100227064 /* Messages.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Messages.framework; path = System/Library/Frameworks/Messages.framework; sourceTree = SDKROOT; };
+		063C7EC22EBB8C0B00227064 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		06A66E6B2EBB6AA1007E8098 /* SC40-V3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		06A66E7D2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "SC40-V3-W Watch App Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		06D023862EBB74E000759A09 /* Exceptions for "SC40-V3" folder in "SC40-V3" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 06A66E6A2EBB6AA1007E8098 /* SC40-V3 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		068261942EBA3007003AE48B /* SC40-V3 */ = {
+		06A66E6D2EBB6AA1007E8098 /* SC40-V3 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				06D023862EBB74E000759A09 /* Exceptions for "SC40-V3" folder in "SC40-V3" target */,
+			);
 			path = "SC40-V3";
 			sourceTree = "<group>";
 		};
-		068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */ = {
+		06A66E7E2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "SC40-V3-W Watch App Watch App";
 			sourceTree = "<group>";
@@ -53,14 +77,20 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0682618F2EBA3007003AE48B /* Frameworks */ = {
+		06A66E682EBB6AA1007E8098 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				063C7EC32EBB8C0B00227064 /* Intents.framework in Frameworks */,
+				063C7EC12EBB8C0100227064 /* Messages.framework in Frameworks */,
+				063C7EBF2EBB8BEF00227064 /* UserNotifications.framework in Frameworks */,
+				063C7EBD2EBB8BDB00227064 /* MusicKit.framework in Frameworks */,
+				063C7EBB2EBB8BD200227064 /* GameKit.framework in Frameworks */,
+				066B6ACA2EBB808F00C84E55 /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		068261A12EBA3017003AE48B /* Frameworks */ = {
+		06A66E7A2EBB6AE6007E8098 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -70,120 +100,137 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		068261892EBA3007003AE48B = {
+		06A66E622EBB6AA1007E8098 = {
 			isa = PBXGroup;
 			children = (
-				068261942EBA3007003AE48B /* SC40-V3 */,
-				068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
-				068261932EBA3007003AE48B /* Products */,
+				06A66E6D2EBB6AA1007E8098 /* SC40-V3 */,
+				06A66E7E2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */,
+				06D023872EBB7BEF00759A09 /* Frameworks */,
+				06A66E6C2EBB6AA1007E8098 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		068261932EBA3007003AE48B /* Products */ = {
+		06A66E6C2EBB6AA1007E8098 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				068261922EBA3007003AE48B /* SC40-V3.app */,
-				068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */,
+				06A66E6B2EBB6AA1007E8098 /* SC40-V3.app */,
+				06A66E7D2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		06D023872EBB7BEF00759A09 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				063C7EC22EBB8C0B00227064 /* Intents.framework */,
+				063C7EC02EBB8C0100227064 /* Messages.framework */,
+				063C7EBE2EBB8BEF00227064 /* UserNotifications.framework */,
+				063C7EBC2EBB8BDB00227064 /* MusicKit.framework */,
+				063C7EBA2EBB8BD200227064 /* GameKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		068261912EBA3007003AE48B /* SC40-V3 */ = {
+		06A66E6A2EBB6AA1007E8098 /* SC40-V3 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0682619D2EBA3008003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */;
+			buildConfigurationList = 06A66E762EBB6AA2007E8098 /* Build configuration list for PBXNativeTarget "SC40-V3" */;
 			buildPhases = (
-				0682618E2EBA3007003AE48B /* Sources */,
-				0682618F2EBA3007003AE48B /* Frameworks */,
-				068261902EBA3007003AE48B /* Resources */,
-				068261B22EBA3018003AE48B /* Embed Watch Content */,
+				06A66E672EBB6AA1007E8098 /* Sources */,
+				06A66E682EBB6AA1007E8098 /* Frameworks */,
+				06A66E692EBB6AA1007E8098 /* Resources */,
+				06A66E8B2EBB6AE7007E8098 /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				068261AD2EBA3018003AE48B /* PBXTargetDependency */,
+				06A66E862EBB6AE7007E8098 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				068261942EBA3007003AE48B /* SC40-V3 */,
+				06A66E6D2EBB6AA1007E8098 /* SC40-V3 */,
 			);
 			name = "SC40-V3";
 			packageProductDependencies = (
+				066B6AC92EBB808F00C84E55 /* Algorithms */,
 			);
 			productName = "SC40-V3";
-			productReference = 068261922EBA3007003AE48B /* SC40-V3.app */;
+			productReference = 06A66E6B2EBB6AA1007E8098 /* SC40-V3.app */;
 			productType = "com.apple.product-type.application";
 		};
-		068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */ = {
+		06A66E7C2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 068261AF2EBA3018003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */;
+			buildConfigurationList = 06A66E882EBB6AE7007E8098 /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */;
 			buildPhases = (
-				068261A02EBA3017003AE48B /* Sources */,
-				068261A12EBA3017003AE48B /* Frameworks */,
-				068261A22EBA3017003AE48B /* Resources */,
+				06A66E792EBB6AE6007E8098 /* Sources */,
+				06A66E7A2EBB6AE6007E8098 /* Frameworks */,
+				06A66E7B2EBB6AE6007E8098 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				068261A52EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
+				06A66E7E2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */,
 			);
 			name = "SC40-V3-W Watch App Watch App";
 			packageProductDependencies = (
 			);
 			productName = "SC40-V3-W Watch App Watch App";
-			productReference = 068261A42EBA3017003AE48B /* SC40-V3-W Watch App Watch App.app */;
+			productReference = 06A66E7D2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		0682618A2EBA3007003AE48B /* Project object */ = {
+		06A66E632EBB6AA1007E8098 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
-				LastUpgradeCheck = 2600;
+				LastSwiftUpdateCheck = 2610;
+				LastUpgradeCheck = 2610;
 				TargetAttributes = {
-					068261912EBA3007003AE48B = {
-						CreatedOnToolsVersion = 26.0.1;
+					06A66E6A2EBB6AA1007E8098 = {
+						CreatedOnToolsVersion = 26.1;
 					};
-					068261A32EBA3017003AE48B = {
-						CreatedOnToolsVersion = 26.0.1;
+					06A66E7C2EBB6AE6007E8098 = {
+						CreatedOnToolsVersion = 26.1;
 					};
 				};
 			};
-			buildConfigurationList = 0682618D2EBA3007003AE48B /* Build configuration list for PBXProject "SC40-V3" */;
+			buildConfigurationList = 06A66E662EBB6AA1007E8098 /* Build configuration list for PBXProject "SC40-V3" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 068261892EBA3007003AE48B;
+			mainGroup = 06A66E622EBB6AA1007E8098;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				066B6AC82EBB806A00C84E55 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+			);
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 068261932EBA3007003AE48B /* Products */;
+			productRefGroup = 06A66E6C2EBB6AA1007E8098 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				068261912EBA3007003AE48B /* SC40-V3 */,
-				068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */,
+				06A66E6A2EBB6AA1007E8098 /* SC40-V3 */,
+				06A66E7C2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		068261902EBA3007003AE48B /* Resources */ = {
+		06A66E692EBB6AA1007E8098 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		068261A22EBA3017003AE48B /* Resources */ = {
+		06A66E7B2EBB6AE6007E8098 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -193,14 +240,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0682618E2EBA3007003AE48B /* Sources */ = {
+		06A66E672EBB6AA1007E8098 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		068261A02EBA3017003AE48B /* Sources */ = {
+		06A66E792EBB6AE6007E8098 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -210,15 +257,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		068261AD2EBA3018003AE48B /* PBXTargetDependency */ = {
+		06A66E862EBB6AE7007E8098 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 068261A32EBA3017003AE48B /* SC40-V3-W Watch App Watch App */;
-			targetProxy = 068261AC2EBA3018003AE48B /* PBXContainerItemProxy */;
+			target = 06A66E7C2EBB6AE6007E8098 /* SC40-V3-W Watch App Watch App */;
+			targetProxy = 06A66E852EBB6AE7007E8098 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		0682619B2EBA3008003AE48B /* Debug */ = {
+		06A66E742EBB6AA2007E8098 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -271,7 +318,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -282,7 +329,7 @@
 			};
 			name = Debug;
 		};
-		0682619C2EBA3008003AE48B /* Release */ = {
+		06A66E752EBB6AA2007E8098 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -329,7 +376,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -339,7 +386,7 @@
 			};
 			name = Release;
 		};
-		0682619E2EBA3008003AE48B /* Debug */ = {
+		06A66E772EBB6AA2007E8098 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -371,7 +418,7 @@
 			};
 			name = Debug;
 		};
-		0682619F2EBA3008003AE48B /* Release */ = {
+		06A66E782EBB6AA2007E8098 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -403,7 +450,7 @@
 			};
 			name = Release;
 		};
-		068261B02EBA3018003AE48B /* Debug */ = {
+		06A66E892EBB6AE7007E8098 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -432,11 +479,11 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.1;
 			};
 			name = Debug;
 		};
-		068261B12EBA3018003AE48B /* Release */ = {
+		06A66E8A2EBB6AE7007E8098 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -465,41 +512,60 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+				WATCHOS_DEPLOYMENT_TARGET = 26.1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0682618D2EBA3007003AE48B /* Build configuration list for PBXProject "SC40-V3" */ = {
+		06A66E662EBB6AA1007E8098 /* Build configuration list for PBXProject "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0682619B2EBA3008003AE48B /* Debug */,
-				0682619C2EBA3008003AE48B /* Release */,
+				06A66E742EBB6AA2007E8098 /* Debug */,
+				06A66E752EBB6AA2007E8098 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0682619D2EBA3008003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
+		06A66E762EBB6AA2007E8098 /* Build configuration list for PBXNativeTarget "SC40-V3" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0682619E2EBA3008003AE48B /* Debug */,
-				0682619F2EBA3008003AE48B /* Release */,
+				06A66E772EBB6AA2007E8098 /* Debug */,
+				06A66E782EBB6AA2007E8098 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		068261AF2EBA3018003AE48B /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */ = {
+		06A66E882EBB6AE7007E8098 /* Build configuration list for PBXNativeTarget "SC40-V3-W Watch App Watch App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				068261B02EBA3018003AE48B /* Debug */,
-				068261B12EBA3018003AE48B /* Release */,
+				06A66E892EBB6AE7007E8098 /* Debug */,
+				06A66E8A2EBB6AE7007E8098 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		066B6AC82EBB806A00C84E55 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		066B6AC92EBB808F00C84E55 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 066B6AC82EBB806A00C84E55 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 0682618A2EBA3007003AE48B /* Project object */;
+	rootObject = 06A66E632EBB6AA1007E8098 /* Project object */;
 }

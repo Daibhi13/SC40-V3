@@ -1,6 +1,37 @@
 import SwiftUI
 import Combine
 
+// MARK: - Onboarding Error Types
+
+enum OnboardingError: LocalizedError {
+    case missingUserName
+    case missingFitnessLevel
+    case invalidFrequency
+    case invalidPersonalBest
+    case saveFailed(Error)
+    case verificationFailed
+    case timeout
+    
+    var errorDescription: String? {
+        switch self {
+        case .missingUserName:
+            return "Please enter your name"
+        case .missingFitnessLevel:
+            return "Please select your fitness level"
+        case .invalidFrequency:
+            return "Please select training frequency"
+        case .invalidPersonalBest:
+            return "Please enter a valid personal best time"
+        case .saveFailed(let error):
+            return "Failed to save profile: \(error.localizedDescription)"
+        case .verificationFailed:
+            return "Profile data verification failed"
+        case .timeout:
+            return "Operation timed out"
+        }
+    }
+}
+
 // Import UserProfileViewModel from Models
 @MainActor
 struct OnboardingView: View {
@@ -155,10 +186,7 @@ struct OnboardingView: View {
             #endif
         }
         .alert("Setup Error", isPresented: $showErrorAlert) {
-            Button("Try Again") {
-                completeOnboarding()
-            }
-            Button("Cancel", role: .cancel) { }
+            Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
         }
@@ -616,24 +644,35 @@ struct OnboardingView: View {
             .cornerRadius(12)
             
             Button(action: {
-                print("🔥 EMERGENCY BYPASS: Generate My Training Program button tapped!")
-                
-                // EMERGENCY BYPASS: Absolute minimal approach
-                // Save only the most basic data and navigate immediately
-                UserDefaults.standard.set("Beginner", forKey: "userLevel")
-                UserDefaults.standard.set(1, forKey: "trainingFrequency") 
-                UserDefaults.standard.set(6.25, forKey: "personalBest40yd")
-                UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-                
-                print("🚀 EMERGENCY BYPASS: Data saved, calling onComplete")
-                
-                // EMERGENCY: Direct navigation without any state management
-                Task { @MainActor in
-                    onComplete()
-                }
-                
-                print("✅ EMERGENCY BYPASS: Navigation called")
-            }) {
+            // 🚨 V2 ULTRA-MINIMAL CRASH-PROOF BUTTON
+            print("🚀🚀🚀 NEW BUTTON V2 PRESSED 🚀🚀🚀")
+            print("Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
+            
+            // Guard against duplicate presses
+            guard !isCompleting else { 
+                print("⚠️ Already processing")
+                return 
+            }
+            isCompleting = true
+            
+            // Minimal save - just the essentials
+            UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
+            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+            UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+            UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+            UserDefaults.standard.set(true, forKey: "onboardingCompleted")
+            UserDefaults.standard.synchronize()
+            
+            print("✅ Data saved successfully")
+            
+            // Navigate immediately
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                print("🚀 Calling onComplete() now...")
+                onComplete()
+                isCompleting = false
+                print("✅ Navigation complete")
+            }
+        }) {
                 HStack {
                     if isCompleting {
                         ProgressView()
@@ -660,22 +699,6 @@ struct OnboardingView: View {
                 .cornerRadius(16)
                 .shadow(color: .yellow.opacity(0.5), radius: 10, x: 0, y: 5)
             }
-            
-            // EMERGENCY BACKUP BUTTON - Red button for immediate bypass
-            Button("EMERGENCY SKIP TO TRAINING") {
-                print("🚨 EMERGENCY SKIP: Bypassing all onboarding logic")
-                UserDefaults.standard.set("Beginner", forKey: "userLevel")
-                UserDefaults.standard.set(1, forKey: "trainingFrequency")
-                UserDefaults.standard.set(6.25, forKey: "personalBest40yd")
-                UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-                print("🚨 EMERGENCY SKIP: Direct onComplete call")
-                onComplete()
-            }
-            .padding()
-            .background(Color.red)
-            .foregroundColor(.white)
-            .cornerRadius(8)
-            .padding(.top, 10)
         }
     }
     
@@ -833,115 +856,141 @@ struct OnboardingView: View {
     
     // MARK: - Thread-Safe Onboarding Completion
     
-    /// Complete onboarding with streamlined critical path approach
-    /// DISABLED: Using nuclear fix in button action instead
-    private func completeOnboarding() {
-        print("🚀 Starting streamlined onboarding completion")
+    // MARK: - 🚨 CRASH-PROOF COMPLETION METHOD
+    
+    /// Safe onboarding completion with comprehensive error handling
+    @MainActor
+    private func runSafeOnboardingCompletion() async throws {
+        print("\n🛡️ SAFE COMPLETION: Starting crash-protected onboarding flow")
         
-        // Guard against duplicate completion calls
-        guard !isCompleting else {
-            print("⚠️ OnboardingView: Completion already in progress, ignoring duplicate call")
-            return
-        }
-        
-        isCompleting = true
-        
-        // VALIDATION: Comprehensive data validation before transfer
-        print("🔍 CRITICAL VALIDATION: Level='\(fitnessLevel)', Frequency=\(daysAvailable), PB=\(pb)")
-        
-        guard !fitnessLevel.isEmpty else {
-            isCompleting = false
-            errorMessage = "Please select your fitness level."
-            showErrorAlert = true
-            return
-        }
-        
-        guard daysAvailable > 0 && daysAvailable <= 7 else {
-            isCompleting = false
-            errorMessage = "Please select training days per week (1-7)."
-            showErrorAlert = true
-            return
-        }
-        
-        guard pb > 0 && pb < 20 else {
-            isCompleting = false
-            errorMessage = "Please set a valid 40-yard time."
-            showErrorAlert = true
-            return
-        }
-        
+        // STEP 1: Validate all inputs
+        print("\n📊 INPUT VALIDATION:")
         guard !userName.isEmpty else {
-            isCompleting = false
-            errorMessage = "User name is required."
-            showErrorAlert = true
-            return
+            throw OnboardingError.missingUserName
         }
-        
-        print("✅ CRITICAL VALIDATION: All data validated successfully")
-        
-        // IMMEDIATE SAVE: Critical data + PB for TrainingView UI
-        print("⚡ IMMEDIATE SAVE: Saving critical data + PB for TrainingView")
-        UserDefaultsManager.shared.setValue(fitnessLevel, forKey: "userLevel")
-        UserDefaultsManager.shared.setValue(daysAvailable, forKey: "trainingFrequency")
-        UserDefaultsManager.shared.setValue(pb, forKey: "personalBest40yd") // PB for immediate TrainingView display
-        UserDefaultsManager.shared.setValue(userName.isEmpty ? "User" : userName, forKey: "userName")
-        UserDefaultsManager.shared.setValue(true, forKey: "onboardingCompleted")
-        UserDefaultsManager.shared.setValue(Date(), forKey: "onboardingCompletedAt")
-        UserDefaultsManager.shared.synchronize()
-        print("✅ CRITICAL DATA: Level=\(fitnessLevel), Frequency=\(daysAvailable), PB=\(pb)")
-        
-        // IMMEDIATE UI UPDATE: Update ViewModel for instant TrainingView display
-        // CRASH FIX: Ensure personalBests dictionary is initialized
-        if userProfileVM.profile.personalBests.isEmpty {
-            userProfileVM.profile.personalBests = [:]
+        guard !fitnessLevel.isEmpty else {
+            throw OnboardingError.missingFitnessLevel
         }
+        guard daysAvailable > 0 else {
+            throw OnboardingError.invalidFrequency
+        }
+        guard pb > 0 else {
+            throw OnboardingError.invalidPersonalBest
+        }
+        print("✅ All inputs validated")
         
-        userProfileVM.profile.level = fitnessLevel
-        userProfileVM.profile.frequency = daysAvailable
-        userProfileVM.profile.personalBests["40yd"] = pb
-        userProfileVM.profile.baselineTime = pb
-        userProfileVM.profile.name = userName.isEmpty ? "User" : userName
-        print("✅ IMMEDIATE UI: ViewModel updated for TrainingView display")
-        
-        // IMMEDIATE NAVIGATION: Reset flag and navigate instantly
-        isCompleting = false
-        print("🚀 IMMEDIATE NAVIGATION: Calling onComplete() now...")
-        
-        // CRASH PROTECTION: Call onComplete with comprehensive error handling
+        // STEP 2: Save to UserDefaults with error handling
+        print("\n💾 SAVING TO USERDEFAULTS:")
         do {
-            print("🔄 NAVIGATION: About to call onComplete() with data transfer")
-            print("🔄 NAVIGATION: Data being transferred - Level: \(fitnessLevel), Frequency: \(daysAvailable), PB: \(pb)")
+            UserDefaults.standard.set(userName, forKey: "user_name")
+            UserDefaults.standard.set(userName, forKey: "userName")
+            print("   ✓ userName saved: '\(userName)'")
             
-            // Ensure we're on the main thread for UI updates with timeout protection
-            DispatchQueue.main.async {
-                // Add timeout protection for navigation
-                let navigationTask = Task {
-                    onComplete()
-                    print("✅ IMMEDIATE NAVIGATION: Completed successfully")
-                }
-                
-                // Timeout protection - if navigation doesn't complete in 5 seconds, show error
-                Task {
-                    try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 seconds
-                    if !navigationTask.isCancelled {
-                        print("⚠️ NAVIGATION TIMEOUT: Navigation took too long")
-                        navigationTask.cancel()
-                        
-                        DispatchQueue.main.async {
-                            self.isCompleting = false
-                            self.errorMessage = "Navigation timeout. Please try again."
-                            self.showErrorAlert = true
-                        }
-                    }
-                }
-            }
+            UserDefaults.standard.set(gender, forKey: "userGender")
+            print("   ✓ gender saved")
+            
+            UserDefaults.standard.set(age, forKey: "userAge")
+            UserDefaults.standard.set(age, forKey: "SC40_UserAge")
+            print("   ✓ age saved: \(age)")
+            
+            let totalHeight = Double(heightFeet * 12 + heightInches)
+            UserDefaults.standard.set(totalHeight, forKey: "userHeight")
+            UserDefaults.standard.set(Int(totalHeight), forKey: "SC40_UserHeight")
+            print("   ✓ height saved: \(totalHeight) inches")
+            
+            UserDefaults.standard.set(Double(weight), forKey: "userWeight")
+            UserDefaults.standard.set(Double(weight), forKey: "SC40_UserWeight")
+            print("   ✓ weight saved: \(weight) lbs")
+            
+            UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+            UserDefaults.standard.set(fitnessLevel, forKey: "SC40_UserLevel")
+            print("   ✓ fitnessLevel saved: '\(fitnessLevel)'")
+            
+            UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+            UserDefaults.standard.set(daysAvailable, forKey: "SC40_UserFrequency")
+            print("   ✓ trainingFrequency saved: \(daysAvailable)")
+            
+            UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+            UserDefaults.standard.set(pb, forKey: "SC40_TargetTime")
+            print("   ✓ personalBest40yd saved: \(pb)")
+            
+            UserDefaults.standard.set(leaderboardOptIn, forKey: "leaderboardOptIn")
+            print("   ✓ leaderboardOptIn saved")
+            
+            UserDefaults.standard.set(true, forKey: "onboardingCompleted")
+            UserDefaults.standard.set(true, forKey: "SC40_OnboardingCompleted")
+            UserDefaults.standard.set(true, forKey: "SC40_userProfileExists")
+            print("   ✓ onboardingCompleted saved: true")
+            
+            UserDefaults.standard.synchronize()
+            print("   ✓ UserDefaults synchronized")
         } catch {
-            print("❌ NAVIGATION ERROR: \(error.localizedDescription)")
-            isCompleting = false
-            errorMessage = "Navigation failed. Please try again."
-            showErrorAlert = true
+            print("❌ UserDefaults save failed: \(error)")
+            throw OnboardingError.saveFailed(error)
+        }
+        
+        // STEP 3: Verify data was saved
+        print("\n🔍 VERIFICATION:")
+        let verifyLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "NOT FOUND"
+        let verifyFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
+        let verifyPB = UserDefaults.standard.double(forKey: "personalBest40yd")
+        
+        guard verifyLevel == fitnessLevel, verifyFreq == daysAvailable, verifyPB == pb else {
+            print("❌ VERIFICATION FAILED - Data mismatch!")
+            throw OnboardingError.verificationFailed
+        }
+        print("✅ VERIFICATION PASSED - Data matches")
+        
+        // STEP 4: Wait for persistence
+        print("\n⏳ WAITING 500ms for persistence...")
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        
+        // STEP 5: Sync to Watch (with error handling)
+        print("\n📤 WATCH SYNC: Sending profile data to Apple Watch...")
+        do {
+            // 🚨 CRASH PROTECTION: Safe Watch sync with timeout
+            try await withTimeout(seconds: 3) {
+                await watchConnectivity.updateProfileContext(userProfileVM.profile)
+            }
+            print("✅ WATCH SYNC: Profile data sent to Watch")
+        } catch {
+            print("⚠️ WATCH SYNC: Failed but continuing - \(error.localizedDescription)")
+            // Don't throw - Watch sync failure shouldn't block onboarding
+        }
+        
+        // STEP 6: Navigate to TrainingView
+        print("\n🚀 NAVIGATION: Calling onComplete()")
+        print(String(repeating: "=", count: 60))
+        
+        onComplete()
+        
+        print("✅ ONBOARDING COMPLETE - Transitioning to TrainingView")
+        print(String(repeating: "=", count: 60) + "\n")
+        
+        isCompleting = false
+    }
+    
+    /// Helper function to add timeout to async operations
+    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask {
+                try await operation()
+            }
+            
+            group.addTask {
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+                throw OnboardingError.timeout
+            }
+            
+            guard let result = try await group.next() else {
+                throw OnboardingError.timeout
+            }
+            
+            group.cancelAll()
+            return result
         }
     }
+    
 }
 
 // MARK: - Text Styling Extension

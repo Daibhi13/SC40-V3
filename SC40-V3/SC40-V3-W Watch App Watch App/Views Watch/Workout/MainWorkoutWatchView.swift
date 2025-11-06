@@ -1,14 +1,22 @@
 import SwiftUI
-#if os(watchOS)
 import WatchKit
-#endif
 import AVFoundation
+
+enum WorkoutModal: Identifiable {
+    case summary, sprint, repLog
+    
+    var id: String {
+        switch self {
+        case .summary: return "summary"
+        case .sprint: return "sprint"
+        case .repLog: return "repLog"
+        }
+    }
+}
 
 struct MainWorkoutWatchView: View {
     @StateObject var workoutVM: WorkoutWatchViewModel
-    @State private var showSummary = false
-    @State private var showSprintView = false
-    @State private var showRepLog = false
+    @State private var activeModal: WorkoutModal?
     @State private var selectedBottomModuleLeft: BottomModuleType = .rest
     @State private var selectedBottomModuleRight: BottomModuleType = .split
     @State private var showSprintGraph = false
@@ -23,11 +31,8 @@ struct MainWorkoutWatchView: View {
     }
     
     private func speak(_ phrase: String) {
-        let utterance = AVSpeechUtterance(string: phrase)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.48
-        utterance.volume = 1.0 // Ensure full volume
-        speechSynth.speak(utterance)
+        // Use unified voice manager for consistent voice settings
+        UnifiedVoiceManager.shared.speak(phrase)
         print("🔊 Speaking: \(phrase)")
     }
     
@@ -36,78 +41,91 @@ struct MainWorkoutWatchView: View {
         print("🔊 Playing Olympic beep sequence")
         
         // Three short preparatory beeps
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.click)
-        #endif
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            #if os(watchOS)
-        WKInterfaceDevice.current().play(.click)
-        #endif
+            WKInterfaceDevice.current().play(.click)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            #if os(watchOS)
-        WKInterfaceDevice.current().play(.click)
-        #endif
+            WKInterfaceDevice.current().play(.click)
         }
         
         // Final start beep with haptic feedback
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.start)
             WKInterfaceDevice.current().play(.notification)
-            #endif
         }
     }
     
     // MARK: - Top Row
     private var topStatsRow: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 4) {
             StatModuleView(icon: "heart.fill",
                            label: "BPM",
                            value: workoutVM.heartRateString,
                            color: .green,
                            theme: colorTheme)
             StatModuleView(icon: "ruler",
-                           label: "Yards",
+                           label: "YDS",
                            value: workoutVM.distanceRemainingString,
                            color: .white,
                            theme: colorTheme)
             StatModuleView(icon: "repeat",
-                           label: "Rep",
+                           label: "REP",
                            value: "\(workoutVM.currentRep)/\(workoutVM.totalReps)",
                            color: .accentColor,
                            theme: colorTheme)
         }
+        .padding(.horizontal, 2)
     }
     
     // MARK: - Main Module
     private var mainModule: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 6) {
             if showSprintGraph {
                 SprintGraphView(viewModel: workoutVM, theme: colorTheme)
-                    .frame(height: 80)
+                    .frame(height: 70)
             } else if workoutVM.isGPSPhase {
                 // Trigger spoken feedback and starter pistol at the start of each GPS sprint/stride
-                GPSStopwatchView(viewModel: workoutVM, distance: Int(workoutVM.distanceRemainingString) ?? 40)
-                    .padding(.bottom, 4)
-                    .onAppear {
-                        if !isSprintStarting && workoutVM.isRunning {
-                            startSprintSequence()
-                        }
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.2))
+                    Text("GPS Stopwatch\n(Coming Soon)")
+                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(height: 70)
+                .onAppear {
+                    if !isSprintStarting && workoutVM.isRunning {
+                        startSprintSequence()
                     }
-                    .accessibilityLabel("Sprint Timer")
-                    .accessibilityHint("Timer for your sprint. Spoken cues and starter pistol will play at the start.")
+                }
+                .accessibilityLabel("Sprint Timer")
+                .accessibilityHint("Timer for your sprint. Spoken cues and starter pistol will play at the start.")
             } else {
-                Text(workoutVM.stopwatchTimeString)
-                    .font(.system(size: 42, weight: .black, design: .monospaced))
-                    .foregroundColor(.white)
-                Text(workoutVM.currentPhaseLabel)
-                    .font(.system(size: 16, weight: .semibold, design: .rounded))
-                    .foregroundColor(.secondary)
+                // Phase indicator
+                Text(workoutVM.currentPhaseLabel.uppercased())
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .foregroundColor(.yellow)
+                    .tracking(1.0)
+                
+                // Main timer display
+                VStack(spacing: 2) {
+                    Text(workoutVM.stopwatchTimeString)
+                        .font(.system(size: 36, weight: .black, design: .monospaced))
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                    
+                    Text("ELAPSED TIME")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundColor(.secondary)
+                        .tracking(0.5)
+                }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 6)
+        .padding(.vertical, 8)
         .contentShape(Rectangle())
         .onTapGesture { showSprintGraph.toggle() }
     }
@@ -144,40 +162,90 @@ struct MainWorkoutWatchView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             TabView(selection: $tabSelection) {
-                ControlWatchView(selectedIndex: 0, workoutVM: workoutVM)
-                    .tag(0)
+                ControlWatchView(
+                    selectedIndex: 0, 
+                    workoutVM: workoutVM,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(0)
                 mainTabContent
                     .tag(1)
-                MusicWatchView(selectedIndex: 2)
-                    .tag(2)
+                MusicWatchView(
+                    selectedIndex: 2,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(2)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
         .onAppear { workoutVM.setupUltra2Features() }
-        .fullScreenCover(isPresented: $showSummary) {
-            RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { showSummary = false })
-        }
-        .fullScreenCover(isPresented: $showSprintView) {
-            SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
-        }
-        .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(workoutVM: workoutVM,
-                                horizontalTab: .constant(1),
-                                isModal: true,
-                                onDone: { showRepLog = false })
+        .fullScreenCover(item: $activeModal) { modal in
+            switch modal {
+            case .summary:
+                RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { activeModal = nil })
+            case .sprint:
+                SprintWatchView(viewModel: workoutVM, onDismiss: { activeModal = nil })
+            case .repLog:
+                RepLogWatchLiveView(
+                    workoutVM: workoutVM,
+                    horizontalTab: .constant(1),
+                    isModal: true,
+                    onDone: { activeModal = nil },
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Main Workout",
+                        focus: "Sprint Training",
+                        sprints: [SprintSet(distanceYards: 40, reps: 5, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+            }
         }
     }
     
     // Main tab content with vertical drag gesture and animation
     private var mainTabContent: some View {
-        VStack(spacing: 6) {
-            topStatsRow
-            Divider().background(Color.gray.opacity(0.4))
-            mainModule
-            Divider().background(Color.gray.opacity(0.4))
-            bottomStatsRow
+        GeometryReader { geometry in
+            VStack(spacing: 4) {
+                // Top stats row with proper spacing from status bar
+                topStatsRow
+                    .padding(.top, 8)
+                
+                Divider()
+                    .background(Color.gray.opacity(0.4))
+                    .padding(.horizontal, 8)
+                
+                // Main module with flexible spacing
+                Spacer(minLength: 4)
+                mainModule
+                Spacer(minLength: 4)
+                
+                Divider()
+                    .background(Color.gray.opacity(0.4))
+                    .padding(.horizontal, 8)
+                
+                // Bottom stats row with proper spacing from bottom
+                bottomStatsRow
+                    .padding(.bottom, 8)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.horizontal, 4)
         }
-        .padding(.horizontal, 6)
         .scaleEffect(animateScale ? 0.96 : 1.0)
         .animation(.easeOut(duration: 0.18), value: animateScale)
         .gesture(
@@ -194,10 +262,8 @@ struct MainWorkoutWatchView: View {
                             print("🔽 SWIPE DOWN DETECTED - showing RepLog")
                             withAnimation(.spring()) {
                                 animateScale = true
-                                #if os(watchOS)
-        WKInterfaceDevice.current().play(.click)
-        #endif
-                                showRepLog = true
+                                WKInterfaceDevice.current().play(.click)
+                                activeModal = .repLog
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                                 animateScale = false
@@ -207,10 +273,8 @@ struct MainWorkoutWatchView: View {
                             print("🔼 SWIPE UP DETECTED - showing SprintView")
                             withAnimation(.spring()) {
                                 animateScale = true
-                                #if os(watchOS)
-            WKInterfaceDevice.current().play(.directionUp)
-            #endif
-                                showSprintView = true
+                                WKInterfaceDevice.current().play(.directionUp)
+                                activeModal = .sprint
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
                                 animateScale = false
@@ -223,9 +287,7 @@ struct MainWorkoutWatchView: View {
                             print("➡️ SWIPE RIGHT DETECTED - switching to Control tab")
                             withAnimation(.spring()) {
                                 animateScale = true
-                                #if os(watchOS)
-        WKInterfaceDevice.current().play(.click)
-        #endif
+                                WKInterfaceDevice.current().play(.click)
                                 tabSelection = 0
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
@@ -236,9 +298,7 @@ struct MainWorkoutWatchView: View {
                             print("⬅️ SWIPE LEFT DETECTED - switching to Music tab")
                             withAnimation(.spring()) {
                                 animateScale = true
-                                #if os(watchOS)
-        WKInterfaceDevice.current().play(.click)
-        #endif
+                                WKInterfaceDevice.current().play(.click)
                                 tabSelection = 2
                             }
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.22) {
@@ -249,7 +309,6 @@ struct MainWorkoutWatchView: View {
                 }
         )
     }
-    
     // Example: Call this function at the start of each sprint
     private func startSprintSequence() {
         isSprintStarting = true
@@ -263,15 +322,11 @@ struct MainWorkoutWatchView: View {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.speak("Ready")
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.directionUp)
-            #endif
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 self.speak("Set")
-                #if os(watchOS)
-            WKInterfaceDevice.current().play(.directionUp)
-            #endif
+                WKInterfaceDevice.current().play(.directionUp)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                     self.speak("Go")
@@ -353,7 +408,7 @@ struct CircularPhaseProgressView: View {
     let phases: [WorkoutPhase]
     let currentPhase: Int
     let theme: ColorTheme
-    let phaseIcons: [String] = ["flame.fill", "figure.walk", "bolt.fill", "pause.fill", "figure.cooldown"]
+    let phaseIcons: [String] = ["flame.fill", "figure.walk", "figure.run", "pause.fill", "figure.cooldown"]
     let phaseLabels: [String] = ["Warmup", "Drills", "Sprint", "Rest", "Cooldown"]
     var body: some View {
         GeometryReader { geo in
@@ -426,24 +481,28 @@ struct StatModuleView: View {
     var body: some View {
         VStack(spacing: 1) {
             Image(systemName: icon)
-                .font(.system(size: 13, weight: .bold))
+                .font(.system(size: 11, weight: .bold))
                 .foregroundColor(theme == .nike ? .green : color)
-                .scaleEffect(icon == "heart.fill" && pulse ? 1.18 : 1.0)
+                .scaleEffect(icon == "heart.fill" && pulse ? 1.15 : 1.0)
                 .animation(icon == "heart.fill" ? .easeInOut(duration: 0.7).repeatForever(autoreverses: true) : .default, value: pulse)
                 .onAppear { if icon == "heart.fill" { pulse = true } }
             Text(label)
-                .font(.system(size: 10, weight: .regular))
+                .font(.system(size: 8, weight: .medium))
                 .foregroundColor(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
             Text(value)
-                .font(.system(size: 16, weight: .semibold, design: .monospaced))
+                .font(.system(size: 14, weight: .semibold, design: .monospaced))
                 .foregroundColor(theme == .nike ? .green : color)
-                .scaleEffect(label == "Rep" && bounce ? 1.18 : 1.0)
-                .animation(label == "Rep" && bounce ? .interpolatingSpring(stiffness: 200, damping: 6) : .default, value: bounce)
-                .onChange(of: value) { _, _ in if label == "Rep" { bounce = true; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { bounce = false } } }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .scaleEffect(label == "REP" && bounce ? 1.15 : 1.0)
+                .animation(label == "REP" && bounce ? .interpolatingSpring(stiffness: 200, damping: 6) : .default, value: bounce)
+                .onChange(of: value) { _, _ in if label == "REP" { bounce = true; DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { bounce = false } } }
         }
-        .frame(width: 54, height: 44)
+        .frame(width: 50, height: 40)
         .background(theme == .nike ? Color.black : Color.black.opacity(0.18))
-        .cornerRadius(10)
+        .cornerRadius(8)
     }
 }
 
@@ -617,7 +676,7 @@ struct LeaderboardModuleView: View {
             .font(.adaptiveTitle)
         Text("Adaptive spacing: \(Int(WatchAdaptiveSizing.spacing))px")
             .font(.adaptiveBody)
-        Text("Module size: \(Int(WatchAdaptiveSizing.smallModuleSize.width))×\(Int(WatchAdaptiveSizing.smallModuleSize.height))")
+        Text("Module size: \(Int(WatchAdaptiveSizing.smallModuleSize.width))x\(Int(WatchAdaptiveSizing.smallModuleSize.height))")
             .font(.adaptiveCaption)
     }
     .adaptivePadding()

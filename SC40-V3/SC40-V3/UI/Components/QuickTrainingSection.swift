@@ -23,10 +23,10 @@ struct QuickTrainingSection: View {
             
             // Quick training cards
             HStack(spacing: 12) {
-                // Time Trial card
+                // Time Trial card - Full width since Quick Sprint removed for safety
                 QuickTrainingCard(
                     title: "Time Trial",
-                    subtitle: "40 Yard Test",
+                    subtitle: "40 Yard Performance Test",
                     icon: "stopwatch",
                     color: .purple,
                     isPro: true
@@ -38,16 +38,10 @@ struct QuickTrainingSection: View {
                     }
                 }
                 
-                // Quick Sprint card
-                QuickTrainingCard(
-                    title: "Quick Sprint",
-                    subtitle: "5 min session",
-                    icon: "bolt.fill",
-                    color: .orange,
-                    isPro: false
-                ) {
-                    // TODO: Implement quick sprint
-                }
+                Spacer()
+                
+                // Note: Quick Sprint removed - proper sprinting requires full warmup process
+                // No such thing as a safe 5-minute sprint session
             }
         }
         .padding(20)
@@ -107,7 +101,7 @@ struct QuickTrainingCard: View {
                         VStack {
                             HStack {
                                 Spacer()
-                                ProBadge()
+                                LocalProBadge()
                             }
                             Spacer()
                         }
@@ -140,7 +134,8 @@ struct QuickTrainingCard: View {
     }
 }
 
-struct ProBadge: View {
+// Local ProBadge for QuickTrainingSection
+struct LocalProBadge: View {
     var body: some View {
         HStack(spacing: 2) {
             Image(systemName: "crown.fill")
@@ -151,7 +146,7 @@ struct ProBadge: View {
         .foregroundColor(.white)
         .padding(.horizontal, 6)
         .padding(.vertical, 2)
-        .background(Color.brandPrimary)
+        .background(Color(red: 1.0, green: 0.8, blue: 0.0))
         .cornerRadius(8)
     }
 }
@@ -177,7 +172,7 @@ struct ProBadge: View {
         QuickTrainingCard(
             title: "Quick Sprint",
             subtitle: "5 min session",
-            icon: "bolt.fill",
+            icon: "figure.run",
             color: .orange,
             isPro: false
         ) { }
@@ -188,7 +183,7 @@ struct ProBadge: View {
 }
 
 #Preview("3. Pro Badge Component") {
-    ProBadge()
+    LocalProBadge()
         .padding()
         .background(Color.gray.opacity(0.1))
         .preferredColorScheme(.dark)

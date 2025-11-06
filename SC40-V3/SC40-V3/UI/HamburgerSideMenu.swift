@@ -1,21 +1,8 @@
 import SwiftUI
 import Foundation
-
-// MARK: - Menu Selection Types
-enum MenuSelection {
-    case main
-    case history
-    case leaderboard
-    case smartHub
-    case settings
-    case helpInfo
-    case news
-    case shareWithTeammates
-    case sharePerformance
-    case proFeatures
-    case performanceTrends
-    case advancedAnalytics
-}
+#if canImport(UIKit)
+import UIKit
+#endif
 
 // MARK: - Menu Row Component
 struct HamburgerMenuRow: View {
@@ -46,7 +33,7 @@ struct HamburgerMenuRow: View {
                     .foregroundColor(.white)
 
                 if showProBadge {
-                    MenuProBadge()
+                    ProBadge()
                 }
 
                 Spacer()
@@ -60,7 +47,7 @@ struct HamburgerMenuRow: View {
 }
 
 // MARK: - Pro Badge Component
-struct MenuProBadge: View {
+struct ProBadge: View {
     var body: some View {
         Text("PRO")
             .font(.system(size: 10, weight: .bold))

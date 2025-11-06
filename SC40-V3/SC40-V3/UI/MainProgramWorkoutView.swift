@@ -625,16 +625,18 @@ struct MainProgramWorkoutView: View {
                                     Text("\(getMainSprintDistance()) YARD SPRINTS")
                                         .font(.system(size: 16, weight: .bold))
                                         .foregroundColor(.white)
-                                    Text(workoutCategory.rawValue)
-                                        .font(.system(size: 12, weight: .medium))
-                                        .foregroundColor(.orange.opacity(0.8))
+                                    // TODO: Uncomment when WorkoutTypeAnalyzer is implemented
+                                    // Text(workoutCategory.rawValue)
+                                    //     .font(.system(size: 12, weight: .medium))
+                                    //     .foregroundColor(.orange.opacity(0.8))
                                 }
                                 
                                 Spacer()
                                 
-                                Image(systemName: workoutCategory.icon)
-                                    .font(.system(size: 20, weight: .semibold))
-                                    .foregroundColor(Color(red: workoutCategory.color.red, green: workoutCategory.color.green, blue: workoutCategory.color.blue))
+                                // TODO: Uncomment when WorkoutTypeAnalyzer is implemented
+                                // Image(systemName: workoutCategory.icon)
+                                //     .font(.system(size: 20, weight: .semibold))
+                                //     .foregroundColor(Color(red: workoutCategory.color.red, green: workoutCategory.color.green, blue: workoutCategory.color.blue))
                             }
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
@@ -1828,6 +1830,8 @@ struct MainProgramWorkoutView: View {
         return (week: 1, day: 1, duration: 47)
     }
     
+    // TODO: Implement WorkoutTypeAnalyzer before enabling
+    /*
     private var workoutCategory: WorkoutTypeAnalyzer.WorkoutCategory {
         guard let session = sessionData,
               let firstSprint = session.sprintSets.first else {
@@ -1841,6 +1845,7 @@ struct MainProgramWorkoutView: View {
             reps: session.sprintSets.count
         )
     }
+    */
     
     // MARK: - Session Description Functions
     
@@ -4386,6 +4391,8 @@ extension RepData.RepType {
 }
 
 // MARK: - Workout Summary Card
+// TODO: Implement WorkoutTypeAnalyzer before enabling
+/*
 struct WorkoutSummaryCard: View {
     let sessionData: MainProgramWorkoutView.SessionData?
     
@@ -4473,6 +4480,7 @@ struct WorkoutSummaryCard: View {
         )
     }
 }
+*/
 
 // MARK: - Workout Process View
 struct WorkoutProcessView: View {
@@ -4500,6 +4508,8 @@ struct WorkoutProcessView: View {
                     .tracking(0.8)
             }
             
+            // TODO: Uncomment when WorkoutStep is implemented
+            /*
             // Animated Process Steps
             VStack(spacing: 12) {
                 ForEach(Array(workoutSteps.enumerated()), id: \.offset) { index, step in
@@ -4546,6 +4556,7 @@ struct WorkoutProcessView: View {
                         )
                 )
             }
+            */
         }
         .padding(.vertical, 20)
         .padding(.horizontal, 20)
@@ -4563,6 +4574,8 @@ struct WorkoutProcessView: View {
         }
     }
     
+    // TODO: Implement WorkoutStep and WorkoutTypeAnalyzer before enabling
+    /*
     private var workoutSteps: [WorkoutStep] {
         guard let session = sessionData,
               let firstSprint = session.sprintSets.first else {
@@ -4586,6 +4599,7 @@ struct WorkoutProcessView: View {
         guard currentStepIndex < workoutSteps.count else { return nil }
         return workoutSteps[currentStepIndex]
     }
+    */
     
     private func startAnimation() {
         withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
@@ -4595,6 +4609,8 @@ struct WorkoutProcessView: View {
 }
 
 // MARK: - Workout Step Row
+// TODO: Implement WorkoutStep before enabling
+/*
 struct WorkoutStepRow: View {
     let step: WorkoutStep
     let isActive: Bool
@@ -4675,6 +4691,7 @@ struct WorkoutStepRow: View {
         }
     }
 }
+*/
 
 #Preview {
     MainProgramWorkoutView(sessionData: nil, onWorkoutCompleted: nil)
@@ -4685,5 +4702,4 @@ extension Notification.Name {
     static let watchWorkoutStartRequested = Notification.Name("watchWorkoutStartRequested")
     static let watchWorkoutEndRequested = Notification.Name("watchWorkoutEndRequested")
     static let watchRepCompletionRequested = Notification.Name("watchRepCompletionRequested")
-    static let watchWorkoutStateChanged = Notification.Name("watchWorkoutStateChanged")
 }

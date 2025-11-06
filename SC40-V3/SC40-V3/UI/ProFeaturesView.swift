@@ -1,161 +1,363 @@
 import SwiftUI
 
 struct ProFeaturesView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var showContent = false
+    @State private var isPurchased = false // This would come from your purchase manager
+    
     var body: some View {
         NavigationView {
             ZStack {
-                // Pro Features Canvas liquid glass background
-                Canvas { context, size in
-                    // Pro gradient with gold accents
-                    let proGradient = Gradient(colors: [
-                        Color.brandBackground.opacity(0.95),
-                        Color.yellow.opacity(0.3),
-                        Color.orange.opacity(0.25),
-                        Color.brandPrimary.opacity(0.8)
-                    ])
-                    context.fill(
-                        Path(CGRect(origin: .zero, size: size)),
-                        with: .linearGradient(proGradient,
-                                            startPoint: CGPoint(x: 0, y: 0),
-                                            endPoint: CGPoint(x: size.width, y: size.height))
-                    )
-                    
-                    // Premium glass elements
-                    let premiumElements = 6
-                    for i in 0..<premiumElements {
-                        let x = size.width * (0.15 + CGFloat(i % 3) * 0.35)
-                        let y = size.height * (0.2 + CGFloat(i / 3) * 0.4)
-                        let radius: CGFloat = 25 + CGFloat(i) * 8
-                        
-                        // Gold/premium glass bubbles
-                        context.addFilter(.blur(radius: 18))
-                        context.fill(Path(ellipseIn: CGRect(x: x - radius, y: y - radius, width: radius * 2, height: radius * 2)),
-                                   with: .color(Color.yellow.opacity(0.20)))
-                        
-                        // Inner highlight
-                        context.fill(Path(ellipseIn: CGRect(x: x - radius * 0.4, y: y - radius * 0.4, width: radius * 0.8, height: radius * 0.8)),
-                                   with: .color(Color.orange.opacity(0.15)))
-                    }
-                    
-                    // Premium wave pattern
-                    let waveHeight: CGFloat = 20
-                    let waveLength = size.width / 3
-                    var wavePath = Path()
-                    wavePath.move(to: CGPoint(x: 0, y: size.height * 0.6))
-                    for x in stride(from: 0, through: size.width, by: 2) {
-                        let y = size.height * 0.6 + waveHeight * sin((x / waveLength) * 2 * .pi)
-                        wavePath.addLine(to: CGPoint(x: x, y: y))
-                    }
-                    wavePath.addLine(to: CGPoint(x: size.width, y: size.height))
-                    wavePath.addLine(to: CGPoint(x: 0, y: size.height))
-                    
-                    context.fill(wavePath, with: .color(Color.yellow.opacity(0.12)))
-                    
-                    // Glass overlay
-                    context.fill(
-                        Path(CGRect(origin: .zero, size: size)),
-                        with: .color(Color.brandPrimary.opacity(0.05))
-                    )
-                }
-                .edgesIgnoringSafeArea(.all)
+                // Premium gradient background matching app design
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: Color(red: 0.05, green: 0.1, blue: 0.2), location: 0.0),
+                        .init(color: Color(red: 0.1, green: 0.2, blue: 0.35), location: 0.3),
+                        .init(color: Color(red: 0.15, green: 0.25, blue: 0.45), location: 0.5),
+                        .init(color: Color(red: 0.2, green: 0.15, blue: 0.35), location: 0.7),
+                        .init(color: Color(red: 0.1, green: 0.05, blue: 0.25), location: 1.0)
+                    ]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea(.all)
                 
-                ScrollView {
-                    VStack(spacing: 32) {
-                    // Performance Trends Pro Feature
-                    VStack(spacing: 18) {
-                        Text("Performance Trends")
-                            .font(.title.bold())
-                            .foregroundColor(.brandPrimary)
-                            .multilineTextAlignment(.center)
-                        Text("Track your progress with advanced performance analytics and detailed sprint trend analysis.")
-                            .font(.body)
-                            .foregroundColor(.brandSecondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("• Detailed performance graphs")
-                            Text("• Sprint time progression tracking")
-                            Text("• Comparative analysis over time")
-                            Text("• Export performance reports")
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // Header Section
+                        VStack(spacing: 16) {
+                            // Crown Icon
+                            ZStack {
+                                Circle()
+                                    .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                    .frame(width: 80, height: 80)
+                                
+                                Image(systemName: "crown.fill")
+                                    .font(.system(size: 40, weight: .medium))
+                                    .foregroundColor(.black)
+                            }
+                            .padding(.top, 20)
+                            
+                            VStack(spacing: 8) {
+                                Text("Pro Features")
+                                    .font(.system(size: 32, weight: .bold))
+                                    .foregroundColor(.white)
+                                
+                                Text("Unlock premium features")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
                         }
-                        .font(.body)
-                        .foregroundColor(.brandTertiary)
-                        .padding(.horizontal)
+                        .padding(.bottom, 40)
                         
-                        Button(action: { 
-                            // Show our new purchase manager
-                        }) {
-                            Text("Upgrade for $4.99/mo")
-                                .font(.body)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.brandPrimary)
-                                .foregroundColor(.white)
-                                .cornerRadius(14)
-                        }
-                        .padding(.horizontal)
+                        // Advanced Analytics Card
+                        ProFeatureCard(
+                            icon: "chart.line.uptrend.xyaxis",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0),
+                            title: "Advanced Analytics",
+                            price: "$2.99 one-time",
+                            description: "Global sports benchmarks, percentile rankings, PDF recruiting cards, and detailed performance insights.",
+                            features: [
+                                "Global Sports Benchmarks (10 sports)",
+                                "Percentile Rankings",
+                                "PDF Recruiting Card Export",
+                                "Advanced Performance Metrics"
+                            ],
+                            isPurchased: isPurchased,
+                            onPurchase: {
+                                // Handle Advanced Analytics purchase
+                                HapticManager.shared.success()
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 24)
+                        
+                        // Sprint Timer Pro Card
+                        ProFeatureCard(
+                            icon: "stopwatch.fill",
+                            iconColor: Color(red: 1.0, green: 0.8, blue: 0.0),
+                            title: "Sprint Timer Pro",
+                            price: "$4.99 one-time",
+                            description: "Professional timing app for sprint training and testing. Practice starts, time trials, and custom workouts from 10-100 yards with precision GPS timing.",
+                            features: [
+                                "Professional Sprint Starter & Timer",
+                                "Custom Distance (10-100 yards, 10yd increments)",
+                                "Flexible Rest Periods (1-60 minutes)",
+                                "Multiple Reps (1-10 repetitions)",
+                                "GPS-Verified Precision Timing",
+                                "Results sync to analytics"
+                            ],
+                            isPurchased: isPurchased,
+                            onPurchase: {
+                                // Handle Sprint Timer Pro purchase
+                                HapticManager.shared.success()
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 24)
+                        
+                        // Pro Bundle Card
+                        ProBundleCard(
+                            onPurchase: {
+                                // Handle Pro Bundle purchase
+                                HapticManager.shared.success()
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 24)
+                        
+                        // Restore Purchases Card
+                        RestorePurchasesCard(
+                            onRestore: {
+                                // Handle restore purchases
+                                HapticManager.shared.medium()
+                            }
+                        )
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 40)
+                        
+                        Spacer(minLength: 40)
                     }
-                    
-                    // Advanced Analytics summary
-                    Text("Advanced Analytics")
-                        .font(.title.bold())
-                        .foregroundColor(.brandPrimary)
-                        .multilineTextAlignment(.center)
-                        .padding(.top, 24)
-                    Text("Gain a competitive edge with in-depth sprint metrics, AI-powered coaching, and pro recruiting tools.")
-                        .font(.body)
-                        .foregroundColor(.brandSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    Button(action: { /* Upgrade action */ }) {
-                        Text("Upgrade for $4.99/mo")
-                            .font(.body)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.brandPrimary)
-                            .foregroundColor(.white)
-                            .cornerRadius(14)
-                    }
-                    .padding(.horizontal)
-
-                    // SC Pro summary
-                    VStack(spacing: 18) {
-                        Text("Sprint Coach Starter")
-                            .font(.title.bold())
-                            .foregroundColor(.brandPrimary)
-                            .multilineTextAlignment(.center)
-                        Text("SC Pro turns your Apple Watch into a world-class starter and timer. Set reps and rest, start your session, and get precise results—automatically synced to your phone.")
-                            .font(.body)
-                            .foregroundColor(.brandSecondary)
-                            .multilineTextAlignment(.center)
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("• Precision starter: 'On your marks... Set... Go!'")
-                            Text("• Set reps and rest your way")
-                            Text("• Team or solo timing")
-                            Text("• Results sync to phone & analytics")
-                        }
-                        .font(.body)
-                        .foregroundColor(.brandTertiary)
-                        .padding(.horizontal)
-                        Button(action: { /* Unlock SC Pro action */ }) {
-                            Text("Unlock SC Pro for $4.99 one-time")
-                                .font(.body)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.brandPrimary)
-                                .foregroundColor(.white)
-                                .cornerRadius(14)
-                        }
-                        .padding(.horizontal)
-                    }
-                    .padding(.top, 12)
-                    Spacer(minLength: 100) // Add some bottom spacing for scrolling
-                }
-                .padding(.top, 24)
+                    .padding(.horizontal, 20)
                 }
             }
-            .navigationTitle("SC Pro Features")
+            .navigationTitle("")
+            .navigationBarHidden(true)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 0.8)) {
+                    showContent = true
+                }
+            }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+}
+
+// MARK: - Supporting Components
+
+struct ProFeatureCard: View {
+    let icon: String
+    let iconColor: Color
+    let title: String
+    let price: String
+    let description: String
+    let features: [String]
+    let isPurchased: Bool
+    let onPurchase: () -> Void
+    
+    var body: some View {
+        let cardBackground = RoundedRectangle(cornerRadius: 16)
+            .fill(Color.white.opacity(0.1))
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+            )
+        
+        let buttonBackground = isPurchased 
+            ? AnyView(Color.green)
+            : AnyView(LinearGradient(
+                colors: [Color(red: 1.0, green: 0.8, blue: 0.0), Color(red: 1.0, green: 0.6, blue: 0.0)],
+                startPoint: .leading,
+                endPoint: .trailing
+            ))
+        
+        return VStack(spacing: 20) {
+            // Header
+            headerSection
+            
+            // Description
+            Text(description)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(.white.opacity(0.8))
+                .multilineTextAlignment(.leading)
+            
+            // Features
+            featuresSection
+            
+            // Purchase button
+            Button(action: onPurchase) {
+                HStack(spacing: 8) {
+                    if isPurchased {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 16, weight: .medium))
+                        Text("Purchased")
+                            .font(.system(size: 16, weight: .semibold))
+                    } else {
+                        Text("Purchase")
+                            .font(.system(size: 16, weight: .semibold))
+                    }
+                }
+                .foregroundColor(isPurchased ? .white : .black)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(buttonBackground)
+                .cornerRadius(12)
+            }
+            .disabled(isPurchased)
+        }
+        .padding(20)
+        .background(cardBackground)
+    }
+    
+    private var headerSection: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.2))
+                    .frame(width: 60, height: 60)
+                
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(iconColor)
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Text(price)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+            }
+            
+            Spacer()
+        }
+    }
+    
+    private var featuresSection: some View {
+        VStack(spacing: 8) {
+            ForEach(features, id: \.self) { feature in
+                HStack(spacing: 8) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    
+                    Text(feature)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    
+                    Spacer()
+                }
+            }
+        }
+    }
+}
+
+struct ProBundleCard: View {
+    let onPurchase: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                Image(systemName: "star.circle.fill")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Pro Bundle")
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundColor(.white)
+                    
+                    Text("Both features at a discount")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                
+                Spacer()
+            }
+            
+            Button(action: onPurchase) {
+                HStack {
+                    Text("Get Pro Bundle")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text("$5.99")
+                            .font(.system(size: 18, weight: .bold))
+                            .foregroundColor(.black)
+                        Text("Save $1.99")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.black.opacity(0.7))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .padding(.horizontal, 20)
+                .background(
+                    LinearGradient(
+                        colors: [Color(red: 1.0, green: 0.8, blue: 0.0), Color(red: 1.0, green: 0.6, blue: 0.0)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(16)
+                .shadow(color: Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), radius: 8, x: 0, y: 4)
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color(red: 1.0, green: 0.8, blue: 0.0).opacity(0.3), lineWidth: 2)
+                )
+        )
+    }
+}
+
+struct RestorePurchasesCard: View {
+    let onRestore: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.clockwise.circle.fill")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Restore Purchases")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.white)
+                    
+                    Text("Already purchased? Restore here")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                
+                Spacer()
+            }
+            
+            Button(action: onRestore) {
+                Text("Restore Purchases")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.white.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                            )
+                    )
+            }
+        }
+        .padding(20)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.white.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
+        )
     }
 }
 

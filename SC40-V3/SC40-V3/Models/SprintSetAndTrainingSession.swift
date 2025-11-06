@@ -1,30 +1,15 @@
 import Foundation
 import Combine
 
-// MARK: - Core Training Types
+// Canonical SprintSet and TrainingSession types for SC40-V3
 
-/// Represents a single sprint set in a training session
-public struct SprintSet: Codable, Sendable, Identifiable, Equatable {
-    public let id: UUID
+public struct SprintSet: Codable, Sendable {
     public let distanceYards: Int
     public let reps: Int
     public let intensity: String // e.g. "max", "submax", "moderate", "easy", "test"
-    
-    public init(id: UUID = UUID(), distanceYards: Int, reps: Int, intensity: String) {
-        self.id = id
-        self.distanceYards = distanceYards
-        self.reps = reps
-        self.intensity = intensity
-    }
-    
-    // MARK: - Equatable
-    public static func == (lhs: SprintSet, rhs: SprintSet) -> Bool {
-        return lhs.id == rhs.id
-    }
 }
 
-/// Represents a complete training session with multiple sprint sets
-public struct TrainingSession: Codable, Identifiable, Sendable, Equatable {
+public struct TrainingSession: Codable, Identifiable, Sendable {
     public let id: UUID
     public let week: Int
     public let day: Int
@@ -69,124 +54,8 @@ public struct TrainingSession: Codable, Identifiable, Sendable, Equatable {
         self.notes = notes
     }
     
-    // MARK: - Equatable
-    public static func == (lhs: TrainingSession, rhs: TrainingSession) -> Bool {
-        return lhs.id == rhs.id
-    }
+    // Note: stableSessionID method moved to UnifiedSessionGenerator.swift to avoid duplication
     
-    public static func stableSessionID(week: Int, day: Int) -> UUID {
-        let weekString = String(format: "%04d", week)
-        let dayString = String(format: "%04d", day)
-        let baseString = "00000000-0000-\(weekString)-\(dayString)-000000000000"
-        return UUID(uuidString: baseString) ?? UUID()
-    }
-}
-
-// MARK: - User Profile
-
-/// Represents a user profile with training data
-public struct UserProfile: Codable, Identifiable, Equatable {
-    public var id: UUID
-    
-    // Basic Info
-    public var name: String
-    public var email: String?
-    public var gender: String
-    public var age: Int
-    public var height: Double // in inches
-    public var weight: Double? // in pounds
-    public var personalBests: [String: Double]
-    public var level: String // e.g. "Beginner", "Intermediate", "Advanced"
-    public var baselineTime: Double // 40-yard dash time in seconds
-    public var frequency: Int // Training days per week
-    public var currentWeek: Int
-    public var currentDay: Int
-    public var leaderboardOptIn: Bool
-    public var photo: Data?
-    public var availableEquipment: [String]
-    
-    // Location
-    public var county: String
-    public var state: String
-    public var country: String
-    public var locationPermissionGranted: Bool
-    
-    // Session Management
-    public var sessionIDs: [UUID] = []
-    public var completedSessionIDs: [UUID] = []
-    public var favoriteSessionTemplateIDs: [Int] = []
-    public var preferredSessionTemplateIDs: [Int] = []
-    public var dislikedSessionTemplateIDs: [Int] = []
-    public var manualSessionOverrides: [UUID: Int] = [:] // sessionID: templateID
-    public var allowRepeatingFavorites: Bool
-    
-    // Additional Properties
-    public var goals: [String]
-    public var personalBest40Yard: Double?
-    public var joinDate: Date
-    
-    public init(
-        id: UUID = UUID(),
-        name: String,
-        email: String? = nil,
-        gender: String,
-        age: Int,
-        height: Double,
-        weight: Double? = nil,
-        personalBests: [String: Double],
-        level: String,
-        baselineTime: Double,
-        frequency: Int,
-        currentWeek: Int = 1,
-        currentDay: Int = 1,
-        leaderboardOptIn: Bool = true,
-        photo: Data? = nil,
-        availableEquipment: [String] = [],
-        county: String = "",
-        state: String = "",
-        country: String = "",
-        locationPermissionGranted: Bool = false,
-        favoriteSessionTemplateIDs: [Int] = [],
-        preferredSessionTemplateIDs: [Int] = [],
-        dislikedSessionTemplateIDs: [Int] = [],
-        allowRepeatingFavorites: Bool = true,
-        goals: [String] = [],
-        personalBest40Yard: Double? = nil,
-        joinDate: Date = Date()
-    ) {
-        self.id = id
-        self.name = name
-        self.email = email
-        self.gender = gender
-        self.age = age
-        self.height = height
-        self.weight = weight
-        self.personalBests = personalBests
-        self.level = level
-        self.baselineTime = baselineTime
-        self.frequency = frequency
-        self.currentWeek = currentWeek
-        self.currentDay = currentDay
-        self.leaderboardOptIn = leaderboardOptIn
-        self.photo = photo
-        self.availableEquipment = availableEquipment
-        self.county = county
-        self.state = state
-        self.country = country
-        self.locationPermissionGranted = locationPermissionGranted
-        self.favoriteSessionTemplateIDs = favoriteSessionTemplateIDs
-        self.preferredSessionTemplateIDs = preferredSessionTemplateIDs
-        self.dislikedSessionTemplateIDs = dislikedSessionTemplateIDs
-        self.allowRepeatingFavorites = allowRepeatingFavorites
-        self.goals = goals
-        self.personalBest40Yard = personalBest40Yard
-        self.joinDate = joinDate
-    }
-    
-    // MARK: - Equatable
-    public static func == (lhs: UserProfile, rhs: UserProfile) -> Bool {
-        return lhs.id == rhs.id
-    }
 }
 
 // MARK: - SC40 Example Session (Algorithm Friendly)

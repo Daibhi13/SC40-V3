@@ -264,7 +264,7 @@ class WatchHealthKitService: NSObject, ObservableObject {
         // Sprint training is approximately 8-12 METs
         let mets: Double = 10.0 // Conservative estimate for sprint training
         
-        // Calories = METs × weight(kg) × time(hours)
+        // Calories = METs * weight(kg) * time(hours)
         let hours = duration / 3600.0
         let calories = mets * userWeight * hours
         

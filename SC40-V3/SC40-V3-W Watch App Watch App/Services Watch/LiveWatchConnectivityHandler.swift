@@ -1,12 +1,9 @@
-import SwiftUI
-import Combine
 import Foundation
+import Combine
+import os.log
 import WatchConnectivity
-#if os(watchOS)
-import WatchKit
-#endif // Added for haptic feedback
+import WatchKit // Added for haptic feedback
 import CoreMotion
-import OSLog
 
 // Import Watch-specific models and managers
 // Note: These should be available in the same target
@@ -72,9 +69,7 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         logger.info("Handling ping test from iPhone")
         
         // Provide haptic and audio feedback for ping
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.notification)
-        #endif
         
         let reply: [String: Any] = [
             "type": "ping_response",
@@ -100,9 +95,7 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         logger.info("Handling workout data from iPhone")
         
         // Provide haptic and audio feedback for workout session received
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.success)
-        #endif
         
         // Extract workout information
         let sessionType = message["sessionType"] as? String ?? "Unknown"
@@ -131,9 +124,7 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         logger.info("Handling profile sync from iPhone")
         
         // Provide haptic feedback for profile sync
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.click)
-        #endif
         
         let name = message["name"] as? String ?? "Unknown"
         let level = message["level"] as? String ?? "Unknown"
@@ -166,9 +157,7 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         logger.info("Handling onboarding completion from iPhone")
         
         // Provide strong haptic feedback for onboarding completion
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.success)
-        #endif
         
         // Extract user profile data
         let name = message["name"] as? String ?? "User"
@@ -198,25 +187,9 @@ class LiveWatchConnectivityHandler: NSObject, ObservableObject {
         UserDefaults.standard.set(frequency, forKey: "trainingFrequency")
         UserDefaults.standard.set(baselineTime, forKey: "personalBest40yd")
         
-        // Update Watch app state
-        Task { @MainActor in
-            // Store user data in UserDefaults for Watch app state management
-            UserDefaults.standard.set(name, forKey: "user_name")
-            UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
-            UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
-            UserDefaults.standard.set("iPhone Sync", forKey: "SC40_AuthMethod")
-            
-            // TODO: Update WatchAppStateManager when available
-            // WatchAppStateManager.shared.updateFromOnboarding([
-            //     "name": name,
-            //     "level": level,
-            //     "frequency": frequency
-            // ])
-            
-            // Post notification for immediate UI updates
-            NotificationCenter.default.post(name: NSNotification.Name("profileDataUpdated"), object: nil)
-            print("📱➡️⌚ Watch: Profile data updated and UI notification sent")
-        }
+        // Post notification for immediate UI updates (already on MainActor)
+        NotificationCenter.default.post(name: NSNotification.Name("profileDataUpdated"), object: nil)
+        print("📱➡️⌚ Watch: Profile data updated and UI notification sent")
         
         let reply: [String: Any] = [
             "type": "onboarding_sync_response",
@@ -333,9 +306,7 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             self.logger.info("Received background data from iPhone: \(userInfo)")
             
             // Provide haptic feedback for background data
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.notification)
-            #endif
             
             self.messagesReceived += 1
             
@@ -356,13 +327,112 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
         }
     }
     
+    // MARK: - Application Context Handler (CRITICAL FIX)
+    
+    nonisolated func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String : Any]) {
+        Task { @MainActor in
+            self.logger.info("📦 Received application context from iPhone: \(applicationContext)")
+            
+            // CRASH PROTECTION: Handle nil or empty context gracefully
+            guard !applicationContext.isEmpty else {
+                self.logger.warning("⚠️ Application context is empty - ignoring")
+                print("⚠️ Watch: Application context data is empty")
+                return
+            }
+            
+            // Provide haptic feedback for context update
+            WKInterfaceDevice.current().play(.click)
+            
+            self.messagesReceived += 1
+            
+            // Extract and store profile data from application context
+            if let onboardingCompleted = applicationContext["onboardingCompleted"] as? Bool {
+                UserDefaults.standard.set(onboardingCompleted, forKey: "SC40_OnboardingCompleted")
+                UserDefaults.standard.set(onboardingCompleted, forKey: "onboardingCompleted")
+                print("📦 Watch: Onboarding status updated: \(onboardingCompleted)")
+            }
+            
+            // Handle user profile data if present
+            if let userProfileExists = applicationContext["userProfileExists"] as? Bool {
+                UserDefaults.standard.set(userProfileExists, forKey: "SC40_userProfileExists")
+                print("📦 Watch: User profile exists: \(userProfileExists)")
+            }
+            
+            // ✅ CRITICAL FIX: Handle actual user profile data
+            if let userName = applicationContext["userName"] as? String {
+                UserDefaults.standard.set(userName, forKey: "SC40_UserName")
+                UserDefaults.standard.set(userName, forKey: "user_name")
+                print("📦 Watch: User name updated: \(userName)")
+            }
+            
+            if let pb = applicationContext["pb"] as? Double {
+                UserDefaults.standard.set(pb, forKey: "SC40_TargetTime")
+                UserDefaults.standard.set(pb, forKey: "personalBest40yd")
+                print("📦 Watch: Personal best updated: \(pb)s")
+            }
+            
+            if let fitnessLevel = applicationContext["fitnessLevel"] as? String {
+                UserDefaults.standard.set(fitnessLevel, forKey: "SC40_UserLevel")
+                UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
+                print("📦 Watch: Fitness level updated: \(fitnessLevel)")
+            }
+            
+            if let daysAvailable = applicationContext["daysAvailable"] as? Int {
+                UserDefaults.standard.set(daysAvailable, forKey: "SC40_UserFrequency")
+                UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
+                print("📦 Watch: Training frequency updated: \(daysAvailable) days/week")
+            }
+            
+            if let age = applicationContext["age"] as? Int {
+                UserDefaults.standard.set(age, forKey: "SC40_UserAge")
+                print("📦 Watch: Age updated: \(age)")
+            }
+            
+            if let height = applicationContext["height"] as? Int {
+                UserDefaults.standard.set(height, forKey: "SC40_UserHeight")
+                print("📦 Watch: Height updated: \(height)")
+            }
+            
+            if let weight = applicationContext["weight"] as? Double {
+                UserDefaults.standard.set(weight, forKey: "SC40_UserWeight")
+                print("📦 Watch: Weight updated: \(weight)")
+            }
+            
+            if let currentWeek = applicationContext["currentWeek"] as? Int {
+                UserDefaults.standard.set(currentWeek, forKey: "SC40_CurrentWeek")
+                print("📦 Watch: Current week updated: \(currentWeek)")
+            }
+            
+            if let currentDay = applicationContext["currentDay"] as? Int {
+                UserDefaults.standard.set(currentDay, forKey: "SC40_CurrentDay")
+                print("📦 Watch: Current day updated: \(currentDay)")
+            }
+            
+            // Handle app version info
+            if let appVersion = applicationContext["appVersion"] as? String {
+                UserDefaults.standard.set(appVersion, forKey: "SC40_appVersion")
+            }
+            
+            if let buildNumber = applicationContext["buildNumber"] as? String {
+                UserDefaults.standard.set(buildNumber, forKey: "SC40_buildNumber")
+            }
+            
+            // Post notification for immediate UI updates
+            NotificationCenter.default.post(name: NSNotification.Name("applicationContextUpdated"), object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name("profileDataUpdated"), object: nil)
+            
+            self.lastMessageReceived = "App Context Updated"
+            
+            self.logger.info("✅ Application context processed and stored on Watch")
+            print("✅ Watch: Application context received - Name: \(applicationContext["userName"] ?? "Unknown"), PB: \(applicationContext["pb"] ?? 0.0)s, Level: \(applicationContext["fitnessLevel"] ?? "Unknown")")
+        }
+    }
+    
     private func handleOnboardingCompleteBackground(_ userInfo: [String: Any]) {
         logger.info("Processing onboarding data from background transfer")
         
         // Provide haptic feedback for background onboarding sync
-        #if os(watchOS)
         WKInterfaceDevice.current().play(.success)
-        #endif
         
         // Extract user profile data (same as message handler)
         let name = userInfo["name"] as? String ?? "User"
@@ -392,21 +462,9 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
         UserDefaults.standard.set(frequency, forKey: "trainingFrequency")
         UserDefaults.standard.set(baselineTime, forKey: "personalBest40yd")
         
-        // Update Watch app state
-        Task { @MainActor in
-            // Store user data in UserDefaults for Watch app state management
-            UserDefaults.standard.set(name, forKey: "user_name")
-            UserDefaults.standard.set(level, forKey: "SC40_UserLevel")
-            UserDefaults.standard.set(baselineTime, forKey: "SC40_TargetTime")
-            UserDefaults.standard.set("iPhone Sync", forKey: "SC40_AuthMethod")
-            
-            // TODO: Update WatchAppStateManager when available
-            // WatchAppStateManager.shared.updateFromOnboarding([
-            //     "name": name,
-            //     "level": level,
-            //     "frequency": frequency
-            // ])
-        }
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: NSNotification.Name("profileDataUpdated"), object: nil)
+        logger.info("✅ Background onboarding data synced to Watch")
     }
     
     // MARK: - Training Sessions Handler
@@ -420,23 +478,29 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             return
         }
         
-        // Store session data locally (simplified for now)
-        // TODO: Implement proper TrainingSession conversion when models are available
+        // Store session data locally with size validation
         do {
             let data = try JSONSerialization.data(withJSONObject: sessionsData)
+            
+            // Validate data size (max 1MB for UserDefaults)
+            guard data.count < 1_000_000 else {
+                logger.error("❌ Training sessions data too large: \(data.count) bytes")
+                replyHandler(["error": "Data too large", "timestamp": Date().timeIntervalSince1970])
+                return
+            }
+            
             UserDefaults.standard.set(data, forKey: "trainingSessions")
-            logger.info("✅ Stored \(sessionsData.count) training sessions locally")
+            logger.info("✅ Stored \(sessionsData.count) training sessions (\(data.count) bytes)")
         } catch {
             logger.error("❌ Failed to store training sessions: \(error.localizedDescription)")
+            replyHandler(["error": error.localizedDescription, "timestamp": Date().timeIntervalSince1970])
+            return
         }
         
-        // Update Watch app state - ENSURE MAIN THREAD
-        DispatchQueue.main.async {
-            // Notify that training sessions have been updated
-            NotificationCenter.default.post(name: NSNotification.Name("trainingSessionsUpdated"), object: nil)
-            self.logger.info("✅ Updated Watch with \(sessionsData.count) training sessions")
-            print("📱➡️⌚ Watch: Training sessions notification posted on main thread")
-        }
+        // Notify that training sessions have been updated (already on MainActor)
+        NotificationCenter.default.post(name: NSNotification.Name("trainingSessionsUpdated"), object: nil)
+        logger.info("✅ Updated Watch with \(sessionsData.count) training sessions")
+        print("📱➡️⌚ Watch: Training sessions notification posted")
         
         replyHandler([
             "received": true,
@@ -492,23 +556,27 @@ extension LiveWatchConnectivityHandler: WCSessionDelegate {
             return
         }
         
-        // Store session data locally (simplified for now)
-        // TODO: Implement proper TrainingSession conversion when models are available
+        // Store session data locally with size validation
         do {
             let data = try JSONSerialization.data(withJSONObject: sessionsData)
+            
+            // Validate data size (max 1MB for UserDefaults)
+            guard data.count < 1_000_000 else {
+                logger.error("❌ Background training sessions data too large: \(data.count) bytes")
+                return
+            }
+            
             UserDefaults.standard.set(data, forKey: "trainingSessions")
-            logger.info("✅ Background stored \(sessionsData.count) training sessions locally")
+            logger.info("✅ Background stored \(sessionsData.count) training sessions (\(data.count) bytes)")
         } catch {
             logger.error("❌ Failed to store background training sessions: \(error.localizedDescription)")
+            return
         }
         
-        // Update Watch app state - ENSURE MAIN THREAD
-        DispatchQueue.main.async {
-            // Notify that training sessions have been updated
-            NotificationCenter.default.post(name: NSNotification.Name("trainingSessionsUpdated"), object: nil)
-            self.logger.info("✅ Background updated Watch with \(sessionsData.count) training sessions")
-            print("📱➡️⌚ Watch: Background training sessions notification posted on main thread")
-        }
+        // Notify that training sessions have been updated (already on MainActor)
+        NotificationCenter.default.post(name: NSNotification.Name("trainingSessionsUpdated"), object: nil)
+        logger.info("✅ Background updated Watch with \(sessionsData.count) training sessions")
+        print("📱➡️⌚ Watch: Background training sessions notification posted")
         
         lastMessageReceived = "Training sessions (BG) - \(sessionsData.count) sessions"
         logger.info("✅ Background training sessions sync complete: \(sessionsData.count) sessions")

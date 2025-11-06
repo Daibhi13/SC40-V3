@@ -12,11 +12,13 @@ import SwiftUI
 struct MusicWatchView: View {
     /// 0 = Control, 1 = MainWorkout, 2 = Music (default)
     var selectedIndex: Int = 2
+    let session: TrainingSession
     
     @State private var isPlaying: Bool = false
     @State private var currentTrack: String = "Not Playing"
     @State private var currentArtist: String = ""
     @State private var showingAppLauncher: Bool = false
+    @Environment(\.presentationMode) var presentationMode
     
     private let musicApps = [
         MusicApp(name: "Apple Music", icon: "music.note", bundleId: "com.apple.Music"),
@@ -31,7 +33,7 @@ struct MusicWatchView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Time at top
+                // Time at top with padding to avoid status bar overlap
                 Text(currentTimeString())
                     .font(.system(size: 18, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.brandSecondary)
@@ -114,10 +116,23 @@ struct MusicWatchView: View {
         .sheet(isPresented: $showingAppLauncher) {
             MusicAppLauncherView(musicApps: musicApps)
         }
+        .gesture(swipeBackGesture)
         .onAppear {
             setupMediaPlayer()
             updateNowPlayingInfo()
         }
+    }
+    
+    // MARK: - Swipe Back Gesture
+    private var swipeBackGesture: some Gesture {
+        DragGesture(minimumDistance: 30, coordinateSpace: .local)
+            .onEnded { value in
+                // Swipe Left to go back to Enhanced7StageWorkoutView
+                if value.translation.width < -30 {
+                    print("🎵 MusicView - Swipe Left to return to workout")
+                    presentationMode.wrappedValue.dismiss()
+                }
+            }
     }
     
     // MARK: - Media Control Functions
@@ -269,5 +284,15 @@ struct MusicAppLauncherView: View {
 
 // MARK: - Preview
 #Preview {
-    MusicWatchView()
+    MusicWatchView(
+        selectedIndex: 2,
+        session: TrainingSession(
+            week: 1,
+            day: 1,
+            type: "Preview",
+            focus: "Test Session",
+            sprints: [SprintSet(distanceYards: 40, reps: 3, intensity: "max")],
+            accessoryWork: []
+        )
+    )
 }

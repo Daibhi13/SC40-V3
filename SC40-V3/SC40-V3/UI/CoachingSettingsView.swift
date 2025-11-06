@@ -29,7 +29,7 @@ enum CoachingStyle: String, CaseIterable, Identifiable, Codable {
 }
 
 enum VoiceCoach: String, CaseIterable, Identifiable, Codable {
-    case neutral, motivator, calm, proCoach
+    case neutral, motivator, calm, proCoach, eliteAthlete, aiAdaptive
     var id: String { rawValue }
     var label: String {
         switch self {
@@ -37,6 +37,26 @@ enum VoiceCoach: String, CaseIterable, Identifiable, Codable {
         case .motivator: return "Motivator"
         case .calm: return "Calm"
         case .proCoach: return "Pro Coach"
+        case .eliteAthlete: return "Elite Athlete"
+        case .aiAdaptive: return "AI Adaptive"
+        }
+    }
+    
+    var isPremium: Bool {
+        switch self {
+        case .neutral, .motivator: return false
+        case .calm, .proCoach, .eliteAthlete, .aiAdaptive: return true
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .neutral: return "Basic coaching with standard voice"
+        case .motivator: return "Energetic and encouraging coaching"
+        case .calm: return "Steady, composed coaching style"
+        case .proCoach: return "Professional athlete-level coaching"
+        case .eliteAthlete: return "Championship mindset coaching"
+        case .aiAdaptive: return "AI-powered personalized coaching"
         }
     }
 }
@@ -134,7 +154,38 @@ struct CoachingSettingsView: View {
         Section(header: Text("Voice Coach")) {
             Picker("Voice Coach", selection: $settings.voiceCoach) {
                 ForEach(VoiceCoach.allCases) { voice in
-                    Text(voice.label).tag(voice)
+                    HStack {
+                        Text(voice.label)
+                        if voice.isPremium {
+                            Image(systemName: "crown.fill")
+                                .foregroundColor(.yellow)
+                                .font(.caption)
+                        }
+                    }
+                    .tag(voice)
+                }
+            }
+            
+            // Enhanced Voice Settings Button
+            NavigationLink(destination: PremiumVoiceCoachSettingsView()) {
+                HStack {
+                    Image(systemName: "waveform.and.mic")
+                        .foregroundColor(.blue)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Advanced Voice Settings")
+                            .font(.system(size: 16, weight: .medium))
+                        
+                        Text("Premium coaching, speech control, AI adaptation")
+                            .font(.system(size: 12))
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
         }

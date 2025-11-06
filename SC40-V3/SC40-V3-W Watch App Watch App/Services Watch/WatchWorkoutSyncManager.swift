@@ -1,6 +1,8 @@
 import SwiftUI
 import Combine
+#if os(watchOS)
 import WatchConnectivity
+#endif
 
 // MARK: - Apple Watch Workout Synchronization Manager
 /// Handles synchronization with iPhone MainProgramWorkoutView and auto-adapts Enhanced7StageWorkoutView
@@ -82,7 +84,7 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
     // MARK: - Send Watch State to iPhone
     
     func sendWatchStateToPhone(_ watchState: WatchWorkoutStateSync) {
-        guard WCSession.default.isReachable else {
+        guard let session = session, session.isReachable else {
             print("⚠️ iPhone not reachable for state sync")
             return
         }
@@ -91,7 +93,7 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
             let data = try JSONEncoder().encode(watchState)
             let message = ["watchWorkoutState": data]
             
-            WCSession.default.sendMessage(message, replyHandler: { response in
+            session.sendMessage(message, replyHandler: { response in
                 print("✅ Watch state sent to iPhone successfully")
             }, errorHandler: { error in
                 print("❌ Failed to send watch state: \(error.localizedDescription)")
@@ -223,7 +225,7 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
         #endif
     }
     
-    func sendSessionDataToPhone(_ sessionData: SessionDataSync) {
+    func sendSessionDataToPhone(_ sessionData: SessionData) {
         #if canImport(WatchConnectivity)
         guard WCSession.default.isReachable else {
             print("📊 RepLog: iPhone not reachable, saving session locally")
@@ -232,15 +234,25 @@ class WatchWorkoutSyncManager: NSObject, ObservableObject {
         
         let sessionMessage: [String: Any] = [
             "type": "session_completed",
-            "sessionName": sessionData.sessionName,
-            "sessionFocus": sessionData.sessionFocus,
+            "sessionId": sessionData.id.uuidString,
+            "sessionType": sessionData.type,
+            "focus": sessionData.focus,
             "week": sessionData.week,
             "day": sessionData.day,
-            "estimatedDuration": sessionData.estimatedDuration,
-            "timestamp": sessionData.timestamp.timeIntervalSince1970,
-            "sprintSets": sessionData.sprintSets,
-            "drillSets": sessionData.drillSets,
-            "strideSets": sessionData.strideSets
+            "startTime": sessionData.startTime.timeIntervalSince1970,
+            "endTime": sessionData.endTime?.timeIntervalSince1970 ?? 0,
+            "totalTime": sessionData.totalTime,
+            "averageTime": sessionData.averageTime,
+            "bestTime": sessionData.bestTime,
+            "repCount": sessionData.reps.count,
+            "reps": sessionData.reps.map { rep in
+                [
+                    "repNumber": rep.repNumber,
+                    "distance": rep.distance,
+                    "time": rep.splitTime,
+                    "timestamp": rep.gpsTime.timeIntervalSince1970
+                ]
+            }
         ]
         
         WCSession.default.sendMessage(sessionMessage) { reply in
@@ -860,9 +872,9 @@ extension WatchWorkoutSyncManager {
         
         print("👤 Onboarding Data - Name: \(name), Level: \(level), Frequency: \(frequency), Week: \(currentWeek), Day: \(currentDay)")
         
-        // Update app state (simplified)
+        // Update WatchAppStateManager
         DispatchQueue.main.async {
-            print("📱 Watch: Onboarding data received and processed")
+            WatchAppStateManager.shared.updateFromOnboarding(message)
         }
         
         // Store current program state

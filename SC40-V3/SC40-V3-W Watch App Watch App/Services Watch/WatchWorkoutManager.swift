@@ -1,8 +1,6 @@
 import Foundation
 import HealthKit
-#if os(watchOS)
 import WatchKit
-#endif
 import Combine
 
 #if canImport(CoreLocation)

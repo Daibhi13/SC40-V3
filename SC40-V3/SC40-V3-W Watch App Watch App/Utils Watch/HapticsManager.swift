@@ -7,7 +7,7 @@ import WatchKit
 class HapticsManager {
     static func triggerHaptic() {
         #if os(watchOS)
-        WKInterfaceDevice.current().play(.success)
+        WKInterfaceDevice.current().play(WKHapticType.success)
         #endif
     }
 }

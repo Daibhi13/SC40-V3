@@ -1,7 +1,5 @@
 import Foundation
-#if os(watchOS)
 import WatchKit
-#endif
 import Combine
 import AVFoundation
 
@@ -42,46 +40,12 @@ class WatchIntervalManager: ObservableObject {
     private var currentIntervalIndex = 0
     
     // Haptic feedback
-    #if os(watchOS)
     private let hapticDevice = WKInterfaceDevice.current()
-    #endif
     
     // Audio feedback
     private let speechSynthesizer = AVSpeechSynthesizer()
     
     private init() {}
-    
-    // MARK: - Helper Methods
-    
-    private func playHapticStop() {
-        #if os(watchOS)
-        hapticDevice.play(.stop)
-        #endif
-    }
-    
-    private func playHapticStart() {
-        #if os(watchOS)
-        hapticDevice.play(.start)
-        #endif
-    }
-    
-    private func playHapticClick() {
-        #if os(watchOS)
-        hapticDevice.play(.click)
-        #endif
-    }
-    
-    private func playHapticSuccess() {
-        #if os(watchOS)
-        hapticDevice.play(.success)
-        #endif
-    }
-    
-    private func playHapticNotification() {
-        #if os(watchOS)
-        hapticDevice.play(.notification)
-        #endif
-    }
     
     // MARK: - Workout Control
     
@@ -118,7 +82,7 @@ class WatchIntervalManager: ObservableObject {
         restTimer?.invalidate()
         
         // Haptic feedback
-        playHapticStop()
+        hapticDevice.play(.stop)
     }
     
     func resumeWorkout() {
@@ -140,7 +104,7 @@ class WatchIntervalManager: ObservableObject {
         }
         
         // Haptic feedback
-        playHapticStart()
+        hapticDevice.play(.start)
     }
     
     func stopWorkout() {
@@ -156,7 +120,7 @@ class WatchIntervalManager: ObservableObject {
         resetWorkoutState()
         
         // Haptic feedback
-        playHapticStop()
+        hapticDevice.play(.stop)
         
         print("🛑 Workout stopped")
     }
@@ -180,7 +144,7 @@ class WatchIntervalManager: ObservableObject {
         }
         
         // Haptic feedback
-        playHapticClick()
+        hapticDevice.play(WKHapticType.click)
     }
     
     // MARK: - Phase Management
@@ -242,7 +206,7 @@ class WatchIntervalManager: ObservableObject {
                 print("⏰ Countdown: \(self.countdownTime)")
                 
                 // Haptic feedback for each count
-                self.playHapticClick()
+                self.hapticDevice.play(WKHapticType.click)
                 
                 // Voice countdown
                 self.speakCountdown(self.countdownTime)
@@ -254,7 +218,7 @@ class WatchIntervalManager: ObservableObject {
                 self.countdownTimer = nil
                 
                 print("🏃‍♂️ GO!")
-                self.playHapticStart()
+                self.hapticDevice.play(.start)
                 self.speak("Go!")
                 
                 self.startPhase(.sprint)
@@ -306,7 +270,7 @@ class WatchIntervalManager: ObservableObject {
         sprintTimer = nil
         
         // Haptic feedback
-        playHapticSuccess()
+        hapticDevice.play(WKHapticType.success)
         
         // Voice feedback
         speak("Sprint complete")
@@ -363,7 +327,7 @@ class WatchIntervalManager: ObservableObject {
                 let previousSecond = Int(self.restTimeRemaining + 1)
                 
                 if currentSecond != previousSecond {
-                    self.playHapticClick()
+                    self.hapticDevice.play(WKHapticType.click)
                     if currentSecond <= 3 {
                         self.speakCountdown(currentSecond)
                     }
@@ -376,7 +340,7 @@ class WatchIntervalManager: ObservableObject {
         print("✅ Rest period complete")
         
         // Haptic feedback
-        playHapticNotification()
+        hapticDevice.play(.notification)
         
         // Move to next interval
         startNextInterval()
@@ -419,7 +383,7 @@ class WatchIntervalManager: ObservableObject {
         stopAllTimers()
         
         // Haptic celebration
-        playHapticSuccess()
+        hapticDevice.play(WKHapticType.success)
         
         // Voice feedback
         speak("Workout complete! Great job!")
@@ -550,12 +514,7 @@ class WatchIntervalManager: ObservableObject {
     
     private func speak(_ text: String) {
         // Use unified voice manager for consistent voice settings
-        // Voice feedback (simplified)
-        print("🗣️ Voice: \(text)")
-        speechSynthesizer.stopSpeaking(at: .immediate)
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.rate = 0.5
-        speechSynthesizer.speak(utterance)
+        UnifiedVoiceManager.shared.speak(text)
     }
     
     // MARK: - Data Access

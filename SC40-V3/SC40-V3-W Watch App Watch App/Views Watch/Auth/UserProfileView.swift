@@ -32,7 +32,7 @@ struct UserProfileView: View {
                             .frame(width: 60, height: 60)
                             .shadow(color: Color.brandPrimary.opacity(0.4), radius: 8)
                         
-                        Image(systemName: (authManager.userProfile?.authMethod == "Apple ID") ? "person.crop.circle.fill" : "person.fill")
+                        Image(systemName: "person.crop.circle.fill")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(Color.brandBackground)
                     }
@@ -40,14 +40,14 @@ struct UserProfileView: View {
                     
                     // User Info
                     VStack(spacing: 4) {
-                        Text(authManager.userProfile?.displayName ?? "SC40 Athlete")
+                        Text(UserDefaults.standard.string(forKey: "user_name") ?? "SC40 Athlete")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
                             .foregroundColor(Color.brandPrimary)
                         
                         HStack(spacing: 4) {
-                            Text(authManager.userProfile?.levelEmoji ?? "🟢")
+                            Text("🟢")
                                 .font(.system(size: 12))
-                            Text(authManager.userProfile?.level ?? "Intermediate")
+                            Text(UserDefaults.standard.string(forKey: "SC40_UserLevel") ?? "Intermediate")
                                 .font(.system(size: 12, weight: .semibold, design: .rounded))
                                 .foregroundColor(Color.brandSecondary)
                         }
@@ -64,7 +64,7 @@ struct UserProfileView: View {
                             .foregroundColor(Color.brandSecondary.opacity(0.8))
                         
                         HStack(spacing: 4) {
-                            Text(String(format: "%.1f", authManager.userProfile?.targetTime ?? 5.0))
+                            Text(String(format: "%.1f", UserDefaults.standard.double(forKey: "SC40_TargetTime") > 0 ? UserDefaults.standard.double(forKey: "SC40_TargetTime") : 5.0))
                                 .font(.system(size: 24, weight: .bold, design: .monospaced))
                                 .foregroundColor(Color.brandPrimary)
                             Text("sec")
@@ -90,11 +90,11 @@ struct UserProfileView: View {
                         
                         VStack(spacing: 8) {
                             HStack {
-                                Image(systemName: authManager.userProfile?.authMethod == "Apple ID" ? "applelogo" : "person.fill")
+                                Image(systemName: "person.fill")
                                     .font(.system(size: 12, weight: .semibold))
                                     .foregroundColor(Color.brandAccent)
                                 
-                                Text(authManager.userProfile?.authMethod ?? "Unknown")
+                                Text(UserDefaults.standard.string(forKey: "SC40_AuthMethod") ?? "Watch")
                                     .font(.system(size: 11, weight: .medium, design: .rounded))
                                     .foregroundColor(Color.brandSecondary)
                                 
@@ -199,7 +199,7 @@ struct UserProfileView: View {
         .navigationBarTitleDisplayMode(.inline)
         .confirmationDialog("Sign Out", isPresented: $showLogoutConfirmation) {
             Button("Sign Out", role: .destructive) {
-                authManager.logout()
+                authManager.signOut()
                 dismiss()
             }
             Button("Cancel", role: .cancel) { }
@@ -225,13 +225,7 @@ struct UserProfileView: View {
     }
     
     private func formatJoinDate() -> String {
-        guard let userProfile = authManager.userProfile else {
-            return "Today"
-        }
-        
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: userProfile.joinDate)
+        return "Today" // Simplified for now since we don't track join date in UserDefaults
     }
 }
 

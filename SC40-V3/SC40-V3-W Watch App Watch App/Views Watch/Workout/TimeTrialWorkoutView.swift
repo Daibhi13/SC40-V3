@@ -6,9 +6,7 @@ import SwiftUI
 
 struct TimeTrialWorkoutView: View {
     @StateObject var workoutVM: WorkoutWatchViewModel
-    @State private var showSummary = false
-    @State private var showSprintView = false
-    @State private var showRepLog = false
+    @State private var activeModal: WorkoutModal?
     @State private var selectedBottomModuleLeft: BottomModuleType = .rest
     @State private var selectedBottomModuleRight: BottomModuleType = .split
     @State private var showSprintGraph = false
@@ -18,6 +16,8 @@ struct TimeTrialWorkoutView: View {
     @State private var showDistancePicker: Bool = false
     @State private var distance: Int = 40
     @State private var isSprintStarting = false
+    @State private var showRepLog: Bool = false
+    @State private var showSprintView: Bool = false
     private let speechSynth = AVSpeechSynthesizer()
 
     public init(workoutVM: WorkoutWatchViewModel) {
@@ -34,29 +34,24 @@ struct TimeTrialWorkoutView: View {
     private func playOlympicBeep() {
         // Play Olympic-style beep sequence using system sounds and haptics
         print("🔊 Playing Olympic beep sequence")
-        
-        // Three short preparatory beeps
         #if os(watchOS)
+        // Three short preparatory beeps
         WKInterfaceDevice.current().play(.click)
-        #endif
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.click)
-            #endif
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.click)
-            #endif
         }
         
         // Final start beep with haptic feedback
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            #if os(watchOS)
             WKInterfaceDevice.current().play(.start)
             WKInterfaceDevice.current().play(.notification)
-            #endif
         }
+        #else
+        // Non-watchOS platforms: no haptics available here
+        #endif
     }
     
     // MARK: - Top Row
@@ -139,12 +134,33 @@ struct TimeTrialWorkoutView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             TabView(selection: $tabSelection) {
-                ControlWatchView(selectedIndex: 0, workoutVM: workoutVM)
-                    .tag(0)
+                ControlWatchView(
+                    selectedIndex: 0, 
+                    workoutVM: workoutVM,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Time Trial",
+                        focus: "40 Yard Sprint",
+                        sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(0)
                 mainTabContent
                     .tag(1)
-                MusicWatchView(selectedIndex: 2)
-                    .tag(2)
+                MusicWatchView(
+                    selectedIndex: 2,
+                    session: TrainingSession(
+                        week: 1,
+                        day: 1,
+                        type: "Time Trial",
+                        focus: "40 Yard Sprint",
+                        sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                        accessoryWork: []
+                    )
+                )
+                .tag(2)
             }
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
             .allowsHitTesting(tabSelection != 1) // Disable TabView gestures on main tab
@@ -242,25 +258,33 @@ struct TimeTrialWorkoutView: View {
             workoutVM.setupUltra2Features() 
             print("📺 TimeTrialWorkoutView appeared - currentPhase: \(workoutVM.currentPhase)")
         }
-        .onChange(of: showRepLog) { oldValue, newValue in
-            print("🔄 TimeTrialView showRepLog changed: \(oldValue) → \(newValue)")
-        }
-        .fullScreenCover(isPresented: $showSummary) {
-            RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { showSummary = false })
-        }
-        .fullScreenCover(isPresented: $showSprintView) {
-            SprintWatchView(viewModel: workoutVM, onDismiss: { showSprintView = false })
-        }
-        .fullScreenCover(isPresented: $showRepLog) {
-            RepLogWatchLiveView(workoutVM: workoutVM,
-                                horizontalTab: .constant(1),
-                                isModal: true,
-                                onDone: { showRepLog = false })
+        .fullScreenCover(item: $activeModal) { modal in
+            switch modal {
+            case .summary:
+                RepLogSummaryFlowView(workoutVM: workoutVM, onDone: { activeModal = nil })
+            case .sprint:
+                SprintWatchView(viewModel: workoutVM, onDismiss: { activeModal = nil })
+            case .repLog:
+                RepLogWatchLiveView(
+                    workoutVM: workoutVM,
+                    horizontalTab: .constant(1),
+                    isModal: true,
+                    onDone: { activeModal = nil },
+                session: TrainingSession(
+                    week: 1,
+                    day: 1,
+                    type: "Time Trial",
+                    focus: "40 Yard Sprint",
+                    sprints: [SprintSet(distanceYards: distance, reps: 1, intensity: "max")],
+                    accessoryWork: []
+                )
+            )
         }
     }
-    
+}
+
     // Main tab content with vertical drag gesture and animation
-    private var mainTabContent: some View {
+    var mainTabContent: some View {
         VStack(spacing: 6) {
             topStatsRow
             Divider().background(Color.gray.opacity(0.4))
@@ -371,3 +395,4 @@ struct GPSStopwatchView: View {
         return distance // fallback to the passed distance parameter
     }
 }
+

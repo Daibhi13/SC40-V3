@@ -45,8 +45,8 @@ struct SessionCardsView: View {
             // WATCH APP STARTUP: Ensure profile data is current
             print("🔄 Watch: SessionCardsView appeared - checking for profile updates")
             
-            // Request fresh session data from iPhone (simplified)
-            print("📱 Watch: Requesting training sessions from iPhone")
+            // Request fresh session data from iPhone
+            sessionManager.requestTrainingSessionsFromPhone()
         }
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("trainingSessionsUpdated"))) { _ in
             // REAL-TIME SESSION UPDATES: Refresh UI when sessions arrive from iPhone
@@ -56,7 +56,7 @@ struct SessionCardsView: View {
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("profileDataUpdated"))) { _ in
             // REAL-TIME PROFILE UPDATES: Refresh sessions when profile changes
             print("⚡ Watch: Profile updated - requesting fresh sessions to match new profile")
-            print("📱 Watch: Requesting updated training sessions from iPhone")
+            sessionManager.requestTrainingSessionsFromPhone()
         }
         .onReceive(sessionManager.$trainingSessions) { sessions in
             // SESSION COUNT MONITORING: Log session changes for debugging
@@ -180,9 +180,7 @@ struct SheetModifiers: ViewModifier {
     func body(content: Content) -> some View {
         content
             .sheet(isPresented: $showSprintTimerPro) {
-                Text("Sprint Timer Pro")
-                    .font(.title2)
-                    .foregroundColor(.yellow)
+                SprintTimerProWatchView()
             }
             .sheet(isPresented: $showWorkout) {
                 Group {
@@ -231,20 +229,16 @@ struct SheetModifiers: ViewModifier {
                 }
             }
             .sheet(isPresented: $showSyncTesting) {
-                Text("Sync Testing")
-                    .font(.title2)
-                    .foregroundColor(.blue)
+                SyncTestingView()
             }
             .sheet(isPresented: $showTestingDashboard) {
-                Text("Testing Dashboard")
-                    .font(.title2)
-                    .foregroundColor(.green)
+                TestingDashboardView()
                     .onAppear {
                         // WATCH APP STARTUP: Ensure profile data is current
                         print("🔄 Watch: SessionCardsView appeared - checking for profile updates")
                         
-                        // Request fresh session data from iPhone (simplified)
-                        print("📱 Watch: Requesting training sessions from iPhone")
+                        // Request fresh session data from iPhone
+                        sessionManager.requestTrainingSessionsFromPhone()
                     }
             }
     }

@@ -37,7 +37,24 @@
 		<string>armv7</string>
 	</array>
 	
-	<!-- SwiftUI App Lifecycle - No scene manifest needed -->
+	<!-- SwiftUI App Lifecycle with Scene Configuration -->
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	
 	<key>UISupportedInterfaceOrientations</key>
 	<array>

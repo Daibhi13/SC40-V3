@@ -7,32 +7,26 @@
 
 import SwiftUI
 
-// CLEAN ContentView - Simple navigation without corruption
+// CLEAN ContentView - Direct to onboarding for testing
 struct ContentView: View {
     @StateObject private var userProfileVM = UserProfileViewModel()
+    @StateObject private var syncManager = TrainingSynchronizationManager.shared
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
-    @State private var showWelcome = true
-    @State private var userName = ""
     
     var body: some View {
         Group {
             if !onboardingCompleted {
-                if showWelcome {
-                    WelcomeView(onContinue: { name, _ in
-                        userName = name
-                        showWelcome = false
-                    })
-                } else {
-                    OnboardingView(
-                        userName: userName,
-                        userProfileVM: userProfileVM,
-                        onComplete: {
-                            onboardingCompleted = true
-                        }
-                    )
-                }
+                // Skip WelcomeView - go straight to onboarding for testing
+                OnboardingView(
+                    userName: "User",
+                    userProfileVM: userProfileVM,
+                    onComplete: {
+                        onboardingCompleted = true
+                    }
+                )
             } else {
                 TrainingView(userProfileVM: userProfileVM)
+                    .environmentObject(syncManager)
             }
         }
     }

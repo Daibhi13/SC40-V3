@@ -621,14 +621,6 @@ struct OnboardingView: View {
                         Text("\(fitnessLevel) • \(daysAvailable) days/week • \(String(format: "%.2f", pb))s baseline")
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.7))
-                            .onAppear {
-                                print("📊 Program Ready display - Level: '\(fitnessLevel)', Days: \(daysAvailable), PB: \(pb)")
-                                
-                                // Auto-save and navigate after showing summary
-                                if !isCompleting {
-                                    saveAndNavigate()
-                                }
-                            }
                     }
                     
                     Spacer()
@@ -644,17 +636,39 @@ struct OnboardingView: View {
                     }
                 }
                 
-                // Progress indicator (no button needed)
-                if isCompleting {
-                    HStack {
-                        ProgressView()
-                            .scaleEffect(0.8)
-                        Text("Setting up your program...")
-                            .font(.headline.bold())
-                            .foregroundColor(.white)
+                // Simple Continue Button
+                Button(action: {
+                    if !isCompleting {
+                        saveAndNavigate()
                     }
-                    .padding(.top, 8)
+                }) {
+                    HStack {
+                        if isCompleting {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                            Text("Setting up...")
+                                .font(.headline.bold())
+                        } else {
+                            Text("Continue")
+                                .font(.headline.bold())
+                            Image(systemName: "arrow.right")
+                                .font(.headline)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(colors: [Color.yellow, Color.orange]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .foregroundColor(.black)
+                    .cornerRadius(12)
                 }
+                .disabled(isCompleting)
+                .padding(.top, 8)
             }
             .padding()
             .background(Color.white.opacity(0.1))
@@ -664,32 +678,30 @@ struct OnboardingView: View {
     
     // MARK: - Save and Navigate Helper
     private func saveAndNavigate() {
-        print("🚀 Auto-saving and navigating...")
-        print("Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
+        print("🚀 Saving and navigating...")
         
         // Guard against duplicate calls
         guard !isCompleting else { 
             print("⚠️ Already processing")
             return 
         }
+        
         isCompleting = true
         
-        // Minimal save - just the essentials
+        // Save to UserDefaults
         UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
         UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
         UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
         UserDefaults.standard.set(pb, forKey: "personalBest40yd")
         UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-        UserDefaults.standard.synchronize()
         
-        print("✅ Data saved successfully")
+        print("✅ Data saved - Name: \(userName), Level: \(fitnessLevel), Days: \(daysAvailable), PB: \(pb)")
         
-        // Navigate after brief delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            print("🚀 Calling onComplete() now...")
-            onComplete()
-            isCompleting = false
-            print("✅ Navigation complete")
+        // Navigate immediately on main thread
+        DispatchQueue.main.async {
+            print("🚀 Navigating to TrainingView...")
+            self.onComplete()
+            self.isCompleting = false
         }
     }
     

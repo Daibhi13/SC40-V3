@@ -140,7 +140,11 @@ struct WelcomeView: View {
                 }
             }
         }
-        .sanitizeLayout()
+        .onAppear {
+            // Reset navigation state when view appears
+            isNavigating = false
+            print("🎬 WelcomeView appeared - ready for user interaction")
+        }
     }
 }
 

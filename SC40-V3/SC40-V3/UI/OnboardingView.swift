@@ -1090,20 +1090,8 @@ struct OnboardingView: View {
         print("\n⏳ WAITING 500ms for persistence...")
         try? await Task.sleep(nanoseconds: 500_000_000)
         
-        // STEP 5: Sync to Watch (with error handling)
-        print("\n📤 WATCH SYNC: Sending profile data to Apple Watch...")
-        do {
-            // 🚨 CRASH PROTECTION: Safe Watch sync with timeout
-            try await withTimeout(seconds: 3) {
-                await watchConnectivity.updateProfileContext(userProfileVM.profile)
-            }
-            print("✅ WATCH SYNC: Profile data sent to Watch")
-        } catch {
-            print("⚠️ WATCH SYNC: Failed but continuing - \(error.localizedDescription)")
-            // Don't throw - Watch sync failure shouldn't block onboarding
-        }
-        
-        // STEP 6: Refresh UserProfileViewModel from UserDefaults
+        // STEP 5: Refresh UserProfileViewModel from UserDefaults FIRST
+        // This must happen BEFORE navigation to prevent crashes
         print("\n🔄 PROFILE REFRESH: Loading saved data into ViewModel")
         userProfileVM.refreshFromUserDefaults()
         print("✅ PROFILE REFRESH: ViewModel updated with saved data")
@@ -1111,7 +1099,7 @@ struct OnboardingView: View {
         print("   Frequency: \(userProfileVM.profile.frequency)")
         print("   Baseline Time: \(userProfileVM.profile.baselineTime)")
         
-        // STEP 7: Navigate to TrainingView
+        // STEP 6: Navigate to TrainingView IMMEDIATELY
         print("\n🚀 NAVIGATION: Calling onComplete()")
         print(String(repeating: "=", count: 60))
         
@@ -1121,29 +1109,18 @@ struct OnboardingView: View {
         print(String(repeating: "=", count: 60) + "\n")
         
         isCompleting = false
-    }
-    
-    /// Helper function to add timeout to async operations
-    private func withTimeout<T>(seconds: TimeInterval, operation: @escaping () async throws -> T) async throws -> T {
-        try await withThrowingTaskGroup(of: T.self) { group in
-            group.addTask {
-                try await operation()
+        
+        // STEP 7: Sync to Watch in background (non-blocking)
+        Task.detached(priority: .background) {
+            print("\n📤 BACKGROUND WATCH SYNC: Sending profile data to Apple Watch...")
+            do {
+                await watchConnectivity.updateProfileContext(userProfileVM.profile)
+                print("✅ BACKGROUND WATCH SYNC: Profile data sent to Watch")
+            } catch {
+                print("⚠️ BACKGROUND WATCH SYNC: Failed - \(error.localizedDescription)")
             }
-            
-            group.addTask {
-                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                throw OnboardingError.timeout
-            }
-            
-            guard let result = try await group.next() else {
-                throw OnboardingError.timeout
-            }
-            
-            group.cancelAll()
-            return result
         }
     }
-    
 }
 
 // MARK: - Text Styling Extension

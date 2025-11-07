@@ -3,7 +3,7 @@ import Foundation
 // Example user profile for 3 days/week, intermediate
 // Moved top-level code into a function for testing/demo
 func runExample3DayIntermediate() {
-    var userProfile = UserProfile(
+    var _ = UserProfile(
         name: "Sample User",
         email: nil,
         gender: "Other",

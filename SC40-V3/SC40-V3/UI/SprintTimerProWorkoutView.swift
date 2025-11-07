@@ -446,7 +446,7 @@ struct SprintTimerProWorkoutView: View {
     
     private func generateMLRecommendations() async {
         // Mock user profile for demonstration
-        let mockProfile = UserProfile(
+        let _ = UserProfile(
             name: "Demo User",
             email: "demo@example.com", 
             gender: "Other",

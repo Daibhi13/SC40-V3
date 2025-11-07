@@ -160,7 +160,7 @@ struct TrainingSyncIntegrationTest: View {
     private func runAllTests() async {
         // Test 1: Manager Initialization
         await runTest("Manager Initialization") {
-            let manager = TrainingSynchronizationManager.shared
+            let _ = TrainingSynchronizationManager.shared
             return "✅ TrainingSynchronizationManager initialized successfully"
         }
         

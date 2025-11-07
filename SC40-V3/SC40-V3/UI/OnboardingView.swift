@@ -1103,7 +1103,15 @@ struct OnboardingView: View {
             // Don't throw - Watch sync failure shouldn't block onboarding
         }
         
-        // STEP 6: Navigate to TrainingView
+        // STEP 6: Refresh UserProfileViewModel from UserDefaults
+        print("\n🔄 PROFILE REFRESH: Loading saved data into ViewModel")
+        userProfileVM.refreshFromUserDefaults()
+        print("✅ PROFILE REFRESH: ViewModel updated with saved data")
+        print("   Level: '\(userProfileVM.profile.level)'")
+        print("   Frequency: \(userProfileVM.profile.frequency)")
+        print("   Baseline Time: \(userProfileVM.profile.baselineTime)")
+        
+        // STEP 7: Navigate to TrainingView
         print("\n🚀 NAVIGATION: Calling onComplete()")
         print(String(repeating: "=", count: 60))
         

@@ -256,7 +256,7 @@ final class UserProfileViewModel: ObservableObject, @unchecked Sendable {
         LoggingService.shared.session.info("Generating unified 12-week program for level: \(self.profile.level), frequency: \(self.profile.frequency) days/week")
         
         // Create user preferences object with crash protection
-        let userPreferences = UserSessionPreferences(
+        let _ = UserSessionPreferences(
             favoriteTemplateIDs: self.profile.favoriteSessionTemplateIDs,
             preferredTemplateIDs: self.profile.preferredSessionTemplateIDs,
             dislikedTemplateIDs: profile.dislikedSessionTemplateIDs,

@@ -2,6 +2,7 @@
 import SwiftUI
 
 struct HomeDashboardView: View {
+    @EnvironmentObject var userProfileVM: UserProfileViewModel
     @State private var isMenuOpen = false
     @State private var showPerformance = false
     @State private var showTraining = false
@@ -172,7 +173,7 @@ struct HomeDashboardView: View {
             }
             // Navigation destinations
             .sheet(isPresented: $showPerformance) {
-                PerformanceView()
+                SharePerformanceView(userProfileVM: userProfileVM)
             }
         }
     }

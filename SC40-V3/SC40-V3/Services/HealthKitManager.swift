@@ -31,7 +31,9 @@ class HealthKitManager: ObservableObject {
     ]
     
     private init() {
-        checkAuthorizationStatus()
+        // Don't check authorization status on init - causes crash
+        // Will be checked when requestAuthorization() is called
+        // checkAuthorizationStatus()
     }
     
     // MARK: - Authorization

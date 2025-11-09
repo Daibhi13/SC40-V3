@@ -1120,13 +1120,9 @@ struct OnboardingView: View {
         
         // STEP 7: Sync to Watch in background (non-blocking)
         Task.detached(priority: .background) {
-            print("\n📤 BACKGROUND WATCH SYNC: Sending profile data to Apple Watch...")
-            do {
-                await watchConnectivity.updateProfileContext(userProfileVM.profile)
-                print("✅ BACKGROUND WATCH SYNC: Profile data sent to Watch")
-            } catch {
-                print("⚠️ BACKGROUND WATCH SYNC: Failed - \(error.localizedDescription)")
-            }
+            print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
+            await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
+            print("✅ BACKGROUND WATCH SYNC: Onboarding data sent to Watch")
         }
     }
 }

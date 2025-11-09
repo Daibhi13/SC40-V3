@@ -108,11 +108,11 @@ class HealthKitManager: ObservableObject {
     }
     
     private func fetchHeight() async throws -> Double? {
-        let heightType = HKQuantityType.quantityType(forIdentifier: .height)!
+        let _ = HKQuantityType.quantityType(forIdentifier: .height)!
         
         return try await withCheckedThrowingContinuation { continuation in
             do {
-                let height = try healthStore.biologicalSex()
+                let _ = try healthStore.biologicalSex()
                 // Note: Height is a characteristic, not a quantity
                 // This is a simplified implementation - in reality you'd query for height samples
                 continuation.resume(returning: nil) // Placeholder
@@ -201,7 +201,7 @@ class HealthKitManager: ObservableObject {
             return false
         }
         
-        var metadata: [String: Any] = [:]
+        let metadata: [String: Any] = [:]
         
         let workout = HKWorkout(
             activityType: type,

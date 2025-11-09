@@ -674,10 +674,18 @@ struct OnboardingView: View {
                     debugMessage = "Button tapped!\nLevel: \(fitnessLevel)\nDays: \(daysAvailable)\nPB: \(pb)s"
                     showDebugAlert = true
                     
-                    // Delay to show alert first
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    // Use async safe completion method
+                    Task {
                         if !isCompleting {
-                            saveAndNavigate()
+                            isCompleting = true
+                            do {
+                                try await runSafeOnboardingCompletion()
+                            } catch {
+                                print("❌ Onboarding error: \(error.localizedDescription)")
+                                errorMessage = error.localizedDescription
+                                showErrorAlert = true
+                                isCompleting = false
+                            }
                         }
                     }
                 }) {

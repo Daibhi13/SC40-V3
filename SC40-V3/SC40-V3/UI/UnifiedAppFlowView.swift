@@ -9,7 +9,7 @@ struct UnifiedAppFlowView: View {
     
     // MARK: - App Flow State
     // NUCLEAR BYPASS: Skip directly to training to avoid navigation crashes
-    @State private var currentFlow: AppFlow = .training  // CHANGED FROM .splash
+    @State private var currentFlow: AppFlow = .splash
     @State private var userName: String = ""
     @State private var userEmail: String? = nil
     
@@ -189,31 +189,6 @@ struct UnifiedAppFlowView: View {
     private var trainingView: some View {
         TrainingView(userProfileVM: userProfileVM)
             .environmentObject(syncManager)
-            .onAppear {
-                // NUCLEAR BYPASS: Setup minimal profile data for TrainingView
-                setupNuclearProfile()
-            }
-    }
-    
-    private func setupNuclearProfile() {
-        print("🔥 NUCLEAR BYPASS: Setting up profile for TrainingView")
-        
-        // Set UserDefaults
-        UserDefaults.standard.set("Beginner", forKey: "userLevel")
-        UserDefaults.standard.set(1, forKey: "trainingFrequency")
-        UserDefaults.standard.set(6.25, forKey: "personalBest40yd")
-        UserDefaults.standard.set("David", forKey: "userName")
-        UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-        UserDefaults.standard.synchronize()
-        
-        // Update ViewModel
-        userProfileVM.profile.level = "Beginner"
-        userProfileVM.profile.frequency = 1
-        userProfileVM.profile.personalBests["40yd"] = 6.25
-        userProfileVM.profile.baselineTime = 6.25
-        userProfileVM.profile.name = "David"
-        
-        print("✅ NUCLEAR BYPASS: Profile setup complete for TrainingView")
     }
     
     // MARK: - Helper Methods

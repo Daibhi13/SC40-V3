@@ -276,6 +276,14 @@ struct EnhancedTrainingView: View {
             }
         }
         .onAppear {
+            // Ensure profile is valid before proceeding to avoid crashes
+            let level = userProfileVM.profile.level
+            let freq = userProfileVM.profile.frequency
+            let base = userProfileVM.profile.baselineTime
+            if level.isEmpty || freq <= 0 || base <= 0 {
+                print("⚠️ EnhancedTrainingView: Missing profile values (level=\(level), freq=\(freq), baseline=\(base)). Deferring setup.")
+                return
+            }
             updateDynamicSessionsWithVariety()
             updateSessionVarietyStats()
         }

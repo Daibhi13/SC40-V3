@@ -57,8 +57,6 @@ struct OnboardingView: View {
     @State private var isCompleting = false
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    @State private var showDebugAlert = false
-    @State private var debugMessage = ""
     
     // Computed property to convert wheel selections to Double
     private var pb: Double {
@@ -101,102 +99,92 @@ struct OnboardingView: View {
     }
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                backgroundGradient
-                
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(spacing: 24) {
-                        // Header with progress matching the design
-                        VStack(spacing: 16) {
-                            Text("Welcome, \(userName)!")
-                                .font(.system(size: 28, weight: .bold))
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                            
-                            Text("Let's build your personalized training program")
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(.white.opacity(0.8))
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal)
-                            
-                            // Enhanced progress bar with animation
-                            VStack(spacing: 8) {
-                                HStack(spacing: 4) {
-                                    ForEach(0..<5) { index in
-                                        Rectangle()
-                                            .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
-                                            .frame(height: 4)
-                                            .frame(maxWidth: .infinity)
-                                            .cornerRadius(2)
-                                    }
+        ZStack {
+            backgroundGradient
+            
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(spacing: 24) {
+                    // Header with progress matching the design
+                    VStack(spacing: 16) {
+                        Text("Welcome, \(userName)!")
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                        
+                        Text("Let's build your personalized training program")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        
+                        // Enhanced progress bar with animation
+                        VStack(spacing: 8) {
+                            HStack(spacing: 4) {
+                                ForEach(0..<5) { index in
+                                    Rectangle()
+                                        .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                        .frame(height: 4)
+                                        .frame(maxWidth: .infinity)
+                                        .cornerRadius(2)
                                 }
-                                .padding(.horizontal, 20)
-                                
-                                Text("5 Questions • 2 minutes")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.6))
                             }
+                            .padding(.horizontal, 20)
+                            
+                            Text("5 Questions • 2 minutes")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.6))
                         }
-                        .padding(.top, 20)
-                        .padding(.horizontal)
-                        
-                        // Questions sections with improved spacing
-                        Group {
-                            pbSection
-                            profileSection
-                            bodyMetricsSection
-                            scheduleSection
-                            leaderboardSection
-                        }
-                        
-                        // Extra bottom padding for sticky button - increased to prevent overlap
-                        Spacer(minLength: 400)
                     }
+                    .padding(.top, 20)
                     .padding(.horizontal)
-                    .padding(.bottom, 40)
-                }
-                
-                // Enhanced Sticky Finish Button
-                VStack {
-                    Spacer()
                     
-                    // Gradient fade overlay for better visual separation
-                    LinearGradient(
-                        colors: [
-                            Color.clear,
-                            Color.black.opacity(0.2),
-                            Color.black.opacity(0.5),
-                            Color.black.opacity(0.8)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                    .frame(height: 120)
-                    .allowsHitTesting(false)
+                    // Questions sections with improved spacing
+                    Group {
+                        pbSection
+                        profileSection
+                        bodyMetricsSection
+                        scheduleSection
+                        leaderboardSection
+                    }
                     
-                    finishButton
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 12)
-                        .background(
-                            Color.black.opacity(0.9)
-                                .ignoresSafeArea(edges: .bottom)
-                        )
+                    // Extra bottom padding for sticky button - increased to prevent overlap
+                    Spacer(minLength: 400)
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 40)
             }
-            #if os(iOS)
-            .navigationBarHidden(true)
-            #endif
+            
+            // Enhanced Sticky Finish Button
+            VStack {
+                Spacer()
+                
+                // Gradient fade overlay for better visual separation
+                LinearGradient(
+                    colors: [
+                        Color.clear,
+                        Color.black.opacity(0.2),
+                        Color.black.opacity(0.5),
+                        Color.black.opacity(0.8)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 120)
+                .allowsHitTesting(false)
+                
+                finishButton
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(
+                        Color.black.opacity(0.9)
+                            .ignoresSafeArea(edges: .bottom)
+                    )
+            }
         }
         .alert("Setup Error", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
-        }
-        .alert("Debug Info", isPresented: $showDebugAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(debugMessage)
         }
         .onAppear {
             // Clear stale state before onboarding starts to prevent old state carryover
@@ -671,9 +659,6 @@ struct OnboardingView: View {
                 
                 // Simple Continue Button
                 Button(action: {
-                    debugMessage = "Button tapped!\nLevel: \(fitnessLevel)\nDays: \(daysAvailable)\nPB: \(pb)s"
-                    showDebugAlert = true
-                    
                     // Use async safe completion method
                     Task {
                         if !isCompleting {
@@ -851,7 +836,32 @@ struct OnboardingView: View {
             print("✅ onComplete() executed successfully")
             
             self.isCompleting = false
-            print("✅ Navigation complete - isCompleting reset to false")
+            
+            // STEP 7a: Immediately push full profile snapshot to Watch via application context
+            do {
+                let profileContext: [String: Any] = [
+                    "type": "profile",
+                    "name": userProfileVM.profile.name,
+                    "level": userProfileVM.profile.level,
+                    "frequency": userProfileVM.profile.frequency,
+                    "pb40": userProfileVM.profile.baselineTime,
+                    "onboardingCompleted": true
+                ]
+                print("📤 Sending profile context to Watch: \(profileContext)")
+                WatchConnectivityManager.shared.sendApplicationContext(profileContext)
+            }
+            
+            // STEP 7: Sync to Watch in background (non-blocking)
+            Task.detached(priority: .background) {
+                print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
+                let debugProfile = userProfileVM.profile
+                print("   • Name: \(debugProfile.name)")
+                print("   • Level: \(debugProfile.level)")
+                print("   • Frequency: \(debugProfile.frequency)")
+                print("   • Baseline: \(debugProfile.baselineTime)")
+                await watchConnectivity.syncOnboardingData(userProfile: debugProfile)
+                print("✅ BACKGROUND WATCH SYNC: Onboarding data sent to Watch")
+            }
         }
     }
     
@@ -1111,17 +1121,36 @@ struct OnboardingView: View {
         print("\n🚀 NAVIGATION: Calling onComplete()")
         print(String(repeating: "=", count: 60))
         
-        onComplete()
+        await MainActor.run { onComplete() }
         
         print("✅ ONBOARDING COMPLETE - Transitioning to TrainingView")
         print(String(repeating: "=", count: 60) + "\n")
         
         isCompleting = false
         
+        // STEP 7a: Immediately push full profile snapshot to Watch via application context
+        do {
+            let profileContext: [String: Any] = [
+                "type": "profile",
+                "name": userProfileVM.profile.name,
+                "level": userProfileVM.profile.level,
+                "frequency": userProfileVM.profile.frequency,
+                "pb40": userProfileVM.profile.baselineTime,
+                "onboardingCompleted": true
+            ]
+            print("📤 Sending profile context to Watch: \(profileContext)")
+            WatchConnectivityManager.shared.sendApplicationContext(profileContext)
+        }
+        
         // STEP 7: Sync to Watch in background (non-blocking)
         Task.detached(priority: .background) {
             print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
-            await watchConnectivity.syncOnboardingData(userProfile: userProfileVM.profile)
+            let debugProfile = userProfileVM.profile
+            print("   • Name: \(debugProfile.name)")
+            print("   • Level: \(debugProfile.level)")
+            print("   • Frequency: \(debugProfile.frequency)")
+            print("   • Baseline: \(debugProfile.baselineTime)")
+            await watchConnectivity.syncOnboardingData(userProfile: debugProfile)
             print("✅ BACKGROUND WATCH SYNC: Onboarding data sent to Watch")
         }
     }

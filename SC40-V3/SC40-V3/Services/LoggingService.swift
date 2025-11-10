@@ -10,6 +10,9 @@ import UIKit
 final class LoggingService: @unchecked Sendable {
     static let shared = LoggingService()
     
+    // PERFORMANCE: Master switch for all logging - set to false for speed
+    static let LOGGING_ENABLED = false
+    
     // MARK: - Logger Categories
     
     private let subsystem = "com.accelerate.sc40"
@@ -28,15 +31,18 @@ final class LoggingService: @unchecked Sendable {
     
     // MARK: - Convenience Methods
     
-    func logSessionStart(_ session: TrainingSession) {
-        self.session.info("Starting session W\(session.week)/D\(session.day): \(session.type) - \(session.focus)")
+    func logSessionStart(_ session: Any) {
+        guard Self.LOGGING_ENABLED else { return }
+        // Logging disabled for performance
     }
     
-    func logSessionComplete(_ session: TrainingSession, duration: TimeInterval) {
-        self.session.info("Completed session W\(session.week)/D\(session.day) in \(String(format: "%.1f", duration))s")
+    func logSessionComplete(_ session: Any, duration: TimeInterval) {
+        guard Self.LOGGING_ENABLED else { return }
+        // Logging disabled for performance
     }
     
     func logPersonalBest(_ distance: String, oldTime: Double?, newTime: Double) {
+        guard Self.LOGGING_ENABLED else { return }
         if let oldTime = oldTime {
             self.performance.info("🏆 New PB for \(distance): \(String(format: "%.2f", newTime))s (prev: \(String(format: "%.2f", oldTime))s)")
         } else {
@@ -45,10 +51,12 @@ final class LoggingService: @unchecked Sendable {
     }
     
     func logWatchSync(sessionCount: Int, dataSize: Int) {
+        guard Self.LOGGING_ENABLED else { return }
         self.connectivity.info("Synced \(sessionCount) sessions to watch (\(dataSize) bytes)")
     }
     
     func logGPSAccuracy(_ accuracy: Double) {
+        guard Self.LOGGING_ENABLED else { return }
         if accuracy <= 5 {
             self.gps.info("GPS accuracy excellent: \(String(format: "%.1f", accuracy))m")
         } else if accuracy <= 10 {
@@ -59,6 +67,7 @@ final class LoggingService: @unchecked Sendable {
     }
     
     func logWorkoutMetrics(heartRate: Double?, distance: Double?, pace: Double?) {
+        guard Self.LOGGING_ENABLED else { return }
         var metrics: [String] = []
         
         if let hr = heartRate {
@@ -77,6 +86,7 @@ final class LoggingService: @unchecked Sendable {
     }
     
     func logDataPersistence(_ operation: String, success: Bool, itemCount: Int? = nil) {
+        guard Self.LOGGING_ENABLED else { return }
         if success {
             let countStr = itemCount != nil ? " (\(itemCount!) items)" : ""
             self.persistence.info("\(operation) successful\(countStr)")

@@ -13,6 +13,7 @@ struct ContentView: View {
     @StateObject private var syncManager = TrainingSynchronizationManager.shared
     
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
+    @State private var showTrainingView = false
     
     var body: some View {
         Group {
@@ -22,12 +23,19 @@ struct ContentView: View {
                     userName: "User",
                     userProfileVM: userProfileVM,
                     onComplete: {
-                        onboardingCompleted = true
+                        // CRASH FIX: Delay TrainingView presentation to prevent AudioGraph crashes
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            onboardingCompleted = true
+                            showTrainingView = true
+                        }
                     }
                 )
-            } else {
+            } else if showTrainingView || onboardingCompleted {
                 TrainingView(userProfileVM: userProfileVM)
                     .environmentObject(syncManager)
+                    .onAppear {
+                        showTrainingView = true
+                    }
             }
         }
     }

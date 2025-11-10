@@ -1131,20 +1131,49 @@ struct OnboardingView: View {
         print("\n⏳ WAITING 500ms for persistence...")
         try? await Task.sleep(nanoseconds: 500_000_000)
         
-        // STEP 5: Refresh UserProfileViewModel from UserDefaults FIRST
-        // This must happen BEFORE navigation to prevent crashes
-        print("\n🔄 PROFILE REFRESH: Loading saved data into ViewModel")
-        userProfileVM.refreshFromUserDefaults()
-        print("✅ PROFILE REFRESH: ViewModel updated with saved data")
-        print("   Level: '\(userProfileVM.profile.level)'")
-        print("   Frequency: \(userProfileVM.profile.frequency)")
-        print("   Baseline Time: \(userProfileVM.profile.baselineTime)")
+        // STEP 5: DIRECTLY UPDATE PROFILE - Don't rely on refreshFromUserDefaults
+        print("\n🔄 PROFILE UPDATE: Directly setting profile values")
+        print("   BEFORE UPDATE:")
+        print("     profile.name: '\(userProfileVM.profile.name)'")
+        print("     profile.level: '\(userProfileVM.profile.level)'")
+        print("     profile.frequency: \(userProfileVM.profile.frequency)")
+        print("     profile.baselineTime: \(userProfileVM.profile.baselineTime)")
         
-        // STEP 6: Navigate to TrainingView IMMEDIATELY
+        userProfileVM.profile.name = userName
+        userProfileVM.profile.level = fitnessLevel
+        userProfileVM.profile.frequency = daysAvailable
+        userProfileVM.profile.baselineTime = pb
+        userProfileVM.profile.personalBests["40yd"] = pb
+        userProfileVM.profile.currentWeek = 1
+        userProfileVM.profile.currentDay = 1
+        
+        print("   AFTER UPDATE:")
+        print("     profile.name: '\(userProfileVM.profile.name)'")
+        print("     profile.level: '\(userProfileVM.profile.level)'")
+        print("     profile.frequency: \(userProfileVM.profile.frequency)")
+        print("     profile.baselineTime: \(userProfileVM.profile.baselineTime)")
+        print("✅ PROFILE UPDATED: Direct assignment complete")
+        
+        // STEP 5b: Save the profile to ensure persistence
+        print("\n💾 SAVING PROFILE:")
+        userProfileVM.saveProfile()
+        print("✅ Profile saved to UserProfileManager")
+        
+        // STEP 6: Wait for profile to fully update before navigation
+        print("\n⏳ WAITING: Allowing profile to stabilize...")
+        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+        
+        // STEP 7: Navigate to TrainingView
         print("\n🚀 NAVIGATION: Calling onComplete()")
         print(String(repeating: "=", count: 60))
         
-        await MainActor.run { onComplete() }
+        // CRASH FIX: Add delay before navigation to allow audio system to stabilize
+        try? await Task.sleep(nanoseconds: 200_000_000) // 200ms delay
+        
+        await MainActor.run { 
+            print("📱 MainActor: Setting onboardingCompleted = true")
+            onComplete() 
+        }
         
         print("✅ ONBOARDING COMPLETE - Transitioning to TrainingView")
         print(String(repeating: "=", count: 60) + "\n")

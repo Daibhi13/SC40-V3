@@ -761,9 +761,29 @@ extension TrainingView {
 
     // Use UnifiedSessionGenerator for consistent iPhone/Watch synchronization
     private func generateDynamicSessions() -> [TrainingSession] {
-        let userLevel = userProfileVM.profile.level
+        var userLevel = userProfileVM.profile.level
         let currentWeek = userProfileVM.profile.currentWeek
-        let frequency = userProfileVM.profile.frequency
+        var frequency = userProfileVM.profile.frequency
+        
+        // CRASH PROTECTION: Validate level before proceeding
+        if userLevel.isEmpty {
+            print("⚠️ TrainingView: Profile level is EMPTY - loading from UserDefaults")
+            userLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "Beginner"
+            userProfileVM.profile.level = userLevel
+            print("✅ TrainingView: Recovered level from UserDefaults: '\(userLevel)'")
+        }
+        
+        // CRASH PROTECTION: Validate frequency before proceeding
+        if frequency == 0 {
+            print("⚠️ TrainingView: Profile frequency is 0 - loading from UserDefaults")
+            frequency = UserDefaults.standard.integer(forKey: "trainingFrequency")
+            if frequency == 0 {
+                frequency = 3 // Safe fallback
+                print("⚠️ TrainingView: UserDefaults frequency also 0 - using fallback: \(frequency)")
+            }
+            userProfileVM.profile.frequency = frequency
+            print("✅ TrainingView: Recovered frequency from UserDefaults: \(frequency)")
+        }
         
         // Debug: Log the actual level being used
         print("🔍 TrainingView: Current user level = '\(userLevel)'")

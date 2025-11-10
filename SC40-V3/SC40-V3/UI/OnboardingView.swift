@@ -659,18 +659,30 @@ struct OnboardingView: View {
                 
                 // Simple Continue Button
                 Button(action: {
+                    print("🔵 BUTTON TAPPED - Starting onboarding completion")
+                    print("   Level: \(fitnessLevel)")
+                    print("   Frequency: \(daysAvailable)")
+                    print("   PB: \(pb)")
+                    
                     // Use async safe completion method
                     Task {
+                        print("🔵 TASK STARTED")
                         if !isCompleting {
+                            print("🔵 NOT COMPLETING - Proceeding")
                             isCompleting = true
                             do {
+                                print("🔵 CALLING runSafeOnboardingCompletion()")
                                 try await runSafeOnboardingCompletion()
+                                print("🔵 runSafeOnboardingCompletion() COMPLETED")
                             } catch {
-                                print("❌ Onboarding error: \(error.localizedDescription)")
+                                print("❌ ONBOARDING ERROR CAUGHT: \(error.localizedDescription)")
+                                print("❌ Error type: \(type(of: error))")
                                 errorMessage = error.localizedDescription
                                 showErrorAlert = true
                                 isCompleting = false
                             }
+                        } else {
+                            print("⚠️ ALREADY COMPLETING - Ignoring tap")
                         }
                     }
                 }) {
@@ -1024,23 +1036,34 @@ struct OnboardingView: View {
     /// Safe onboarding completion with comprehensive error handling
     @MainActor
     private func runSafeOnboardingCompletion() async throws {
-        print("\n🛡️ SAFE COMPLETION: Starting crash-protected onboarding flow")
+        print("\n" + String(repeating: "=", count: 80))
+        print("🛡️ SAFE COMPLETION: Starting crash-protected onboarding flow")
+        print(String(repeating: "=", count: 80))
         
         // STEP 1: Validate all inputs
         print("\n📊 INPUT VALIDATION:")
+        print("   userName: '\(userName)' (isEmpty: \(userName.isEmpty))")
+        print("   fitnessLevel: '\(fitnessLevel)' (isEmpty: \(fitnessLevel.isEmpty))")
+        print("   daysAvailable: \(daysAvailable)")
+        print("   pb: \(pb)")
+        
         guard !userName.isEmpty else {
+            print("❌ VALIDATION FAILED: userName is empty")
             throw OnboardingError.missingUserName
         }
         guard !fitnessLevel.isEmpty else {
+            print("❌ VALIDATION FAILED: fitnessLevel is empty")
             throw OnboardingError.missingFitnessLevel
         }
         guard daysAvailable > 0 else {
+            print("❌ VALIDATION FAILED: daysAvailable is 0")
             throw OnboardingError.invalidFrequency
         }
         guard pb > 0 else {
+            print("❌ VALIDATION FAILED: pb is 0")
             throw OnboardingError.invalidPersonalBest
         }
-        print("✅ All inputs validated")
+        print("✅ All inputs validated successfully")
         
         // STEP 2: Save to UserDefaults with error handling
         print("\n💾 SAVING TO USERDEFAULTS:")

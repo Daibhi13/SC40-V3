@@ -798,17 +798,31 @@ extension TrainingView {
             print("⚠️ TrainingView: MISMATCH! Profile level (\(userLevel)) != UserDefaults level (\(savedLevel))")
         }
         
-        // Use UnifiedSessionGenerator to ensure iPhone/Watch synchronization
-        print("🔄 TrainingView: Using UnifiedSessionGenerator for session consistency")
-        let unifiedGenerator = UnifiedSessionGenerator.shared
-        let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
+        // Use LazySessionGenerator to prevent memory spikes - only generate current + next week
+        print("🔄 TrainingView: Using LazySessionGenerator for incremental loading")
+        let lazyGenerator = LazySessionGenerator.shared
+        
+        // Generate only 2 weeks at a time (current + next)
+        let unifiedSessions = lazyGenerator.generateCurrentAndNextWeek(
+            currentWeek: currentWeek,
             userLevel: userLevel,
             frequency: frequency,
             userPreferences: nil
         )
         
-        print("📱 TrainingView: Generated \(unifiedSessions.count) unified sessions")
-        print("📱 TrainingView: Sessions will match Watch exactly for W1/D1 through W12/D\(frequency)")
+        // Pre-generate remaining weeks in background (non-blocking)
+        if currentWeek < 11 {
+            lazyGenerator.preGenerateInBackground(
+                userLevel: userLevel,
+                frequency: frequency,
+                startWeek: currentWeek + 2,
+                endWeek: 12,
+                userPreferences: nil
+            )
+        }
+        
+        print("📱 TrainingView: Generated \(unifiedSessions.count) sessions (2-week lookahead)")
+        print("📱 TrainingView: Background pre-generation started for weeks \(currentWeek + 2)-12")
         
         return unifiedSessions
     }
@@ -3637,17 +3651,33 @@ extension TrainingView {
             
             print("🔄 TrainingView: Generating missing sessions for \(trainingLevel.rawValue) × \(userProfileVM.profile.frequency)")
             
-            let unifiedGenerator = UnifiedSessionGenerator.shared
-            let unifiedSessions = unifiedGenerator.generateUnified12WeekProgram(
+            // Use lazy generator for incremental loading
+            let lazyGenerator = LazySessionGenerator.shared
+            let currentWeek = userProfileVM.profile.currentWeek
+            
+            // Generate current + next week only
+            let unifiedSessions = lazyGenerator.generateCurrentAndNextWeek(
+                currentWeek: currentWeek,
                 userLevel: trainingLevel.rawValue,
                 frequency: userProfileVM.profile.frequency,
                 userPreferences: nil
             )
             
+            // Pre-generate rest in background
+            if currentWeek < 11 {
+                lazyGenerator.preGenerateInBackground(
+                    userLevel: trainingLevel.rawValue,
+                    frequency: userProfileVM.profile.frequency,
+                    startWeek: currentWeek + 2,
+                    endWeek: 12,
+                    userPreferences: nil
+                )
+            }
+            
             await MainActor.run {
                 userProfileVM.updateWithUnifiedSessions(unifiedSessions)
                 validateDataCompleteness() // Re-validate after generating sessions
-                print("✅ TrainingView: Missing sessions generated (\(unifiedSessions.count) sessions)")
+                print("✅ TrainingView: Missing sessions generated (\(unifiedSessions.count) sessions, 2-week lookahead)")
             }
         }
     }

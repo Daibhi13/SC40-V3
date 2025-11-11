@@ -25,6 +25,7 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     @Published var isSyncing = false
     
     private var cancellables = Set<AnyCancellable>()
+    private var pendingContext: [String: Any]?  // Queue context if session not ready
     
     override init() {
         super.init()
@@ -72,7 +73,15 @@ class WatchConnectivityManager: NSObject, ObservableObject {
     private func sendInitialApplicationContext() {
         logger.info("📤 Sending initial application context after session activation")
         
-        let context = DataPersistenceManager.shared.getApplicationContext()
+        // Check if we have a pending context (e.g., from onboarding completion)
+        let context: [String: Any]
+        if let pending = pendingContext {
+            logger.info("✅ Found pending context - sending onboarding data instead of default")
+            context = pending
+            pendingContext = nil  // Clear after using
+        } else {
+            context = DataPersistenceManager.shared.getApplicationContext()
+        }
         
         do {
             try WCSession.default.updateApplicationContext(context)
@@ -859,11 +868,17 @@ extension WatchConnectivityManager: WCSessionDelegate {
                 if WCSession.default.activationState == .activated {
                     try WCSession.default.updateApplicationContext(context)
                     logger.info("✅ Application context sent to Watch")
+                    pendingContext = nil  // Clear pending context after successful send
                 } else {
-                    logger.warning("⚠️ WCSession not activated - context will be sent when ready")
+                    logger.warning("⚠️ WCSession not activated - queuing context to send when ready")
+                    pendingContext = context  // Store context to send later
                 }
             } catch {
                 logger.error("❌ Failed to send context to Watch: \(error)")
+                // Keep context in queue to retry
+                if pendingContext == nil {
+                    pendingContext = context
+                }
             }
         }
     }

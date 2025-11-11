@@ -723,159 +723,7 @@ struct OnboardingView: View {
     }
     
     // MARK: - Save and Navigate Helper
-    private func saveAndNavigate() {
-        print("\n" + String(repeating: "=", count: 60))
-        print("🚀 SAVING ONBOARDING DATA")
-        print(String(repeating: "=", count: 60))
-        print("📝 Current State Values:")
-        print("   userName: '\(userName)'")
-        print("   fitnessLevel: '\(fitnessLevel)'")
-        print("   daysAvailable: \(daysAvailable)")
-        print("   pbSeconds: \(pbSeconds)")
-        print("   pbTenthsHundredths: \(pbTenthsHundredths)")
-        print("   pb (computed): \(pb)")
-        print("   gender: '\(gender)'")
-        print(String(repeating: "=", count: 60))
-        
-        // Guard against duplicate calls
-        guard !isCompleting else { 
-            print("⚠️ Already processing - ignoring duplicate call")
-            return 
-        }
-        
-        // Validate data before saving - fix empty level if needed
-        if fitnessLevel.isEmpty {
-            print("❌ ERROR: fitnessLevel is empty!")
-            print("   This should never happen - level should be auto-set from PB")
-            print("   Attempting to fix by calling updateLevelFromPB()...")
-            updateLevelFromPB()
-            if fitnessLevel.isEmpty {
-                print("❌ CRITICAL: Still empty after update - aborting save")
-                isCompleting = false
-                return
-            }
-            print("✅ Level fixed: '\(fitnessLevel)'")
-        }
-        
-        guard daysAvailable > 0 else {
-            print("❌ ERROR: daysAvailable is 0 - aborting save")
-            isCompleting = false
-            return
-        }
-        
-        guard pb > 0 else {
-            print("❌ ERROR: pb is 0 - aborting save")
-            isCompleting = false
-            return
-        }
-        
-        isCompleting = true
-        print("✅ Validation passed - proceeding with save")
-        
-        // Save to UserDefaults with explicit synchronization
-        UserDefaults.standard.set(userName.isEmpty ? "User" : userName, forKey: "user_name")
-        UserDefaults.standard.set(fitnessLevel, forKey: "userLevel")
-        UserDefaults.standard.set(daysAvailable, forKey: "trainingFrequency")
-        UserDefaults.standard.set(pb, forKey: "personalBest40yd")
-        UserDefaults.standard.set(1, forKey: "currentWeek")
-        UserDefaults.standard.set(1, forKey: "currentDay")
-        
-        // Force synchronize to disk
-        UserDefaults.standard.synchronize()
-        
-        print("✅ Data saved to UserDefaults and synchronized to disk")
-        
-        // Update UserProfileViewModel with ALL onboarding data
-        userProfileVM.profile.name = userName.isEmpty ? "User" : userName
-        userProfileVM.profile.level = fitnessLevel
-        userProfileVM.profile.frequency = daysAvailable
-        userProfileVM.profile.baselineTime = pb
-        userProfileVM.profile.currentWeek = 1  // Start at Week 1
-        userProfileVM.profile.currentDay = 1   // Start at Day 1
-        userProfileVM.profile.personalBests["40yd"] = pb // Set initial 40yd PR
-        
-        print("✅ UserProfileViewModel updated with complete profile:")
-        print("   - Name: \(userProfileVM.profile.name)")
-        print("   - Level: \(userProfileVM.profile.level)")
-        print("   - Frequency: \(userProfileVM.profile.frequency) days/week")
-        print("   - Baseline: \(userProfileVM.profile.baselineTime)s")
-        print("   - Starting: Week \(userProfileVM.profile.currentWeek), Day \(userProfileVM.profile.currentDay)")
-        print("   - Personal Best (40yd): \(userProfileVM.profile.personalBests["40yd"] ?? 0.0)s")
-        
-        // DON'T refresh adaptive program here - it can crash
-        // TrainingView will do it on load instead
-        print("⏭️ Skipping refreshAdaptiveProgram() - will be done in TrainingView")
-        print("   Estimated sessions: \(estimatedSessions) sessions over 12 weeks")
-        
-        // Final verification before navigation
-        print("\n🔍 FINAL VERIFICATION BEFORE NAVIGATION:")
-        print("   UserDefaults.userLevel: '\(UserDefaults.standard.string(forKey: "userLevel") ?? "NOT SET")'")
-        print("   UserDefaults.trainingFrequency: \(UserDefaults.standard.integer(forKey: "trainingFrequency"))")
-        print("   UserDefaults.personalBest40yd: \(UserDefaults.standard.double(forKey: "personalBest40yd"))")
-        print("   UserProfileVM.level: '\(userProfileVM.profile.level)'")
-        print("   UserProfileVM.frequency: \(userProfileVM.profile.frequency)")
-        print("   UserProfileVM.baselineTime: \(userProfileVM.profile.baselineTime)")
-        
-        // Navigate after brief delay to ensure data is saved
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            print("\n🚀 NAVIGATION TRIGGERED")
-            print("   Calling onComplete() closure...")
-            
-            // Final safety check before navigation
-            let finalLevel = UserDefaults.standard.string(forKey: "userLevel") ?? "NOT SET"
-            let finalFreq = UserDefaults.standard.integer(forKey: "trainingFrequency")
-            let finalPB = UserDefaults.standard.double(forKey: "personalBest40yd")
-            
-            print("   Final UserDefaults check:")
-            print("     userLevel: '\(finalLevel)'")
-            print("     trainingFrequency: \(finalFreq)")
-            print("     personalBest40yd: \(finalPB)")
-            
-            if finalLevel == "NOT SET" || finalFreq == 0 || finalPB == 0 {
-                print("❌ CRITICAL ERROR: Data not saved properly!")
-                print("   Aborting navigation to prevent crash")
-                self.isCompleting = false
-                return
-            }
-            
-            print("✅ All data verified - safe to navigate")
-            
-            // Mark onboarding as complete LAST
-            UserDefaults.standard.set(true, forKey: "onboardingCompleted")
-            UserDefaults.standard.synchronize()
-            
-            self.onComplete()
-            print("✅ onComplete() executed successfully")
-            
-            self.isCompleting = false
-            
-            // STEP 7a: Immediately push full profile snapshot to Watch via application context
-            do {
-                let profileContext: [String: Any] = [
-                    "type": "profile",
-                    "name": userProfileVM.profile.name,
-                    "level": userProfileVM.profile.level,
-                    "frequency": userProfileVM.profile.frequency,
-                    "pb40": userProfileVM.profile.baselineTime,
-                    "onboardingCompleted": true
-                ]
-                print("📤 Sending profile context to Watch: \(profileContext)")
-                WatchConnectivityManager.shared.sendApplicationContext(profileContext)
-            }
-            
-            // STEP 7: Sync to Watch in background (non-blocking)
-            Task.detached(priority: .background) {
-                print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
-                let debugProfile = await userProfileVM.profile
-                print("   • Name: \(debugProfile.name)")
-                print("   • Level: \(debugProfile.level)")
-                print("   • Frequency: \(debugProfile.frequency)")
-                print("   • Baseline: \(debugProfile.baselineTime)")
-                await watchConnectivity.syncOnboardingData(userProfile: debugProfile)
-                print("✅ BACKGROUND WATCH SYNC: Onboarding data sent to Watch")
-            }
-        }
-    }
+    // REMOVED: Old saveAndNavigate() function - now using runSafeOnboardingCompletion() instead
     
     // MARK: - Enhanced Reusable Section Card
     private func sectionCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
@@ -1131,14 +979,15 @@ struct OnboardingView: View {
         print("\n⏳ WAITING 500ms for persistence...")
         try? await Task.sleep(nanoseconds: 500_000_000)
         
-        // STEP 5: DIRECTLY UPDATE PROFILE - Don't rely on refreshFromUserDefaults
-        print("\n🔄 PROFILE UPDATE: Directly setting profile values")
+        // STEP 5: UPDATE PROFILE DIRECTLY - Don't use refreshFromUserDefaults yet
+        print("\n🔄 PROFILE UPDATE: Directly updating profile from saved UserDefaults")
         print("   BEFORE UPDATE:")
         print("     profile.name: '\(userProfileVM.profile.name)'")
         print("     profile.level: '\(userProfileVM.profile.level)'")
         print("     profile.frequency: \(userProfileVM.profile.frequency)")
         print("     profile.baselineTime: \(userProfileVM.profile.baselineTime)")
         
+        // Directly update profile properties from the values we just saved to UserDefaults
         userProfileVM.profile.name = userName
         userProfileVM.profile.level = fitnessLevel
         userProfileVM.profile.frequency = daysAvailable
@@ -1154,10 +1003,23 @@ struct OnboardingView: View {
         print("     profile.baselineTime: \(userProfileVM.profile.baselineTime)")
         print("✅ PROFILE UPDATED: Direct assignment complete")
         
-        // STEP 5b: Save the profile to ensure persistence
-        print("\n💾 SAVING PROFILE:")
+        // STEP 5b: Save the profile to UserProfileData key
+        print("\n💾 SAVING PROFILE TO USERPROFILEDATA:")
         userProfileVM.saveProfile()
-        print("✅ Profile saved to UserProfileManager")
+        print("✅ Profile saved - TrainingView will load this data")
+        
+        // STEP 5c: Verify the save worked
+        print("\n🔍 VERIFICATION: Reading back saved profile...")
+        if let savedData = UserDefaults.standard.data(forKey: "UserProfileData"),
+           let decoded = try? JSONDecoder().decode(UserProfile.self, from: savedData) {
+            print("   ✅ Verified saved profile:")
+            print("      name: '\(decoded.name)'")
+            print("      level: '\(decoded.level)'")
+            print("      frequency: \(decoded.frequency)")
+            print("      baselineTime: \(decoded.baselineTime)")
+        } else {
+            print("   ❌ ERROR: Could not read back saved profile!")
+        }
         
         // STEP 6: Wait for profile to fully update before navigation
         print("\n⏳ WAITING: Allowing profile to stabilize...")
@@ -1184,14 +1046,24 @@ struct OnboardingView: View {
         do {
             let profileContext: [String: Any] = [
                 "type": "profile",
-                "name": userProfileVM.profile.name,
-                "level": userProfileVM.profile.level,
-                "frequency": userProfileVM.profile.frequency,
-                "pb40": userProfileVM.profile.baselineTime,
-                "onboardingCompleted": true
+                "userName": userProfileVM.profile.name,
+                "fitnessLevel": userProfileVM.profile.level,
+                "daysAvailable": userProfileVM.profile.frequency,
+                "pb": userProfileVM.profile.baselineTime,
+                "onboardingCompleted": true,
+                "userProfileExists": true,
+                "age": age,
+                "height": heightFeet * 12 + heightInches,
+                "weight": Double(weight)
             ]
-            print("📤 Sending profile context to Watch: \(profileContext)")
+            print("📤 ONBOARDING: Sending profile context to Watch")
+            print("   userName: \(profileContext["userName"] ?? "nil")")
+            print("   fitnessLevel: \(profileContext["fitnessLevel"] ?? "nil")")
+            print("   daysAvailable: \(profileContext["daysAvailable"] ?? "nil")")
+            print("   pb: \(profileContext["pb"] ?? "nil")")
+            print("   onboardingCompleted: \(profileContext["onboardingCompleted"] ?? "nil")")
             WatchConnectivityManager.shared.sendApplicationContext(profileContext)
+            print("📤 ONBOARDING: sendApplicationContext() called - check WCSession state")
         }
         
         // STEP 7: Sync to Watch in background (non-blocking)

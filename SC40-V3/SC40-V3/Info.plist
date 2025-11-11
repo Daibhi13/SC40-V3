@@ -2,14 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Privacy - Location Usage -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>SC40 needs location access to accurately time your sprints and measure distances during training sessions.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>SC40 uses location services to provide precise sprint timing and distance measurement for optimal training results.</string>
+	
+	<!-- Privacy - HealthKit Usage -->
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.</string>
 	<key>NSHealthShareUsageDescription</key>
 	<string>SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.</string>
+	
+	<!-- HealthKit Capabilities -->
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>healthkit</string>
+	</array>
 	
 	<!-- Bundle Information -->
 	<key>CFBundleIdentifier</key>
@@ -32,18 +41,12 @@
 	<!-- iOS Configuration -->
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
 	
 	<!-- SwiftUI App Lifecycle - No SceneDelegate needed -->
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
-		<key>UISceneConfigurations</key>
-		<dict/>
 	</dict>
 	
 	<key>UISupportedInterfaceOrientations</key>

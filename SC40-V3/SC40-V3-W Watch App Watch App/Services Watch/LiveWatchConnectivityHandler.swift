@@ -12,9 +12,8 @@ import CoreMotion
 // MARK: - Live Watch Connectivity Handler
 // Handles connectivity testing messages from iPhone
 
-@MainActor
 class LiveWatchConnectivityHandler: NSObject, ObservableObject {
-    static let shared = LiveWatchConnectivityHandler()
+    @MainActor static let shared = LiveWatchConnectivityHandler()
     
     @Published var isConnected = false
     @Published var lastMessageReceived: String?

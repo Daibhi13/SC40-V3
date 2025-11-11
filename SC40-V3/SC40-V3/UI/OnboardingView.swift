@@ -866,7 +866,7 @@ struct OnboardingView: View {
             // STEP 7: Sync to Watch in background (non-blocking)
             Task.detached(priority: .background) {
                 print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
-                let debugProfile = userProfileVM.profile
+                let debugProfile = await userProfileVM.profile
                 print("   • Name: \(debugProfile.name)")
                 print("   • Level: \(debugProfile.level)")
                 print("   • Frequency: \(debugProfile.frequency)")
@@ -1197,7 +1197,7 @@ struct OnboardingView: View {
         // STEP 7: Sync to Watch in background (non-blocking)
         Task.detached(priority: .background) {
             print("\n📤 BACKGROUND WATCH SYNC: Sending onboarding data to Apple Watch...")
-            let debugProfile = userProfileVM.profile
+            let debugProfile = await userProfileVM.profile
             print("   • Name: \(debugProfile.name)")
             print("   • Level: \(debugProfile.level)")
             print("   • Frequency: \(debugProfile.frequency)")

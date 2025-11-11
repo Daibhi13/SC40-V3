@@ -465,6 +465,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";
@@ -501,6 +503,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Sprint Coach";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "SC40 needs to read your health data to provide personalized training recommendations and track your fitness progress over time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "SC40 needs to write workout data to HealthKit to track your sprint training sessions, record distances, heart rate, and calories burned for comprehensive fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKApplication = YES;
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "Acclerate.SC40-V3";

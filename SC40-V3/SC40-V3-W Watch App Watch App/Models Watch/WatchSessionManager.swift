@@ -4,9 +4,8 @@ import Foundation
 import WatchConnectivity
 import WatchKit
 
-@MainActor
 class WatchSessionManager: ObservableObject {
-    static let shared = WatchSessionManager()
+    @MainActor static let shared = WatchSessionManager()
     
     @Published var trainingSessions: [TrainingSession] = []
     @Published var isPhoneConnected = false

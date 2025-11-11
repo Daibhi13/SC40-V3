@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 #if canImport(UIKit)
 import UIKit
 import AVFoundation
@@ -28,8 +29,11 @@ struct SC40_V3App: App {
 #if canImport(UIKit)
 /// Manages audio session configuration to prevent AudioGraph crashes
 @MainActor
-class AudioSessionManager: ObservableObject {
+final class AudioSessionManager: ObservableObject {
     static let shared = AudioSessionManager()
+    
+    // Required for ObservableObject conformance
+    let objectWillChange = ObservableObjectPublisher()
     
     private init() {
         print("📱📱📱 iOS APP STARTING 📱📱📱")
@@ -66,8 +70,9 @@ class AudioSessionManager: ObservableObject {
 #else
 // Dummy implementation for non-iOS platforms
 @MainActor
-class AudioSessionManager: ObservableObject {
+final class AudioSessionManager: ObservableObject {
     static let shared = AudioSessionManager()
+    let objectWillChange = ObservableObjectPublisher()
     private init() {}
 }
 #endif

@@ -68,6 +68,62 @@ struct TrainingView: View {
     @State private var showSyncDemo = false
     @State private var cancellables = Set<AnyCancellable>()
     @State private var refreshTrigger = UUID()
+    
+    // MARK: - Adaptive Layout Helpers
+    
+    /// Adaptive spacing based on screen height
+    private func adaptiveSpacing(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 12
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 16
+        case 800..<900:  // iPhone 14, iPhone 15
+            return 20
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return 24
+        }
+    }
+    
+    /// Adaptive font size based on screen height
+    private func adaptiveFontSize(base: CGFloat, for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return base * 0.85
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return base * 0.9
+        case 800..<900:  // iPhone 14, iPhone 15
+            return base * 0.95
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return base
+        }
+    }
+    
+    /// Adaptive padding based on screen height
+    private func adaptivePadding(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 16
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 18
+        default:  // iPhone 14+
+            return 20
+        }
+    }
+    
+    /// Adaptive card height for carousel
+    private func adaptiveCardHeight(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 180
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 200
+        case 800..<900:  // iPhone 14, iPhone 15
+            return 210
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return 220
+        }
+    }
 
     var body: some View {
         let profile = userProfileVM.profile
@@ -269,26 +325,41 @@ struct TrainingView: View {
                 .toolbarColorScheme(.dark, for: .navigationBar)
                 .preferredColorScheme(.dark)
                 .onAppear {
+                    print("\n🎬 TRAININGVIEW .onAppear TRIGGERED")
+                    print("   Profile level: '\(userProfileVM.profile.level)'")
+                    print("   Profile frequency: \(userProfileVM.profile.frequency)")
+                    print("   Profile baselineTime: \(userProfileVM.profile.baselineTime)")
+                    
                     // CRASH PROTECTION: Initialize managers lazily to prevent deadlock
                     initializeManagersLazily()
                     
                     // Validate data completeness before loading
                     validateDataCompleteness()
                     
-                    // Only proceed if startup is complete and data is valid
-                    guard let startup = startupManager, startup.canProceedToMainView else {
-                        print("⚠️ TrainingView: Startup not complete, deferring initialization")
-                        return
-                    }
-                    
-                    // Refresh profile data to ensure it's up-to-date with onboarding selections
+                    // CRITICAL FIX: Always refresh profile from UserDefaults on appear
+                    // This ensures onboarding data is loaded even if startup manager isn't ready
+                    print("🔄 TRAININGVIEW: Refreshing profile from UserDefaults (onboarding data)")
                     refreshProfileFromUserDefaults()
                     
                     // IMMEDIATE SESSION REFRESH: Generate sessions with updated profile
+                    print("🔄 TRAININGVIEW: Refreshing dynamic sessions")
                     refreshDynamicSessions()
                     
-                    // Setup training plan update listener
-                    setupTrainingPlanUpdateListener()
+                    // Setup training plan update listener (will work once startup manager is ready)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        if let startup = self.startupManager, startup.canProceedToMainView {
+                            print("✅ TRAININGVIEW: Startup manager ready - setting up listeners")
+                            self.setupTrainingPlanUpdateListener()
+                        } else {
+                            print("⚠️ TRAININGVIEW: Startup manager not ready yet - will retry")
+                            // Retry after another delay
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                if let startup = self.startupManager, startup.canProceedToMainView {
+                                    self.setupTrainingPlanUpdateListener()
+                                }
+                            }
+                        }
+                    }
                     
                     // FORCE UI UPDATE: Trigger view refresh after profile changes
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -1864,40 +1935,41 @@ extension TrainingView {
             print("   📅 W\(session.week)D\(session.day): \(session.type)")
         }
         
-        return ScrollView(showsIndicators: false) {
-            VStack(spacing: 0) {
-                // Nike-Inspired Hero Section
-                VStack(alignment: .center, spacing: 24) {
-                    // Motivational Welcome
-                    VStack(spacing: 12) {
-                        Text("YOUR JOURNEY")
-                            .font(.system(size: 13, weight: .black))
-                            .foregroundColor(.white.opacity(0.8))
-                            .tracking(2.0)
-                        
-                        Text("STARTS NOW")
-                            .font(.system(size: 36, weight: .black))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(nil)
-                    }
-                    
-                    // Personal Best Achievement Card
-                    VStack(spacing: 12) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "trophy.fill")
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+        return GeometryReader { geometry in
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    // Nike-Inspired Hero Section
+                    VStack(alignment: .center, spacing: adaptiveSpacing(for: geometry.size.height)) {
+                        // Motivational Welcome
+                        VStack(spacing: adaptiveSpacing(for: geometry.size.height) * 0.5) {
+                            Text("YOUR JOURNEY")
+                                .font(.system(size: adaptiveFontSize(base: 13, for: geometry.size.height), weight: .black))
+                                .foregroundColor(.white.opacity(0.8))
+                                .tracking(2.0)
                             
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("PERSONAL RECORD")
-                                    .font(.system(size: 11, weight: .black))
-                                    .foregroundColor(.white.opacity(0.8))
-                                    .tracking(1.5)
+                            Text("STARTS NOW")
+                                .font(.system(size: adaptiveFontSize(base: 36, for: geometry.size.height), weight: .black))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(nil)
+                        }
+                    
+                        // Personal Best Achievement Card
+                        VStack(spacing: adaptiveSpacing(for: geometry.size.height) * 0.5) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "trophy.fill")
+                                    .font(.system(size: adaptiveFontSize(base: 20, for: geometry.size.height), weight: .bold))
+                                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                                 
-                                HStack(alignment: .bottom, spacing: 8) {
-                                    Text(String(format: "%.2f", profile.personalBests["40yd"] ?? profile.baselineTime))
-                                        .font(.system(size: 32, weight: .black))
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("PERSONAL RECORD")
+                                        .font(.system(size: adaptiveFontSize(base: 11, for: geometry.size.height), weight: .black))
+                                        .foregroundColor(.white.opacity(0.8))
+                                        .tracking(1.5)
+                                    
+                                    HStack(alignment: .bottom, spacing: 8) {
+                                        Text(String(format: "%.2f", profile.personalBests["40yd"] ?? profile.baselineTime))
+                                            .font(.system(size: adaptiveFontSize(base: 32, for: geometry.size.height), weight: .black))
                                         .foregroundStyle(
                                             LinearGradient(
                                                 colors: [
@@ -1929,8 +2001,8 @@ extension TrainingView {
                                     .foregroundColor(.white.opacity(0.7))
                             }
                         }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
+                        .padding(.horizontal, adaptivePadding(for: geometry.size.height))
+                        .padding(.vertical, adaptivePadding(for: geometry.size.height) * 0.8)
                         .background(
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(
@@ -1958,11 +2030,11 @@ extension TrainingView {
                                         )
                                 )
                         )
+                        }
+                        .padding(.horizontal, adaptivePadding(for: geometry.size.height))
                     }
-                    .padding(.horizontal, 20)
-                }
-                .padding(.top, 20)
-                .padding(.bottom, 24)
+                    .padding(.top, adaptivePadding(for: geometry.size.height))
+                    .padding(.bottom, adaptiveSpacing(for: geometry.size.height))
 
                 // Premium Connectivity Status
                 if let connectivityManager = premiumConnectivity {
@@ -1971,88 +2043,88 @@ extension TrainingView {
                         .padding(.bottom, 16)
                 }
 
-                // Elite Training Program Section
-                VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "flame.fill")
-                                .font(.system(size: 16, weight: .bold))
-                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                            
-                            Text("12-WEEK PROGRAM")
-                                .font(.system(size: 13, weight: .black))
-                                .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
-                                .tracking(1.8)
-                        }
-                        
-                        Text("Transform Your Speed")
-                            .font(.system(size: 28, weight: .black))
-                            .foregroundColor(.white)
-                            .lineLimit(nil)
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    // Training Program Carousel - One card visible with scroll capability
-                    VStack(spacing: 16) {
-                        GeometryReader { geometry in
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                LazyHStack(spacing: 40) {
-                                    ForEach(uniqueSessionsToShow.indices, id: \.self) { index in
-                                        let session = uniqueSessionsToShow[index]
-                                        TrainingSessionCard(session: session, userLevel: profile.level)
-                                            .onAppear {
-                                                print("🔍 TrainingSessionCard: userLevel='\(profile.level)', session.type='\(session.type)', session.focus='\(session.focus)'")
-                                            }
-                                            .frame(width: geometry.size.width - 40) // Full width minus padding for one card
-                                            .onTapGesture {
-                                                selectedSessionForWorkout = session
-                                                showMainProgramWorkout = true
-                                                #if os(iOS)
-                                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-                                                #endif
-                                            }
-                                    }
-                                }
-                                .padding(.horizontal, 20)
-                            }
-                        }
-                        .frame(height: 220) // Fixed height for carousel
-                        .clipped()
-                        
-                    }
-                }
-                .padding(.bottom, 16)
-
-                // Nike-Inspired Action Button
-                VStack(spacing: 8) {
-                    
-                    // Enhanced Action Button
-                    Button(action: {
-                        #if os(iOS)
-                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                        #endif
-                        selectedSessionForWorkout = sessionsToShow.first
-                        showMainProgramWorkout = true
-                    }) {
-                        VStack(spacing: 8) {
-                            HStack(spacing: 12) {
+                    // Elite Training Program Section
+                    VStack(alignment: .leading, spacing: adaptiveSpacing(for: geometry.size.height) * 0.8) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 8) {
                                 Image(systemName: "flame.fill")
-                                    .font(.system(size: 20, weight: .bold))
+                                    .font(.system(size: adaptiveFontSize(base: 16, for: geometry.size.height), weight: .bold))
+                                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
                                 
-                                Text("START SPRINT")
-                                    .font(.system(size: 18, weight: .black))
-                                    .tracking(0.5)
-                                
-                                Spacer()
-                                
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .font(.system(size: 24, weight: .bold))
+                                Text("12-WEEK PROGRAM")
+                                    .font(.system(size: adaptiveFontSize(base: 13, for: geometry.size.height), weight: .black))
+                                    .foregroundColor(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                    .tracking(1.8)
                             }
+                            
+                            Text("Transform Your Speed")
+                                .font(.system(size: adaptiveFontSize(base: 28, for: geometry.size.height), weight: .black))
+                                .foregroundColor(.white)
+                                .lineLimit(nil)
                         }
-                        .foregroundColor(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 20)
+                        .padding(.horizontal, adaptivePadding(for: geometry.size.height))
+                    
+                        // Training Program Carousel - One card visible with scroll capability
+                        VStack(spacing: adaptiveSpacing(for: geometry.size.height) * 0.6) {
+                            GeometryReader { carouselGeometry in
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    LazyHStack(spacing: 40) {
+                                        ForEach(uniqueSessionsToShow.indices, id: \.self) { index in
+                                            let session = uniqueSessionsToShow[index]
+                                            TrainingSessionCard(session: session, userLevel: profile.level)
+                                                .onAppear {
+                                                    print("🔍 TrainingSessionCard: userLevel='\(profile.level)', session.type='\(session.type)', session.focus='\(session.focus)'")
+                                                }
+                                                .frame(width: carouselGeometry.size.width - 40) // Full width minus padding for one card
+                                                .onTapGesture {
+                                                    selectedSessionForWorkout = session
+                                                    showMainProgramWorkout = true
+                                                    #if os(iOS)
+                                                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                                    #endif
+                                                }
+                                        }
+                                    }
+                                    .padding(.horizontal, adaptivePadding(for: geometry.size.height))
+                                }
+                            }
+                            .frame(height: adaptiveCardHeight(for: geometry.size.height))
+                            .clipped()
+                            
+                        }
+                    }
+                    .padding(.bottom, adaptiveSpacing(for: geometry.size.height) * 0.6)
+
+                    // Nike-Inspired Action Button
+                    VStack(spacing: 8) {
+                        
+                        // Enhanced Action Button
+                        Button(action: {
+                            #if os(iOS)
+                            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                            #endif
+                            selectedSessionForWorkout = sessionsToShow.first
+                            showMainProgramWorkout = true
+                        }) {
+                            VStack(spacing: 8) {
+                                HStack(spacing: 12) {
+                                    Image(systemName: "flame.fill")
+                                        .font(.system(size: adaptiveFontSize(base: 20, for: geometry.size.height), weight: .bold))
+                                    
+                                    Text("START SPRINT")
+                                        .font(.system(size: adaptiveFontSize(base: 18, for: geometry.size.height), weight: .black))
+                                        .tracking(0.5)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "arrow.right.circle.fill")
+                                        .font(.system(size: adaptiveFontSize(base: 24, for: geometry.size.height), weight: .bold))
+                                }
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal, adaptivePadding(for: geometry.size.height) * 1.2)
+                            .padding(.vertical, adaptivePadding(for: geometry.size.height))
                         .background(
                             LinearGradient(
                                 colors: [
@@ -2071,24 +2143,24 @@ extension TrainingView {
                             x: 0,
                             y: 6
                         )
+                        }
+                        .padding(.horizontal, adaptivePadding(for: geometry.size.height))
                     }
-                    .padding(.horizontal, 20)
-                }
-                .padding(.bottom, 16)
+                    .padding(.bottom, adaptiveSpacing(for: geometry.size.height) * 0.6)
 
-                // Sprint Timer Pro Access Point
-                SprintTimerProAccessCard(isProUser: isProUser) {
-                    if isProUser {
-                        // Navigate to Sprint Timer Pro
-                        showSprintTimerPro = true
-                    } else {
-                        // Navigate to Pro Features for purchase
-                        selectedMenu = .proFeatures
-                        showMenu = false
+                    // Sprint Timer Pro Access Point
+                    SprintTimerProAccessCard(isProUser: isProUser) {
+                        if isProUser {
+                            // Navigate to Sprint Timer Pro
+                            showSprintTimerPro = true
+                        } else {
+                            // Navigate to Pro Features for purchase
+                            selectedMenu = .proFeatures
+                            showMenu = false
+                        }
                     }
-                }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
+                    .padding(.horizontal, adaptivePadding(for: geometry.size.height))
+                    .padding(.bottom, adaptiveSpacing(for: geometry.size.height))
                 
                 // Demo: Tap to toggle Pro status (for testing)
                 #if DEBUG
@@ -2107,9 +2179,9 @@ extension TrainingView {
                 .padding(.bottom, 12)
                 #endif
                 
-                // Additional spacing to replace Up Next section
-                Spacer()
-                    .frame(height: 20)
+                    // Additional spacing to replace Up Next section
+                    Spacer()
+                        .frame(height: 20)
                 // Up Next Section - Exact match
                 // VStack(alignment: .leading, spacing: 12) {
                 //     HStack(spacing: 8) {
@@ -2184,10 +2256,11 @@ extension TrainingView {
                 //         )
                 //         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
                 // )
+                }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.clear)
     }
 }
 // Close TrainingView extension here

@@ -39,8 +39,9 @@ struct OnboardingView: View {
     @ObservedObject var userProfileVM: UserProfileViewModel
     var onComplete: () -> Void
     
-    @StateObject private var watchConnectivity = WatchConnectivityManager.shared
-    @StateObject private var profileManager = UserProfileManager.shared
+    // CRASH FIX: Don't use @StateObject with .shared singletons - causes immediate crash
+    private var watchConnectivity: WatchConnectivityManager { WatchConnectivityManager.shared }
+    private var profileManager: UserProfileManager { UserProfileManager.shared }
     
     @State private var gender = "Male"
     @State private var age = 25
@@ -98,45 +99,108 @@ struct OnboardingView: View {
         .ignoresSafeArea()
     }
     
+    // MARK: - Adaptive Layout Helpers
+    
+    /// Adaptive spacing based on screen height
+    private func adaptiveSpacing(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 16
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 18
+        case 800..<900:  // iPhone 14, iPhone 15
+            return 20
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return 24
+        }
+    }
+    
+    /// Adaptive font size based on screen height
+    private func adaptiveFontSize(base: CGFloat, for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return base * 0.85
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return base * 0.9
+        case 800..<900:  // iPhone 14, iPhone 15
+            return base * 0.95
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return base
+        }
+    }
+    
+    /// Adaptive top padding based on screen height
+    private func adaptiveTopPadding(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 8
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 12
+        case 800..<900:  // iPhone 14, iPhone 15
+            return 16
+        default:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return 20
+        }
+    }
+    
+    /// Adaptive bottom padding for sticky button
+    private func adaptiveBottomPadding(for height: CGFloat) -> CGFloat {
+        switch height {
+        case ..<700:  // iPhone SE, iPhone 8
+            return 170
+        case 700..<800:  // iPhone 12 mini, iPhone 13 mini
+            return 190
+        case 800..<852:  // iPhone 14, iPhone 15
+            return 210
+        case 852..<900:  // iPhone 14 Pro, iPhone 15 Pro
+            return 220
+        case 900..<950:  // iPhone 14 Pro Max, iPhone 15 Pro Max
+            return 230
+        default:  // iPhone 17 Pro and future larger models
+            return 240
+        }
+    }
+    
     var body: some View {
-        ZStack {
-            backgroundGradient
-            
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 24) {
-                    // Header with progress matching the design
-                    VStack(spacing: 16) {
-                        Text("Welcome, \(userName)!")
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.center)
-                        
-                        Text("Let's build your personalized training program")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
-                        
-                        // Enhanced progress bar with animation
-                        VStack(spacing: 8) {
-                            HStack(spacing: 4) {
-                                ForEach(0..<5) { index in
-                                    Rectangle()
-                                        .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
-                                        .frame(height: 4)
-                                        .frame(maxWidth: .infinity)
-                                        .cornerRadius(2)
-                                }
-                            }
-                            .padding(.horizontal, 20)
+        GeometryReader { geometry in
+            ZStack {
+                backgroundGradient
+                
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(spacing: adaptiveSpacing(for: geometry.size.height)) {
+                        // Header with progress matching the design
+                        VStack(spacing: adaptiveSpacing(for: geometry.size.height) * 0.6) {
+                            Text("Welcome, \(userName)!")
+                                .font(.system(size: adaptiveFontSize(base: 28, for: geometry.size.height), weight: .bold))
+                                .foregroundColor(.white)
+                                .multilineTextAlignment(.center)
                             
-                            Text("5 Questions • 2 minutes")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.6))
+                            Text("Let's build your personalized training program")
+                                .font(.system(size: adaptiveFontSize(base: 16, for: geometry.size.height), weight: .medium))
+                                .foregroundColor(.white.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal)
+                            
+                            // Enhanced progress bar with animation
+                            VStack(spacing: 6) {
+                                HStack(spacing: 4) {
+                                    ForEach(0..<5) { index in
+                                        Rectangle()
+                                            .fill(Color(red: 1.0, green: 0.8, blue: 0.0))
+                                            .frame(height: 3)
+                                            .frame(maxWidth: .infinity)
+                                            .cornerRadius(2)
+                                    }
+                                }
+                                .padding(.horizontal, 20)
+                                
+                                Text("5 Questions • 2 minutes")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.6))
+                            }
                         }
-                    }
-                    .padding(.top, 20)
-                    .padding(.horizontal)
+                        .padding(.top, adaptiveTopPadding(for: geometry.size.height))
+                        .padding(.horizontal)
                     
                     // Questions sections with improved spacing
                     Group {
@@ -147,38 +211,40 @@ struct OnboardingView: View {
                         leaderboardSection
                     }
                     
-                    // Extra bottom padding for sticky button - increased to prevent overlap
-                    Spacer(minLength: 400)
+                        // Extra bottom padding for sticky button
+                        Spacer(minLength: adaptiveBottomPadding(for: geometry.size.height))
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal)
-                .padding(.bottom, 40)
-            }
-            
-            // Enhanced Sticky Finish Button
-            VStack {
-                Spacer()
                 
-                // Gradient fade overlay for better visual separation
-                LinearGradient(
-                    colors: [
-                        Color.clear,
-                        Color.black.opacity(0.2),
-                        Color.black.opacity(0.5),
-                        Color.black.opacity(0.8)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .frame(height: 120)
-                .allowsHitTesting(false)
-                
-                finishButton
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                    .background(
-                        Color.black.opacity(0.9)
-                            .ignoresSafeArea(edges: .bottom)
+                // Enhanced Sticky Finish Button
+                VStack {
+                    Spacer()
+                    
+                    // Gradient fade overlay for better visual separation
+                    LinearGradient(
+                        colors: [
+                            Color.clear,
+                            Color.black.opacity(0.2),
+                            Color.black.opacity(0.5),
+                            Color.black.opacity(0.8)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
                     )
+                    .frame(height: 60)
+                    .allowsHitTesting(false)
+                    
+                    finishButton
+                        .padding(.horizontal, 16)
+                        .padding(.top, 6)
+                        .padding(.bottom, 10)
+                        .background(
+                            Color.black.opacity(0.9)
+                                .ignoresSafeArea(edges: .bottom)
+                        )
+                }
             }
         }
         .alert("Setup Error", isPresented: $showErrorAlert) {
@@ -576,47 +642,49 @@ struct OnboardingView: View {
     
     // MARK: - Live Program Ready Summary (Updates with all onboarding choices)
     private var finishButton: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 10) {
             // Live summary card - updates as user makes selections
-            VStack(spacing: 16) {
+            VStack(spacing: 10) {
                 // Header with live level indicator
-                HStack(spacing: 12) {
+                HStack(spacing: 8) {
                     Image(systemName: "bolt.circle.fill")
-                        .font(.title2)
+                        .font(.body)
                         .foregroundColor(.yellow)
                     
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Program Ready")
-                            .font(.headline)
+                            .font(.subheadline.bold())
                             .foregroundColor(.white)
                         
                         // Live summary - updates with every selection
-                        HStack(spacing: 8) {
+                        HStack(spacing: 6) {
                             // Level badge - LIVE UPDATES
                             Text(fitnessLevel)
-                                .font(.caption.bold())
+                                .font(.caption2.bold())
                                 .foregroundColor(.black)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 3)
                                 .background(levelColor(fitnessLevel))
-                                .cornerRadius(6)
+                                .cornerRadius(4)
                                 .id("level-\(fitnessLevel)") // Force refresh on level change
                             
                             Text("•")
+                                .font(.caption2)
                                 .foregroundColor(.white.opacity(0.5))
                             
                             // Frequency - LIVE UPDATES
-                            Text("\(daysAvailable) days/week")
-                                .font(.caption)
+                            Text("\(daysAvailable) days/wk")
+                                .font(.caption2)
                                 .foregroundColor(.white.opacity(0.9))
                                 .id("freq-\(daysAvailable)") // Force refresh on frequency change
                             
                             Text("•")
+                                .font(.caption2)
                                 .foregroundColor(.white.opacity(0.5))
                             
                             // PB Time - LIVE UPDATES
-                            Text("\(String(format: "%.2f", pb))s PB")
-                                .font(.caption)
+                            Text("\(String(format: "%.2f", pb))s")
+                                .font(.caption2)
                                 .foregroundColor(.yellow)
                                 .id("pb-\(pb)") // Force refresh on PB change
                         }
@@ -627,17 +695,18 @@ struct OnboardingView: View {
                 }
                 
                 // Detailed program breakdown
-                VStack(spacing: 12) {
+                VStack(spacing: 6) {
                     // Week 1 start info
                     HStack {
                         Image(systemName: "calendar.badge.clock")
+                            .font(.caption2)
                             .foregroundColor(.cyan)
                         Text("Starting Week 1")
-                            .font(.subheadline)
+                            .font(.caption2)
                             .foregroundColor(.white)
                         Spacer()
                         Text("Day 1")
-                            .font(.caption)
+                            .font(.caption2)
                             .foregroundColor(.white.opacity(0.7))
                     }
                     
@@ -645,7 +714,7 @@ struct OnboardingView: View {
                         .background(Color.white.opacity(0.2))
                     
                     // Program features preview - LIVE UPDATES
-                    HStack(spacing: 16) {
+                    HStack(spacing: 10) {
                         FeaturePreview(icon: "calendar", text: "12 Weeks", color: .blue)
                         FeaturePreview(icon: "figure.run", text: "\(estimatedSessions) Sessions", color: .green)
                             .id("sessions-\(estimatedSessions)") // Force refresh when session count changes
@@ -659,30 +728,42 @@ struct OnboardingView: View {
                 
                 // Simple Continue Button
                 Button(action: {
-                    print("🔵 BUTTON TAPPED - Starting onboarding completion")
-                    print("   Level: \(fitnessLevel)")
-                    print("   Frequency: \(daysAvailable)")
-                    print("   PB: \(pb)")
+                    print("\n" + String(repeating: "=", count: 80))
+                    print("🔵 CONTINUE BUTTON TAPPED")
+                    print(String(repeating: "=", count: 80))
+                    print("📊 CURRENT STATE:")
+                    print("   userName: '\(userName)'")
+                    print("   fitnessLevel: '\(fitnessLevel)'")
+                    print("   daysAvailable: \(daysAvailable)")
+                    print("   pb: \(pb)")
+                    print("   age: \(age)")
+                    print("   height: \(heightFeet)ft \(heightInches)in")
+                    print("   weight: \(weight) lbs")
+                    print("   isCompleting: \(isCompleting)")
+                    print(String(repeating: "=", count: 80) + "\n")
                     
                     // Use async safe completion method
                     Task {
-                        print("🔵 TASK STARTED")
+                        print("🔵 ASYNC TASK STARTED")
                         if !isCompleting {
-                            print("🔵 NOT COMPLETING - Proceeding")
+                            print("🔵 NOT COMPLETING - Proceeding with onboarding")
                             isCompleting = true
                             do {
-                                print("🔵 CALLING runSafeOnboardingCompletion()")
+                                print("🔵 CALLING runSafeOnboardingCompletion()...")
                                 try await runSafeOnboardingCompletion()
-                                print("🔵 runSafeOnboardingCompletion() COMPLETED")
+                                print("✅ runSafeOnboardingCompletion() COMPLETED SUCCESSFULLY")
                             } catch {
-                                print("❌ ONBOARDING ERROR CAUGHT: \(error.localizedDescription)")
+                                print("\n" + String(repeating: "❌", count: 40))
+                                print("❌ ONBOARDING ERROR CAUGHT")
+                                print("❌ Error: \(error.localizedDescription)")
                                 print("❌ Error type: \(type(of: error))")
+                                print(String(repeating: "❌", count: 40) + "\n")
                                 errorMessage = error.localizedDescription
                                 showErrorAlert = true
                                 isCompleting = false
                             }
                         } else {
-                            print("⚠️ ALREADY COMPLETING - Ignoring tap")
+                            print("⚠️ ALREADY COMPLETING - Ignoring duplicate tap")
                         }
                     }
                 }) {
@@ -691,16 +772,16 @@ struct OnboardingView: View {
                             ProgressView()
                                 .scaleEffect(0.8)
                             Text("Setting up...")
-                                .font(.headline.bold())
+                                .font(.subheadline.bold())
                         } else {
                             Text("Continue")
-                                .font(.headline.bold())
+                                .font(.subheadline.bold())
                             Image(systemName: "arrow.right")
-                                .font(.headline)
+                                .font(.subheadline)
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, 14)
                     .background(
                         LinearGradient(
                             gradient: Gradient(colors: isCompleting ? [Color.gray, Color.gray.opacity(0.8)] : [Color.yellow, Color.orange]),
@@ -709,16 +790,16 @@ struct OnboardingView: View {
                         )
                     )
                     .foregroundColor(isCompleting ? .white.opacity(0.6) : .black)
-                    .cornerRadius(12)
-                    .shadow(color: isCompleting ? Color.clear : Color.yellow.opacity(0.5), radius: 10, x: 0, y: 5)
+                    .cornerRadius(10)
+                    .shadow(color: isCompleting ? Color.clear : Color.yellow.opacity(0.5), radius: 8, x: 0, y: 4)
                     .opacity(isCompleting ? 0.6 : 1.0)
                 }
                 .disabled(isCompleting)
-                .padding(.top, 8)
+                .padding(.top, 4)
             }
-            .padding()
+            .padding(12)
             .background(Color.white.opacity(0.1))
-            .cornerRadius(12)
+            .cornerRadius(10)
         }
     }
     
@@ -727,19 +808,19 @@ struct OnboardingView: View {
     
     // MARK: - Enhanced Reusable Section Card
     private func sectionCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 14) {
             content()
         }
-        .padding(20)
+        .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(Color.white.opacity(0.08))
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
+                    RoundedRectangle(cornerRadius: 16)
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)
                 )
         )
-        .shadow(color: .black.opacity(0.2), radius: 8, x: 0, y: 4)
+        .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
         .shadow(color: .white.opacity(0.05), radius: 1, x: 0, y: 1)
     }
     
@@ -1096,12 +1177,12 @@ struct FeaturePreview: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 2) {
             Image(systemName: icon)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundColor(color)
             Text(text)
-                .font(.caption2)
+                .font(.system(size: 9))
                 .foregroundColor(.white.opacity(0.8))
         }
         .frame(maxWidth: .infinity)
